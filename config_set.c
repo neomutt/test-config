@@ -3,9 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "config_set.h"
+#include "address.h"
 #include "hash.h"
 #include "lib.h"
+#include "mbyte_table.h"
 #include "mutt_options.h"
+#include "mutt_regex.h"
 
 bool config_set_init(struct ConfigSet *config)
 {
@@ -17,8 +20,44 @@ void destroy(int type, void *obj)
 {
   switch (type)
   {
+    case DT_BOOL:
+    case DT_MAGIC:
+    case DT_NUM:
+    case DT_QUAD:
+    case DT_SORT:
+      break;
+
+    case DT_ADDR:
+    {
+      struct Address *a = obj;
+      FREE(&a->personal);
+      FREE(&a->mailbox);
+      FREE(&a);
+      break;
+    }
+
+    case DT_MBCHARTBL:
+    {
+      struct MbCharTable *m = obj;
+      FREE(&m->segmented_str);
+      FREE(&m->orig_str);
+      FREE(&m);
+      break;
+    }
+
+    case DT_RX:
+    {
+      struct Regex *r = obj;
+      FREE(&r->pattern);
+      //regfree(r->rx)
+      FREE(&r);
+    }
+    break;
+
+    case DT_HCACHE:
+    case DT_PATH:
     case DT_STR:
-      // free(obj);
+      free(obj);
       break;
   }
 }
@@ -34,7 +73,7 @@ void config_set_addr(struct ConfigSet *config, const char *name, struct Address 
   struct HashElem *elem = hash_find_elem(config->hash, name);
   if (elem)
   {
-    FREE(&elem->data);
+    destroy(DT_ADDR, elem->data);
     elem->data = (void *) value;
     return;
   }
@@ -77,12 +116,12 @@ void config_set_magic(struct ConfigSet *config, const char *name, int value)
   hash_typed_insert(config->hash, name, DT_MAGIC, (void *) copy);
 }
 
-void config_set_mbchartbl(struct ConfigSet *config, const char *name, struct MbCharTbl *value)
+void config_set_mbchartbl(struct ConfigSet *config, const char *name, struct MbCharTable *value)
 {
   struct HashElem *elem = hash_find_elem(config->hash, name);
   if (elem)
   {
-    FREE(&elem->data);
+    destroy(DT_MBCHARTBL, elem->data);
     elem->data = (void *) value;
     return;
   }
@@ -130,7 +169,7 @@ void config_set_rx(struct ConfigSet *config, const char *name, struct Regex *val
   struct HashElem *elem = hash_find_elem(config->hash, name);
   if (elem)
   {
-    FREE(&elem->data);
+    destroy(DT_RX, elem->data);
     elem->data = (void *) value;
     return;
   }
@@ -194,7 +233,7 @@ int config_get_magic(struct ConfigSet *config, const char *name)
   return -1;
 }
 
-struct MbCharTbl *config_get_mbchartbl(struct ConfigSet *config, const char *name)
+struct MbCharTable *config_get_mbchartbl(struct ConfigSet *config, const char *name)
 {
   struct HashElem *elem = hash_find_elem(config->hash, name);
   if (elem && (elem->type == DT_MBCHARTBL))
