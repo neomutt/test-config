@@ -1,8 +1,11 @@
 #include "config.h"
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 #include "config_set.h"
 #include "hash.h"
+#include "lib.h"
+#include "mutt_options.h"
 
 bool config_set_init(struct ConfigSet *config)
 {
@@ -10,49 +13,240 @@ bool config_set_init(struct ConfigSet *config)
   return true;
 }
 
+void destroy(int type, void *obj)
+{
+  switch (type)
+  {
+    case DT_STR:
+      // free(obj);
+      break;
+  }
+}
+
 void config_set_free(struct ConfigSet *config)
 {
-  hash_destroy(&config->hash, NULL);
+  hash_destroy(&config->hash, destroy);
 }
 
-void config_set_int(struct ConfigSet *config, const char *name, intptr_t value)
+
+void config_set_addr(struct ConfigSet *config, const char *name, struct Address *value)
 {
   struct HashElem *elem = hash_find_elem(config->hash, name);
   if (elem)
   {
+    FREE(&elem->data);
     elem->data = (void *) value;
     return;
   }
-
-  hash_insert(config->hash, name, (void *) value);
+  hash_typed_insert(config->hash, name, DT_ADDR, (void *) value);
 }
 
-void config_set_string(struct ConfigSet *config, const char *name, const char *value)
+void config_set_bool(struct ConfigSet *config, const char *name, bool value)
+{
+  intptr_t copy = value;
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    elem->data = (void *) copy;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_BOOL, (void *) copy);
+}
+
+void config_set_hcache(struct ConfigSet *config, const char *name, const char *value)
 {
   struct HashElem *elem = hash_find_elem(config->hash, name);
   if (elem)
   {
+    FREE(&elem->data);
     elem->data = (void *) value;
     return;
   }
-
-  hash_insert(config->hash, name, (void *) value);
+  hash_typed_insert(config->hash, name, DT_HCACHE, (void *) value);
 }
 
-int config_get_int(struct ConfigSet *config, const char *name)
+void config_set_magic(struct ConfigSet *config, const char *name, int value)
+{
+  intptr_t copy = value;
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    elem->data = (void *) copy;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_MAGIC, (void *) copy);
+}
+
+void config_set_mbchartbl(struct ConfigSet *config, const char *name, struct MbCharTbl *value)
 {
   struct HashElem *elem = hash_find_elem(config->hash, name);
   if (elem)
+  {
+    FREE(&elem->data);
+    elem->data = (void *) value;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_MBCHARTBL, (void *) value);
+}
+
+void config_set_num(struct ConfigSet *config, const char *name, int value)
+{
+  intptr_t copy = value;
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    elem->data = (void *) copy;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_NUM, (void *) copy);
+}
+
+void config_set_path(struct ConfigSet *config, const char *name, const char *value)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    FREE(&elem->data);
+    elem->data = (void *) value;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_PATH, (void *) value);
+}
+
+void config_set_quad(struct ConfigSet *config, const char *name, int value)
+{
+  intptr_t copy = value;
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    elem->data = (void *) copy;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_QUAD, (void *) copy);
+}
+
+void config_set_rx(struct ConfigSet *config, const char *name, struct Regex *value)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    FREE(&elem->data);
+    elem->data = (void *) value;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_RX, (void *) value);
+}
+
+void config_set_sort(struct ConfigSet *config, const char *name, int value)
+{
+  intptr_t copy = value;
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    elem->data = (void *) copy;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_SORT, (void *) copy);
+}
+
+void config_set_str(struct ConfigSet *config, const char *name, const char *value)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem)
+  {
+    FREE(&elem->data);
+    elem->data = (void *) value;
+    return;
+  }
+  hash_typed_insert(config->hash, name, DT_STR, (void *) value);
+}
+
+
+struct Address *config_get_addr(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_ADDR))
+    return elem->data;
+  return NULL;
+}
+
+bool config_get_bool(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_BOOL))
+    return ((intptr_t) elem->data != 0);
+  return false;
+}
+
+const char *config_get_hcache(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_PATH))
+    return elem->data;
+  return NULL;
+}
+
+int config_get_magic(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_MAGIC))
     return (intptr_t) elem->data;
+  return -1;
+}
 
+struct MbCharTbl *config_get_mbchartbl(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_MBCHARTBL))
+    return elem->data;
+  return NULL;
+}
+
+int config_get_num(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_NUM))
+    return (intptr_t) elem->data;
   return INT_MIN;
 }
 
-char *config_get_string(struct ConfigSet *config, const char *name)
+const char *config_get_path(struct ConfigSet *config, const char *name)
 {
   struct HashElem *elem = hash_find_elem(config->hash, name);
-  if (elem)
+  if (elem && (elem->type == DT_PATH))
     return elem->data;
-
   return NULL;
 }
+
+int config_get_quad(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_QUAD))
+    return (intptr_t) elem->data;
+  return -1;
+}
+
+struct Regex *config_get_rx(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_RX))
+    return elem->data;
+  return NULL;
+}
+
+int config_get_sort(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_SORT))
+    return (intptr_t) elem->data;
+  return -1;
+}
+
+const char *config_get_str(struct ConfigSet *config, const char *name)
+{
+  struct HashElem *elem = hash_find_elem(config->hash, name);
+  if (elem && (elem->type == DT_STR))
+    return elem->data;
+  return NULL;
+}
+

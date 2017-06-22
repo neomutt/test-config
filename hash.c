@@ -139,7 +139,7 @@ struct Hash *hash_resize(struct Hash *ptr, int nelem, int lower)
  * data         data to associate with `key'
  * allow_dup    if nonzero, duplicate keys are allowed in the table
  */
-static int union_hash_insert(struct Hash *table, union hash_key key, void *data)
+static int union_hash_insert(struct Hash *table, union hash_key key, int type, void *data)
 {
   struct HashElem *ptr = NULL;
   unsigned int h;
@@ -148,6 +148,7 @@ static int union_hash_insert(struct Hash *table, union hash_key key, void *data)
   h = table->gen_hash(key, table->nelem);
   ptr->key = key;
   ptr->data = data;
+  ptr->type = type;
 
   if (table->allow_dups)
   {
@@ -181,18 +182,23 @@ static int union_hash_insert(struct Hash *table, union hash_key key, void *data)
   return h;
 }
 
-int hash_insert(struct Hash *table, const char *strkey, void *data)
+int hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data)
 {
   union hash_key key;
   key.strkey = table->strdup_keys ? safe_strdup(strkey) : strkey;
-  return union_hash_insert(table, key, data);
+  return union_hash_insert(table, key, type, data);
+}
+
+int hash_insert(struct Hash *table, const char *strkey, void *data)
+{
+  return hash_typed_insert(table, strkey, -1, data);
 }
 
 int int_hash_insert(struct Hash *table, unsigned int intkey, void *data)
 {
   union hash_key key;
   key.intkey = intkey;
-  return union_hash_insert(table, key, data);
+  return union_hash_insert(table, key, -1, data);
 }
 
 static struct HashElem *union_hash_find_elem(const struct Hash *table, union hash_key key)
@@ -310,7 +316,7 @@ void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data,
 /* ptr          pointer to the hash table to be freed
  * destroy()    function to call to free the ->data member (optional)
  */
-void hash_destroy(struct Hash **ptr, void (*destroy)(void *))
+void hash_destroy(struct Hash **ptr, void (*destroy)(int type, void *obj))
 {
   struct Hash *pptr = NULL;
   struct HashElem *elem = NULL, *tmp = NULL;
@@ -326,7 +332,7 @@ void hash_destroy(struct Hash **ptr, void (*destroy)(void *))
       tmp = elem;
       elem = elem->next;
       if (destroy)
-        destroy(tmp->data);
+        destroy(tmp->type, tmp->data);
       if (pptr->strdup_keys)
         FREE(&tmp->key.strkey);
       FREE(&tmp);

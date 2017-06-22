@@ -27,6 +27,7 @@ union hash_key {
 
 struct HashElem
 {
+  int type;
   union hash_key key;
   void *data;
   struct HashElem *next;
@@ -50,6 +51,7 @@ struct Hash
 struct Hash *hash_create(int nelem, int flags);
 struct Hash *int_hash_create(int nelem, int flags);
 
+int hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data);
 int hash_insert(struct Hash *table, const char *strkey, void *data);
 int int_hash_insert(struct Hash *table, unsigned int intkey, void *data);
 struct Hash *hash_resize(struct Hash *ptr, int nelem, int lower);
@@ -65,7 +67,7 @@ void hash_delete(struct Hash *table, const char *strkey, const void *data,
 void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data,
                      void (*destroy)(void *));
 
-void hash_destroy(struct Hash **ptr, void (*destroy)(void *));
+void hash_destroy(struct Hash **ptr, void (*destroy)(int type, void *obj));
 
 struct HashWalkState
 {
