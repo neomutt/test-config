@@ -220,7 +220,7 @@ bool config_get_bool(struct ConfigSet *config, const char *name)
 const char *config_get_hcache(struct ConfigSet *config, const char *name)
 {
   struct HashElem *elem = hash_find_elem(config->hash, name);
-  if (elem && (elem->type == DT_PATH))
+  if (elem && (elem->type == DT_HCACHE))
     return elem->data;
   return NULL;
 }

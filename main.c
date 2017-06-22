@@ -53,26 +53,30 @@ int main()
   config_set_addr(&cs, a, a1);
   config_set_addr(&cs, b, a2);
   config_set_addr(&cs, b, a3);
-  printf("%-10s = %s\n", a, config_get_addr(&cs, a)->personal);
-  printf("%-10s = %s\n", b, config_get_addr(&cs, b)->personal);
+  printf("DT_ADDR\n");
+  printf("    %-10s = %s\n", a, config_get_addr(&cs, a)->personal);
+  printf("    %-10s = %s\n", b, config_get_addr(&cs, b)->personal);
 
   config_set_bool(&cs, c, false);
   config_set_bool(&cs, d, false);
   config_set_bool(&cs, d, true);
-  printf("%-10s = %d\n", c, config_get_bool(&cs, c));
-  printf("%-10s = %d\n", d, config_get_bool(&cs, d));
+  printf("DT_BOOL\n");
+  printf("    %-10s = %d\n", c, config_get_bool(&cs, c));
+  printf("    %-10s = %d\n", d, config_get_bool(&cs, d));
 
   config_set_hcache(&cs, e, strdup("lmdb"));
   config_set_hcache(&cs, f, strdup("qdbm"));
   config_set_hcache(&cs, f, strdup("gdbm"));
-  printf("%-10s = %s\n", e, config_get_hcache(&cs, e));
-  printf("%-10s = %s\n", f, config_get_hcache(&cs, f));
+  printf("DT_HCACHE\n");
+  printf("    %-10s = %s\n", e, config_get_hcache(&cs, e));
+  printf("    %-10s = %s\n", f, config_get_hcache(&cs, f));
 
   config_set_magic(&cs, g, 123);
   config_set_magic(&cs, h, 456);
   config_set_magic(&cs, h, 789);
-  printf("%-10s = %d\n", g, config_get_magic(&cs, g));
-  printf("%-10s = %d\n", h, config_get_magic(&cs, h));
+  printf("DT_MAGIC\n");
+  printf("    %-10s = %d\n", g, config_get_magic(&cs, g));
+  printf("    %-10s = %d\n", h, config_get_magic(&cs, h));
 
   struct MbCharTable *m1 = calloc(1, sizeof(*m1));
   m1->segmented_str = strdup("x y z");
@@ -86,26 +90,30 @@ int main()
   config_set_mbchartbl(&cs, i, m1);
   config_set_mbchartbl(&cs, j, m2);
   config_set_mbchartbl(&cs, j, m3);
-  printf("%-10s = %s\n", i, config_get_mbchartbl(&cs, i)->segmented_str);
-  printf("%-10s = %s\n", j, config_get_mbchartbl(&cs, j)->segmented_str);
+  printf("DT_MBCHARTBL\n");
+  printf("    %-10s = %s\n", i, config_get_mbchartbl(&cs, i)->segmented_str);
+  printf("    %-10s = %s\n", j, config_get_mbchartbl(&cs, j)->segmented_str);
 
   config_set_num(&cs, k, 111);
   config_set_num(&cs, l, 222);
   config_set_num(&cs, l, 333);
-  printf("%-10s = %d\n", k, config_get_num(&cs, k));
-  printf("%-10s = %d\n", l, config_get_num(&cs, l));
+  printf("DT_NUM\n");
+  printf("    %-10s = %d\n", k, config_get_num(&cs, k));
+  printf("    %-10s = %d\n", l, config_get_num(&cs, l));
 
   config_set_path(&cs, m, strdup("/usr"));
   config_set_path(&cs, n, strdup("/home"));
   config_set_path(&cs, n, strdup("/etc"));
-  printf("%-10s = %s\n", m, config_get_path(&cs, m));
-  printf("%-10s = %s\n", n, config_get_path(&cs, n));
+  printf("DT_PATH\n");
+  printf("    %-10s = %s\n", m, config_get_path(&cs, m));
+  printf("    %-10s = %s\n", n, config_get_path(&cs, n));
 
   config_set_quad(&cs, o, 1);
   config_set_quad(&cs, p, 2);
   config_set_quad(&cs, p, 3);
-  printf("%-10s = %d\n", o, config_get_quad(&cs, o));
-  printf("%-10s = %d\n", p, config_get_quad(&cs, p));
+  printf("DT_QUAD\n");
+  printf("    %-10s = %d\n", o, config_get_quad(&cs, o));
+  printf("    %-10s = %d\n", p, config_get_quad(&cs, p));
 
   struct Regex *r1 = calloc(1, sizeof(*r1));
   r1->pattern = strdup("name.*");
@@ -116,20 +124,23 @@ int main()
   config_set_rx(&cs, q, r1);
   config_set_rx(&cs, r, r2);
   config_set_rx(&cs, r, r3);
-  printf("%-10s = %s\n", q, config_get_rx(&cs, q)->pattern);
-  printf("%-10s = %s\n", r, config_get_rx(&cs, r)->pattern);
+  printf("DT_RX\n");
+  printf("    %-10s = %s\n", q, config_get_rx(&cs, q)->pattern);
+  printf("    %-10s = %s\n", r, config_get_rx(&cs, r)->pattern);
 
   config_set_sort(&cs, s, 2);
   config_set_sort(&cs, t, 3);
   config_set_sort(&cs, t, 4);
-  printf("%-10s = %d\n", s, config_get_sort(&cs, s));
-  printf("%-10s = %d\n", t, config_get_sort(&cs, t));
+  printf("DT_SORT\n");
+  printf("    %-10s = %d\n", s, config_get_sort(&cs, s));
+  printf("    %-10s = %d\n", t, config_get_sort(&cs, t));
 
   config_set_str(&cs, u, strdup("apple"));
   config_set_str(&cs, v, strdup("banana"));
   config_set_str(&cs, v, strdup("cherry"));
-  printf("%-10s = %s\n", u, config_get_str(&cs, u));
-  printf("%-10s = %s\n", v, config_get_str(&cs, v));
+  printf("DT_STR\n");
+  printf("    %-10s = %s\n", u, config_get_str(&cs, u));
+  printf("    %-10s = %s\n", v, config_get_str(&cs, v));
 
   config_set_free(&cs);
   return 0;
