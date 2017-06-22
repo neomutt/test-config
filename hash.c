@@ -263,7 +263,7 @@ struct HashElem *hash_find_bucket(const struct Hash *table, const char *strkey)
 }
 
 static void union_hash_delete(struct Hash *table, union hash_key key,
-                              const void *data, void (*destroy)(void *))
+                              const void *data, void (*destroy)(int type, void *obj))
 {
   int hash;
   struct HashElem *ptr, **last;
@@ -281,7 +281,7 @@ static void union_hash_delete(struct Hash *table, union hash_key key,
     {
       *last = ptr->next;
       if (destroy)
-        destroy(ptr->data);
+        destroy(ptr->type, ptr->data);
       if (table->strdup_keys)
         FREE(&ptr->key.strkey);
       FREE(&ptr);
@@ -298,7 +298,7 @@ static void union_hash_delete(struct Hash *table, union hash_key key,
 }
 
 void hash_delete(struct Hash *table, const char *strkey, const void *data,
-                 void (*destroy)(void *))
+                 void (*destroy)(int type, void *obj))
 {
   union hash_key key;
   key.strkey = strkey;
@@ -306,7 +306,7 @@ void hash_delete(struct Hash *table, const char *strkey, const void *data,
 }
 
 void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data,
-                     void (*destroy)(void *))
+                     void (*destroy)(int type, void *obj))
 {
   union hash_key key;
   key.intkey = intkey;

@@ -13,8 +13,9 @@ struct ConfigSet
   struct Hash *hash;
 };
 
-bool   config_set_init  (struct ConfigSet *config);
-void   config_set_free  (struct ConfigSet *config);
+struct ConfigSet *config_set_new(void);
+bool config_set_init(struct ConfigSet *config);
+void config_set_free(struct ConfigSet *config);
 
 void   config_set_addr     (struct ConfigSet *config, const char *name, struct Address *value);
 void   config_set_bool     (struct ConfigSet *config, const char *name, bool value);

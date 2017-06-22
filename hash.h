@@ -63,9 +63,9 @@ void *int_hash_find(const struct Hash *table, unsigned int intkey);
 struct HashElem *hash_find_bucket(const struct Hash *table, const char *strkey);
 
 void hash_delete(struct Hash *table, const char *strkey, const void *data,
-                 void (*destroy)(void *));
+                 void (*destroy)(int type, void *obj));
 void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data,
-                     void (*destroy)(void *));
+                     void (*destroy)(int type, void *obj));
 
 void hash_destroy(struct Hash **ptr, void (*destroy)(int type, void *obj));
 

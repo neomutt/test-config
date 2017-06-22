@@ -10,6 +10,13 @@
 #include "mutt_options.h"
 #include "mutt_regex.h"
 
+struct ConfigSet *config_set_new(void)
+{
+  struct ConfigSet *cs = safe_calloc(1, sizeof(*cs));
+  config_set_init(cs);
+  return cs;
+}
+
 bool config_set_init(struct ConfigSet *config)
 {
   config->hash = hash_create(10, 0);
