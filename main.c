@@ -34,10 +34,10 @@ const char *x = "xigua";
 const char *y = "yew";
 const char *z = "ziziphus";
 
-int main()
+void test1(void)
 {
   struct ConfigSet cs;
-  config_set_init(&cs);
+  config_set_init(&cs, NULL);
 
   /* set two values, overwrite the second one */
 
@@ -135,13 +135,54 @@ int main()
   printf("    %-10s = %d\n", s, config_get_sort(&cs, s));
   printf("    %-10s = %d\n", t, config_get_sort(&cs, t));
 
-  config_set_str(&cs, u, strdup("apple"));
-  config_set_str(&cs, v, strdup("banana"));
-  config_set_str(&cs, v, strdup("cherry"));
+  config_set_str(&cs, u, strdup(a));
+  config_set_str(&cs, v, strdup(b));
+  config_set_str(&cs, v, strdup(c));
   printf("DT_STR\n");
   printf("    %-10s = %s\n", u, config_get_str(&cs, u));
   printf("    %-10s = %s\n", v, config_get_str(&cs, v));
 
   config_set_free(&cs);
+}
+
+void test2(void)
+{
+  struct ConfigSet parent;
+  config_set_init(&parent, NULL);
+
+  struct ConfigSet child;
+  config_set_init(&child, &parent);
+
+  printf("MISSING\n");
+  printf("    PARENT %-10s = %s\n", a, config_get_str(&parent, a));
+  printf("    CHILD  %-10s = %s\n", a, config_get_str(&child,  a));
+
+  config_set_str(&parent, b, strdup(b));
+
+  printf("PARENT ONLY\n");
+  printf("    PARENT %-10s = %s\n", b, config_get_str(&parent, b));
+  printf("    CHILD  %-10s = %s\n", b, config_get_str(&child,  b));
+
+  config_set_str(&child, c, strdup(c));
+
+  printf("CHILD ONLY\n");
+  printf("    PARENT %-10s = %s\n", c, config_get_str(&parent, c));
+  printf("    CHILD  %-10s = %s\n", c, config_get_str(&child,  c));
+
+  config_set_str(&parent, d, strdup(d));
+  config_set_str(&child,  d, strdup(e));
+
+  printf("OVERRIDE\n");
+  printf("    PARENT %-10s = %s\n", d, config_get_str(&parent, d));
+  printf("    CHILD  %-10s = %s\n", d, config_get_str(&child,  d));
+
+  config_set_free(&parent);
+  config_set_free(&child);
+}
+
+int main()
+{
+  // test1();
+  test2();
   return 0;
 }
