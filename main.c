@@ -6,33 +6,20 @@
 #include "config_set.h"
 #include "mutt_regex.h"
 #include "mbyte_table.h"
+#include "data.h"
 
-const char *a = "apple";
-const char *b = "banana";
-const char *c = "cherry";
-const char *d = "damson";
-const char *e = "elderberry";
-const char *f = "fig";
-const char *g = "guava";
-const char *h = "hawthorn";
-const char *i = "ilama";
-const char *j = "jackfruit";
-const char *k = "kumquat";
-const char *l = "lemon";
-const char *m = "mango";
-const char *n = "nectarine";
-const char *o = "olive";
-const char *p = "papaya";
-const char *q = "quince";
-const char *r = "raspberry";
-const char *s = "strawberry";
-const char *t = "tangerine";
-const char *u = "ugli";
-const char *v = "vanilla";
-const char *w = "wolfberry";
-const char *x = "xigua";
-const char *y = "yew";
-const char *z = "ziziphus";
+unsigned int SOMEPRIME = 149711;
+
+static unsigned int gen_string_hash(const char *key, unsigned int n)
+{
+  unsigned int h = 0;
+
+  while (*key)
+    h += (h << 7) + *key++;
+  h = (h * SOMEPRIME) % n;
+
+  return h;
+}
 
 void test1(void)
 {
@@ -180,9 +167,23 @@ void test2(void)
   config_set_free(&child);
 }
 
-int main()
+void test3(void)
+{
+  fprintf(stderr, "Prime: %d\n", SOMEPRIME);
+  // fprintf(stderr, "%d\n", SOMEPRIME);
+  for (int i = 0; MuttVars[i].option; i++)
+  {
+    printf("%3d %s\n", gen_string_hash(MuttVars[i].option, 500), MuttVars[i].option);
+    // printf("%3d\n", gen_string_hash(MuttVars[i].option, 503));
+  }
+}
+
+int main(int argc, char *argv[])
 {
   // test1();
-  test2();
+  // test2();
+  if (argc > 1)
+    SOMEPRIME = atol(argv[1]);
+  test3();
   return 0;
 }

@@ -7,7 +7,7 @@ OBJDIR	= .obj
 
 OUT	= hash
 
-SRC	+= main.c config_set.c lib.c extlib.c hash.c
+SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 

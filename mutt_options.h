@@ -50,8 +50,6 @@ struct Option
 {
   char *option;
   short type;
-  short flags;
-  unsigned long data;
   unsigned long init; /* initial value */
 };
 
