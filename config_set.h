@@ -21,12 +21,14 @@ struct ConfigSet
 {
   struct ConfigSet *parent;
   struct Hash *hash;
-  config_callback cb;
+  config_callback cb[4];
 };
 
 struct ConfigSet *set_set_new(struct ConfigSet *parent);
 bool config_set_init(struct ConfigSet *set, struct ConfigSet *parent);
 void config_set_free(struct ConfigSet *set);
+
+void config_set_add_callback(struct ConfigSet *set, config_callback cb);
 
 bool config_set_addr     (struct ConfigSet *set, const char *name, struct Address *value);
 bool config_set_bool     (struct ConfigSet *set, const char *name, bool value);

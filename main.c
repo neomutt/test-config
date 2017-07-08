@@ -10,7 +10,16 @@
 
 unsigned int SOMEPRIME = 149711;
 
-static unsigned int gen_string_hash(const char *key, unsigned int n)
+bool callback(struct ConfigSet *set, const char *name, enum ConfigEvent e)
+{
+  if (e == CE_CHANGED)
+    printf("\033[1;33m%s has been changed\033[m\n", name);
+  else
+    printf("\033[1;32m%s has been set\033[m\n", name);
+  return false;
+}
+
+unsigned int gen_string_hash(const char *key, unsigned int n)
 {
   unsigned int h = 0;
 
@@ -25,6 +34,7 @@ void test1(void)
 {
   struct ConfigSet cs;
   config_set_init(&cs, NULL);
+  config_set_add_callback(&cs, callback);
 
   /* set two values, overwrite the second one */
 
@@ -137,9 +147,11 @@ void test2(void)
   const char *empty = NULL;
   struct ConfigSet parent;
   config_set_init(&parent, NULL);
+  config_set_add_callback(&parent, callback);
 
   struct ConfigSet child;
   config_set_init(&child, &parent);
+  config_set_add_callback(&child, callback);
 
   printf("MISSING\n");
   printf("    PARENT %-10s = %s\n", empty, config_get_str(&parent, a));
@@ -182,9 +194,9 @@ void test3(void)
 int main(int argc, char *argv[])
 {
   test1();
-  // test2();
-  // if (argc > 1)
-  //   SOMEPRIME = atol(argv[1]);
-  // test3();
+  test2();
+  if (argc > 1)
+    SOMEPRIME = atol(argv[1]);
+  test3();
   return 0;
 }

@@ -17,21 +17,24 @@ struct ConfigSet *config_set_new(struct ConfigSet *parent)
   return cs;
 }
 
-bool callback(struct ConfigSet *set, const char *name, enum ConfigEvent e)
-{
-  if (e == CE_CHANGED)
-    printf("\033[1;33m%s has been changed\033[m\n", name);
-  else
-    printf("\033[1;32m%s has been set\033[m\n", name);
-  return false;
-}
-
 bool config_set_init(struct ConfigSet *set, struct ConfigSet *parent)
 {
   set->hash = hash_create(10, 0);
   set->parent = parent;
-  set->cb = callback;
+  memset(set->cb, 0, sizeof(set->cb));
   return true;
+}
+
+void config_set_add_callback(struct ConfigSet *set, config_callback cb)
+{
+  for (unsigned int i = 0; i < mutt_array_size(set->cb); i++)
+  {
+    if (!set->cb[i])
+    {
+      set->cb[i] = cb;
+      break;
+    }
+  }
 }
 
 void destroy(int type, void *obj)
@@ -86,6 +89,17 @@ void config_set_free(struct ConfigSet *set)
 }
 
 
+void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent e)
+{
+  for (unsigned int i = 0; i < mutt_array_size(set->cb); i++)
+  {
+    if (!set->cb[i])
+      return;
+
+    set->cb[i](set, name, e);
+  }
+}
+
 bool config_set_addr(struct ConfigSet *set, const char *name, struct Address *value)
 {
   enum ConfigEvent e = CE_CHANGED;
@@ -104,8 +118,7 @@ bool config_set_addr(struct ConfigSet *set, const char *name, struct Address *va
     hash_typed_insert(set->hash, name, DT_ADDR, (void *) value);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -127,8 +140,7 @@ bool config_set_bool(struct ConfigSet *set, const char *name, bool value)
     hash_typed_insert(set->hash, name, DT_BOOL, (void *) copy);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -150,8 +162,7 @@ bool config_set_hcache(struct ConfigSet *set, const char *name, const char *valu
     hash_typed_insert(set->hash, name, DT_HCACHE, (void *) value);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -173,8 +184,7 @@ bool config_set_magic(struct ConfigSet *set, const char *name, int value)
     hash_typed_insert(set->hash, name, DT_MAGIC, (void *) copy);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -196,8 +206,7 @@ bool config_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbChar
     hash_typed_insert(set->hash, name, DT_MBCHARTBL, (void *) value);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -219,8 +228,7 @@ bool config_set_num(struct ConfigSet *set, const char *name, int value)
     hash_typed_insert(set->hash, name, DT_NUM, (void *) copy);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -242,8 +250,7 @@ bool config_set_path(struct ConfigSet *set, const char *name, const char *value)
     hash_typed_insert(set->hash, name, DT_PATH, (void *) value);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -265,8 +272,7 @@ bool config_set_quad(struct ConfigSet *set, const char *name, int value)
     hash_typed_insert(set->hash, name, DT_QUAD, (void *) copy);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -288,8 +294,7 @@ bool config_set_rx(struct ConfigSet *set, const char *name, struct Regex *value)
     hash_typed_insert(set->hash, name, DT_RX, (void *) value);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -311,8 +316,7 @@ bool config_set_sort(struct ConfigSet *set, const char *name, int value)
     hash_typed_insert(set->hash, name, DT_SORT, (void *) copy);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
@@ -334,8 +338,7 @@ bool config_set_str(struct ConfigSet *set, const char *name, const char *value)
     hash_typed_insert(set->hash, name, DT_STR, (void *) value);
   }
 
-  if (set->cb)
-    set->cb(set, name, e);
+  notify_listeners(set, name, e);
   return true;
 }
 
