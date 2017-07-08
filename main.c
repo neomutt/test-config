@@ -7,6 +7,7 @@
 #include "mutt_regex.h"
 #include "mbyte_table.h"
 #include "data.h"
+#include "lib.h"
 
 unsigned int SOMEPRIME = 149711;
 
@@ -17,6 +18,17 @@ bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
   else
     printf("\033[1;32m%s has been set\033[m\n", name);
   return false;
+}
+
+bool destructor(struct ConfigSet *set, int type, intptr_t obj)
+{
+  if (DTYPE(type) != DT_STR)
+    return false;
+
+  const char *str = (const char*) obj;
+  printf("\033[1;35mFreeing string '%s'\033[m\n", str);
+  FREE(&str);
+  return true;
 }
 
 bool validator(struct ConfigSet *set, const char *name, int type, intptr_t value)
@@ -166,10 +178,12 @@ void test2(void)
   struct ConfigSet parent;
   cs_init(&parent, NULL);
   cs_add_listener(&parent, listener);
+  cs_add_destructor(&parent, destructor);
 
   struct ConfigSet child;
   cs_init(&child, &parent);
   cs_add_listener(&child, listener);
+  cs_add_destructor(&child, destructor);
 
   printf("MISSING\n");
   printf("    PARENT %-10s = %s\n", empty, cs_get_str(&parent, a));
@@ -254,11 +268,11 @@ void test5(void)
 int main(int argc, char *argv[])
 {
   // test1();
-  // test2();
+  test2();
   // if (argc > 1)
   //   SOMEPRIME = atol(argv[1]);
   // test3();
   // test4();
-  test5();
+  // test5();
   return 0;
 }

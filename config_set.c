@@ -10,47 +10,11 @@
 #include "mutt_options.h"
 #include "mutt_regex.h"
 
-struct ConfigSet *cs_set_new(struct ConfigSet *parent)
+static void destroy(int type, void *obj, intptr_t data)
 {
-  struct ConfigSet *cs = safe_calloc(1, sizeof(*cs));
-  cs_init(cs, parent);
-  return cs;
-}
-
-bool cs_init(struct ConfigSet *set, struct ConfigSet *parent)
-{
-  memset(set, 0, sizeof(*set));
-  set->hash = hash_create(10, 0);
-  set->parent = parent;
-  return true;
-}
-
-void cs_add_listener(struct ConfigSet *set, cs_listener fn)
-{
-  for (unsigned int i = 0; i < mutt_array_size(set->listeners); i++)
-  {
-    if (!set->listeners[i])
-    {
-      set->listeners[i] = fn;
-      break;
-    }
-  }
-}
-
-void cs_add_validator(struct ConfigSet *set, cs_validator fn)
-{
-  set->validator = fn;
-}
-
-void cs_add_destructor(struct ConfigSet *set, cs_destructor fn)
-{
-  set->destructor = fn;
-}
-
-void destroy(int type, void *obj, intptr_t data)
-{
-  // if (set->destructor && set->destructor(set, name, type, obj))
-  //     return;
+  struct ConfigSet *set = (struct ConfigSet*) data;
+  if (set->destructor && set->destructor(set, type, (intptr_t) obj))
+    return;
 
   switch (type)
   {
@@ -96,9 +60,47 @@ void destroy(int type, void *obj, intptr_t data)
   }
 }
 
+struct ConfigSet *cs_set_new(struct ConfigSet *parent)
+{
+  struct ConfigSet *cs = safe_calloc(1, sizeof(*cs));
+  cs_init(cs, parent);
+  return cs;
+}
+
+bool cs_init(struct ConfigSet *set, struct ConfigSet *parent)
+{
+  memset(set, 0, sizeof(*set));
+  set->hash = hash_create(10, 0);
+  hash_set_destructor(set->hash, destroy, (intptr_t) set);
+  set->parent = parent;
+  return true;
+}
+
+void cs_add_listener(struct ConfigSet *set, cs_listener fn)
+{
+  for (unsigned int i = 0; i < mutt_array_size(set->listeners); i++)
+  {
+    if (!set->listeners[i])
+    {
+      set->listeners[i] = fn;
+      break;
+    }
+  }
+}
+
+void cs_add_validator(struct ConfigSet *set, cs_validator fn)
+{
+  set->validator = fn;
+}
+
+void cs_add_destructor(struct ConfigSet *set, cs_destructor fn)
+{
+  set->destructor = fn;
+}
+
 void cs_free(struct ConfigSet *set)
 {
-  hash_destroy(&set->hash, destroy, (intptr_t) set);
+  hash_destroy(&set->hash);
 }
 
 void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent e)

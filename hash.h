@@ -45,6 +45,8 @@ struct Hash
   struct HashElem **table;
   unsigned int (*gen_hash)(union hash_key, unsigned int);
   int (*cmp_key)(union hash_key, union hash_key);
+  hash_destructor destructor;
+  intptr_t dest_data;
 };
 
 /* flags for hash_create() */
@@ -54,6 +56,7 @@ struct Hash
 
 struct Hash *hash_create(int nelem, int flags);
 struct Hash *int_hash_create(int nelem, int flags);
+void hash_set_destructor(struct Hash *hash, hash_destructor fn, intptr_t fn_data);
 
 struct HashElem *hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data);
 struct HashElem *hash_insert(struct Hash *table, const char *strkey, void *data);
@@ -66,9 +69,9 @@ void *int_hash_find(const struct Hash *table, unsigned int intkey);
 
 struct HashElem *hash_find_bucket(const struct Hash *table, const char *strkey);
 
-void hash_delete(struct Hash *table, const char *strkey, const void *data, hash_destructor fn, intptr_t fn_data);
-void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data, hash_destructor fn, intptr_t fn_data);
-void hash_destroy(struct Hash **ptr, hash_destructor fn, intptr_t fn_data);
+void hash_delete(struct Hash *table, const char *strkey, const void *data);
+void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data);
+void hash_destroy(struct Hash **ptr);
 
 struct HashWalkState
 {
