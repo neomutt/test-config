@@ -19,9 +19,9 @@ struct ConfigSet *cs_set_new(struct ConfigSet *parent)
 
 bool cs_init(struct ConfigSet *set, struct ConfigSet *parent)
 {
+  memset(set, 0, sizeof(*set));
   set->hash = hash_create(10, 0);
   set->parent = parent;
-  memset(set->listeners, 0, sizeof(set->listeners));
   return true;
 }
 
@@ -42,8 +42,16 @@ void cs_add_validator(struct ConfigSet *set, cs_validator fn)
   set->validator = fn;
 }
 
-void destroy(int type, void *obj)
+void cs_add_destructor(struct ConfigSet *set, cs_destructor fn)
 {
+  set->destructor = fn;
+}
+
+void destroy(int type, void *obj, intptr_t data)
+{
+  // if (set->destructor && set->destructor(set, name, type, obj))
+  //     return;
+
   switch (type)
   {
     case DT_BOOL:
@@ -90,7 +98,7 @@ void destroy(int type, void *obj)
 
 void cs_free(struct ConfigSet *set)
 {
-  hash_destroy(&set->hash, destroy);
+  hash_destroy(&set->hash, destroy, (intptr_t) set);
 }
 
 void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent e)
@@ -119,7 +127,7 @@ struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Add
     if (DTYPE(elem->type) != DT_ADDR)
       return NULL;
 
-    destroy(DT_ADDR, elem->data);
+    destroy(DT_ADDR, elem->data, (intptr_t) set);
     elem->data = (void *) value;
   }
   else
@@ -225,7 +233,7 @@ struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struc
     if (DTYPE(elem->type) != DT_MBCHARTBL)
       return NULL;
 
-    destroy(DT_MBCHARTBL, elem->data);
+    destroy(DT_MBCHARTBL, elem->data, (intptr_t) set);
     elem->data = (void *) value;
   }
   else
@@ -331,7 +339,7 @@ struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex
     if (DTYPE(elem->type) != DT_RX)
       return NULL;
 
-    destroy(DT_RX, elem->data);
+    destroy(DT_RX, elem->data, (intptr_t) set);
     elem->data = (void *) value;
   }
   else
@@ -505,7 +513,7 @@ struct HashElem *he_set_addr(struct HashElem *var, struct Address *value)
   if (DTYPE(var->type) != DT_ADDR)
     return NULL;
 
-  destroy(DT_ADDR, var->data);
+  destroy(DT_ADDR, var->data, 0);
   var->data = (void *) value;
 
   // notify_listeners(set, name, e);
@@ -565,7 +573,7 @@ struct HashElem *he_set_mbchartbl(struct HashElem *var, struct MbCharTable *valu
   if (DTYPE(var->type) != DT_MBCHARTBL)
     return NULL;
 
-  destroy(DT_MBCHARTBL, var->data);
+  destroy(DT_MBCHARTBL, var->data, 0);
   var->data = (void *) value;
 
   // notify_listeners(set, name, e);
@@ -625,7 +633,7 @@ struct HashElem *he_set_rx(struct HashElem *var, struct Regex *value)
   if (DTYPE(var->type) != DT_RX)
     return NULL;
 
-  destroy(DT_RX, var->data);
+  destroy(DT_RX, var->data, 0);
   var->data = (void *) value;
 
   // notify_listeners(set, name, e);

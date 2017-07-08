@@ -17,6 +17,7 @@ enum ConfigEvent
 struct ConfigSet;
 typedef bool (*cs_listener)(struct ConfigSet *set, const char *name, enum ConfigEvent e);
 typedef bool (*cs_validator)(struct ConfigSet *set, const char *name, int type, intptr_t value);
+typedef bool (*cs_destructor)(struct ConfigSet *set, int type, intptr_t obj);
 
 struct ConfigSet
 {
@@ -24,13 +25,15 @@ struct ConfigSet
   struct Hash *hash;
   cs_listener listeners[4];
   cs_validator validator;
+  cs_destructor destructor;
 };
 
 struct ConfigSet *cs_new(struct ConfigSet *parent);
 bool cs_init(struct ConfigSet *set, struct ConfigSet *parent);
 void cs_free(struct ConfigSet *set);
-void cs_add_listener(struct ConfigSet *set, cs_listener fn);
-void cs_add_validator(struct ConfigSet *set, cs_validator fn);
+void cs_add_listener  (struct ConfigSet *set, cs_listener fn);
+void cs_add_validator (struct ConfigSet *set, cs_validator fn);
+void cs_add_destructor(struct ConfigSet *set, cs_destructor fn);
 struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name);
 
 struct HashElem *cs_set_addr     (struct ConfigSet *set, const char *name, struct Address *value);

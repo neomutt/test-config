@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 1996-2009 Michael R. Elkins <me@mutt.org>
+ * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -19,6 +20,7 @@
 #define _MUTT_HASH_H 1
 
 #include <stdbool.h>
+#include <stdint.h>
 
 union hash_key {
   const char *strkey;
@@ -32,6 +34,8 @@ struct HashElem
   void *data;
   struct HashElem *next;
 };
+
+typedef void (*hash_destructor)(int type, void *obj, intptr_t data);
 
 struct Hash
 {
@@ -62,12 +66,9 @@ void *int_hash_find(const struct Hash *table, unsigned int intkey);
 
 struct HashElem *hash_find_bucket(const struct Hash *table, const char *strkey);
 
-void hash_delete(struct Hash *table, const char *strkey, const void *data,
-                 void (*destroy)(int type, void *obj));
-void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data,
-                     void (*destroy)(int type, void *obj));
-
-void hash_destroy(struct Hash **ptr, void (*destroy)(int type, void *obj));
+void hash_delete(struct Hash *table, const char *strkey, const void *data, hash_destructor fn, intptr_t fn_data);
+void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data, hash_destructor fn, intptr_t fn_data);
+void hash_destroy(struct Hash **ptr, hash_destructor fn, intptr_t fn_data);
 
 struct HashWalkState
 {

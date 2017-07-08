@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 1996-2009 Michael R. Elkins <me@mutt.org>
+ * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -262,8 +263,7 @@ struct HashElem *hash_find_bucket(const struct Hash *table, const char *strkey)
   return table->table[hash];
 }
 
-static void union_hash_delete(struct Hash *table, union hash_key key,
-                              const void *data, void (*destroy)(int type, void *obj))
+static void union_hash_delete(struct Hash *table, union hash_key key, const void *data, hash_destructor fn, intptr_t fn_data)
 {
   int hash;
   struct HashElem *ptr, **last;
@@ -280,8 +280,8 @@ static void union_hash_delete(struct Hash *table, union hash_key key,
     if ((data == ptr->data || !data) && table->cmp_key(ptr->key, key) == 0)
     {
       *last = ptr->next;
-      if (destroy)
-        destroy(ptr->type, ptr->data);
+      if (fn)
+        fn(ptr->type, ptr->data, fn_data);
       if (table->strdup_keys)
         FREE(&ptr->key.strkey);
       FREE(&ptr);
@@ -297,26 +297,24 @@ static void union_hash_delete(struct Hash *table, union hash_key key,
   }
 }
 
-void hash_delete(struct Hash *table, const char *strkey, const void *data,
-                 void (*destroy)(int type, void *obj))
+void hash_delete(struct Hash *table, const char *strkey, const void *data, hash_destructor fn, intptr_t fn_data)
 {
   union hash_key key;
   key.strkey = strkey;
-  union_hash_delete(table, key, data, destroy);
+  union_hash_delete(table, key, data, fn, fn_data);
 }
 
-void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data,
-                     void (*destroy)(int type, void *obj))
+void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data, hash_destructor fn, intptr_t fn_data)
 {
   union hash_key key;
   key.intkey = intkey;
-  union_hash_delete(table, key, data, destroy);
+  union_hash_delete(table, key, data, fn, fn_data);
 }
 
 /* ptr          pointer to the hash table to be freed
  * destroy()    function to call to free the ->data member (optional)
  */
-void hash_destroy(struct Hash **ptr, void (*destroy)(int type, void *obj))
+void hash_destroy(struct Hash **ptr, hash_destructor fn, intptr_t fn_data)
 {
   struct Hash *pptr = NULL;
   struct HashElem *elem = NULL, *tmp = NULL;
@@ -331,8 +329,8 @@ void hash_destroy(struct Hash **ptr, void (*destroy)(int type, void *obj))
     {
       tmp = elem;
       elem = elem->next;
-      if (destroy)
-        destroy(tmp->type, tmp->data);
+      if (fn)
+        fn(tmp->type, tmp->data, fn_data);
       if (pptr->strdup_keys)
         FREE(&tmp->key.strkey);
       FREE(&tmp);
