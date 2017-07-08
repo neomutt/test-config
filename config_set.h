@@ -30,17 +30,17 @@ void config_set_free(struct ConfigSet *set);
 void config_set_add_callback(struct ConfigSet *set, config_callback cb);
 struct HashElem *config_get_var(struct ConfigSet *set, const char *name);
 
-bool config_set_addr     (struct ConfigSet *set, const char *name, struct Address *value);
-bool config_set_bool     (struct ConfigSet *set, const char *name, bool value);
-bool config_set_hcache   (struct ConfigSet *set, const char *name, const char *value);
-bool config_set_magic    (struct ConfigSet *set, const char *name, int value);
-bool config_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbCharTable *value);
-bool config_set_num      (struct ConfigSet *set, const char *name, int value);
-bool config_set_path     (struct ConfigSet *set, const char *name, const char *value);
-bool config_set_quad     (struct ConfigSet *set, const char *name, int value);
-bool config_set_rx       (struct ConfigSet *set, const char *name, struct Regex *value);
-bool config_set_sort     (struct ConfigSet *set, const char *name, int value);
-bool config_set_str      (struct ConfigSet *set, const char *name, const char *value);
+struct HashElem *config_set_addr     (struct ConfigSet *set, const char *name, struct Address *value);
+struct HashElem *config_set_bool     (struct ConfigSet *set, const char *name, bool value);
+struct HashElem *config_set_hcache   (struct ConfigSet *set, const char *name, const char *value);
+struct HashElem *config_set_magic    (struct ConfigSet *set, const char *name, int value);
+struct HashElem *config_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbCharTable *value);
+struct HashElem *config_set_num      (struct ConfigSet *set, const char *name, int value);
+struct HashElem *config_set_path     (struct ConfigSet *set, const char *name, const char *value);
+struct HashElem *config_set_quad     (struct ConfigSet *set, const char *name, int value);
+struct HashElem *config_set_rx       (struct ConfigSet *set, const char *name, struct Regex *value);
+struct HashElem *config_set_sort     (struct ConfigSet *set, const char *name, int value);
+struct HashElem *config_set_str      (struct ConfigSet *set, const char *name, const char *value);
 
 struct Address *     config_get_addr     (struct ConfigSet *set, const char *name);
 bool                 config_get_bool     (struct ConfigSet *set, const char *name);
@@ -54,17 +54,17 @@ struct Regex *       config_get_rx       (struct ConfigSet *set, const char *nam
 int                  config_get_sort     (struct ConfigSet *set, const char *name);
 const char *         config_get_str      (struct ConfigSet *set, const char *name);
 
-bool var_set_addr     (struct HashElem *var, struct Address *value);
-bool var_set_bool     (struct HashElem *var, bool value);
-bool var_set_hcache   (struct HashElem *var, const char *value);
-bool var_set_magic    (struct HashElem *var, int value);
-bool var_set_mbchartbl(struct HashElem *var, struct MbCharTable *value);
-bool var_set_num      (struct HashElem *var, int value);
-bool var_set_path     (struct HashElem *var, const char *value);
-bool var_set_quad     (struct HashElem *var, int value);
-bool var_set_rx       (struct HashElem *var, struct Regex *value);
-bool var_set_sort     (struct HashElem *var, int value);
-bool var_set_str      (struct HashElem *var, const char *value);
+struct HashElem *var_set_addr     (struct HashElem *var, struct Address *value);
+struct HashElem *var_set_bool     (struct HashElem *var, bool value);
+struct HashElem *var_set_hcache   (struct HashElem *var, const char *value);
+struct HashElem *var_set_magic    (struct HashElem *var, int value);
+struct HashElem *var_set_mbchartbl(struct HashElem *var, struct MbCharTable *value);
+struct HashElem *var_set_num      (struct HashElem *var, int value);
+struct HashElem *var_set_path     (struct HashElem *var, const char *value);
+struct HashElem *var_set_quad     (struct HashElem *var, int value);
+struct HashElem *var_set_rx       (struct HashElem *var, struct Regex *value);
+struct HashElem *var_set_sort     (struct HashElem *var, int value);
+struct HashElem *var_set_str      (struct HashElem *var, const char *value);
 
 struct Address *     var_get_addr     (struct HashElem *var);
 bool                 var_get_bool     (struct HashElem *var);
