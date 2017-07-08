@@ -13,7 +13,7 @@ OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 
 CFLAGS	+= -Wall
 # CFLAGS	+= -Wextra
-# CFLAGS	+= -Wpedantic
+CFLAGS	+= -Wpedantic
 CFLAGS	+= -g
 CFLAGS	+= -I.
 

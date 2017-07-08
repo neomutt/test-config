@@ -134,6 +134,7 @@ void test1(void)
 
 void test2(void)
 {
+  const char *empty = NULL;
   struct ConfigSet parent;
   config_set_init(&parent, NULL);
 
@@ -141,27 +142,27 @@ void test2(void)
   config_set_init(&child, &parent);
 
   printf("MISSING\n");
-  printf("    PARENT %-10s = %s\n", a, config_get_str(&parent, a));
-  printf("    CHILD  %-10s = %s\n", a, config_get_str(&child,  a));
+  printf("    PARENT %-10s = %s\n", empty, config_get_str(&parent, a));
+  printf("    CHILD  %-10s = %s\n", empty, config_get_str(&child,  a));
 
   config_set_str(&parent, b, strdup(b));
 
   printf("PARENT ONLY\n");
-  printf("    PARENT %-10s = %s\n", b, config_get_str(&parent, b));
-  printf("    CHILD  %-10s = %s\n", b, config_get_str(&child,  b));
+  printf("    PARENT %-10s = %s\n", b,     config_get_str(&parent, b));
+  printf("    CHILD  %-10s = %s\n", empty, config_get_str(&child,  b));
 
   config_set_str(&child, c, strdup(c));
 
   printf("CHILD ONLY\n");
-  printf("    PARENT %-10s = %s\n", c, config_get_str(&parent, c));
-  printf("    CHILD  %-10s = %s\n", c, config_get_str(&child,  c));
+  printf("    PARENT %-10s = %s\n", empty, config_get_str(&parent, c));
+  printf("    CHILD  %-10s = %s\n", c,     config_get_str(&child,  c));
 
   config_set_str(&parent, d, strdup(d));
   config_set_str(&child,  d, strdup(e));
 
   printf("OVERRIDE\n");
   printf("    PARENT %-10s = %s\n", d, config_get_str(&parent, d));
-  printf("    CHILD  %-10s = %s\n", d, config_get_str(&child,  d));
+  printf("    CHILD  %-10s = %s\n", e, config_get_str(&child,  d));
 
   config_set_free(&parent);
   config_set_free(&child);
@@ -181,9 +182,9 @@ void test3(void)
 int main(int argc, char *argv[])
 {
   // test1();
-  // test2();
-  if (argc > 1)
-    SOMEPRIME = atol(argv[1]);
-  test3();
+  test2();
+  // if (argc > 1)
+  //   SOMEPRIME = atol(argv[1]);
+  // test3();
   return 0;
 }
