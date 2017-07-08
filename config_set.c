@@ -21,20 +21,25 @@ bool cs_init(struct ConfigSet *set, struct ConfigSet *parent)
 {
   set->hash = hash_create(10, 0);
   set->parent = parent;
-  memset(set->cb, 0, sizeof(set->cb));
+  memset(set->listeners, 0, sizeof(set->listeners));
   return true;
 }
 
-void cs_add_callback(struct ConfigSet *set, cs_callback cb)
+void cs_add_listener(struct ConfigSet *set, cs_listener fn)
 {
-  for (unsigned int i = 0; i < mutt_array_size(set->cb); i++)
+  for (unsigned int i = 0; i < mutt_array_size(set->listeners); i++)
   {
-    if (!set->cb[i])
+    if (!set->listeners[i])
     {
-      set->cb[i] = cb;
+      set->listeners[i] = fn;
       break;
     }
   }
+}
+
+void cs_add_validator(struct ConfigSet *set, cs_validator fn)
+{
+  set->validator = fn;
 }
 
 void destroy(int type, void *obj)
@@ -90,12 +95,12 @@ void cs_free(struct ConfigSet *set)
 
 void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent e)
 {
-  for (unsigned int i = 0; i < mutt_array_size(set->cb); i++)
+  for (unsigned int i = 0; i < mutt_array_size(set->listeners); i++)
   {
-    if (!set->cb[i])
+    if (!set->listeners[i])
       return;
 
-    set->cb[i](set, name, e);
+    set->listeners[i](set, name, e);
   }
 }
 
@@ -103,6 +108,11 @@ void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent 
 struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Address *value)
 {
   enum ConfigEvent e = CE_CHANGED;
+  intptr_t copy = (intptr_t) value;
+
+  if (set->validator && !set->validator(set, name, DT_ADDR, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -126,6 +136,10 @@ struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
+
+  if (set->validator && !set->validator(set, name, DT_BOOL, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -147,6 +161,11 @@ struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value
 struct HashElem *cs_set_hcache(struct ConfigSet *set, const char *name, const char *value)
 {
   enum ConfigEvent e = CE_CHANGED;
+  intptr_t copy = (intptr_t) value;
+
+  if (set->validator && !set->validator(set, name, DT_HCACHE, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -170,6 +189,10 @@ struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
+
+  if (set->validator && !set->validator(set, name, DT_MAGIC, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -191,6 +214,11 @@ struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value
 struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbCharTable *value)
 {
   enum ConfigEvent e = CE_CHANGED;
+  intptr_t copy = (intptr_t) value;
+
+  if (set->validator && !set->validator(set, name, DT_MBCHARTBL, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -214,6 +242,10 @@ struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
+
+  if (set->validator && !set->validator(set, name, DT_NUM, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -235,6 +267,11 @@ struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value)
 struct HashElem *cs_set_path(struct ConfigSet *set, const char *name, const char *value)
 {
   enum ConfigEvent e = CE_CHANGED;
+  intptr_t copy = (intptr_t) value;
+
+  if (set->validator && !set->validator(set, name, DT_PATH, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -258,6 +295,10 @@ struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
+
+  if (set->validator && !set->validator(set, name, DT_QUAD, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -279,6 +320,11 @@ struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value)
 struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex *value)
 {
   enum ConfigEvent e = CE_CHANGED;
+  intptr_t copy = (intptr_t) value;
+
+  if (set->validator && !set->validator(set, name, DT_RX, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -302,6 +348,10 @@ struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
+
+  if (set->validator && !set->validator(set, name, DT_SORT, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -323,6 +373,11 @@ struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value)
 struct HashElem *cs_set_str(struct ConfigSet *set, const char *name, const char *value)
 {
   enum ConfigEvent e = CE_CHANGED;
+  intptr_t copy = (intptr_t) value;
+
+  if (set->validator && !set->validator(set, name, DT_STR, copy))
+      return NULL;
+
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
@@ -365,7 +420,7 @@ bool cs_get_bool(struct ConfigSet *set, const char *name)
 {
   struct HashElem *elem = cs_get_elem(set, name);
   if (elem && (DTYPE(elem->type) == DT_BOOL))
-    return ((intptr_t) elem->data != 0);
+    return ((intptr_t) (elem->data != 0));
   return false;
 }
 
@@ -618,7 +673,7 @@ struct Address *he_get_addr(struct HashElem *var)
 bool he_get_bool(struct HashElem *var)
 {
   if (var && (DTYPE(var->type) == DT_BOOL))
-    return ((intptr_t) var->data != 0);
+    return ((intptr_t) (var->data != 0));
   return false;
 }
 
