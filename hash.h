@@ -51,9 +51,9 @@ struct Hash
 struct Hash *hash_create(int nelem, int flags);
 struct Hash *int_hash_create(int nelem, int flags);
 
-int hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data);
-int hash_insert(struct Hash *table, const char *strkey, void *data);
-int int_hash_insert(struct Hash *table, unsigned int intkey, void *data);
+struct HashElem *hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data);
+struct HashElem *hash_insert(struct Hash *table, const char *strkey, void *data);
+struct HashElem *int_hash_insert(struct Hash *table, unsigned int intkey, void *data);
 struct Hash *hash_resize(struct Hash *ptr, int nelem, int lower);
 
 void *hash_find(const struct Hash *table, const char *strkey);

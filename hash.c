@@ -139,7 +139,7 @@ struct Hash *hash_resize(struct Hash *ptr, int nelem, int lower)
  * data         data to associate with `key'
  * allow_dup    if nonzero, duplicate keys are allowed in the table
  */
-static int union_hash_insert(struct Hash *table, union hash_key key, int type, void *data)
+static struct HashElem *union_hash_insert(struct Hash *table, union hash_key key, int type, void *data)
 {
   struct HashElem *ptr = NULL;
   unsigned int h;
@@ -167,7 +167,7 @@ static int union_hash_insert(struct Hash *table, union hash_key key, int type, v
       if (r == 0)
       {
         FREE(&ptr);
-        return -1;
+        return NULL;
       }
       if (r > 0)
         break;
@@ -179,22 +179,22 @@ static int union_hash_insert(struct Hash *table, union hash_key key, int type, v
     ptr->next = tmp;
     table->curnelem++;
   }
-  return h;
+  return ptr;
 }
 
-int hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data)
+struct HashElem *hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data)
 {
   union hash_key key;
   key.strkey = table->strdup_keys ? safe_strdup(strkey) : strkey;
   return union_hash_insert(table, key, type, data);
 }
 
-int hash_insert(struct Hash *table, const char *strkey, void *data)
+struct HashElem *hash_insert(struct Hash *table, const char *strkey, void *data)
 {
   return hash_typed_insert(table, strkey, -1, data);
 }
 
-int int_hash_insert(struct Hash *table, unsigned int intkey, void *data)
+struct HashElem *int_hash_insert(struct Hash *table, unsigned int intkey, void *data)
 {
   union hash_key key;
   key.intkey = intkey;
