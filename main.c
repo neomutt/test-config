@@ -32,9 +32,9 @@ unsigned int gen_string_hash(const char *key, unsigned int n)
 
 void test1(void)
 {
-  struct ConfigSet cs;
-  config_set_init(&cs, NULL);
-  config_set_add_callback(&cs, callback);
+  struct ConfigSet cs_;
+  cs_init(&cs_, NULL);
+  cs_add_callback(&cs_, callback);
 
   /* set two values, overwrite the second one */
 
@@ -47,33 +47,33 @@ void test1(void)
   struct Address *a3 = calloc(3, sizeof(*a3));
   a3->personal = strdup("Wendy Simile");
   a3->mailbox  = strdup("wendy@simile.com");
-  config_set_addr(&cs, a, a1);
-  config_set_addr(&cs, b, a2);
-  config_set_addr(&cs, b, a3);
+  cs_set_addr(&cs_, a, a1);
+  cs_set_addr(&cs_, b, a2);
+  cs_set_addr(&cs_, b, a3);
   printf("DT_ADDR\n");
-  printf("    %-10s = %s\n", a, config_get_addr(&cs, a)->personal);
-  printf("    %-10s = %s\n", b, config_get_addr(&cs, b)->personal);
+  printf("    %-10s = %s\n", a, cs_get_addr(&cs_, a)->personal);
+  printf("    %-10s = %s\n", b, cs_get_addr(&cs_, b)->personal);
 
-  config_set_bool(&cs, c, false);
-  config_set_bool(&cs, d, false);
-  config_set_bool(&cs, d, true);
+  cs_set_bool(&cs_, c, false);
+  cs_set_bool(&cs_, d, false);
+  cs_set_bool(&cs_, d, true);
   printf("DT_BOOL\n");
-  printf("    %-10s = %d\n", c, config_get_bool(&cs, c));
-  printf("    %-10s = %d\n", d, config_get_bool(&cs, d));
+  printf("    %-10s = %d\n", c, cs_get_bool(&cs_, c));
+  printf("    %-10s = %d\n", d, cs_get_bool(&cs_, d));
 
-  config_set_hcache(&cs, e, strdup("lmdb"));
-  config_set_hcache(&cs, f, strdup("qdbm"));
-  config_set_hcache(&cs, f, strdup("gdbm"));
+  cs_set_hcache(&cs_, e, strdup("lmdb"));
+  cs_set_hcache(&cs_, f, strdup("qdbm"));
+  cs_set_hcache(&cs_, f, strdup("gdbm"));
   printf("DT_HCACHE\n");
-  printf("    %-10s = %s\n", e, config_get_hcache(&cs, e));
-  printf("    %-10s = %s\n", f, config_get_hcache(&cs, f));
+  printf("    %-10s = %s\n", e, cs_get_hcache(&cs_, e));
+  printf("    %-10s = %s\n", f, cs_get_hcache(&cs_, f));
 
-  config_set_magic(&cs, g, 123);
-  config_set_magic(&cs, h, 456);
-  config_set_magic(&cs, h, 789);
+  cs_set_magic(&cs_, g, 123);
+  cs_set_magic(&cs_, h, 456);
+  cs_set_magic(&cs_, h, 789);
   printf("DT_MAGIC\n");
-  printf("    %-10s = %d\n", g, config_get_magic(&cs, g));
-  printf("    %-10s = %d\n", h, config_get_magic(&cs, h));
+  printf("    %-10s = %d\n", g, cs_get_magic(&cs_, g));
+  printf("    %-10s = %d\n", h, cs_get_magic(&cs_, h));
 
   struct MbCharTable *m1 = calloc(1, sizeof(*m1));
   m1->segmented_str = strdup("x y z");
@@ -84,33 +84,33 @@ void test1(void)
   struct MbCharTable *m3 = calloc(3, sizeof(*m3));
   m3->segmented_str = strdup("v a b");
   m3->orig_str  = strdup("pqr");
-  config_set_mbchartbl(&cs, i, m1);
-  config_set_mbchartbl(&cs, j, m2);
-  config_set_mbchartbl(&cs, j, m3);
+  cs_set_mbchartbl(&cs_, i, m1);
+  cs_set_mbchartbl(&cs_, j, m2);
+  cs_set_mbchartbl(&cs_, j, m3);
   printf("DT_MBCHARTBL\n");
-  printf("    %-10s = %s\n", i, config_get_mbchartbl(&cs, i)->segmented_str);
-  printf("    %-10s = %s\n", j, config_get_mbchartbl(&cs, j)->segmented_str);
+  printf("    %-10s = %s\n", i, cs_get_mbchartbl(&cs_, i)->segmented_str);
+  printf("    %-10s = %s\n", j, cs_get_mbchartbl(&cs_, j)->segmented_str);
 
-  config_set_num(&cs, k, 111);
-  config_set_num(&cs, l, 222);
-  config_set_num(&cs, l, 333);
+  cs_set_num(&cs_, k, 111);
+  cs_set_num(&cs_, l, 222);
+  cs_set_num(&cs_, l, 333);
   printf("DT_NUM\n");
-  printf("    %-10s = %d\n", k, config_get_num(&cs, k));
-  printf("    %-10s = %d\n", l, config_get_num(&cs, l));
+  printf("    %-10s = %d\n", k, cs_get_num(&cs_, k));
+  printf("    %-10s = %d\n", l, cs_get_num(&cs_, l));
 
-  config_set_path(&cs, m, strdup("/usr"));
-  config_set_path(&cs, n, strdup("/home"));
-  config_set_path(&cs, n, strdup("/etc"));
+  cs_set_path(&cs_, m, strdup("/usr"));
+  cs_set_path(&cs_, n, strdup("/home"));
+  cs_set_path(&cs_, n, strdup("/etc"));
   printf("DT_PATH\n");
-  printf("    %-10s = %s\n", m, config_get_path(&cs, m));
-  printf("    %-10s = %s\n", n, config_get_path(&cs, n));
+  printf("    %-10s = %s\n", m, cs_get_path(&cs_, m));
+  printf("    %-10s = %s\n", n, cs_get_path(&cs_, n));
 
-  config_set_quad(&cs, o, 1);
-  config_set_quad(&cs, p, 2);
-  config_set_quad(&cs, p, 3);
+  cs_set_quad(&cs_, o, 1);
+  cs_set_quad(&cs_, p, 2);
+  cs_set_quad(&cs_, p, 3);
   printf("DT_QUAD\n");
-  printf("    %-10s = %d\n", o, config_get_quad(&cs, o));
-  printf("    %-10s = %d\n", p, config_get_quad(&cs, p));
+  printf("    %-10s = %d\n", o, cs_get_quad(&cs_, o));
+  printf("    %-10s = %d\n", p, cs_get_quad(&cs_, p));
 
   struct Regex *r1 = calloc(1, sizeof(*r1));
   r1->pattern = strdup("name.*");
@@ -118,66 +118,66 @@ void test1(void)
   r2->pattern = strdup(".*name");
   struct Regex *r3 = calloc(3, sizeof(*r3));
   r3->pattern = strdup("na.*me");
-  config_set_rx(&cs, q, r1);
-  config_set_rx(&cs, r, r2);
-  config_set_rx(&cs, r, r3);
+  cs_set_rx(&cs_, q, r1);
+  cs_set_rx(&cs_, r, r2);
+  cs_set_rx(&cs_, r, r3);
   printf("DT_RX\n");
-  printf("    %-10s = %s\n", q, config_get_rx(&cs, q)->pattern);
-  printf("    %-10s = %s\n", r, config_get_rx(&cs, r)->pattern);
+  printf("    %-10s = %s\n", q, cs_get_rx(&cs_, q)->pattern);
+  printf("    %-10s = %s\n", r, cs_get_rx(&cs_, r)->pattern);
 
-  config_set_sort(&cs, s, 2);
-  config_set_sort(&cs, t, 3);
-  config_set_sort(&cs, t, 4);
+  cs_set_sort(&cs_, s, 2);
+  cs_set_sort(&cs_, t, 3);
+  cs_set_sort(&cs_, t, 4);
   printf("DT_SORT\n");
-  printf("    %-10s = %d\n", s, config_get_sort(&cs, s));
-  printf("    %-10s = %d\n", t, config_get_sort(&cs, t));
+  printf("    %-10s = %d\n", s, cs_get_sort(&cs_, s));
+  printf("    %-10s = %d\n", t, cs_get_sort(&cs_, t));
 
-  config_set_str(&cs, u, strdup(a));
-  config_set_str(&cs, v, strdup(b));
-  config_set_str(&cs, v, strdup(c));
+  cs_set_str(&cs_, u, strdup(a));
+  cs_set_str(&cs_, v, strdup(b));
+  cs_set_str(&cs_, v, strdup(c));
   printf("DT_STR\n");
-  printf("    %-10s = %s\n", u, config_get_str(&cs, u));
-  printf("    %-10s = %s\n", v, config_get_str(&cs, v));
+  printf("    %-10s = %s\n", u, cs_get_str(&cs_, u));
+  printf("    %-10s = %s\n", v, cs_get_str(&cs_, v));
 
-  config_set_free(&cs);
+  cs_free(&cs_);
 }
 
 void test2(void)
 {
   const char *empty = NULL;
   struct ConfigSet parent;
-  config_set_init(&parent, NULL);
-  config_set_add_callback(&parent, callback);
+  cs_init(&parent, NULL);
+  cs_add_callback(&parent, callback);
 
   struct ConfigSet child;
-  config_set_init(&child, &parent);
-  config_set_add_callback(&child, callback);
+  cs_init(&child, &parent);
+  cs_add_callback(&child, callback);
 
   printf("MISSING\n");
-  printf("    PARENT %-10s = %s\n", empty, config_get_str(&parent, a));
-  printf("    CHILD  %-10s = %s\n", empty, config_get_str(&child,  a));
+  printf("    PARENT %-10s = %s\n", empty, cs_get_str(&parent, a));
+  printf("    CHILD  %-10s = %s\n", empty, cs_get_str(&child,  a));
 
-  config_set_str(&parent, b, strdup(b));
+  cs_set_str(&parent, b, strdup(b));
 
   printf("PARENT ONLY\n");
-  printf("    PARENT %-10s = %s\n", b,     config_get_str(&parent, b));
-  printf("    CHILD  %-10s = %s\n", empty, config_get_str(&child,  b));
+  printf("    PARENT %-10s = %s\n", b,     cs_get_str(&parent, b));
+  printf("    CHILD  %-10s = %s\n", empty, cs_get_str(&child,  b));
 
-  config_set_str(&child, c, strdup(c));
+  cs_set_str(&child, c, strdup(c));
 
   printf("CHILD ONLY\n");
-  printf("    PARENT %-10s = %s\n", empty, config_get_str(&parent, c));
-  printf("    CHILD  %-10s = %s\n", c,     config_get_str(&child,  c));
+  printf("    PARENT %-10s = %s\n", empty, cs_get_str(&parent, c));
+  printf("    CHILD  %-10s = %s\n", c,     cs_get_str(&child,  c));
 
-  config_set_str(&parent, d, strdup(d));
-  config_set_str(&child,  d, strdup(e));
+  cs_set_str(&parent, d, strdup(d));
+  cs_set_str(&child,  d, strdup(e));
 
   printf("OVERRIDE\n");
-  printf("    PARENT %-10s = %s\n", d, config_get_str(&parent, d));
-  printf("    CHILD  %-10s = %s\n", e, config_get_str(&child,  d));
+  printf("    PARENT %-10s = %s\n", d, cs_get_str(&parent, d));
+  printf("    CHILD  %-10s = %s\n", e, cs_get_str(&child,  d));
 
-  config_set_free(&parent);
-  config_set_free(&child);
+  cs_free(&parent);
+  cs_free(&child);
 }
 
 void test3(void)
@@ -194,33 +194,33 @@ void test3(void)
 void test4(void)
 {
   struct ConfigSet parent;
-  config_set_init(&parent, NULL);
-  config_set_add_callback(&parent, callback);
+  cs_init(&parent, NULL);
+  cs_add_callback(&parent, callback);
 
   struct ConfigSet child;
-  config_set_init(&child, &parent);
-  config_set_add_callback(&child, callback);
+  cs_init(&child, &parent);
+  cs_add_callback(&child, callback);
 
-  config_set_str(&parent, d, strdup(d));
-  config_set_str(&child,  d, strdup(e));
+  cs_set_str(&parent, d, strdup(d));
+  cs_set_str(&child,  d, strdup(e));
 
-  struct HashElem *hep = config_get_var(&parent, d);
-  struct HashElem *hec = config_get_var(&child,  d);
+  struct HashElem *hep = cs_get_elem(&parent, d);
+  struct HashElem *hec = cs_get_elem(&child,  d);
 
   printf("OVERRIDE\n");
-  printf("    PARENT %-10s = %s\n", d, var_get_str(hep));
-  printf("    CHILD  %-10s = %s\n", e, var_get_str(hec));
+  printf("    PARENT %-10s = %s\n", d, he_get_str(hep));
+  printf("    CHILD  %-10s = %s\n", e, he_get_str(hec));
 
-  config_set_free(&parent);
-  config_set_free(&child);
+  cs_free(&parent);
+  cs_free(&child);
 }
 int main(int argc, char *argv[])
 {
-  // test1();
-  // test2();
-  // if (argc > 1)
-  //   SOMEPRIME = atol(argv[1]);
-  // test3();
+  test1();
+  test2();
+  if (argc > 1)
+    SOMEPRIME = atol(argv[1]);
+  test3();
   test4();
   return 0;
 }
