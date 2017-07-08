@@ -17,10 +17,20 @@ struct ConfigSet *config_set_new(struct ConfigSet *parent)
   return cs;
 }
 
-bool config_set_init(struct ConfigSet *config, struct ConfigSet *parent)
+bool callback(struct ConfigSet *set, const char *name, enum ConfigEvent e)
 {
-  config->hash = hash_create(10, 0);
-  config->parent = parent;
+  if (e == CE_CHANGED)
+    printf("\033[1;33m%s has been changed\033[m\n", name);
+  else
+    printf("\033[1;32m%s has been set\033[m\n", name);
+  return false;
+}
+
+bool config_set_init(struct ConfigSet *set, struct ConfigSet *parent)
+{
+  set->hash = hash_create(10, 0);
+  set->parent = parent;
+  set->cb = callback;
   return true;
 }
 
@@ -70,15 +80,16 @@ void destroy(int type, void *obj)
   }
 }
 
-void config_set_free(struct ConfigSet *config)
+void config_set_free(struct ConfigSet *set)
 {
-  hash_destroy(&config->hash, destroy);
+  hash_destroy(&set->hash, destroy);
 }
 
 
-bool config_set_addr(struct ConfigSet *config, const char *name, struct Address *value)
+bool config_set_addr(struct ConfigSet *set, const char *name, struct Address *value)
 {
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  enum ConfigEvent e = CE_CHANGED;
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_ADDR)
@@ -86,33 +97,45 @@ bool config_set_addr(struct ConfigSet *config, const char *name, struct Address 
 
     destroy(DT_ADDR, elem->data);
     elem->data = (void *) value;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_ADDR, (void *) value);
   }
 
-  hash_typed_insert(config->hash, name, DT_ADDR, (void *) value);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_bool(struct ConfigSet *config, const char *name, bool value)
+bool config_set_bool(struct ConfigSet *set, const char *name, bool value)
 {
+  enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_BOOL)
       return false;
 
     elem->data = (void *) copy;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_BOOL, (void *) copy);
   }
 
-  hash_typed_insert(config->hash, name, DT_BOOL, (void *) copy);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_hcache(struct ConfigSet *config, const char *name, const char *value)
+bool config_set_hcache(struct ConfigSet *set, const char *name, const char *value)
 {
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  enum ConfigEvent e = CE_CHANGED;
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_HCACHE)
@@ -120,33 +143,45 @@ bool config_set_hcache(struct ConfigSet *config, const char *name, const char *v
 
     FREE(&elem->data);
     elem->data = (void *) value;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_HCACHE, (void *) value);
   }
 
-  hash_typed_insert(config->hash, name, DT_HCACHE, (void *) value);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_magic(struct ConfigSet *config, const char *name, int value)
+bool config_set_magic(struct ConfigSet *set, const char *name, int value)
 {
+  enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_MAGIC)
       return false;
 
     elem->data = (void *) copy;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_MAGIC, (void *) copy);
   }
 
-  hash_typed_insert(config->hash, name, DT_MAGIC, (void *) copy);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_mbchartbl(struct ConfigSet *config, const char *name, struct MbCharTable *value)
+bool config_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbCharTable *value)
 {
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  enum ConfigEvent e = CE_CHANGED;
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_MBCHARTBL)
@@ -154,33 +189,45 @@ bool config_set_mbchartbl(struct ConfigSet *config, const char *name, struct MbC
 
     destroy(DT_MBCHARTBL, elem->data);
     elem->data = (void *) value;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_MBCHARTBL, (void *) value);
   }
 
-  hash_typed_insert(config->hash, name, DT_MBCHARTBL, (void *) value);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_num(struct ConfigSet *config, const char *name, int value)
+bool config_set_num(struct ConfigSet *set, const char *name, int value)
 {
+  enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_NUM)
       return false;
 
     elem->data = (void *) copy;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_NUM, (void *) copy);
   }
 
-  hash_typed_insert(config->hash, name, DT_NUM, (void *) copy);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_path(struct ConfigSet *config, const char *name, const char *value)
+bool config_set_path(struct ConfigSet *set, const char *name, const char *value)
 {
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  enum ConfigEvent e = CE_CHANGED;
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_PATH)
@@ -188,33 +235,45 @@ bool config_set_path(struct ConfigSet *config, const char *name, const char *val
 
     FREE(&elem->data);
     elem->data = (void *) value;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_PATH, (void *) value);
   }
 
-  hash_typed_insert(config->hash, name, DT_PATH, (void *) value);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_quad(struct ConfigSet *config, const char *name, int value)
+bool config_set_quad(struct ConfigSet *set, const char *name, int value)
 {
+  enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_QUAD)
       return false;
 
     elem->data = (void *) copy;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_QUAD, (void *) copy);
   }
 
-  hash_typed_insert(config->hash, name, DT_QUAD, (void *) copy);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_rx(struct ConfigSet *config, const char *name, struct Regex *value)
+bool config_set_rx(struct ConfigSet *set, const char *name, struct Regex *value)
 {
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  enum ConfigEvent e = CE_CHANGED;
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_RX)
@@ -222,33 +281,45 @@ bool config_set_rx(struct ConfigSet *config, const char *name, struct Regex *val
 
     destroy(DT_RX, elem->data);
     elem->data = (void *) value;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_RX, (void *) value);
   }
 
-  hash_typed_insert(config->hash, name, DT_RX, (void *) value);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_sort(struct ConfigSet *config, const char *name, int value)
+bool config_set_sort(struct ConfigSet *set, const char *name, int value)
 {
+  enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_SORT)
       return false;
 
     elem->data = (void *) copy;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_SORT, (void *) copy);
   }
 
-  hash_typed_insert(config->hash, name, DT_SORT, (void *) copy);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
-bool config_set_str(struct ConfigSet *config, const char *name, const char *value)
+bool config_set_str(struct ConfigSet *set, const char *name, const char *value)
 {
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  enum ConfigEvent e = CE_CHANGED;
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
     if (DTYPE(elem->type) != DT_STR)
@@ -256,107 +327,112 @@ bool config_set_str(struct ConfigSet *config, const char *name, const char *valu
 
     FREE(&elem->data);
     elem->data = (void *) value;
-    return true;
+  }
+  else
+  {
+    e = CE_SET;
+    hash_typed_insert(set->hash, name, DT_STR, (void *) value);
   }
 
-  hash_typed_insert(config->hash, name, DT_STR, (void *) value);
+  if (set->cb)
+    set->cb(set, name, e);
   return true;
 }
 
 
-struct HashElem *find_hash(struct ConfigSet *config, const char *name)
+struct HashElem *find_hash(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = hash_find_elem(config->hash, name);
+  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
     return elem;
-  if (config->parent)
-    return find_hash(config->parent, name);
+  if (set->parent)
+    return find_hash(set->parent, name);
   return NULL;
 }
 
-struct Address *config_get_addr(struct ConfigSet *config, const char *name)
+struct Address *config_get_addr(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_ADDR))
     return elem->data;
   return NULL;
 }
 
-bool config_get_bool(struct ConfigSet *config, const char *name)
+bool config_get_bool(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_BOOL))
     return ((intptr_t) elem->data != 0);
   return false;
 }
 
-const char *config_get_hcache(struct ConfigSet *config, const char *name)
+const char *config_get_hcache(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_HCACHE))
     return elem->data;
   return NULL;
 }
 
-int config_get_magic(struct ConfigSet *config, const char *name)
+int config_get_magic(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_MAGIC))
     return (intptr_t) elem->data;
   return -1;
 }
 
-struct MbCharTable *config_get_mbchartbl(struct ConfigSet *config, const char *name)
+struct MbCharTable *config_get_mbchartbl(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_MBCHARTBL))
     return elem->data;
   return NULL;
 }
 
-int config_get_num(struct ConfigSet *config, const char *name)
+int config_get_num(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_NUM))
     return (intptr_t) elem->data;
   return INT_MIN;
 }
 
-const char *config_get_path(struct ConfigSet *config, const char *name)
+const char *config_get_path(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_PATH))
     return elem->data;
   return NULL;
 }
 
-int config_get_quad(struct ConfigSet *config, const char *name)
+int config_get_quad(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_QUAD))
     return (intptr_t) elem->data;
   return -1;
 }
 
-struct Regex *config_get_rx(struct ConfigSet *config, const char *name)
+struct Regex *config_get_rx(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_RX))
     return elem->data;
   return NULL;
 }
 
-int config_get_sort(struct ConfigSet *config, const char *name)
+int config_get_sort(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_SORT))
     return (intptr_t) elem->data;
   return -1;
 }
 
-const char *config_get_str(struct ConfigSet *config, const char *name)
+const char *config_get_str(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(config, name);
+  struct HashElem *elem = find_hash(set, name);
   if (elem && (DTYPE(elem->type) == DT_STR))
     return elem->data;
   return NULL;

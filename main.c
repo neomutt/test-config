@@ -181,8 +181,8 @@ void test3(void)
 
 int main(int argc, char *argv[])
 {
-  // test1();
-  test2();
+  test1();
+  // test2();
   // if (argc > 1)
   //   SOMEPRIME = atol(argv[1]);
   // test3();
