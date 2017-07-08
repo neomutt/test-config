@@ -11,6 +11,26 @@
 
 unsigned int SOMEPRIME = 149711;
 
+const char *type_to_string(int type)
+{
+  switch (DTYPE(type))
+  {
+    case DT_BOOL:      return "boolean";
+    case DT_NUM:       return "number";
+    case DT_STR:       return "string";
+    case DT_PATH:      return "path";
+    case DT_QUAD:      return "quad";
+    case DT_SORT:      return "sort";
+    case DT_RX:        return "regex";
+    case DT_MAGIC:     return "magic";
+    case DT_SYN:       return "synonym";
+    case DT_ADDR:      return "address";
+    case DT_MBCHARTBL: return "mb-table";
+    case DT_HCACHE:    return "hcache";
+    default:           return "unknown";
+  }
+}
+
 bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
 {
   if (e == CE_CHANGED)
@@ -22,13 +42,54 @@ bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
 
 bool destructor(struct ConfigSet *set, int type, intptr_t obj)
 {
-  if (DTYPE(type) != DT_STR)
-    return false;
+  printf("\033[1;35mFreeing type: %s\033[m\n", type_to_string(type));
+  switch (DTYPE(type))
+  {
+    case DT_BOOL:
+    case DT_MAGIC:
+    case DT_NUM:
+    case DT_QUAD:
+    case DT_SORT:
+      return true;
 
-  const char *str = (const char*) obj;
-  printf("\033[1;35mFreeing string '%s'\033[m\n", str);
-  FREE(&str);
-  return true;
+    case DT_ADDR:
+    {
+      struct Address *a = (struct Address*) obj;
+      FREE(&a->personal);
+      FREE(&a->mailbox);
+      FREE(&a);
+      return true;
+    }
+
+    case DT_MBCHARTBL:
+    {
+      struct MbCharTable *m = (struct MbCharTable*) obj;
+      FREE(&m->segmented_str);
+      FREE(&m->orig_str);
+      FREE(&m);
+      return true;
+    }
+
+    case DT_RX:
+    {
+      struct Regex *r = (struct Regex*) obj;
+      FREE(&r->pattern);
+      //regfree(r->rx)
+      FREE(&r);
+      return true;
+    }
+
+    case DT_HCACHE:
+    case DT_PATH:
+    case DT_STR:
+    {
+      const char *str = (const char*) obj;
+      FREE(&str);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool validator(struct ConfigSet *set, const char *name, int type, intptr_t value)
@@ -65,6 +126,7 @@ void test1(void)
   struct ConfigSet cs;
   cs_init(&cs, NULL);
   cs_add_listener(&cs, listener);
+  cs_add_destructor(&cs, destructor);
 
   /* set two values, overwrite the second one */
 
@@ -267,8 +329,8 @@ void test5(void)
 
 int main(int argc, char *argv[])
 {
-  // test1();
-  test2();
+  test1();
+  // test2();
   // if (argc > 1)
   //   SOMEPRIME = atol(argv[1]);
   // test3();

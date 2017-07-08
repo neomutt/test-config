@@ -288,7 +288,8 @@ struct HashElem *cs_set_path(struct ConfigSet *set, const char *name, const char
     if (DTYPE(elem->type) != DT_PATH)
       return NULL;
 
-    FREE(&elem->data);
+    if (set->destructor && !set->destructor(set, DT_PATH, (intptr_t) elem->data))
+      FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -394,7 +395,8 @@ struct HashElem *cs_set_str(struct ConfigSet *set, const char *name, const char 
     if (DTYPE(elem->type) != DT_STR)
       return NULL;
 
-    FREE(&elem->data);
+    if (set->destructor && !set->destructor(set, DT_STR, (intptr_t) elem->data))
+      FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
