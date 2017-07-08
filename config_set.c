@@ -343,19 +343,19 @@ bool config_set_str(struct ConfigSet *set, const char *name, const char *value)
 }
 
 
-struct HashElem *find_hash(struct ConfigSet *set, const char *name)
+struct HashElem *config_get_var(struct ConfigSet *set, const char *name)
 {
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
     return elem;
   if (set->parent)
-    return find_hash(set->parent, name);
+    return config_get_var(set->parent, name);
   return NULL;
 }
 
 struct Address *config_get_addr(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_ADDR))
     return elem->data;
   return NULL;
@@ -363,7 +363,7 @@ struct Address *config_get_addr(struct ConfigSet *set, const char *name)
 
 bool config_get_bool(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_BOOL))
     return ((intptr_t) elem->data != 0);
   return false;
@@ -371,7 +371,7 @@ bool config_get_bool(struct ConfigSet *set, const char *name)
 
 const char *config_get_hcache(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_HCACHE))
     return elem->data;
   return NULL;
@@ -379,7 +379,7 @@ const char *config_get_hcache(struct ConfigSet *set, const char *name)
 
 int config_get_magic(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_MAGIC))
     return (intptr_t) elem->data;
   return -1;
@@ -387,7 +387,7 @@ int config_get_magic(struct ConfigSet *set, const char *name)
 
 struct MbCharTable *config_get_mbchartbl(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_MBCHARTBL))
     return elem->data;
   return NULL;
@@ -395,7 +395,7 @@ struct MbCharTable *config_get_mbchartbl(struct ConfigSet *set, const char *name
 
 int config_get_num(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_NUM))
     return (intptr_t) elem->data;
   return INT_MIN;
@@ -403,7 +403,7 @@ int config_get_num(struct ConfigSet *set, const char *name)
 
 const char *config_get_path(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_PATH))
     return elem->data;
   return NULL;
@@ -411,7 +411,7 @@ const char *config_get_path(struct ConfigSet *set, const char *name)
 
 int config_get_quad(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_QUAD))
     return (intptr_t) elem->data;
   return -1;
@@ -419,7 +419,7 @@ int config_get_quad(struct ConfigSet *set, const char *name)
 
 struct Regex *config_get_rx(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_RX))
     return elem->data;
   return NULL;
@@ -427,7 +427,7 @@ struct Regex *config_get_rx(struct ConfigSet *set, const char *name)
 
 int config_get_sort(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_SORT))
     return (intptr_t) elem->data;
   return -1;
@@ -435,9 +435,254 @@ int config_get_sort(struct ConfigSet *set, const char *name)
 
 const char *config_get_str(struct ConfigSet *set, const char *name)
 {
-  struct HashElem *elem = find_hash(set, name);
+  struct HashElem *elem = config_get_var(set, name);
   if (elem && (DTYPE(elem->type) == DT_STR))
     return elem->data;
   return NULL;
 }
+
+
+bool var_set_addr(struct HashElem *var, struct Address *value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_ADDR)
+    return false;
+
+  destroy(DT_ADDR, var->data);
+  var->data = (void *) value;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_bool(struct HashElem *var, bool value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_BOOL)
+    return false;
+
+  intptr_t copy = value;
+  var->data = (void *) copy;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_hcache(struct HashElem *var, const char *value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_HCACHE)
+    return false;
+
+  FREE(&var->data);
+  var->data = (void *) value;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_magic(struct HashElem *var, int value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_MAGIC)
+    return false;
+
+  intptr_t copy = value;
+  var->data = (void *) copy;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_mbchartbl(struct HashElem *var, struct MbCharTable *value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_MBCHARTBL)
+    return false;
+
+  destroy(DT_MBCHARTBL, var->data);
+  var->data = (void *) value;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_num(struct HashElem *var, int value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_NUM)
+    return false;
+
+  intptr_t copy = value;
+  var->data = (void *) copy;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_path(struct HashElem *var, const char *value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_PATH)
+    return false;
+
+  FREE(&var->data);
+  var->data = (void *) value;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_quad(struct HashElem *var, int value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_QUAD)
+    return false;
+
+  intptr_t copy = value;
+  var->data = (void *) copy;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_rx(struct HashElem *var, struct Regex *value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_RX)
+    return false;
+
+  destroy(DT_RX, var->data);
+  var->data = (void *) value;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_sort(struct HashElem *var, int value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_SORT)
+    return false;
+
+  intptr_t copy = value;
+  var->data = (void *) copy;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+bool var_set_str(struct HashElem *var, const char *value)
+{
+  if (!var)
+    return false;
+
+  if (DTYPE(var->type) != DT_STR)
+    return false;
+
+  FREE(&var->data);
+  var->data = (void *) value;
+
+  // notify_listeners(set, name, e);
+  return true;
+}
+
+
+struct Address *var_get_addr(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_ADDR))
+    return var->data;
+  return NULL;
+}
+
+bool var_get_bool(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_BOOL))
+    return ((intptr_t) var->data != 0);
+  return false;
+}
+
+const char *var_get_hcache(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_HCACHE))
+    return var->data;
+  return NULL;
+}
+
+int var_get_magic(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_MAGIC))
+    return (intptr_t) var->data;
+  return -1;
+}
+
+struct MbCharTable *var_get_mbchartbl(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_MBCHARTBL))
+    return var->data;
+  return NULL;
+}
+
+int var_get_num(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_NUM))
+    return (intptr_t) var->data;
+  return INT_MIN;
+}
+
+const char *var_get_path(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_PATH))
+    return var->data;
+  return NULL;
+}
+
+int var_get_quad(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_QUAD))
+    return (intptr_t) var->data;
+  return -1;
+}
+
+struct Regex *var_get_rx(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_RX))
+    return var->data;
+  return NULL;
+}
+
+int var_get_sort(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_SORT))
+    return (intptr_t) var->data;
+  return -1;
+}
+
+const char *var_get_str(struct HashElem *var)
+{
+  if (var && (DTYPE(var->type) == DT_STR))
+    return var->data;
+  return NULL;
+}
+
 

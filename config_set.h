@@ -27,8 +27,8 @@ struct ConfigSet
 struct ConfigSet *set_set_new(struct ConfigSet *parent);
 bool config_set_init(struct ConfigSet *set, struct ConfigSet *parent);
 void config_set_free(struct ConfigSet *set);
-
 void config_set_add_callback(struct ConfigSet *set, config_callback cb);
+struct HashElem *config_get_var(struct ConfigSet *set, const char *name);
 
 bool config_set_addr     (struct ConfigSet *set, const char *name, struct Address *value);
 bool config_set_bool     (struct ConfigSet *set, const char *name, bool value);
@@ -53,5 +53,29 @@ int                  config_get_quad     (struct ConfigSet *set, const char *nam
 struct Regex *       config_get_rx       (struct ConfigSet *set, const char *name);
 int                  config_get_sort     (struct ConfigSet *set, const char *name);
 const char *         config_get_str      (struct ConfigSet *set, const char *name);
+
+bool var_set_addr     (struct HashElem *var, struct Address *value);
+bool var_set_bool     (struct HashElem *var, bool value);
+bool var_set_hcache   (struct HashElem *var, const char *value);
+bool var_set_magic    (struct HashElem *var, int value);
+bool var_set_mbchartbl(struct HashElem *var, struct MbCharTable *value);
+bool var_set_num      (struct HashElem *var, int value);
+bool var_set_path     (struct HashElem *var, const char *value);
+bool var_set_quad     (struct HashElem *var, int value);
+bool var_set_rx       (struct HashElem *var, struct Regex *value);
+bool var_set_sort     (struct HashElem *var, int value);
+bool var_set_str      (struct HashElem *var, const char *value);
+
+struct Address *     var_get_addr     (struct HashElem *var);
+bool                 var_get_bool     (struct HashElem *var);
+const char *         var_get_hcache   (struct HashElem *var);
+int                  var_get_magic    (struct HashElem *var);
+struct MbCharTable * var_get_mbchartbl(struct HashElem *var);
+int                  var_get_num      (struct HashElem *var);
+const char *         var_get_path     (struct HashElem *var);
+int                  var_get_quad     (struct HashElem *var);
+struct Regex *       var_get_rx       (struct HashElem *var);
+int                  var_get_sort     (struct HashElem *var);
+const char *         var_get_str      (struct HashElem *var);
 
 #endif /* _MUTT_CONFIG_SET_H */

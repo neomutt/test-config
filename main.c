@@ -191,12 +191,36 @@ void test3(void)
   }
 }
 
+void test4(void)
+{
+  struct ConfigSet parent;
+  config_set_init(&parent, NULL);
+  config_set_add_callback(&parent, callback);
+
+  struct ConfigSet child;
+  config_set_init(&child, &parent);
+  config_set_add_callback(&child, callback);
+
+  config_set_str(&parent, d, strdup(d));
+  config_set_str(&child,  d, strdup(e));
+
+  struct HashElem *hep = config_get_var(&parent, d);
+  struct HashElem *hec = config_get_var(&child,  d);
+
+  printf("OVERRIDE\n");
+  printf("    PARENT %-10s = %s\n", d, var_get_str(hep));
+  printf("    CHILD  %-10s = %s\n", e, var_get_str(hec));
+
+  config_set_free(&parent);
+  config_set_free(&child);
+}
 int main(int argc, char *argv[])
 {
-  test1();
-  test2();
-  if (argc > 1)
-    SOMEPRIME = atol(argv[1]);
-  test3();
+  // test1();
+  // test2();
+  // if (argc > 1)
+  //   SOMEPRIME = atol(argv[1]);
+  // test3();
+  test4();
   return 0;
 }
