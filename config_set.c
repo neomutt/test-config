@@ -129,7 +129,8 @@ struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Add
     if (DTYPE(elem->type) != DT_ADDR)
       return NULL;
 
-    destroy(DT_ADDR, elem->data, (intptr_t) set);
+    if (set->destructor && !set->destructor(set, DT_ADDR, (intptr_t) elem->data))
+      FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -156,6 +157,8 @@ struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value
     if (DTYPE(elem->type) != DT_BOOL)
       return NULL;
 
+    if (set->destructor)
+      set->destructor(set, DT_BOOL, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -182,7 +185,8 @@ struct HashElem *cs_set_hcache(struct ConfigSet *set, const char *name, const ch
     if (DTYPE(elem->type) != DT_HCACHE)
       return NULL;
 
-    FREE(&elem->data);
+    if (set->destructor && !set->destructor(set, DT_HCACHE, (intptr_t) elem->data))
+      FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -209,6 +213,8 @@ struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value
     if (DTYPE(elem->type) != DT_MAGIC)
       return NULL;
 
+    if (set->destructor)
+      set->destructor(set, DT_MAGIC, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -235,7 +241,8 @@ struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struc
     if (DTYPE(elem->type) != DT_MBCHARTBL)
       return NULL;
 
-    destroy(DT_MBCHARTBL, elem->data, (intptr_t) set);
+    if (set->destructor && !set->destructor(set, DT_MBCHARTBL, (intptr_t) elem->data))
+      FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -262,6 +269,8 @@ struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value)
     if (DTYPE(elem->type) != DT_NUM)
       return NULL;
 
+    if (set->destructor)
+      set->destructor(set, DT_NUM, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -316,6 +325,8 @@ struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value)
     if (DTYPE(elem->type) != DT_QUAD)
       return NULL;
 
+    if (set->destructor)
+      set->destructor(set, DT_QUAD, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -342,7 +353,8 @@ struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex
     if (DTYPE(elem->type) != DT_RX)
       return NULL;
 
-    destroy(DT_RX, elem->data, (intptr_t) set);
+    if (set->destructor && !set->destructor(set, DT_RX, (intptr_t) elem->data))
+      FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -369,6 +381,8 @@ struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value)
     if (DTYPE(elem->type) != DT_SORT)
       return NULL;
 
+    if (set->destructor)
+      set->destructor(set, DT_SORT, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else

@@ -25,7 +25,7 @@ const char *type_to_string(int type)
     case DT_MAGIC:     return "magic";
     case DT_SYN:       return "synonym";
     case DT_ADDR:      return "address";
-    case DT_MBCHARTBL: return "mb-table";
+    case DT_MBCHARTBL: return "mbtable";
     case DT_HCACHE:    return "hcache";
     default:           return "unknown";
   }
