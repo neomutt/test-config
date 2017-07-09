@@ -5,9 +5,9 @@ MKDIR	= mkdir -p
 DEPDIR	= .dep
 OBJDIR	= .obj
 
-OUT	= hash
+OUT	= demo
 
-SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c
+SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c buffer.c
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 

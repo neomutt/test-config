@@ -4,6 +4,7 @@
 #include <string.h>
 #include "config_set.h"
 #include "address.h"
+#include "buffer.h"
 #include "hash.h"
 #include "lib.h"
 #include "mbyte_table.h"
@@ -115,20 +116,23 @@ void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent 
 }
 
 
-struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Address *value)
+struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Address *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = (intptr_t) value;
 
-  if (set->validator && !set->validator(set, name, DT_ADDR, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_ADDR))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_ADDR));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_ADDR, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_ADDR)
-      return NULL;
-
     if (set->destructor && !set->destructor(set, DT_ADDR, (intptr_t) elem->data))
       FREE(&elem->data);
     elem->data = (void *) value;
@@ -143,20 +147,23 @@ struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Add
   return elem;
 }
 
-struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value)
+struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
 
-  if (set->validator && !set->validator(set, name, DT_BOOL, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_BOOL))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_BOOL));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_BOOL, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_BOOL)
-      return NULL;
-
     if (set->destructor)
       set->destructor(set, DT_BOOL, (intptr_t) elem->data);
     elem->data = (void *) copy;
@@ -171,20 +178,23 @@ struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value
   return elem;
 }
 
-struct HashElem *cs_set_hcache(struct ConfigSet *set, const char *name, const char *value)
+struct HashElem *cs_set_hcache(struct ConfigSet *set, const char *name, const char *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = (intptr_t) value;
 
-  if (set->validator && !set->validator(set, name, DT_HCACHE, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_HCACHE))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_HCACHE));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_HCACHE, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_HCACHE)
-      return NULL;
-
     if (set->destructor && !set->destructor(set, DT_HCACHE, (intptr_t) elem->data))
       FREE(&elem->data);
     elem->data = (void *) value;
@@ -199,20 +209,23 @@ struct HashElem *cs_set_hcache(struct ConfigSet *set, const char *name, const ch
   return elem;
 }
 
-struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value)
+struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
 
-  if (set->validator && !set->validator(set, name, DT_MAGIC, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_MAGIC))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_MAGIC));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_MAGIC, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_MAGIC)
-      return NULL;
-
     if (set->destructor)
       set->destructor(set, DT_MAGIC, (intptr_t) elem->data);
     elem->data = (void *) copy;
@@ -227,20 +240,23 @@ struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value
   return elem;
 }
 
-struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbCharTable *value)
+struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbCharTable *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = (intptr_t) value;
 
-  if (set->validator && !set->validator(set, name, DT_MBCHARTBL, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_MBCHARTBL))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_MBCHARTBL));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_MBCHARTBL, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_MBCHARTBL)
-      return NULL;
-
     if (set->destructor && !set->destructor(set, DT_MBCHARTBL, (intptr_t) elem->data))
       FREE(&elem->data);
     elem->data = (void *) value;
@@ -255,20 +271,23 @@ struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struc
   return elem;
 }
 
-struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value)
+struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
 
-  if (set->validator && !set->validator(set, name, DT_NUM, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_NUM))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_NUM));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_NUM, copy, result))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_NUM)
-      return NULL;
-
     if (set->destructor)
       set->destructor(set, DT_NUM, (intptr_t) elem->data);
     elem->data = (void *) copy;
@@ -283,20 +302,23 @@ struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value)
   return elem;
 }
 
-struct HashElem *cs_set_path(struct ConfigSet *set, const char *name, const char *value)
+struct HashElem *cs_set_path(struct ConfigSet *set, const char *name, const char *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = (intptr_t) value;
 
-  if (set->validator && !set->validator(set, name, DT_PATH, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_PATH))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_PATH));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_PATH, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_PATH)
-      return NULL;
-
     if (set->destructor && !set->destructor(set, DT_PATH, (intptr_t) elem->data))
       FREE(&elem->data);
     elem->data = (void *) value;
@@ -311,20 +333,23 @@ struct HashElem *cs_set_path(struct ConfigSet *set, const char *name, const char
   return elem;
 }
 
-struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value)
+struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
 
-  if (set->validator && !set->validator(set, name, DT_QUAD, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_QUAD))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_QUAD));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_QUAD, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_QUAD)
-      return NULL;
-
     if (set->destructor)
       set->destructor(set, DT_QUAD, (intptr_t) elem->data);
     elem->data = (void *) copy;
@@ -339,20 +364,23 @@ struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value)
   return elem;
 }
 
-struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex *value)
+struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = (intptr_t) value;
 
-  if (set->validator && !set->validator(set, name, DT_RX, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_RX))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_RX));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_RX, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_RX)
-      return NULL;
-
     if (set->destructor && !set->destructor(set, DT_RX, (intptr_t) elem->data))
       FREE(&elem->data);
     elem->data = (void *) value;
@@ -367,20 +395,23 @@ struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex
   return elem;
 }
 
-struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value)
+struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = value;
 
-  if (set->validator && !set->validator(set, name, DT_SORT, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_SORT))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_SORT));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_SORT, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_SORT)
-      return NULL;
-
     if (set->destructor)
       set->destructor(set, DT_SORT, (intptr_t) elem->data);
     elem->data = (void *) copy;
@@ -395,20 +426,23 @@ struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value)
   return elem;
 }
 
-struct HashElem *cs_set_str(struct ConfigSet *set, const char *name, const char *value)
+struct HashElem *cs_set_str(struct ConfigSet *set, const char *name, const char *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
   intptr_t copy = (intptr_t) value;
 
-  if (set->validator && !set->validator(set, name, DT_STR, copy))
+  struct HashElem *elem = hash_find_elem(set->hash, name);
+  if (elem && (DTYPE(elem->type) != DT_STR))
+  {
+    mutt_buffer_printf(result, "Variable is type %s, trying to use type %s", type_to_string(DTYPE(elem->type)), type_to_string(DT_STR));
+    return NULL;
+  }
+
+  if (set->validator && !set->validator(set, name, DT_STR, copy, NULL))
     return NULL;
 
-  struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
   {
-    if (DTYPE(elem->type) != DT_STR)
-      return NULL;
-
     if (set->destructor && !set->destructor(set, DT_STR, (intptr_t) elem->data))
       FREE(&elem->data);
     elem->data = (void *) value;

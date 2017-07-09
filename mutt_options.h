@@ -54,6 +54,7 @@ struct Option
 };
 
 int mutt_option_to_string(const struct Option *opt, char *val, size_t len);
+const char *type_to_string(int type);
 
 const struct Option *mutt_option_get(const char *s);
 int mutt_option_set(const struct Option *val, struct Buffer *err);
