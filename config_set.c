@@ -12,7 +12,7 @@
 
 static void destroy(int type, void *obj, intptr_t data)
 {
-  struct ConfigSet *set = (struct ConfigSet*) data;
+  struct ConfigSet *set = (struct ConfigSet *) data;
   if (set->destructor && set->destructor(set, type, (intptr_t) obj))
     return;
 
@@ -121,7 +121,7 @@ struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Add
   intptr_t copy = (intptr_t) value;
 
   if (set->validator && !set->validator(set, name, DT_ADDR, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -149,7 +149,7 @@ struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value
   intptr_t copy = value;
 
   if (set->validator && !set->validator(set, name, DT_BOOL, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -177,7 +177,7 @@ struct HashElem *cs_set_hcache(struct ConfigSet *set, const char *name, const ch
   intptr_t copy = (intptr_t) value;
 
   if (set->validator && !set->validator(set, name, DT_HCACHE, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -205,7 +205,7 @@ struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value
   intptr_t copy = value;
 
   if (set->validator && !set->validator(set, name, DT_MAGIC, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -233,7 +233,7 @@ struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struc
   intptr_t copy = (intptr_t) value;
 
   if (set->validator && !set->validator(set, name, DT_MBCHARTBL, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -261,7 +261,7 @@ struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value)
   intptr_t copy = value;
 
   if (set->validator && !set->validator(set, name, DT_NUM, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -289,7 +289,7 @@ struct HashElem *cs_set_path(struct ConfigSet *set, const char *name, const char
   intptr_t copy = (intptr_t) value;
 
   if (set->validator && !set->validator(set, name, DT_PATH, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -317,7 +317,7 @@ struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value)
   intptr_t copy = value;
 
   if (set->validator && !set->validator(set, name, DT_QUAD, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -345,7 +345,7 @@ struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex
   intptr_t copy = (intptr_t) value;
 
   if (set->validator && !set->validator(set, name, DT_RX, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -373,7 +373,7 @@ struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value)
   intptr_t copy = value;
 
   if (set->validator && !set->validator(set, name, DT_SORT, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -401,7 +401,7 @@ struct HashElem *cs_set_str(struct ConfigSet *set, const char *name, const char 
   intptr_t copy = (intptr_t) value;
 
   if (set->validator && !set->validator(set, name, DT_STR, copy))
-      return NULL;
+    return NULL;
 
   struct HashElem *elem = hash_find_elem(set->hash, name);
   if (elem)
@@ -446,7 +446,7 @@ bool cs_get_bool(struct ConfigSet *set, const char *name)
 {
   struct HashElem *elem = cs_get_elem(set, name);
   if (elem && (DTYPE(elem->type) == DT_BOOL))
-    return ((intptr_t) (elem->data != 0));
+    return ((intptr_t)(elem->data != 0));
   return false;
 }
 
@@ -699,7 +699,7 @@ struct Address *he_get_addr(struct HashElem *var)
 bool he_get_bool(struct HashElem *var)
 {
   if (var && (DTYPE(var->type) == DT_BOOL))
-    return ((intptr_t) (var->data != 0));
+    return ((intptr_t)(var->data != 0));
   return false;
 }
 
@@ -765,5 +765,4 @@ const char *he_get_str(struct HashElem *var)
     return var->data;
   return NULL;
 }
-
 

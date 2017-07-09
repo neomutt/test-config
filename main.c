@@ -1,13 +1,13 @@
 #include "config.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include "address.h"
 #include "config_set.h"
-#include "mutt_regex.h"
-#include "mbyte_table.h"
 #include "data.h"
 #include "lib.h"
+#include "mbyte_table.h"
+#include "mutt_regex.h"
 
 unsigned int SOMEPRIME = 149711;
 
@@ -54,7 +54,7 @@ bool destructor(struct ConfigSet *set, int type, intptr_t obj)
 
     case DT_ADDR:
     {
-      struct Address *a = (struct Address*) obj;
+      struct Address *a = (struct Address *) obj;
       FREE(&a->personal);
       FREE(&a->mailbox);
       FREE(&a);
@@ -63,7 +63,7 @@ bool destructor(struct ConfigSet *set, int type, intptr_t obj)
 
     case DT_MBCHARTBL:
     {
-      struct MbCharTable *m = (struct MbCharTable*) obj;
+      struct MbCharTable *m = (struct MbCharTable *) obj;
       FREE(&m->segmented_str);
       FREE(&m->orig_str);
       FREE(&m);
@@ -72,7 +72,7 @@ bool destructor(struct ConfigSet *set, int type, intptr_t obj)
 
     case DT_RX:
     {
-      struct Regex *r = (struct Regex*) obj;
+      struct Regex *r = (struct Regex *) obj;
       FREE(&r->pattern);
       //regfree(r->rx)
       FREE(&r);
@@ -83,7 +83,7 @@ bool destructor(struct ConfigSet *set, int type, intptr_t obj)
     case DT_PATH:
     case DT_STR:
     {
-      const char *str = (const char*) obj;
+      const char *str = (const char *) obj;
       FREE(&str);
       return true;
     }
