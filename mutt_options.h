@@ -45,6 +45,7 @@ struct Buffer;
 
 /* subtypes */
 #define DT_SUBTYPE_MASK 0xff0
+#define DT_SORT_INDEX   0x00
 #define DT_SORT_ALIAS   0x10
 #define DT_SORT_BROWSER 0x20
 #define DT_SORT_KEYS    0x40
