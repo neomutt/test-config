@@ -39,7 +39,7 @@ static bool hc_string_set(struct HashElem *e, const char *value, struct Buffer *
   return true;
 }
 
-static const char *hc_string_get(struct HashElem *e, struct Buffer *err)
+static bool hc_string_get(struct HashElem *e, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_HCACHE)
   {

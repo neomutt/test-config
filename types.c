@@ -115,17 +115,6 @@ static bool rx_set_string(struct HashElem *e, const char *value, struct Buffer *
   return false;
 }
 
-static bool sort_set_string(struct HashElem *e, const char *value, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_SORT)
-  {
-    mutt_buffer_printf(err, "Variable is not a sort");
-    return false;
-  }
-
-  return false;
-}
-
 static bool str_set_string(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_STR)
@@ -138,54 +127,140 @@ static bool str_set_string(struct HashElem *e, const char *value, struct Buffer 
 }
 
 
-static const char *addr_get_string(struct HashElem *e, struct Buffer *err)
+static bool addr_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  if (DTYPE(e->type) != DT_ADDR)
+  {
+    mutt_buffer_printf(result, "Variable is not an address");
+    return false;
+  }
+
+  mutt_buffer_addstr(result, (const char*) e->data);
+  return true;
 }
 
-static const char *bool_get_string(struct HashElem *e, struct Buffer *err)
+static bool bool_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  const char *text[] = { "no", "yes" };
+
+  if (DTYPE(e->type) != DT_BOOL)
+  {
+    mutt_buffer_printf(result, "Variable is not an address");
+    return false;
+  }
+
+  intptr_t index = (intptr_t) e->data;
+  if ((index < 0) || (index > mutt_array_size(text)))
+  {
+    mutt_buffer_printf(result, "Variable has an invalid value");
+    return false;
+  }
+
+  mutt_buffer_addstr(result, text[index]);
+  return true;
 }
 
-static const char *magic_get_string(struct HashElem *e, struct Buffer *err)
+static bool magic_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  const char *text[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
+
+  if (DTYPE(e->type) != DT_MAGIC)
+  {
+    mutt_buffer_printf(result, "Variable is not a mailbox type");
+    return false;
+  }
+
+  intptr_t index = (intptr_t) e->data;
+  if ((index < 1) || (index > mutt_array_size(text)))
+  {
+    mutt_buffer_printf(result, "Variable has an invalid value");
+    return false;
+  }
+
+  mutt_buffer_addstr(result, text[index]);
+  return true;
 }
 
-static const char *mbchartbl_get_string(struct HashElem *e, struct Buffer *err)
+static bool mbchartbl_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  if (DTYPE(e->type) != DT_MBCHARTBL)
+  {
+    mutt_buffer_printf(result, "Variable is not a multibyte string");
+    return false;
+  }
+
+  struct MbCharTable *table = (struct MbCharTable*) e->data;
+  mutt_buffer_addstr(result, table->orig_str);
+  return true;
 }
 
-static const char *num_get_string(struct HashElem *e, struct Buffer *err)
+static bool num_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  if (DTYPE(e->type) != DT_NUM)
+  {
+    mutt_buffer_printf(result, "Variable is not a string");
+    return false;
+  }
+
+  mutt_buffer_printf(result, "%d", (intptr_t) e->data);
+  return true;
 }
 
-static const char *path_get_string(struct HashElem *e, struct Buffer *err)
+static bool path_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  if (DTYPE(e->type) != DT_PATH)
+  {
+    mutt_buffer_printf(result, "Variable is not a path");
+    return false;
+  }
+
+  mutt_buffer_addstr(result, (const char*) e->data);
+  return true;
 }
 
-static const char *quad_get_string(struct HashElem *e, struct Buffer *err)
+static bool quad_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  const char *text[] = { "no", "yes", "ask-no", "ask-yes" };
+
+  if (DTYPE(e->type) != DT_QUAD)
+  {
+    mutt_buffer_printf(result, "Variable is not a quad");
+    return false;
+  }
+
+  intptr_t index = (intptr_t) e->data;
+  if ((index < 0) || (index > mutt_array_size(text)))
+  {
+    mutt_buffer_printf(result, "Variable has an invalid value");
+    return false;
+  }
+
+  return true;
 }
 
-static const char *rx_get_string(struct HashElem *e, struct Buffer *err)
+static bool rx_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
+  if (DTYPE(e->type) != DT_RX)
+  {
+    mutt_buffer_printf(result, "Variable is not a regex");
+    return false;
+  }
+
+  struct Regex *rx = (struct Regex*) e->data;
+  mutt_buffer_addstr(result, rx->pattern);
+  return true;
 }
 
-static const char *sort_get_string(struct HashElem *e, struct Buffer *err)
+static bool str_get_string(struct HashElem *e, struct Buffer *result)
 {
-  return NULL;
-}
+  if (DTYPE(e->type) != DT_STR)
+  {
+    mutt_buffer_printf(result, "Variable is not a string");
+    return false;
+  }
 
-static const char *str_get_string(struct HashElem *e, struct Buffer *err)
-{
-  return NULL;
+  mutt_buffer_addstr(result, (const char*) e->data);
+  return true;
 }
 
 
@@ -265,7 +340,7 @@ static bool str_destructor(struct HashElem *e, struct Buffer *err)
 }
 
 
-bool init_variables(void)
+bool init_types(void)
 {
   struct ConfigSetType cst_addr      = { addr_set_string,      addr_get_string,      addr_destructor      };
   struct ConfigSetType cst_bool      = { bool_set_string,      bool_get_string,      NULL                 };
@@ -275,7 +350,6 @@ bool init_variables(void)
   struct ConfigSetType cst_path      = { path_set_string,      path_get_string,      path_destructor      };
   struct ConfigSetType cst_quad      = { quad_set_string,      quad_get_string,      NULL                 };
   struct ConfigSetType cst_rx        = { rx_set_string,        rx_get_string,        rx_destructor        };
-  struct ConfigSetType cst_sort      = { sort_set_string,      sort_get_string,      NULL                 };
   struct ConfigSetType cst_str       = { str_set_string,       str_get_string,       str_destructor       };
 
   cs_register_type("address", DT_ADDR,      &cst_addr);
@@ -286,60 +360,9 @@ bool init_variables(void)
   cs_register_type("path",    DT_PATH,      &cst_path);
   cs_register_type("quad",    DT_QUAD,      &cst_quad);
   cs_register_type("regex",   DT_RX,        &cst_rx);
-  cs_register_type("sort",    DT_SORT,      &cst_sort);
   cs_register_type("string",  DT_STR,       &cst_str);
 
   return true;
 }
 
-#if 0
-static bool hc_string_set(struct HashElem *e, const char *value, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_HCACHE)
-  {
-    mutt_buffer_printf(err, "Variable is not an hcache");
-    return false;
-  }
 
-  intptr_t index = -1;
-
-  for (int i = 0; i < mutt_array_size(hcache_backends); i++)
-  {
-    if (strcmp(value, hcache_backends[i]) == 0)
-    {
-      index = i;
-      break;
-    }
-  }
-
-  if (index < 0)
-  {
-    mutt_buffer_printf(err, "Not a valid hcache backend: %s", value);
-    return false;
-  }
-
-  e->data = (void *) index;
-  return true;
-}
-
-static const char *hc_string_get(struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_HCACHE)
-  {
-    mutt_buffer_printf(err, "Variable is not an hcache");
-    return NULL;
-  }
-
-  int index = (intptr_t) e->data;
-  if ((index < 0) || (index >= mutt_array_size(hcache_backends)))
-  {
-    mutt_buffer_printf(err, "Invalid hcache value: %d", index);
-    return NULL;
-  }
-
-  return hcache_backends[index];
-}
-
-
-
-#endif

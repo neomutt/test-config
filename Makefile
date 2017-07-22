@@ -7,7 +7,7 @@ OBJDIR	= .obj
 
 OUT	= demo
 
-SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c buffer.c hcache.c types.c
+SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c buffer.c hcache.c types.c sort.c
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 

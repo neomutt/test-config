@@ -10,6 +10,9 @@
 #include "lib.h"
 #include "mbyte_table.h"
 #include "mutt_regex.h"
+#include "sort.h"
+#include "types.h"
+#include "types.h"
 
 unsigned int SOMEPRIME = 149711;
 
@@ -368,6 +371,8 @@ void test6(void)
 
 int main(int argc, char *argv[])
 {
+  init_types();
+  init_sorts();
   hcache_init();
 
   // test1();
