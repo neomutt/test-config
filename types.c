@@ -10,6 +10,84 @@
 #include "mbyte_table.h"
 #include "mutt_regex.h"
 
+const char *bool_values[] = { "no", "yes" };
+
+static bool addr_destructor(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_ADDR)
+  {
+    mutt_buffer_printf(err, "Variable is not an address");
+    return false;
+  }
+
+  struct Address *a = (struct Address *) e->data;
+  FREE(&a->personal);
+  FREE(&a->mailbox);
+  FREE(&a);
+
+  return true;
+}
+
+static bool mbchartbl_destructor(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_MBCHARTBL)
+  {
+    mutt_buffer_printf(err, "Variable is not a multibyte string");
+    return false;
+  }
+
+  struct MbCharTable *m = (struct MbCharTable *) e->data;
+  FREE(&m->segmented_str);
+  FREE(&m->orig_str);
+  FREE(&m);
+  return true;
+}
+
+static bool path_destructor(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_PATH)
+  {
+    mutt_buffer_printf(err, "Variable is not a path");
+    return false;
+  }
+
+  const char *str = (const char *) e->data;
+  FREE(&str);
+
+  return true;
+}
+
+static bool rx_destructor(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_RX)
+  {
+    mutt_buffer_printf(err, "Variable is not a regex");
+    return false;
+  }
+
+  struct Regex *r = (struct Regex *) e->data;
+  FREE(&r->pattern);
+  //regfree(r->rx)
+  FREE(&r);
+
+  return true;
+}
+
+static bool str_destructor(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_STR)
+  {
+    mutt_buffer_printf(err, "Variable is not a string");
+    return false;
+  }
+
+  const char *str = (const char *) e->data;
+  FREE(&str);
+
+  return true;
+}
+
+
 static bool set_addr(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_ADDR)
@@ -42,10 +120,23 @@ static bool set_bool(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_BOOL)
   {
-    mutt_buffer_printf(err, "Variable is not an address");
+    mutt_buffer_printf(err, "Variable is not a boolean");
     return false;
   }
 
+  if (strcmp(bool_values[0], value) == 0)
+  {
+    e->data = (void *) false;
+    return true;
+  }
+
+  if (strcmp(bool_values[1], value) == 0)
+  {
+    e->data = (void *) true;
+    return true;
+  }
+
+  mutt_buffer_printf(err, "Invalid boolean value: %s", value);
   return false;
 }
 
@@ -79,7 +170,16 @@ static bool set_num(struct HashElem *e, const char *value, struct Buffer *err)
     return false;
   }
 
-  return false;
+  int num = 0;
+  if (mutt_atoi(value, &num) < 0)
+  {
+    mutt_buffer_printf(err, "Invalid number: %s", value);
+    return false;
+  }
+
+  intptr_t copy = num;
+  e->data = (void *) copy;
+  return true;
 }
 
 static bool set_path(struct HashElem *e, const char *value, struct Buffer *err)
@@ -141,8 +241,6 @@ static bool get_addr(struct HashElem *e, struct Buffer *result)
 
 static bool get_bool(struct HashElem *e, struct Buffer *result)
 {
-  const char *text[] = { "no", "yes" };
-
   if (DTYPE(e->type) != DT_BOOL)
   {
     mutt_buffer_printf(result, "Variable is not an address");
@@ -150,13 +248,13 @@ static bool get_bool(struct HashElem *e, struct Buffer *result)
   }
 
   intptr_t index = (intptr_t) e->data;
-  if ((index < 0) || (index > mutt_array_size(text)))
+  if ((index < 0) || (index > mutt_array_size(bool_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;
   }
 
-  mutt_buffer_addstr(result, text[index]);
+  mutt_buffer_addstr(result, bool_values[index]);
   return true;
 }
 
@@ -260,82 +358,6 @@ static bool get_str(struct HashElem *e, struct Buffer *result)
   }
 
   mutt_buffer_addstr(result, (const char*) e->data);
-  return true;
-}
-
-
-static bool addr_destructor(struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_ADDR)
-  {
-    mutt_buffer_printf(err, "Variable is not an address");
-    return false;
-  }
-
-  struct Address *a = (struct Address *) e->data;
-  FREE(&a->personal);
-  FREE(&a->mailbox);
-  FREE(&a);
-
-  return true;
-}
-
-static bool mbchartbl_destructor(struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_MBCHARTBL)
-  {
-    mutt_buffer_printf(err, "Variable is not a multibyte string");
-    return false;
-  }
-
-  struct MbCharTable *m = (struct MbCharTable *) e->data;
-  FREE(&m->segmented_str);
-  FREE(&m->orig_str);
-  FREE(&m);
-  return true;
-}
-
-static bool path_destructor(struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_PATH)
-  {
-    mutt_buffer_printf(err, "Variable is not a path");
-    return false;
-  }
-
-  const char *str = (const char *) e->data;
-  FREE(&str);
-
-  return true;
-}
-
-static bool rx_destructor(struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_RX)
-  {
-    mutt_buffer_printf(err, "Variable is not a regex");
-    return false;
-  }
-
-  struct Regex *r = (struct Regex *) e->data;
-  FREE(&r->pattern);
-  //regfree(r->rx)
-  FREE(&r);
-
-  return true;
-}
-
-static bool str_destructor(struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_STR)
-  {
-    mutt_buffer_printf(err, "Variable is not a string");
-    return false;
-  }
-
-  const char *str = (const char *) e->data;
-  FREE(&str);
-
   return true;
 }
 
