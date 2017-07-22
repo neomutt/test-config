@@ -1,7 +1,12 @@
 /**
+ * @file
+ * Some very miscellaneous functions
+ *
+ * @authors
  * Copyright (C) 1996-2000,2007,2010 Michael R. Elkins <me@mutt.org>
  * Copyright (C) 1999-2004,2006-2007 Thomas Roessler <roessler@does-not-exist.org>
  *
+ * @copyright
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 2 of the License, or (at your option) any later
@@ -44,7 +49,10 @@
 #define EX_OK 0
 #endif
 
-static const struct Sysexits
+/**
+ * struct SysExits - Lookup table of error messages
+ */
+static const struct SysExits
 {
   int v;
   const char *str;
@@ -280,7 +288,9 @@ void mutt_str_adjust(char **p)
   safe_realloc(p, strlen(*p) + 1);
 }
 
-/* convert all characters in the string to lowercase */
+/**
+ * mutt_strlower - convert all characters in the string to lowercase
+ */
 char *mutt_strlower(char *s)
 {
   char *p = s;
@@ -296,9 +306,9 @@ char *mutt_strlower(char *s)
 
 /**
  * mutt_strchrnul - find first occurrence of character in string
- * @param s Haystack.
- * @param c Needle.
- * @return Pointer to the first occurrence if found or to the NULL character.
+ * @param s Haystack
+ * @param c Needle
+ * @retval ptr First occurrence if found or to the NULL character
  *
  * This function is like GNU's strchrnul, which is similar to the standard
  * strchr function: it looks for the c character in the NULL-terminated string
@@ -442,8 +452,8 @@ int safe_symlink(const char *oldpath, const char *newpath)
 }
 
 
-/*
- * This function is supposed to do nfs-safe renaming of files.
+/**
+ * safe_rename - NFS-safe renaming of files
  *
  * Warning: We don't check whether src and target are equal.
  */
@@ -544,7 +554,9 @@ int safe_rename(const char *src, const char *target)
 }
 
 
-/* Create a temporary directory next to a file name */
+/**
+ * mkwrapdir - Create a temporary directory next to a file name
+ */
 static int mkwrapdir(const char *path, char *newfile, size_t nflen, char *newdir, size_t ndlen)
 {
   const char *basename = NULL;
@@ -580,7 +592,9 @@ static int mkwrapdir(const char *path, char *newfile, size_t nflen, char *newdir
   return 0;
 }
 
-/* remove a directory and everything under it */
+/**
+ * mutt_rmtree - remove a directory and everything under it
+ */
 int mutt_rmtree(const char *path)
 {
   DIR *dirp = NULL;
@@ -668,8 +682,11 @@ int safe_open(const char *path, int flags)
   return fd;
 }
 
-/* when opening files for writing, make sure the file doesn't already exist
- * to avoid race conditions.
+/**
+ * safe_fopen - Call fopen() safely
+ *
+ * when opening files for writing, make sure the file doesn't already exist to
+ * avoid race conditions.
  */
 FILE *safe_fopen(const char *path, const char *mode)
 {
@@ -735,10 +752,13 @@ int mutt_rx_sanitize_string(char *dest, size_t destlen, const char *src)
     return 0;
 }
 
-/* Read a line from ``fp'' into the dynamically allocated ``s'',
- * increasing ``s'' if necessary. The ending "\n" or "\r\n" is removed.
- * If a line ends with "\", this char and the linefeed is removed,
- * and the next line is read too.
+/**
+ * mutt_read_line - Read a line from a file
+ *
+ * Read a line from ``fp'' into the dynamically allocated ``s'', increasing
+ * ``s'' if necessary. The ending "\n" or "\r\n" is removed.  If a line ends
+ * with "\", this char and the linefeed is removed, and the next line is read
+ * too.
  */
 char *mutt_read_line(char *s, size_t *size, FILE *fp, int *line, int flags)
 {
@@ -826,7 +846,9 @@ char *mutt_substrdup(const char *begin, const char *end)
   return p;
 }
 
-/* prepare a file name to survive the shell's quoting rules.
+/**
+ * mutt_quote_filename - Quote a filename to survive the shell's quoting rules
+ *
  * From the Unix programming FAQ by way of Liviu.
  */
 size_t mutt_quote_filename(char *d, size_t l, const char *f)
@@ -930,7 +952,17 @@ void mutt_remove_trailing_ws(char *s)
     *p = 0;
 }
 
-/*
+/**
+ * mutt_concatn_path - Concatenate directory and filename
+ * @param dst      Buffer for result
+ * @param dstlen   Buffer length
+ * @param dir      Directory
+ * @param dirlen   Directory length
+ * @param fname    Filename
+ * @param fnamelen Filename length
+ * @retval NULL Error
+ * @retval ptr  Pointer to \a dst on success
+ *
  * Write the concatenated pathname (dir + "/" + fname) into dst.
  * The slash is omitted when dir or fname is of 0 length.
  * Returns NULL on error or a pointer to dst otherwise.
@@ -1094,13 +1126,12 @@ int mutt_atoi(const char *str, int *dst)
 }
 
 /**
- * mutt_inbox_cmp - check whether two folders share the same path and one is
- * an inbox.
- *
- * @param a First path.
- * @param b Second path.
- *
- * @return -1 if a is INBOX of b, 0 if none is INBOX, 1 if b is INBOX for a
+ * mutt_inbox_cmp - do two folders share the same path and one is an inbox
+ * @param a First path
+ * @param b Second path
+ * @retval -1 if a is INBOX of b
+ * @retval 0 if none is INBOX
+ * @retval 1 if b is INBOX for a
  *
  * This function compares two folder paths. It first looks for the position of
  * the last common '/' character. If a valid position is found and it's not the
@@ -1111,10 +1142,10 @@ int mutt_atoi(const char *str, int *dst)
  * paths are considered equivalent and this function returns 0.
  *
  * Examples:
- *   mutt_inbox_cmp("/foo/bar",      "/foo/baz") --> 0
- *   mutt_inbox_cmp("/foo/bar/",     "/foo/bar/inbox") --> 0
- *   mutt_inbox_cmp("/foo/bar/sent", "/foo/bar/inbox") --> 1
- *   mutt_inbox_cmp("=INBOX",        "=Drafts") --> -1
+ * * mutt_inbox_cmp("/foo/bar",      "/foo/baz") --> 0
+ * * mutt_inbox_cmp("/foo/bar/",     "/foo/bar/inbox") --> 0
+ * * mutt_inbox_cmp("/foo/bar/sent", "/foo/bar/inbox") --> 1
+ * * mutt_inbox_cmp("=INBOX",        "=Drafts") --> -1
  */
 int mutt_inbox_cmp(const char *a, const char *b)
 {
@@ -1166,15 +1197,14 @@ char *strfcpy(char *dest, const char *src, size_t dlen)
 
 /**
  * mutt_mkdir - Recursively create directories
- * @path: Directories to create
- * @mode: Permissions for final directory
- * @return:
- * *    0  Success
- * *   -1  Error (errno set)
+ * @param path Directories to create
+ * @param mode Permissions for final directory
+ * @retval    0  Success
+ * @retval   -1  Error (errno set)
  *
  * Create a directory, creating the parents if necessary. (like mkdir -p)
  *
- * Note: The permissions are only set on the final directory.
+ * @note The permissions are only set on the final directory.
  *       The permissions of any parent directories are determined by the umask.
  *       (This is how "mkdir -p" behaves)
  */

@@ -1,4 +1,9 @@
 /**
+ * @file
+ * General purpose object for storing and parsing strings
+ *
+ * @authors
+ * @copyright
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 2 of the License, or (at your option) any later
@@ -23,7 +28,9 @@
 #include "buffer.h"
 #include "lib.h"
 
-/* creates and initializes a Buffer */
+/**
+ * mutt_buffer_new - creates and initializes a Buffer
+ */
 struct Buffer *mutt_buffer_new(void)
 {
   struct Buffer *b = NULL;
@@ -35,7 +42,9 @@ struct Buffer *mutt_buffer_new(void)
   return b;
 }
 
-/* initialize a new Buffer */
+/**
+ * mutt_buffer_init - initialize a new Buffer
+ */
 struct Buffer *mutt_buffer_init(struct Buffer *b)
 {
   memset(b, 0, sizeof(struct Buffer));
@@ -48,7 +57,9 @@ void mutt_buffer_reset(struct Buffer *b)
   b->dptr = b->data;
 }
 
-/*
+/**
+ * mutt_buffer_from - Create Buffer from an existing Buffer
+ *
  * Creates and initializes a Buffer*. If passed an existing Buffer*,
  * just initializes. Frees anything already in the buffer. Copies in
  * the seed string.
@@ -123,9 +134,13 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
   return len;
 }
 
-/* dynamically grows a Buffer to accommodate s, in increments of 128 bytes.
- * Always one byte bigger than necessary for the null terminator, and
- * the buffer is always null-terminated */
+/**
+ * mutt_buffer_add - Add a string to a Buffer, expanding it if necessary
+ *
+ * dynamically grows a Buffer to accommodate s, in increments of 128 bytes.
+ * Always one byte bigger than necessary for the null terminator, and the
+ * buffer is always null-terminated
+ */
 static void mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
 {
   if (!buf || !s)
