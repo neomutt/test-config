@@ -360,6 +360,11 @@ void test5(void)
   cs_free(&cs);
 }
 
+void test6(void)
+{
+  return;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -371,6 +376,7 @@ int main(int argc, char *argv[])
   //   SOMEPRIME = atol(argv[1]);
   // test3();
   // test4();
-  test5();
+  // test5();
+  test6();
   return 0;
 }

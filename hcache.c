@@ -57,24 +57,30 @@ static const char *hc_string_get(struct HashElem *e, struct Buffer *err)
   return hcache_backends[index];
 }
 
-static bool hc_validator(const char *name, int type, intptr_t value, struct Buffer *err)
-{
-  // validate an hcache string
-  return true;
-}
 
-static bool hc_destructor(struct HashElem *e, struct Buffer *err)
+static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result)
 {
-  /* We only store an int, so no action is required */
-  return true;
+  int x = 1024;
+
+  if (x < 512)
+    return false;
+
+  // Power of two
+  return (!(x & (x - 1)));
 }
 
 
 bool hcache_init(void)
 {
-  struct ConfigSetType cst = { hc_string_set, hc_string_get, hc_validator, hc_destructor };
+  struct ConfigSetType cst = { hc_string_set, hc_string_get };
 
   cs_register_type("hcache", DT_HCACHE, &cst);
 
+  cs_register_variable("header_cache",          DT_PATH,   NULL,    NULL);
+  cs_register_variable("header_cache_backend",  DT_HCACHE, NULL,    NULL);
+  cs_register_variable("header_cache_compress", DT_BOOL,   "yes",   NULL);
+  cs_register_variable("header_cache_pagesize", DT_NUM,    "16384", hc_pagesize_validator);
+
   return true;
 }
+

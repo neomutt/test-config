@@ -7,7 +7,7 @@ OBJDIR	= .obj
 
 OUT	= demo
 
-SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c buffer.c hcache.c
+SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c buffer.c hcache.c types.c
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 
@@ -21,7 +21,6 @@ LDFLAGS	+= -pthread
 LDFLAGS	+= -rdynamic
 
 CFLAGS	+= -fno-omit-frame-pointer
-CFLAGS	+= -fno-optimize-sibling-calls
 
 all:	$(OBJDIR) $(DEPDIR) $(OBJ) $(OUT) tags
 

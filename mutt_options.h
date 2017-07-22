@@ -27,7 +27,6 @@
 
 struct Buffer;
 
-#define DT_MASK      0x0f
 #define DT_BOOL      1    /**< boolean option */
 #define DT_NUM       2    /**< a number */
 #define DT_STR       3    /**< a string */
@@ -40,6 +39,7 @@ struct Buffer;
 #define DT_ADDR      10   /**< e-mail address */
 #define DT_MBCHARTBL 11   /**< multibyte char table */
 #define DT_HCACHE    12   /**< header cache backend */
+#define DT_MASK      0x0F
 
 #define DTYPE(x) ((x) &DT_MASK)
 

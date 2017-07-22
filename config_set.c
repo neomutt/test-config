@@ -11,9 +11,11 @@
 #include "mutt_options.h"
 #include "mutt_regex.h"
 
+bool allow_notifications = false;
+
 struct ConfigSetType RegisteredTypes[16] =
 {
-  { NULL, NULL, NULL, NULL, },
+  { NULL, NULL, NULL, },
 };
 
 static void destroy(int type, void *obj, intptr_t data)
@@ -127,6 +129,10 @@ bool cs_register_type(const char *name, int type_id, struct ConfigSetType *cst)
   return false;
 }
 
+bool cs_register_variable(const char *name, int type_id, const char *initial, cs_validator validator)
+{
+  return false;
+}
 
 struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Address *value, struct Buffer *result)
 {
