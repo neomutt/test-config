@@ -6,6 +6,7 @@
 #include "buffer.h"
 #include "config_set.h"
 #include "data.h"
+#include "hcache.h"
 #include "lib.h"
 #include "mbyte_table.h"
 #include "mutt_regex.h"
@@ -362,6 +363,8 @@ void test5(void)
 
 int main(int argc, char *argv[])
 {
+  hcache_init();
+
   // test1();
   // test2();
   // if (argc > 1)

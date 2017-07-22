@@ -11,6 +11,11 @@
 #include "mutt_options.h"
 #include "mutt_regex.h"
 
+struct ConfigSetType RegisteredTypes[16] =
+{
+  { NULL, NULL, NULL, NULL, },
+};
+
 static void destroy(int type, void *obj, intptr_t data)
 {
   struct ConfigSet *set = (struct ConfigSet *) data;
@@ -113,6 +118,13 @@ void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent 
 
     set->listeners[i](set, name, e);
   }
+}
+
+
+bool cs_register_type(const char *name, int type_id, struct ConfigSetType *cst)
+{
+  RegisteredTypes[type_id] = *cst;
+  return false;
 }
 
 
