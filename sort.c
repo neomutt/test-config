@@ -99,7 +99,7 @@ static int find_id(const struct Mapping *map, const char *str)
 }
 
 
-static bool sort_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_sort(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_SORT)
   {
@@ -130,7 +130,7 @@ static bool sort_set_string(struct HashElem *e, const char *value, struct Buffer
   return true;
 }
 
-static bool sort_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_sort(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_SORT)
   {
@@ -157,13 +157,6 @@ static bool sort_get_string(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  // pgp_sort_keys       DT_SORT|DT_SORT_KEYS    PgpSortKeys       SORT_ADDRESS
-  // sidebar_sort_method DT_SORT|DT_SORT_SIDEBAR SidebarSortMethod SORT_ORDER
-  // sort                DT_SORT                 Sort              SORT_DATE
-  // sort_alias          DT_SORT|DT_SORT_ALIAS   SortAlias         SORT_ALIAS
-  // sort_aux            DT_SORT|DT_SORT_AUX     SortAux           SORT_DATE
-  // sort_browser        DT_SORT|DT_SORT_BROWSER BrowserSort       SORT_ALPHA
-
   mutt_buffer_addstr(result, str);
   return true;
 }
@@ -171,7 +164,7 @@ static bool sort_get_string(struct HashElem *e, struct Buffer *result)
 
 bool init_sorts(void)
 {
-  struct ConfigSetType cst_sort = { sort_set_string, sort_get_string, NULL };
+  struct ConfigSetType cst_sort = { set_sort, get_sort, NULL };
 
   cs_register_type("sort", DT_SORT, &cst_sort);
   return true;

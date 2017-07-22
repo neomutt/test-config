@@ -10,7 +10,7 @@
 #include "mbyte_table.h"
 #include "mutt_regex.h"
 
-static bool addr_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_addr(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_ADDR)
   {
@@ -38,7 +38,7 @@ static bool addr_set_string(struct HashElem *e, const char *value, struct Buffer
   return false;
 }
 
-static bool bool_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_bool(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_BOOL)
   {
@@ -49,7 +49,7 @@ static bool bool_set_string(struct HashElem *e, const char *value, struct Buffer
   return false;
 }
 
-static bool magic_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_magic(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_MAGIC)
   {
@@ -60,7 +60,7 @@ static bool magic_set_string(struct HashElem *e, const char *value, struct Buffe
   return false;
 }
 
-static bool mbchartbl_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_mbchartbl(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_MBCHARTBL)
   {
@@ -71,7 +71,7 @@ static bool mbchartbl_set_string(struct HashElem *e, const char *value, struct B
   return false;
 }
 
-static bool num_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_num(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_NUM)
   {
@@ -82,7 +82,7 @@ static bool num_set_string(struct HashElem *e, const char *value, struct Buffer 
   return false;
 }
 
-static bool path_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_path(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_PATH)
   {
@@ -93,7 +93,7 @@ static bool path_set_string(struct HashElem *e, const char *value, struct Buffer
   return false;
 }
 
-static bool quad_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_quad(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_QUAD)
   {
@@ -104,7 +104,7 @@ static bool quad_set_string(struct HashElem *e, const char *value, struct Buffer
   return false;
 }
 
-static bool rx_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_rx(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_RX)
   {
@@ -115,7 +115,7 @@ static bool rx_set_string(struct HashElem *e, const char *value, struct Buffer *
   return false;
 }
 
-static bool str_set_string(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_str(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_STR)
   {
@@ -127,7 +127,7 @@ static bool str_set_string(struct HashElem *e, const char *value, struct Buffer 
 }
 
 
-static bool addr_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_addr(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_ADDR)
   {
@@ -139,7 +139,7 @@ static bool addr_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool bool_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_bool(struct HashElem *e, struct Buffer *result)
 {
   const char *text[] = { "no", "yes" };
 
@@ -160,7 +160,7 @@ static bool bool_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool magic_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_magic(struct HashElem *e, struct Buffer *result)
 {
   const char *text[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 
@@ -181,7 +181,7 @@ static bool magic_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool mbchartbl_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_MBCHARTBL)
   {
@@ -194,7 +194,7 @@ static bool mbchartbl_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool num_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_num(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_NUM)
   {
@@ -206,7 +206,7 @@ static bool num_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool path_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_path(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_PATH)
   {
@@ -218,7 +218,7 @@ static bool path_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool quad_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_quad(struct HashElem *e, struct Buffer *result)
 {
   const char *text[] = { "no", "yes", "ask-no", "ask-yes" };
 
@@ -238,7 +238,7 @@ static bool quad_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool rx_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_rx(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_RX)
   {
@@ -251,7 +251,7 @@ static bool rx_get_string(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool str_get_string(struct HashElem *e, struct Buffer *result)
+static bool get_str(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_STR)
   {
@@ -342,15 +342,15 @@ static bool str_destructor(struct HashElem *e, struct Buffer *err)
 
 bool init_types(void)
 {
-  struct ConfigSetType cst_addr      = { addr_set_string,      addr_get_string,      addr_destructor      };
-  struct ConfigSetType cst_bool      = { bool_set_string,      bool_get_string,      NULL                 };
-  struct ConfigSetType cst_magic     = { magic_set_string,     magic_get_string,     NULL                 };
-  struct ConfigSetType cst_mbchartbl = { mbchartbl_set_string, mbchartbl_get_string, mbchartbl_destructor };
-  struct ConfigSetType cst_num       = { num_set_string,       num_get_string,       NULL                 };
-  struct ConfigSetType cst_path      = { path_set_string,      path_get_string,      path_destructor      };
-  struct ConfigSetType cst_quad      = { quad_set_string,      quad_get_string,      NULL                 };
-  struct ConfigSetType cst_rx        = { rx_set_string,        rx_get_string,        rx_destructor        };
-  struct ConfigSetType cst_str       = { str_set_string,       str_get_string,       str_destructor       };
+  struct ConfigSetType cst_addr      = { set_addr,      get_addr,      addr_destructor      };
+  struct ConfigSetType cst_bool      = { set_bool,      get_bool,      NULL                 };
+  struct ConfigSetType cst_magic     = { set_magic,     get_magic,     NULL                 };
+  struct ConfigSetType cst_mbchartbl = { set_mbchartbl, get_mbchartbl, mbchartbl_destructor };
+  struct ConfigSetType cst_num       = { set_num,       get_num,       NULL                 };
+  struct ConfigSetType cst_path      = { set_path,      get_path,      path_destructor      };
+  struct ConfigSetType cst_quad      = { set_quad,      get_quad,      NULL                 };
+  struct ConfigSetType cst_rx        = { set_rx,        get_rx,        rx_destructor        };
+  struct ConfigSetType cst_str       = { set_str,       get_str,       str_destructor       };
 
   cs_register_type("address", DT_ADDR,      &cst_addr);
   cs_register_type("boolean", DT_BOOL,      &cst_bool);
