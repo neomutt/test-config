@@ -122,6 +122,18 @@ void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent 
   }
 }
 
+void cs_dump_set(struct ConfigSet *set)
+{
+  struct HashElem *entry = NULL;
+  struct HashWalkState state;
+  memset(&state, 0, sizeof(state));
+
+  while ((entry = hash_walk(set->hash, &state)))
+  {
+    printf("cs: %s\n", entry->key.strkey);
+  }
+}
+
 
 bool cs_register_type(const char *name, int type_id, struct ConfigSetType *cst)
 {
@@ -131,6 +143,7 @@ bool cs_register_type(const char *name, int type_id, struct ConfigSetType *cst)
 
 bool cs_register_variable(const char *name, int type_id, const char *initial, cs_validator validator)
 {
+  // cs_set_str(&cs, a, strdup(a), NULL);
   return false;
 }
 

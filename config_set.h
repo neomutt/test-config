@@ -44,6 +44,7 @@ struct ConfigSet *cs_new(struct ConfigSet *parent);
 bool cs_init(struct ConfigSet *set, struct ConfigSet *parent);
 void cs_free(struct ConfigSet *set);
 struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name);
+void cs_dump_set(struct ConfigSet *set);
 
 bool cs_register_type    (const char *name, int type_id, struct ConfigSetType *cst);
 bool cs_register_variable(const char *name, int type_id, const char *initial, cs_validator validator);

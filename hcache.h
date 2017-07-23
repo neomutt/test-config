@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool hcache_init(void);
+bool init_hcache(void);
 
 #endif /* _MUTT_HCACHE_H */

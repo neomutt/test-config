@@ -231,9 +231,9 @@ void test1(void)
   printf("    %-10s = %d\n", s, cs_get_sort(&cs, s));
   printf("    %-10s = %d\n", t, cs_get_sort(&cs, t));
 
-  cs_set_str(&cs, u, strdup(a), NULL);
-  cs_set_str(&cs, v, strdup(b), NULL);
-  cs_set_str(&cs, v, strdup(c), NULL);
+  cs_set_str(&cs, u, strdup(u), NULL);
+  cs_set_str(&cs, v, strdup(v), NULL);
+  cs_set_str(&cs, v, strdup(v), NULL);
   printf("DT_STR\n");
   printf("    %-10s = %s\n", u, cs_get_str(&cs, u));
   printf("    %-10s = %s\n", v, cs_get_str(&cs, v));
@@ -365,7 +365,22 @@ void test5(void)
 
 void test6(void)
 {
-  return;
+  struct ConfigSet cs;
+  cs_init(&cs, NULL);
+  cs_add_listener(&cs, listener);
+  cs_add_destructor(&cs, destructor);
+
+  /* set two values, overwrite the second one */
+
+  cs_set_str(&cs, a, strdup(a), NULL);
+  cs_set_str(&cs, b, strdup(b), NULL);
+  cs_set_str(&cs, b, strdup(c), NULL);
+  printf("DT_STR\n");
+  printf("    %-10s = %s\n", a, cs_get_str(&cs, a));
+  printf("    %-10s = %s\n", b, cs_get_str(&cs, b));
+
+  cs_dump_set(&cs);
+  cs_free(&cs);
 }
 
 
@@ -373,7 +388,7 @@ int main(int argc, char *argv[])
 {
   init_types();
   init_sorts();
-  hcache_init();
+  init_hcache();
 
   // test1();
   // test2();

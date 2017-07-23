@@ -11,6 +11,7 @@
 #include "mutt_regex.h"
 
 const char *bool_values[] = { "no", "yes" };
+const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
 static bool addr_destructor(struct HashElem *e, struct Buffer *err)
 {
@@ -23,8 +24,8 @@ static bool addr_destructor(struct HashElem *e, struct Buffer *err)
   struct Address *a = (struct Address *) e->data;
   FREE(&a->personal);
   FREE(&a->mailbox);
-  FREE(&a);
 
+  FREE(&e->data);
   return true;
 }
 
@@ -39,7 +40,8 @@ static bool mbchartbl_destructor(struct HashElem *e, struct Buffer *err)
   struct MbCharTable *m = (struct MbCharTable *) e->data;
   FREE(&m->segmented_str);
   FREE(&m->orig_str);
-  FREE(&m);
+
+  FREE(&e->data);
   return true;
 }
 
@@ -51,9 +53,7 @@ static bool path_destructor(struct HashElem *e, struct Buffer *err)
     return false;
   }
 
-  const char *str = (const char *) e->data;
-  FREE(&str);
-
+  FREE(&e->data);
   return true;
 }
 
@@ -68,8 +68,8 @@ static bool rx_destructor(struct HashElem *e, struct Buffer *err)
   struct Regex *r = (struct Regex *) e->data;
   FREE(&r->pattern);
   //regfree(r->rx)
-  FREE(&r);
 
+  FREE(&e->data);
   return true;
 }
 
@@ -81,9 +81,7 @@ static bool str_destructor(struct HashElem *e, struct Buffer *err)
     return false;
   }
 
-  const char *str = (const char *) e->data;
-  FREE(&str);
-
+  FREE(&e->data);
   return true;
 }
 
@@ -124,16 +122,13 @@ static bool set_bool(struct HashElem *e, const char *value, struct Buffer *err)
     return false;
   }
 
-  if (strcmp(bool_values[0], value) == 0)
+  for (intptr_t i = 0; i < mutt_array_size(bool_values); i++)
   {
-    e->data = (void *) false;
-    return true;
-  }
-
-  if (strcmp(bool_values[1], value) == 0)
-  {
-    e->data = (void *) true;
-    return true;
+    if (strcasecmp(bool_values[i], value) == 0)
+    {
+      e->data = (void *) i;
+      return true;
+    }
   }
 
   mutt_buffer_printf(err, "Invalid boolean value: %s", value);
@@ -166,7 +161,7 @@ static bool set_num(struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_NUM)
   {
-    mutt_buffer_printf(err, "Variable is not a string");
+    mutt_buffer_printf(err, "Variable is not a number");
     return false;
   }
 
@@ -201,6 +196,16 @@ static bool set_quad(struct HashElem *e, const char *value, struct Buffer *err)
     return false;
   }
 
+  for (intptr_t i = 0; i < mutt_array_size(quad_values); i++)
+  {
+    if (strcasecmp(quad_values[i], value) == 0)
+    {
+      e->data = (void *) i;
+      return true;
+    }
+  }
+
+  mutt_buffer_printf(err, "Invalid quad value: %s", value);
   return false;
 }
 
@@ -217,11 +222,23 @@ static bool set_rx(struct HashElem *e, const char *value, struct Buffer *err)
 
 static bool set_str(struct HashElem *e, const char *value, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_STR)
+  if (e && DTYPE(e->type) != DT_STR)
   {
     mutt_buffer_printf(err, "Variable is not a string");
     return false;
   }
+
+  // if (e)
+  // {
+  //   if (!str_destructor(e, err))
+  //     return false;
+
+  //   e->data = (void *) value;
+  // }
+  // else
+  // {
+  //   e = hash_typed_insert(hash, name, DT_STR, (void *) value);
+  // }
 
   return false;
 }
@@ -318,8 +335,6 @@ static bool get_path(struct HashElem *e, struct Buffer *result)
 
 static bool get_quad(struct HashElem *e, struct Buffer *result)
 {
-  const char *text[] = { "no", "yes", "ask-no", "ask-yes" };
-
   if (DTYPE(e->type) != DT_QUAD)
   {
     mutt_buffer_printf(result, "Variable is not a quad");
@@ -327,12 +342,13 @@ static bool get_quad(struct HashElem *e, struct Buffer *result)
   }
 
   intptr_t index = (intptr_t) e->data;
-  if ((index < 0) || (index > mutt_array_size(text)))
+  if ((index < 0) || (index > mutt_array_size(quad_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;
   }
 
+  mutt_buffer_addstr(result, quad_values[index]);
   return true;
 }
 
@@ -383,6 +399,8 @@ bool init_types(void)
   cs_register_type("quad",    DT_QUAD,      &cst_quad);
   cs_register_type("regex",   DT_RX,        &cst_rx);
   cs_register_type("string",  DT_STR,       &cst_str);
+
+  cs_register_variable("print_command", DT_STR, strdup("lpr"), NULL);
 
   return true;
 }

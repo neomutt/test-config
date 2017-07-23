@@ -70,7 +70,7 @@ static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int t
 }
 
 
-bool hcache_init(void)
+bool init_hcache(void)
 {
   struct ConfigSetType cst = { hc_string_set, hc_string_get };
 
