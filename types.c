@@ -446,6 +446,22 @@ static bool reset_str(struct ConfigSet *set, struct HashElem *e, struct Buffer *
 }
 
 
+int Percentage;
+char *PrintCommand;
+#define UL (intptr_t)
+
+bool percentage_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result)
+{
+  return false;
+}
+
+struct VariableDef vars[] =
+{
+  { "percentage",    DT_NUM, UL &Percentage,   UL 10,    percentage_validator },
+  { "print_command", DT_STR, UL &PrintCommand, UL "lpr", NULL },
+  { NULL },
+};
+
 bool init_types(void)
 {
   struct ConfigSetType cst_addr      = { set_addr,      get_addr,      reset_addr,      addr_destructor      };
@@ -468,7 +484,9 @@ bool init_types(void)
   cs_register_type("regex",   DT_RX,        &cst_rx);
   cs_register_type("string",  DT_STR,       &cst_str);
 
-  cs_register_variable("print_command", DT_STR, strdup("lpr"), NULL);
+  cs_register_variable("percentage", DT_NUM, "10", NULL);
+
+  cs_register_variables(vars);
 
   return true;
 }

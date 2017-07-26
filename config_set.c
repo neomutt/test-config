@@ -147,6 +147,15 @@ bool cs_register_variable(const char *name, int type_id, const char *initial, cs
   return false;
 }
 
+bool cs_register_variables(struct VariableDef vars[])
+{
+  for (int i = 0; vars[i].name; i++)
+  {
+  }
+
+  return false;
+}
+
 struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Address *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;

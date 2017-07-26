@@ -25,6 +25,15 @@ typedef bool (*cs_type_string_get)(struct HashElem *e, struct Buffer *result);
 typedef bool (*cs_type_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
 typedef bool (*cs_type_destructor)(struct HashElem *e, struct Buffer *err);
 
+struct VariableDef
+{
+  const char  *name;
+  int          type;
+  intptr_t     variable;
+  intptr_t     initial;
+  cs_validator validator;
+};
+
 struct ConfigSetType
 {
   cs_type_string_set   setter;
@@ -48,8 +57,9 @@ void cs_free(struct ConfigSet *set);
 struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name);
 void cs_dump_set(struct ConfigSet *set);
 
-bool cs_register_type    (const char *name, int type_id, struct ConfigSetType *cst);
-bool cs_register_variable(const char *name, int type_id, const char *initial, cs_validator validator);
+bool cs_register_type     (const char *name, int type_id, struct ConfigSetType *cst);
+bool cs_register_variable (const char *name, int type_id, const char *initial, cs_validator validator);
+bool cs_register_variables(struct VariableDef vars[]);
 
 void cs_add_listener  (struct ConfigSet *set, cs_listener fn);
 void cs_add_validator (struct ConfigSet *set, cs_validator fn);
