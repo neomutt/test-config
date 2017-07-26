@@ -147,15 +147,6 @@ bool cs_register_variable(const char *name, int type_id, const char *initial, cs
   return false;
 }
 
-bool cs_register_variables(struct VariableDef vars[])
-{
-  for (int i = 0; vars[i].name; i++)
-  {
-  }
-
-  return false;
-}
-
 struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Address *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;
@@ -838,5 +829,56 @@ const char *he_get_str(struct HashElem *var)
   if (var && (DTYPE(var->type) == DT_STR))
     return var->data;
   return NULL;
+}
+
+struct ConfigSetType *get_type_def(int type)
+{
+  if ((type < 0) || (type >= mutt_array_size(RegisteredTypes)))
+    return NULL;
+
+  return &RegisteredTypes[type];
+}
+
+static struct HashElem *reg_one_var(struct ConfigSet *set, struct VariableDef *var, struct Buffer *err)
+{
+  struct ConfigSetType *type = get_type_def(var->type);
+  if (!type)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", var->name, var->type);
+    return NULL;
+  }
+
+  struct HashElem *e = hash_typed_insert(set->hash, var->name, var->type, var);
+  if (type->resetter)
+  {
+    if (!type->resetter(set, e, err))
+    {
+      hash_delete(set->hash, var->name, (void*) var->variable);
+      return NULL;
+    }
+  }
+  else
+  {
+    var->variable = var->initial;
+  }
+
+  return e;
+}
+
+bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[])
+{
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = calloc(1, STRING);
+  err.dsize = STRING;
+
+  for (int i = 0; vars[i].name; i++)
+  {
+    reg_one_var(set, &vars[i], &err);
+    printf("register: %s\n", vars[i].name);
+  }
+
+  FREE(&err.data);
+  return true;
 }
 

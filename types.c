@@ -462,7 +462,7 @@ struct VariableDef vars[] =
   { NULL },
 };
 
-bool init_types(void)
+bool init_types(struct ConfigSet *set)
 {
   struct ConfigSetType cst_addr      = { set_addr,      get_addr,      reset_addr,      addr_destructor      };
   struct ConfigSetType cst_bool      = { set_bool,      get_bool,      NULL,            NULL                 };
@@ -486,7 +486,7 @@ bool init_types(void)
 
   cs_register_variable("percentage", DT_NUM, "10", NULL);
 
-  cs_register_variables(vars);
+  cs_register_variables(set, vars);
 
   return true;
 }

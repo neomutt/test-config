@@ -370,6 +370,10 @@ void test6(void)
   cs_add_listener(&cs, listener);
   cs_add_destructor(&cs, destructor);
 
+  init_types(&cs);
+  init_sorts();
+  init_hcache();
+
   /* set two values, overwrite the second one */
 
   cs_set_str(&cs, a, strdup(a), NULL);
@@ -386,10 +390,6 @@ void test6(void)
 
 int main(int argc, char *argv[])
 {
-  init_types();
-  init_sorts();
-  init_hcache();
-
   // test1();
   // test2();
   // if (argc > 1)
