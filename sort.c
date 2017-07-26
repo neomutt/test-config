@@ -99,7 +99,7 @@ static int find_id(const struct Mapping *map, const char *str)
 }
 
 
-static bool set_sort(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_sort(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_SORT)
   {

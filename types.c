@@ -86,7 +86,7 @@ static bool str_destructor(struct HashElem *e, struct Buffer *err)
 }
 
 
-static bool set_addr(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_addr(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_ADDR)
   {
@@ -114,7 +114,7 @@ static bool set_addr(struct HashElem *e, const char *value, struct Buffer *err)
   return false;
 }
 
-static bool set_bool(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_bool(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_BOOL)
   {
@@ -135,7 +135,7 @@ static bool set_bool(struct HashElem *e, const char *value, struct Buffer *err)
   return false;
 }
 
-static bool set_magic(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_magic(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_MAGIC)
   {
@@ -146,7 +146,7 @@ static bool set_magic(struct HashElem *e, const char *value, struct Buffer *err)
   return false;
 }
 
-static bool set_mbchartbl(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_MBCHARTBL)
   {
@@ -157,7 +157,7 @@ static bool set_mbchartbl(struct HashElem *e, const char *value, struct Buffer *
   return false;
 }
 
-static bool set_num(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_num(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_NUM)
   {
@@ -177,7 +177,7 @@ static bool set_num(struct HashElem *e, const char *value, struct Buffer *err)
   return true;
 }
 
-static bool set_path(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_path(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_PATH)
   {
@@ -188,7 +188,7 @@ static bool set_path(struct HashElem *e, const char *value, struct Buffer *err)
   return false;
 }
 
-static bool set_quad(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_quad(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_QUAD)
   {
@@ -209,7 +209,7 @@ static bool set_quad(struct HashElem *e, const char *value, struct Buffer *err)
   return false;
 }
 
-static bool set_rx(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_rx(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_RX)
   {
@@ -220,7 +220,7 @@ static bool set_rx(struct HashElem *e, const char *value, struct Buffer *err)
   return false;
 }
 
-static bool set_str(struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_str(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (e && DTYPE(e->type) != DT_STR)
   {
@@ -378,7 +378,7 @@ static bool get_str(struct HashElem *e, struct Buffer *result)
 }
 
 
-static bool reset_addr(struct HashElem *e, struct Buffer *err)
+static bool reset_addr(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_ADDR)
   {
@@ -389,7 +389,7 @@ static bool reset_addr(struct HashElem *e, struct Buffer *err)
   return false;
 }
 
-static bool reset_mbchartbl(struct HashElem *e, struct Buffer *err)
+static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_MBCHARTBL)
   {
@@ -400,7 +400,7 @@ static bool reset_mbchartbl(struct HashElem *e, struct Buffer *err)
   return false;
 }
 
-static bool reset_path(struct HashElem *e, struct Buffer *err)
+static bool reset_path(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_PATH)
   {
@@ -411,7 +411,7 @@ static bool reset_path(struct HashElem *e, struct Buffer *err)
   return false;
 }
 
-static bool reset_rx(struct HashElem *e, struct Buffer *err)
+static bool reset_rx(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_RX)
   {
@@ -422,7 +422,7 @@ static bool reset_rx(struct HashElem *e, struct Buffer *err)
   return false;
 }
 
-static bool reset_str(struct HashElem *e, struct Buffer *err)
+static bool reset_str(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
 {
   if (e && DTYPE(e->type) != DT_STR)
   {

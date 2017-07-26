@@ -10,7 +10,7 @@ const char *hcache_backends[] = {
 };
 
 
-static bool hc_string_set(struct HashElem *e, const char *value, struct Buffer *err)
+static bool hc_string_set(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_HCACHE)
   {
