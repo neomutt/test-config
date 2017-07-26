@@ -22,13 +22,15 @@ typedef bool (*cs_destructor)(struct ConfigSet *set, int type, intptr_t obj);
 
 typedef bool (*cs_type_string_set)(struct HashElem *e, const char *value, struct Buffer *err);
 typedef bool (*cs_type_string_get)(struct HashElem *e, struct Buffer *result);
+typedef bool (*cs_type_reset)     (struct HashElem *e, struct Buffer *err);
 typedef bool (*cs_type_destructor)(struct HashElem *e, struct Buffer *err);
 
 struct ConfigSetType
 {
-  cs_type_string_set setter;
-  cs_type_string_get getter;
-  cs_type_destructor destructor;
+  cs_type_string_set   setter;
+  cs_type_string_get   getter;
+  cs_type_reset        resetter;
+  cs_type_destructor   destructor;
 };
 
 struct ConfigSet

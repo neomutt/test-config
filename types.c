@@ -378,17 +378,85 @@ static bool get_str(struct HashElem *e, struct Buffer *result)
 }
 
 
+static bool reset_addr(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_ADDR)
+  {
+    mutt_buffer_printf(err, "Variable is not an address");
+    return false;
+  }
+
+  return false;
+}
+
+static bool reset_mbchartbl(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_MBCHARTBL)
+  {
+    mutt_buffer_printf(err, "Variable is not a multibyte string");
+    return false;
+  }
+
+  return false;
+}
+
+static bool reset_path(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_PATH)
+  {
+    mutt_buffer_printf(err, "Variable is not a path");
+    return false;
+  }
+
+  return false;
+}
+
+static bool reset_rx(struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_RX)
+  {
+    mutt_buffer_printf(err, "Variable is not a regex");
+    return false;
+  }
+
+  return false;
+}
+
+static bool reset_str(struct HashElem *e, struct Buffer *err)
+{
+  if (e && DTYPE(e->type) != DT_STR)
+  {
+    mutt_buffer_printf(err, "Variable is not a string");
+    return false;
+  }
+
+  // if (e)
+  // {
+  //   if (!str_destructor(e, err))
+  //     return false;
+
+  //   e->data = (void *) value;
+  // }
+  // else
+  // {
+  //   e = hash_typed_insert(hash, name, DT_STR, (void *) value);
+  // }
+
+  return false;
+}
+
+
 bool init_types(void)
 {
-  struct ConfigSetType cst_addr      = { set_addr,      get_addr,      addr_destructor      };
-  struct ConfigSetType cst_bool      = { set_bool,      get_bool,      NULL                 };
-  struct ConfigSetType cst_magic     = { set_magic,     get_magic,     NULL                 };
-  struct ConfigSetType cst_mbchartbl = { set_mbchartbl, get_mbchartbl, mbchartbl_destructor };
-  struct ConfigSetType cst_num       = { set_num,       get_num,       NULL                 };
-  struct ConfigSetType cst_path      = { set_path,      get_path,      path_destructor      };
-  struct ConfigSetType cst_quad      = { set_quad,      get_quad,      NULL                 };
-  struct ConfigSetType cst_rx        = { set_rx,        get_rx,        rx_destructor        };
-  struct ConfigSetType cst_str       = { set_str,       get_str,       str_destructor       };
+  struct ConfigSetType cst_addr      = { set_addr,      get_addr,      reset_addr,      addr_destructor      };
+  struct ConfigSetType cst_bool      = { set_bool,      get_bool,      NULL,            NULL                 };
+  struct ConfigSetType cst_magic     = { set_magic,     get_magic,     NULL,            NULL                 };
+  struct ConfigSetType cst_mbchartbl = { set_mbchartbl, get_mbchartbl, reset_mbchartbl, mbchartbl_destructor };
+  struct ConfigSetType cst_num       = { set_num,       get_num,       NULL,            NULL                 };
+  struct ConfigSetType cst_path      = { set_path,      get_path,      reset_path,      path_destructor      };
+  struct ConfigSetType cst_quad      = { set_quad,      get_quad,      NULL,            NULL                 };
+  struct ConfigSetType cst_rx        = { set_rx,        get_rx,        reset_rx,        rx_destructor        };
+  struct ConfigSetType cst_str       = { set_str,       get_str,       reset_str,       str_destructor       };
 
   cs_register_type("address", DT_ADDR,      &cst_addr);
   cs_register_type("boolean", DT_BOOL,      &cst_bool);

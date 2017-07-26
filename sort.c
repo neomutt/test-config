@@ -164,7 +164,7 @@ static bool get_sort(struct HashElem *e, struct Buffer *result)
 
 bool init_sorts(void)
 {
-  struct ConfigSetType cst_sort = { set_sort, get_sort, NULL };
+  struct ConfigSetType cst_sort = { set_sort, get_sort, NULL, NULL };
 
   cs_register_type("sort", DT_SORT, &cst_sort);
   return true;
