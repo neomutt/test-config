@@ -69,18 +69,27 @@ static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int t
   return (!(x & (x - 1)));
 }
 
+char *HeaderCache;
+char *HeaderCacheBackend;
+char *HeaderCachePageSize;
+bool  OPT_HCACHE_COMPRESS;
 
-bool init_hcache(void)
+#define UL (intptr_t)
+
+struct VariableDef HCVars[] = {
+  { "header_cache",          DT_PATH,   &HeaderCache,         0 },
+  { "header_cache_backend",  DT_HCACHE, &HeaderCacheBackend,  0 },
+  { "header_cache_compress", DT_BOOL,   &OPT_HCACHE_COMPRESS, 1 },
+  { "header_cache_pagesize", DT_STR,    &HeaderCachePageSize, UL "16384", hc_pagesize_validator },
+  { NULL },
+};
+
+void init_hcache(struct ConfigSet *set)
 {
   struct ConfigSetType cst = { hc_string_set, hc_string_get, NULL, NULL };
 
   cs_register_type("hcache", DT_HCACHE, &cst);
 
-  cs_register_variable("header_cache",          DT_PATH,   NULL,    NULL);
-  cs_register_variable("header_cache_backend",  DT_HCACHE, NULL,    NULL);
-  cs_register_variable("header_cache_compress", DT_BOOL,   "yes",   NULL);
-  cs_register_variable("header_cache_pagesize", DT_NUM,    "16384", hc_pagesize_validator);
-
-  return true;
+  cs_register_variables(set, HCVars);
 }
 

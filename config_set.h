@@ -57,7 +57,6 @@ struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name);
 void cs_dump_set(struct ConfigSet *set);
 
 bool cs_register_type     (const char *name, int type_id, struct ConfigSetType *cst);
-bool cs_register_variable (const char *name, int type_id, const char *initial, cs_validator validator);
 bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[]);
 
 void cs_add_listener  (struct ConfigSet *set, cs_listener fn);

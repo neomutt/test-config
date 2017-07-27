@@ -106,12 +106,6 @@ bool cs_register_type(const char *name, int type_id, struct ConfigSetType *cst)
   return false;
 }
 
-bool cs_register_variable(const char *name, int type_id, const char *initial, cs_validator validator)
-{
-  // cs_set_str(&cs, a, strdup(a), NULL);
-  return false;
-}
-
 struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Address *value, struct Buffer *result)
 {
   enum ConfigEvent e = CE_CHANGED;

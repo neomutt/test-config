@@ -309,16 +309,22 @@ void test5(void)
 
 void test6(void)
 {
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = calloc(1, STRING);
+  err.dsize = STRING;
+
   struct ConfigSet cs;
   cs_init(&cs, NULL);
   cs_add_listener(&cs, listener);
 
   init_types(&cs);
   init_sorts();
-  init_hcache();
+  init_hcache(&cs);
 
   // cs_dump_set(&cs);
   cs_free(&cs);
+  FREE(&err.data);
 }
 
 
