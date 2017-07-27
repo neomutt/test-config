@@ -5,7 +5,9 @@
 #include "buffer.h"
 #include "config_set.h"
 #include "data.h"
-#include "hcache.h"
+#include "hcache/hcache.h"
+#include "imap/imap.h"
+#include "ncrypt/ncrypt.h"
 #include "lib.h"
 #include "types.h"
 #include "type/address.h"
@@ -321,6 +323,8 @@ void test6(void)
   init_types(&cs);
   init_sorts();
   init_hcache(&cs);
+  init_ncrypt(&cs);
+  init_imap(&cs);
 
   // cs_dump_set(&cs);
   cs_free(&cs);
