@@ -9,6 +9,7 @@
 #include "address.h"
 #include "mbyte_table.h"
 #include "mutt_regex.h"
+#include "data.h"
 
 const char *bool_values[] = { "no", "yes" };
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
@@ -486,7 +487,8 @@ bool init_types(struct ConfigSet *set)
 
   cs_register_variable("percentage", DT_NUM, "10", NULL);
 
-  cs_register_variables(set, vars);
+  // cs_register_variables(set, vars);
+  cs_register_variables(set, MuttVars);
 
   return true;
 }

@@ -133,7 +133,7 @@ void test1(void)
   struct ConfigSet cs;
   cs_init(&cs, NULL);
   cs_add_listener(&cs, listener);
-  cs_add_destructor(&cs, destructor);
+  // cs_add_destructor(&cs, destructor);
 
   /* set two values, overwrite the second one */
 
@@ -247,12 +247,12 @@ void test2(void)
   struct ConfigSet parent;
   cs_init(&parent, NULL);
   cs_add_listener(&parent, listener);
-  cs_add_destructor(&parent, destructor);
+  // cs_add_destructor(&parent, destructor);
 
   struct ConfigSet child;
   cs_init(&child, &parent);
   cs_add_listener(&child, listener);
-  cs_add_destructor(&child, destructor);
+  // cs_add_destructor(&child, destructor);
 
   printf("MISSING\n");
   printf("    PARENT %-10s = %s\n", empty, cs_get_str(&parent, a));
@@ -285,10 +285,10 @@ void test3(void)
 {
   fprintf(stderr, "Prime: %d\n", SOMEPRIME);
   // fprintf(stderr, "%d\n", SOMEPRIME);
-  for (int i = 0; MuttVars[i].option; i++)
+  for (int i = 0; MuttVars[i].name; i++)
   {
-    printf("%3d %s\n", gen_string_hash(MuttVars[i].option, 500), MuttVars[i].option);
-    // printf("%3d\n", gen_string_hash(MuttVars[i].option, 503));
+    printf("%3d %s\n", gen_string_hash(MuttVars[i].name, 500), MuttVars[i].name);
+    // printf("%3d\n", gen_string_hash(MuttVars[i].name, 503));
   }
 }
 
@@ -368,7 +368,7 @@ void test6(void)
   struct ConfigSet cs;
   cs_init(&cs, NULL);
   cs_add_listener(&cs, listener);
-  cs_add_destructor(&cs, destructor);
+  // cs_add_destructor(&cs, destructor);
 
   init_types(&cs);
   init_sorts();

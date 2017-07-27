@@ -70,10 +70,10 @@ struct ReplaceList
   struct ReplaceList *next;
 };
 
-WHERE struct Regex Mask;
-WHERE struct Regex QuoteRegexp;
-WHERE struct Regex ReplyRegexp;
-WHERE struct Regex Smileys;
-WHERE struct Regex GecosMask;
+extern struct Regex Mask;
+extern struct Regex QuoteRegexp;
+extern struct Regex ReplyRegexp;
+extern struct Regex Smileys;
+extern struct Regex GecosMask;
 
 #endif /* _MUTT_REGEX_H */

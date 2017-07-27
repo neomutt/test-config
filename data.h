@@ -2,6 +2,7 @@
 #define _DATA_H
 
 #include "mutt_options.h"
+#include "config_set.h"
 
 extern const char *a;
 extern const char *b;
@@ -30,6 +31,6 @@ extern const char *x;
 extern const char *y;
 extern const char *z;
 
-extern struct Option MuttVars[];
+extern struct VariableDef MuttVars[];
 
 #endif /* _DATA_H */
