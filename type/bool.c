@@ -1,13 +1,14 @@
 #include <stdbool.h>
 #include "buffer.h"
-#include "hash.h"
 #include "config_set.h"
-#include "mutt_options.h"
+#include "hash.h"
 #include "lib.h"
+#include "mutt_options.h"
 
 const char *bool_values[] = { "no", "yes" };
 
-static bool set_bool(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_bool(struct ConfigSet *set, struct HashElem *e,
+                     const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_BOOL)
   {

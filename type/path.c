@@ -1,8 +1,8 @@
 #include <stdbool.h>
-#include "lib.h"
 #include "buffer.h"
-#include "hash.h"
 #include "config_set.h"
+#include "hash.h"
+#include "lib.h"
 #include "mutt_options.h"
 
 static void path_destructor(void **obj)
@@ -13,7 +13,8 @@ static void path_destructor(void **obj)
   FREE(obj);
 }
 
-static bool set_path(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_path(struct ConfigSet *set, struct HashElem *e,
+                     const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_PATH)
   {
@@ -32,7 +33,7 @@ static bool get_path(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  mutt_buffer_addstr(result, (const char*) e->data);
+  mutt_buffer_addstr(result, (const char *) e->data);
   return true;
 }
 
@@ -53,4 +54,3 @@ void init_path(void)
   struct ConfigSetType cst_path = { set_path, get_path, reset_path, path_destructor };
   cs_register_type("path", DT_PATH, &cst_path);
 }
-

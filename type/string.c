@@ -1,8 +1,8 @@
 #include <stdbool.h>
-#include "lib.h"
-#include "hash.h"
 #include "buffer.h"
 #include "config_set.h"
+#include "hash.h"
+#include "lib.h"
 #include "mutt_options.h"
 
 static void str_destructor(void **obj)
@@ -13,7 +13,8 @@ static void str_destructor(void **obj)
   FREE(obj);
 }
 
-static bool set_str(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_str(struct ConfigSet *set, struct HashElem *e,
+                    const char *value, struct Buffer *err)
 {
   if (e && DTYPE(e->type) != DT_STR)
   {
@@ -44,7 +45,7 @@ static bool get_str(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  mutt_buffer_addstr(result, (const char*) e->data);
+  mutt_buffer_addstr(result, (const char *) e->data);
   return true;
 }
 

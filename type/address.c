@@ -1,9 +1,9 @@
-#include "lib.h"
-#include "mutt_options.h"
-#include "hash.h"
 #include "address.h"
 #include "buffer.h"
 #include "config_set.h"
+#include "hash.h"
+#include "lib.h"
+#include "mutt_options.h"
 
 static void addr_destructor(void **obj)
 {
@@ -16,7 +16,8 @@ static void addr_destructor(void **obj)
   FREE(&a);
 }
 
-static bool set_addr(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_addr(struct ConfigSet *set, struct HashElem *e,
+                     const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_ADDR)
   {
@@ -52,7 +53,7 @@ static bool get_addr(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  mutt_buffer_addstr(result, (const char*) e->data);
+  mutt_buffer_addstr(result, (const char *) e->data);
   return true;
 }
 

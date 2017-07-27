@@ -1,10 +1,10 @@
 #include <stdbool.h>
+#include "mbyte_table.h"
 #include "buffer.h"
+#include "config_set.h"
+#include "hash.h"
 #include "lib.h"
 #include "mutt_options.h"
-#include "hash.h"
-#include "mbyte_table.h"
-#include "config_set.h"
 
 static void mbchartbl_destructor(void **obj)
 {
@@ -17,7 +17,8 @@ static void mbchartbl_destructor(void **obj)
   FREE(&m);
 }
 
-static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e,
+                          const char *value, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_MBCHARTBL)
   {
@@ -36,7 +37,7 @@ static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  struct MbCharTable *table = (struct MbCharTable*) e->data;
+  struct MbCharTable *table = (struct MbCharTable *) e->data;
   mutt_buffer_addstr(result, table->orig_str);
   return true;
 }
@@ -55,6 +56,7 @@ static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Bu
 
 void init_mbyte_table(void)
 {
-  struct ConfigSetType cst_mbchartbl = { set_mbchartbl, get_mbchartbl, reset_mbchartbl, mbchartbl_destructor };
+  struct ConfigSetType cst_mbchartbl = { set_mbchartbl, get_mbchartbl,
+                                         reset_mbchartbl, mbchartbl_destructor };
   cs_register_type("mbtable", DT_MBCHARTBL, &cst_mbchartbl);
 }

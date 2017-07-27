@@ -1,10 +1,10 @@
 #include <stdbool.h>
-#include "buffer.h"
-#include "hash.h"
 #include "mutt_regex.h"
+#include "buffer.h"
 #include "config_set.h"
-#include "mutt_options.h"
+#include "hash.h"
 #include "lib.h"
+#include "mutt_options.h"
 
 struct Regex Mask;
 struct Regex QuoteRegexp;
@@ -23,7 +23,8 @@ static void rx_destructor(void **obj)
   FREE(&r);
 }
 
-static bool set_rx(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
+static bool set_rx(struct ConfigSet *set, struct HashElem *e, const char *value,
+                   struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_RX)
   {
@@ -42,7 +43,7 @@ static bool get_rx(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  struct Regex *rx = (struct Regex*) e->data;
+  struct Regex *rx = (struct Regex *) e->data;
   mutt_buffer_addstr(result, rx->pattern);
   return true;
 }
