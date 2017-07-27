@@ -14,76 +14,53 @@
 const char *bool_values[] = { "no", "yes" };
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
-static bool addr_destructor(struct HashElem *e, struct Buffer *err)
+static void addr_destructor(void **obj)
 {
-  if (DTYPE(e->type) != DT_ADDR)
-  {
-    mutt_buffer_printf(err, "Variable is not an address");
-    return false;
-  }
+  if (!obj || !*obj)
+    return;
 
-  struct Address *a = (struct Address *) e->data;
+  struct Address *a = *(struct Address **) obj;
   FREE(&a->personal);
   FREE(&a->mailbox);
-
-  FREE(&e->data);
-  return true;
+  FREE(&a);
 }
 
-static bool mbchartbl_destructor(struct HashElem *e, struct Buffer *err)
+static void mbchartbl_destructor(void **obj)
 {
-  if (DTYPE(e->type) != DT_MBCHARTBL)
-  {
-    mutt_buffer_printf(err, "Variable is not a multibyte string");
-    return false;
-  }
+  if (!obj || !*obj)
+    return;
 
-  struct MbCharTable *m = (struct MbCharTable *) e->data;
+  struct MbCharTable *m = *(struct MbCharTable **) obj;
   FREE(&m->segmented_str);
   FREE(&m->orig_str);
-
-  FREE(&e->data);
-  return true;
+  FREE(&m);
 }
 
-static bool path_destructor(struct HashElem *e, struct Buffer *err)
+static void path_destructor(void **obj)
 {
-  if (DTYPE(e->type) != DT_PATH)
-  {
-    mutt_buffer_printf(err, "Variable is not a path");
-    return false;
-  }
+  if (!obj || !*obj)
+    return;
 
-  FREE(&e->data);
-  return true;
+  FREE(obj);
 }
 
-static bool rx_destructor(struct HashElem *e, struct Buffer *err)
+static void rx_destructor(void **obj)
 {
-  if (DTYPE(e->type) != DT_RX)
-  {
-    mutt_buffer_printf(err, "Variable is not a regex");
-    return false;
-  }
+  if (!obj || !*obj)
+    return;
 
-  struct Regex *r = (struct Regex *) e->data;
+  struct Regex *r = *(struct Regex **) obj;
   FREE(&r->pattern);
   //regfree(r->rx)
-
-  FREE(&e->data);
-  return true;
+  FREE(&r);
 }
 
-static bool str_destructor(struct HashElem *e, struct Buffer *err)
+static void str_destructor(void **obj)
 {
-  if (DTYPE(e->type) != DT_STR)
-  {
-    mutt_buffer_printf(err, "Variable is not a string");
-    return false;
-  }
+  if (!obj || !*obj)
+    return;
 
-  FREE(&e->data);
-  return true;
+  FREE(obj);
 }
 
 

@@ -374,16 +374,7 @@ void test6(void)
   init_sorts();
   init_hcache();
 
-  /* set two values, overwrite the second one */
-
-  cs_set_str(&cs, a, strdup(a), NULL);
-  cs_set_str(&cs, b, strdup(b), NULL);
-  cs_set_str(&cs, b, strdup(c), NULL);
-  printf("DT_STR\n");
-  printf("    %-10s = %s\n", a, cs_get_str(&cs, a));
-  printf("    %-10s = %s\n", b, cs_get_str(&cs, b));
-
-  cs_dump_set(&cs);
+  // cs_dump_set(&cs);
   cs_free(&cs);
 }
 

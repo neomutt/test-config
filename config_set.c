@@ -11,61 +11,75 @@
 #include "mutt_options.h"
 #include "mutt_regex.h"
 
-bool allow_notifications = false;
-
 struct ConfigSetType RegisteredTypes[16] =
 {
   { NULL, NULL, NULL, },
 };
 
+bool allow_notifications = false;
+
+struct ConfigSetType *get_type_def(int type)
+{
+  if ((type < 0) || (type >= mutt_array_size(RegisteredTypes)))
+    return NULL;
+
+  return &RegisteredTypes[type];
+}
+
 static void destroy(int type, void *obj, intptr_t data)
 {
-  struct ConfigSet *set = (struct ConfigSet *) data;
-  if (set->destructor && set->destructor(set, type, (intptr_t) obj))
-    return;
+  // struct ConfigSet *set = (struct ConfigSet *) data;
+  // if (set->destructor && set->destructor(set, type, (intptr_t) obj))
+  //   return;
 
-  switch (type)
-  {
-    case DT_BOOL:
-    case DT_MAGIC:
-    case DT_NUM:
-    case DT_QUAD:
-    case DT_SORT:
-      break;
+  struct VariableDef *def = obj;
 
-    case DT_ADDR:
-    {
-      struct Address *a = obj;
-      FREE(&a->personal);
-      FREE(&a->mailbox);
-      FREE(&a);
-      break;
-    }
+  struct ConfigSetType *cs = get_type_def(type);
+  if (cs->destructor)
+    cs->destructor(def->variable);
 
-    case DT_MBCHARTBL:
-    {
-      struct MbCharTable *m = obj;
-      FREE(&m->segmented_str);
-      FREE(&m->orig_str);
-      FREE(&m);
-      break;
-    }
+  // switch (type)
+  // {
+  //   case DT_BOOL:
+  //   case DT_MAGIC:
+  //   case DT_NUM:
+  //   case DT_QUAD:
+  //   case DT_SORT:
+  //     break;
 
-    case DT_RX:
-    {
-      struct Regex *r = obj;
-      FREE(&r->pattern);
-      //regfree(r->rx)
-      FREE(&r);
-    }
-    break;
+  //   case DT_ADDR:
+  //   {
+  //     struct Address *a = obj;
+  //     FREE(&a->personal);
+  //     FREE(&a->mailbox);
+  //     FREE(&a);
+  //     break;
+  //   }
 
-    case DT_HCACHE:
-    case DT_PATH:
-    case DT_STR:
-      free(obj);
-      break;
-  }
+  //   case DT_MBCHARTBL:
+  //   {
+  //     struct MbCharTable *m = obj;
+  //     FREE(&m->segmented_str);
+  //     FREE(&m->orig_str);
+  //     FREE(&m);
+  //     break;
+  //   }
+
+  //   case DT_RX:
+  //   {
+  //     struct Regex *r = obj;
+  //     FREE(&r->pattern);
+  //     //regfree(r->rx)
+  //     FREE(&r);
+  //   }
+  //   break;
+
+  //   case DT_HCACHE:
+  //   case DT_PATH:
+  //   case DT_STR:
+  //     free(obj);
+  //     break;
+  // }
 }
 
 struct ConfigSet *cs_set_new(struct ConfigSet *parent)
@@ -130,8 +144,9 @@ void cs_dump_set(struct ConfigSet *set)
 
   while ((entry = hash_walk(set->hash, &state)))
   {
-    printf("cs: %s\n", entry->key.strkey);
+    printf("%s ", entry->key.strkey);
   }
+  printf("\n");
 }
 
 
@@ -831,14 +846,6 @@ const char *he_get_str(struct HashElem *var)
   return NULL;
 }
 
-struct ConfigSetType *get_type_def(int type)
-{
-  if ((type < 0) || (type >= mutt_array_size(RegisteredTypes)))
-    return NULL;
-
-  return &RegisteredTypes[type];
-}
-
 static struct HashElem *reg_one_var(struct ConfigSet *set, struct VariableDef *var, struct Buffer *err)
 {
   struct ConfigSetType *type = get_type_def(var->type);
@@ -875,7 +882,7 @@ bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[])
   for (int i = 0; vars[i].name; i++)
   {
     reg_one_var(set, &vars[i], &err);
-    printf("register: %s\n", vars[i].name);
+    // printf("register: %s\n", vars[i].name);
   }
 
   FREE(&err.data);
