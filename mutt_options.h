@@ -52,6 +52,16 @@ struct Buffer;
 #define DT_SORT_AUX     0x80
 #define DT_SORT_SIDEBAR 0x100
 
+/* possible arguments to set_quadoption() */
+enum
+{
+  MUTT_ABORT = -1,
+  MUTT_NO,
+  MUTT_YES,
+  MUTT_ASKNO,
+  MUTT_ASKYES
+};
+
 /**
  * struct Option - Definition of a user-variable
  */
