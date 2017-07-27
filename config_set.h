@@ -29,7 +29,7 @@ struct VariableDef
 {
   const char  *name;
   int          type;
-  intptr_t     variable;
+  void        *variable;
   intptr_t     initial;
   cs_validator validator;
 };

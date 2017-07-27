@@ -859,7 +859,7 @@ static struct HashElem *reg_one_var(struct ConfigSet *set, struct VariableDef *v
   }
   else
   {
-    var->variable = var->initial;
+    //XXX var->variable = var->initial;
   }
 
   return e;

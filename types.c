@@ -390,6 +390,28 @@ static bool reset_addr(struct ConfigSet *set, struct HashElem *e, struct Buffer 
   return false;
 }
 
+static bool reset_bool(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_BOOL)
+  {
+    mutt_buffer_printf(err, "Variable is not an boolean");
+    return false;
+  }
+
+  return false;
+}
+
+static bool reset_magic(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_MAGIC)
+  {
+    mutt_buffer_printf(err, "Variable is not a mailbox magic");
+    return false;
+  }
+
+  return false;
+}
+
 static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_MBCHARTBL)
@@ -401,11 +423,33 @@ static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Bu
   return false;
 }
 
+static bool reset_num(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_NUM)
+  {
+    mutt_buffer_printf(err, "Variable is not a number");
+    return false;
+  }
+
+  return false;
+}
+
 static bool reset_path(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
 {
   if (DTYPE(e->type) != DT_PATH)
   {
     mutt_buffer_printf(err, "Variable is not a path");
+    return false;
+  }
+
+  return false;
+}
+
+static bool reset_quad(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_QUAD)
+  {
+    mutt_buffer_printf(err, "Variable is not a quad");
     return false;
   }
 
@@ -458,20 +502,20 @@ bool percentage_validator(struct ConfigSet *set, const char *name, int type, int
 
 struct VariableDef vars[] =
 {
-  { "percentage",    DT_NUM, UL &Percentage,   UL 10,    percentage_validator },
-  { "print_command", DT_STR, UL &PrintCommand, UL "lpr", NULL },
+  { "percentage",    DT_NUM, &Percentage,   10,       percentage_validator },
+  { "print_command", DT_STR, &PrintCommand, UL "lpr", NULL },
   { NULL },
 };
 
 bool init_types(struct ConfigSet *set)
 {
   struct ConfigSetType cst_addr      = { set_addr,      get_addr,      reset_addr,      addr_destructor      };
-  struct ConfigSetType cst_bool      = { set_bool,      get_bool,      NULL,            NULL                 };
-  struct ConfigSetType cst_magic     = { set_magic,     get_magic,     NULL,            NULL                 };
+  struct ConfigSetType cst_bool      = { set_bool,      get_bool,      reset_bool,      NULL                 };
+  struct ConfigSetType cst_magic     = { set_magic,     get_magic,     reset_magic,     NULL                 };
   struct ConfigSetType cst_mbchartbl = { set_mbchartbl, get_mbchartbl, reset_mbchartbl, mbchartbl_destructor };
-  struct ConfigSetType cst_num       = { set_num,       get_num,       NULL,            NULL                 };
+  struct ConfigSetType cst_num       = { set_num,       get_num,       reset_num,       NULL                 };
   struct ConfigSetType cst_path      = { set_path,      get_path,      reset_path,      path_destructor      };
-  struct ConfigSetType cst_quad      = { set_quad,      get_quad,      NULL,            NULL                 };
+  struct ConfigSetType cst_quad      = { set_quad,      get_quad,      reset_quad,      NULL                 };
   struct ConfigSetType cst_rx        = { set_rx,        get_rx,        reset_rx,        rx_destructor        };
   struct ConfigSetType cst_str       = { set_str,       get_str,       reset_str,       str_destructor       };
 
