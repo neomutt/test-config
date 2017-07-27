@@ -7,9 +7,9 @@ OBJDIR	= .obj
 
 OUT	= demo
 
-TYPES	= type/sort.c
+TYPES	= type/address.c type/bool.c type/magic.c type/mbyte_table.c type/mutt_regex.c type/number.c type/path.c type/quad.c type/sort.c type/string.c
 
-SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c buffer.c hcache.c types.c options.c globals.c mutt_regex.c
+SRC	+= main.c config_set.c lib.c extlib.c hash.c data.c buffer.c hcache.c types.c options.c globals.c
 SRC	+= $(TYPES)
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)

@@ -38,4 +38,6 @@ struct MbCharTable
   char *orig_str;
 };
 
+void init_mbyte_table(void);
+
 #endif /* _MUTT_MBYTE_TABLE_H */

@@ -38,4 +38,6 @@ struct Address
   bool intl_checked : 1;
 };
 
+void init_addr(void);
+
 #endif /* _MUTT_ADDRESS_H */

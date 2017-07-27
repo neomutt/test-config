@@ -1,9 +1,9 @@
 #include "config.h"
-#include "type/sort.h"
+#include "config_set.h"
+#include "globals.h"
 #include "mutt_options.h"
 #include "options.h"
-#include "globals.h"
-#include "config_set.h"
+#include "type/sort.h"
 
 const char *a = "apple";
 const char *b = "banana";

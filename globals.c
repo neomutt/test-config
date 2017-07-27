@@ -1,6 +1,6 @@
-#include "mutt_regex.h"
 #include "type/address.h"
 #include "type/mbyte_table.h"
+#include "type/mutt_regex.h"
 
 struct Address     *EnvFrom;
 struct Address     *From;

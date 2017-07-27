@@ -25,6 +25,6 @@
 #define SORT_LABEL    19
 #define SORT_DESC     20
 
-bool init_sorts(void);
+void init_sorts(void);
 
 #endif /* _MUTT_SORTS_H */

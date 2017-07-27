@@ -76,4 +76,6 @@ extern struct Regex ReplyRegexp;
 extern struct Regex Smileys;
 extern struct Regex GecosMask;
 
+void init_regex(void);
+
 #endif /* _MUTT_REGEX_H */

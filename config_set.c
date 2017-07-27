@@ -2,14 +2,14 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include "config_set.h"
-#include "type/address.h"
 #include "buffer.h"
+#include "config_set.h"
 #include "hash.h"
 #include "lib.h"
-#include "type/mbyte_table.h"
 #include "mutt_options.h"
-#include "mutt_regex.h"
+#include "type/address.h"
+#include "type/mbyte_table.h"
+#include "type/mutt_regex.h"
 
 struct ConfigSetType RegisteredTypes[16] =
 {
