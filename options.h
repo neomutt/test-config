@@ -138,7 +138,6 @@ extern bool OPT_NEED_RESORT;
 extern bool OPT_NEWS;
 extern bool OPT_NEWS_SEND;
 extern bool OPT_NO_CURSES;
-extern bool OPT_NOTMUCH_RECORD;
 extern bool OPT_PAGER_STOP;
 extern bool OPT_PGP_AUTO_DEC;
 extern bool OPT_PGP_AUTO_INLINE;
