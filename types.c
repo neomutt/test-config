@@ -6,8 +6,8 @@
 #include "buffer.h"
 #include "hash.h"
 #include "lib.h"
-#include "address.h"
-#include "mbyte_table.h"
+#include "type/address.h"
+#include "type/mbyte_table.h"
 #include "mutt_regex.h"
 #include "data.h"
 

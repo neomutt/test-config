@@ -2,15 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "address.h"
+#include "type/address.h"
 #include "buffer.h"
 #include "config_set.h"
 #include "data.h"
 #include "hcache.h"
 #include "lib.h"
-#include "mbyte_table.h"
+#include "type/mbyte_table.h"
 #include "mutt_regex.h"
-#include "sort.h"
+#include "type/sort.h"
 #include "types.h"
 #include "types.h"
 

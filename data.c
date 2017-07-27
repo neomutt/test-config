@@ -1,5 +1,5 @@
 #include "config.h"
-#include "sort.h"
+#include "type/sort.h"
 #include "mutt_options.h"
 #include "options.h"
 #include "globals.h"
