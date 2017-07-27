@@ -7,13 +7,17 @@
 #include "data.h"
 #include "hcache/hcache.h"
 #include "imap/imap.h"
-#include "ncrypt/ncrypt.h"
 #include "lib.h"
-#include "types.h"
+#include "ncrypt/ncrypt.h"
+#include "nntp.h"
+#include "notmuch.h"
+#include "pop.h"
+#include "sidebar.h"
 #include "type/address.h"
 #include "type/mbyte_table.h"
 #include "type/mutt_regex.h"
 #include "type/sort.h"
+#include "types.h"
 
 unsigned int SOMEPRIME = 149711;
 
@@ -322,9 +326,14 @@ void test6(void)
 
   init_types(&cs);
   init_sorts();
+
   init_hcache(&cs);
-  init_ncrypt(&cs);
   init_imap(&cs);
+  init_ncrypt(&cs);
+  init_nntp(&cs);
+  init_notmuch(&cs);
+  init_pop(&cs);
+  init_sidebar(&cs);
 
   // cs_dump_set(&cs);
   cs_free(&cs);

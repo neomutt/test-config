@@ -7,7 +7,7 @@ OBJDIR	= .obj
 
 OUT	= demo
 
-SRC	+= buffer.c config_set.c data.c extlib.c globals.c hash.c lib.c main.c nntp.c notmuch.c options.c sidebar.c types.c
+SRC	+= buffer.c config_set.c data.c extlib.c globals.c hash.c lib.c main.c nntp.c notmuch.c options.c pop.c sidebar.c types.c
 SRC	+= type/address.c type/bool.c type/magic.c type/mbyte_table.c type/mutt_regex.c type/number.c type/path.c type/quad.c type/sort.c type/string.c
 SRC	+= hcache/hcache.c
 SRC	+= imap/imap.c
