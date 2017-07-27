@@ -45,58 +45,6 @@ bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
   return false;
 }
 
-bool destructor(struct ConfigSet *set, int type, intptr_t obj)
-{
-  printf("\033[1;35mFreeing type: %s\033[m\n", type_to_string(type));
-  switch (DTYPE(type))
-  {
-    case DT_BOOL:
-    case DT_MAGIC:
-    case DT_NUM:
-    case DT_QUAD:
-    case DT_SORT:
-      return true;
-
-    case DT_ADDR:
-    {
-      struct Address *a = (struct Address *) obj;
-      FREE(&a->personal);
-      FREE(&a->mailbox);
-      FREE(&a);
-      return true;
-    }
-
-    case DT_MBCHARTBL:
-    {
-      struct MbCharTable *m = (struct MbCharTable *) obj;
-      FREE(&m->segmented_str);
-      FREE(&m->orig_str);
-      FREE(&m);
-      return true;
-    }
-
-    case DT_RX:
-    {
-      struct Regex *r = (struct Regex *) obj;
-      FREE(&r->pattern);
-      //regfree(r->rx)
-      FREE(&r);
-      return true;
-    }
-
-    case DT_HCACHE:
-    case DT_PATH:
-    case DT_STR:
-    {
-      const char *str = (const char *) obj;
-      FREE(&str);
-      return true;
-    }
-  }
-
-  return false;
-}
-
 bool validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result)
 {
   if (type != DT_NUM)
@@ -133,7 +81,6 @@ void test1(void)
   struct ConfigSet cs;
   cs_init(&cs, NULL);
   cs_add_listener(&cs, listener);
-  // cs_add_destructor(&cs, destructor);
 
   /* set two values, overwrite the second one */
 
@@ -247,12 +194,10 @@ void test2(void)
   struct ConfigSet parent;
   cs_init(&parent, NULL);
   cs_add_listener(&parent, listener);
-  // cs_add_destructor(&parent, destructor);
 
   struct ConfigSet child;
   cs_init(&child, &parent);
   cs_add_listener(&child, listener);
-  // cs_add_destructor(&child, destructor);
 
   printf("MISSING\n");
   printf("    PARENT %-10s = %s\n", empty, cs_get_str(&parent, a));
@@ -368,7 +313,6 @@ void test6(void)
   struct ConfigSet cs;
   cs_init(&cs, NULL);
   cs_add_listener(&cs, listener);
-  // cs_add_destructor(&cs, destructor);
 
   init_types(&cs);
   init_sorts();

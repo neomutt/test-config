@@ -48,7 +48,6 @@ struct ConfigSet
   struct Hash *hash;
   cs_listener listeners[4];
   cs_validator validator;
-  cs_destructor destructor;
 };
 
 struct ConfigSet *cs_new(struct ConfigSet *parent);
@@ -63,7 +62,6 @@ bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[]);
 
 void cs_add_listener  (struct ConfigSet *set, cs_listener fn);
 void cs_add_validator (struct ConfigSet *set, cs_validator fn);
-void cs_add_destructor(struct ConfigSet *set, cs_destructor fn);
 
 struct HashElem *cs_set_addr     (struct ConfigSet *set, const char *name, struct Address *value,     struct Buffer *result);
 struct HashElem *cs_set_bool     (struct ConfigSet *set, const char *name, bool value,                struct Buffer *result);

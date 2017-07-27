@@ -16,7 +16,6 @@ struct ConfigSetType RegisteredTypes[16] =
   { NULL, NULL, NULL, },
 };
 
-bool allow_notifications = false;
 
 struct ConfigSetType *get_type_def(int type)
 {
@@ -29,57 +28,12 @@ struct ConfigSetType *get_type_def(int type)
 static void destroy(int type, void *obj, intptr_t data)
 {
   // struct ConfigSet *set = (struct ConfigSet *) data;
-  // if (set->destructor && set->destructor(set, type, (intptr_t) obj))
-  //   return;
 
   struct VariableDef *def = obj;
 
   struct ConfigSetType *cs = get_type_def(type);
   if (cs->destructor)
     cs->destructor(def->variable);
-
-  // switch (type)
-  // {
-  //   case DT_BOOL:
-  //   case DT_MAGIC:
-  //   case DT_NUM:
-  //   case DT_QUAD:
-  //   case DT_SORT:
-  //     break;
-
-  //   case DT_ADDR:
-  //   {
-  //     struct Address *a = obj;
-  //     FREE(&a->personal);
-  //     FREE(&a->mailbox);
-  //     FREE(&a);
-  //     break;
-  //   }
-
-  //   case DT_MBCHARTBL:
-  //   {
-  //     struct MbCharTable *m = obj;
-  //     FREE(&m->segmented_str);
-  //     FREE(&m->orig_str);
-  //     FREE(&m);
-  //     break;
-  //   }
-
-  //   case DT_RX:
-  //   {
-  //     struct Regex *r = obj;
-  //     FREE(&r->pattern);
-  //     //regfree(r->rx)
-  //     FREE(&r);
-  //   }
-  //   break;
-
-  //   case DT_HCACHE:
-  //   case DT_PATH:
-  //   case DT_STR:
-  //     free(obj);
-  //     break;
-  // }
 }
 
 struct ConfigSet *cs_set_new(struct ConfigSet *parent)
@@ -115,10 +69,6 @@ void cs_add_validator(struct ConfigSet *set, cs_validator fn)
   set->validator = fn;
 }
 
-void cs_add_destructor(struct ConfigSet *set, cs_destructor fn)
-{
-  set->destructor = fn;
-}
 
 void cs_free(struct ConfigSet *set)
 {
@@ -179,8 +129,8 @@ struct HashElem *cs_set_addr(struct ConfigSet *set, const char *name, struct Add
 
   if (elem)
   {
-    if (set->destructor && !set->destructor(set, DT_ADDR, (intptr_t) elem->data))
-      FREE(&elem->data);
+    // if (set->destructor && !set->destructor(set, DT_ADDR, (intptr_t) elem->data))
+    //   FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -210,8 +160,8 @@ struct HashElem *cs_set_bool(struct ConfigSet *set, const char *name, bool value
 
   if (elem)
   {
-    if (set->destructor)
-      set->destructor(set, DT_BOOL, (intptr_t) elem->data);
+    // if (set->destructor)
+    //   set->destructor(set, DT_BOOL, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -241,8 +191,8 @@ struct HashElem *cs_set_hcache(struct ConfigSet *set, const char *name, const ch
 
   if (elem)
   {
-    if (set->destructor && !set->destructor(set, DT_HCACHE, (intptr_t) elem->data))
-      FREE(&elem->data);
+    // if (set->destructor && !set->destructor(set, DT_HCACHE, (intptr_t) elem->data))
+    //   FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -272,8 +222,8 @@ struct HashElem *cs_set_magic(struct ConfigSet *set, const char *name, int value
 
   if (elem)
   {
-    if (set->destructor)
-      set->destructor(set, DT_MAGIC, (intptr_t) elem->data);
+    // if (set->destructor)
+    //   set->destructor(set, DT_MAGIC, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -303,8 +253,8 @@ struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struc
 
   if (elem)
   {
-    if (set->destructor && !set->destructor(set, DT_MBCHARTBL, (intptr_t) elem->data))
-      FREE(&elem->data);
+    // if (set->destructor && !set->destructor(set, DT_MBCHARTBL, (intptr_t) elem->data))
+    //   FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -334,8 +284,8 @@ struct HashElem *cs_set_num(struct ConfigSet *set, const char *name, int value, 
 
   if (elem)
   {
-    if (set->destructor)
-      set->destructor(set, DT_NUM, (intptr_t) elem->data);
+    // if (set->destructor)
+    //   set->destructor(set, DT_NUM, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -365,8 +315,8 @@ struct HashElem *cs_set_path(struct ConfigSet *set, const char *name, const char
 
   if (elem)
   {
-    if (set->destructor && !set->destructor(set, DT_PATH, (intptr_t) elem->data))
-      FREE(&elem->data);
+    // if (set->destructor && !set->destructor(set, DT_PATH, (intptr_t) elem->data))
+    //   FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -396,8 +346,8 @@ struct HashElem *cs_set_quad(struct ConfigSet *set, const char *name, int value,
 
   if (elem)
   {
-    if (set->destructor)
-      set->destructor(set, DT_QUAD, (intptr_t) elem->data);
+    // if (set->destructor)
+    //   set->destructor(set, DT_QUAD, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -427,8 +377,8 @@ struct HashElem *cs_set_rx(struct ConfigSet *set, const char *name, struct Regex
 
   if (elem)
   {
-    if (set->destructor && !set->destructor(set, DT_RX, (intptr_t) elem->data))
-      FREE(&elem->data);
+    // if (set->destructor && !set->destructor(set, DT_RX, (intptr_t) elem->data))
+    //   FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
@@ -458,8 +408,8 @@ struct HashElem *cs_set_sort(struct ConfigSet *set, const char *name, int value,
 
   if (elem)
   {
-    if (set->destructor)
-      set->destructor(set, DT_SORT, (intptr_t) elem->data);
+    // if (set->destructor)
+    //   set->destructor(set, DT_SORT, (intptr_t) elem->data);
     elem->data = (void *) copy;
   }
   else
@@ -489,8 +439,8 @@ struct HashElem *cs_set_str(struct ConfigSet *set, const char *name, const char 
 
   if (elem)
   {
-    if (set->destructor && !set->destructor(set, DT_STR, (intptr_t) elem->data))
-      FREE(&elem->data);
+    // if (set->destructor && !set->destructor(set, DT_STR, (intptr_t) elem->data))
+    //   FREE(&elem->data);
     elem->data = (void *) value;
   }
   else
