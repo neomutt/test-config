@@ -83,13 +83,11 @@ short HeaderCacheBackend;
 char *HeaderCachePageSize;
 bool  OPT_HCACHE_COMPRESS;
 
-#define UL (intptr_t)
-
 struct VariableDef HCVars[] = {
   { "header_cache",          DT_PATH,   &HeaderCache,         0 },
   { "header_cache_backend",  DT_HCACHE, &HeaderCacheBackend,  0 },
   { "header_cache_compress", DT_BOOL,   &OPT_HCACHE_COMPRESS, 1 },
-  { "header_cache_pagesize", DT_STR,    &HeaderCachePageSize, UL "16384", hc_pagesize_validator },
+  { "header_cache_pagesize", DT_STR,    &HeaderCachePageSize, IP "16384", hc_pagesize_validator },
   { NULL },
 };
 

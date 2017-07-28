@@ -15,14 +15,12 @@ char  *SidebarIndentString;
 short  SidebarSortMethod;
 short  SidebarWidth;
 
-#define UL (intptr_t)
-
 struct VariableDef SidebarVars[] = {
-  { "sidebar_delim_chars",   DT_STR,                  &SidebarDelimChars,         UL "/." },
+  { "sidebar_delim_chars",   DT_STR,                  &SidebarDelimChars,         IP "/." },
   { "sidebar_divider_char",  DT_STR,                  &SidebarDividerChar,        0 },
   { "sidebar_folder_indent", DT_BOOL,                 &OPT_SIDEBAR_FOLDER_INDENT, 0 },
-  { "sidebar_format",        DT_STR,                  &SidebarFormat,             UL "%B%* %n" },
-  { "sidebar_indent_string", DT_STR,                  &SidebarIndentString,       UL " " },
+  { "sidebar_format",        DT_STR,                  &SidebarFormat,             IP "%B%* %n" },
+  { "sidebar_indent_string", DT_STR,                  &SidebarIndentString,       IP " " },
   { "sidebar_new_mail_only", DT_BOOL,                 &OPT_SIDEBAR_NEWMAIL_ONLY,  0 },
   { "sidebar_next_new_wrap", DT_BOOL,                 &OPT_SIDEBAR_NEXT_NEW_WRAP, 0 },
   { "sidebar_on_right",      DT_BOOL,                 &OPT_SIDEBAR_ON_RIGHT,      0 },

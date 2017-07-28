@@ -16,20 +16,18 @@ bool   OPT_NEWS;
 bool   OPT_NEWS_SEND;
 bool   OPT_SHOW_NEW_NEWS;
 
-#define UL (intptr_t)
-
 struct VariableDef NntpVars[] = {
-  { "newsgroups_charset",    DT_STR,  &NewsgroupsCharset,  UL "utf-8" },
-  { "newsrc",                DT_PATH, &NewsRc,             UL "~/.newsrc" },
-  { "news_cache_dir",        DT_PATH, &NewsCacheDir,       UL "~/.mutt" },
+  { "newsgroups_charset",    DT_STR,  &NewsgroupsCharset,  IP "utf-8" },
+  { "newsrc",                DT_PATH, &NewsRc,             IP "~/.newsrc" },
+  { "news_cache_dir",        DT_PATH, &NewsCacheDir,       IP "~/.mutt" },
   { "news_server",           DT_STR,  &NewsServer,         0 },
   { "nntp_authenticators",   DT_STR,  &NntpAuthenticators, 0 },
   { "nntp_context",          DT_NUM,  &NntpContext,        1000 },
   { "nntp_listgroup",        DT_BOOL, &OPT_LIST_GROUP,     1 },
   { "nntp_load_description", DT_BOOL, &OPT_LOAD_DESC,      1 },
-  { "nntp_pass",             DT_STR,  &NntpPass,           UL "" },
+  { "nntp_pass",             DT_STR,  &NntpPass,           IP "" },
   { "nntp_poll",             DT_NUM,  &NewsPollTimeout,    60 },
-  { "nntp_user",             DT_STR,  &NntpUser,           UL "" },
+  { "nntp_user",             DT_STR,  &NntpUser,           IP "" },
   { "show_new_news",         DT_BOOL, &OPT_SHOW_NEW_NEWS,  1 },
   { NULL },
 };

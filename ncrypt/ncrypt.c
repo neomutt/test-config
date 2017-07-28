@@ -74,8 +74,6 @@ short         SmimeTimeout;
 char         *SmimeVerifyCommand;
 char         *SmimeVerifyOpaqueCommand;
 
-#define UL (intptr_t)
-
 struct VariableDef NcryptVars[] = {
   { "crypt_autoencrypt",             DT_BOOL,              &OPT_CRYPT_AUTO_ENCRYPT,          0 },
   { "crypt_autopgp",                 DT_BOOL,              &OPT_CRYPT_AUTO_PGP,              1 },
@@ -100,7 +98,7 @@ struct VariableDef NcryptVars[] = {
   { "pgp_encrypt_only_command",      DT_STR,               &PgpEncryptOnlyCommand,           0 },
   { "pgp_encrypt_self",              DT_QUAD,              &OPT_PGP_ENCRYPT_SELF,            MUTT_NO },
   { "pgp_encrypt_sign_command",      DT_STR,               &PgpEncryptSignCommand,           0 },
-  { "pgp_entry_format",              DT_STR,               &PgpEntryFormat,                  UL "%4n %t%f %4l/0x%k %-4a %2c %u" },
+  { "pgp_entry_format",              DT_STR,               &PgpEntryFormat,                  IP "%4n %t%f %4l/0x%k %-4a %2c %u" },
   { "pgp_export_command",            DT_STR,               &PgpExportCommand,                0 },
   { "pgp_getkeys_command",           DT_STR,               &PgpGetkeysCommand,               0 },
   { "pgp_good_sign",                 DT_RX,                &PgpGoodSign,                     0 },
@@ -131,7 +129,7 @@ struct VariableDef NcryptVars[] = {
   { "smime_default_key",             DT_STR,               &SmimeDefaultKey,                 0 },
   { "smime_encrypt_command",         DT_STR,               &SmimeEncryptCommand,             0 },
   { "smime_encrypt_self",            DT_QUAD,              &OPT_SMIME_ENCRYPT_SELF,          MUTT_NO },
-  { "smime_encrypt_with",            DT_STR,               &SmimeCryptAlg,                   UL "aes256" },
+  { "smime_encrypt_with",            DT_STR,               &SmimeCryptAlg,                   IP "aes256" },
   { "smime_get_cert_command",        DT_STR,               &SmimeGetCertCommand,             0 },
   { "smime_get_cert_email_command",  DT_STR,               &SmimeGetCertEmailCommand,        0 },
   { "smime_get_signer_cert_command", DT_STR,               &SmimeGetSignerCertCommand,       0 },
@@ -142,7 +140,7 @@ struct VariableDef NcryptVars[] = {
   { "smime_self_encrypt",            DT_BOOL,              &OPT_SMIME_SELF_ENCRYPT,          0 },
   { "smime_self_encrypt_as",         DT_STR,               &SmimeSelfEncryptAs,              0 },
   { "smime_sign_command",            DT_STR,               &SmimeSignCommand,                0 },
-  { "smime_sign_digest_alg",         DT_STR,               &SmimeDigestAlg,                  UL "sha256" },
+  { "smime_sign_digest_alg",         DT_STR,               &SmimeDigestAlg,                  IP "sha256" },
   { "smime_timeout",                 DT_NUM,               &SmimeTimeout,                    300 },
   { "smime_verify_command",          DT_STR,               &SmimeVerifyCommand,              0 },
   { "smime_verify_opaque_command",   DT_STR,               &SmimeVerifyOpaqueCommand,        0 },

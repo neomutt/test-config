@@ -22,6 +22,8 @@ typedef bool (*cs_type_string_get)(struct HashElem *e, struct Buffer *result);
 typedef bool (*cs_type_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
 typedef void (*cs_type_destructor)(void **obj);
 
+#define IP (intptr_t)
+
 struct VariableDef
 {
   const char  *name;

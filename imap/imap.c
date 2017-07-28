@@ -16,12 +16,10 @@ bool   OPT_IMAP_PASSIVE;
 bool   OPT_IMAP_PEEK;
 bool   OPT_IMAP_SERVER_NOISE;
 
-#define UL (intptr_t)
-
 struct VariableDef ImapVars[] = {
   { "imap_authenticators",   DT_STR,  &ImapAuthenticators,        0 },
   { "imap_check_subscribed", DT_BOOL, &OPT_IMAP_CHECK_SUBSCRIBED, 0 },
-  { "imap_delim_chars",      DT_STR,  &ImapDelimChars,            UL "/." },
+  { "imap_delim_chars",      DT_STR,  &ImapDelimChars,            IP "/." },
   { "imap_headers",          DT_STR,  &ImapHeaders,               0 },
   { "imap_idle",             DT_BOOL, &OPT_IMAP_IDLE,             0 },
   { "imap_keepalive",        DT_NUM,  &ImapKeepalive,             300 },
