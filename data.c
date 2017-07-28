@@ -50,6 +50,12 @@ enum
   MUTT_COMPRESSED,
 };
 
+struct Regex Mask;
+struct Regex QuoteRegexp;
+struct Regex ReplyRegexp;
+struct Regex Smileys;
+struct Regex GecosMask;
+
 struct VariableDef MuttVars[] = {
   { "abort_noattach",                   DT_QUAD,                 &OPT_ATTACH,                        MUTT_NO },
   { "abort_nosubject",                  DT_QUAD,                 &OPT_SUBJECT,                       MUTT_ASKYES },

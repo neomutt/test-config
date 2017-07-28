@@ -26,7 +26,7 @@ static bool set_str(struct ConfigSet *set, struct HashElem *e,
   if (!v)
     return false;
 
-  mutt_str_replace(v->variable, safe_strdup(value));
+  mutt_str_replace(v->variable, value);
   return true;
 }
 
@@ -58,7 +58,7 @@ static bool reset_str(struct ConfigSet *set, struct HashElem *e, struct Buffer *
   if (!v)
     return false;
 
-  mutt_str_replace(v->variable, safe_strdup((const char*) v->initial));
+  mutt_str_replace(v->variable, (const char*) v->initial);
   return true;
 }
 

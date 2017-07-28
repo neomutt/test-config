@@ -1,3 +1,4 @@
+#include <wchar.h>
 #include <stdbool.h>
 #include "mbyte_table.h"
 #include "buffer.h"
@@ -6,12 +7,54 @@
 #include "lib.h"
 #include "mutt_options.h"
 
+static struct MbCharTable *parse_mbchar_table(const char *s)
+{
+  struct MbCharTable *t = NULL;
+  size_t slen, k;
+  mbstate_t mbstate;
+  char *d = NULL;
+
+  t = safe_calloc(1, sizeof(struct MbCharTable));
+  slen = mutt_strlen(s);
+  if (!slen)
+    return t;
+
+  t->orig_str = safe_strdup(s);
+  /* This could be more space efficient.  However, being used on tiny
+   * strings (Tochars and StChars), the overhead is not great. */
+  t->chars = safe_calloc(slen, sizeof(char *));
+  d = t->segmented_str = safe_calloc(slen * 2, sizeof(char));
+
+  memset(&mbstate, 0, sizeof(mbstate));
+  while (slen && (k = mbrtowc(NULL, s, slen, &mbstate)))
+  {
+    if (k == (size_t)(-1) || k == (size_t)(-2))
+    {
+      mutt_debug(
+          1, "parse_mbchar_table: mbrtowc returned %d converting %s in %s\n",
+          (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
+      if (k == (size_t)(-1))
+        memset(&mbstate, 0, sizeof(mbstate));
+      k = (k == (size_t)(-1)) ? 1 : slen;
+    }
+
+    slen -= k;
+    t->chars[t->len++] = d;
+    while (k--)
+      *d++ = *s++;
+    *d++ = '\0';
+  }
+
+  return t;
+}
+
 static void mbchartbl_destructor(void **obj)
 {
   if (!obj || !*obj)
     return;
 
   struct MbCharTable *m = *(struct MbCharTable **) obj;
+  FREE(&m->chars);
   FREE(&m->segmented_str);
   FREE(&m->orig_str);
   FREE(&m);
@@ -26,7 +69,17 @@ static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct MbCharTable *table = parse_mbchar_table(value);
+  if (!table)
+    return false;
+
+  mbchartbl_destructor(v->variable);
+  *(struct MbCharTable **) v->variable = table;
+  return true;
 }
 
 static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
@@ -37,7 +90,17 @@ static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  struct MbCharTable *table = (struct MbCharTable *) e->data;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct MbCharTable *table = *(struct MbCharTable **) v->variable;
+  if (!table)
+    return false;
+
+  if (!table->orig_str)
+    return false;
+
   mutt_buffer_addstr(result, table->orig_str);
   return true;
 }
@@ -50,7 +113,17 @@ static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Bu
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct MbCharTable *table = parse_mbchar_table((const char*) v->initial);
+  if (!table)
+    return false;
+
+  mbchartbl_destructor(v->variable);
+  *(struct MbCharTable **) v->variable = table;
+  return true;
 }
 
 

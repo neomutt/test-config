@@ -6,21 +6,15 @@
 #include "lib.h"
 #include "mutt_options.h"
 
-struct Regex Mask;
-struct Regex QuoteRegexp;
-struct Regex ReplyRegexp;
-struct Regex Smileys;
-struct Regex GecosMask;
-
 static void rx_destructor(void **obj)
 {
   if (!obj || !*obj)
     return;
 
-  struct Regex *r = *(struct Regex **) obj;
+  struct Regex *r = (struct Regex *) obj;
   FREE(&r->pattern);
   //regfree(r->rx)
-  FREE(&r);
+  // FREE(r);
 }
 
 static bool set_rx(struct ConfigSet *set, struct HashElem *e, const char *value,
@@ -32,7 +26,17 @@ static bool set_rx(struct ConfigSet *set, struct HashElem *e, const char *value,
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct Regex *r = v->variable;
+  if (!r)
+    return false;
+
+  r->rx = NULL; //XXX regenerate r->rx
+  mutt_str_replace(&r->pattern, value);
+  return true;
 }
 
 static bool get_rx(struct HashElem *e, struct Buffer *result)
@@ -43,8 +47,15 @@ static bool get_rx(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  struct Regex *rx = (struct Regex *) e->data;
-  mutt_buffer_addstr(result, rx->pattern);
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct Regex *r = v->variable;
+  if (!r)
+    return false;
+
+  mutt_buffer_addstr(result, r->pattern);
   return true;
 }
 
@@ -56,7 +67,19 @@ static bool reset_rx(struct ConfigSet *set, struct HashElem *e, struct Buffer *e
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  rx_destructor(v->variable);
+
+  struct Regex *r = v->variable;
+  if (!r)
+    return false;
+
+  r->rx = NULL; //XXX regenerate r->rx
+  mutt_str_replace(&r->pattern, (const char*) v->initial);
+  return true;
 }
 
 

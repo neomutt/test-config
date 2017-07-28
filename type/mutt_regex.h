@@ -70,12 +70,6 @@ struct ReplaceList
   struct ReplaceList *next;
 };
 
-extern struct Regex Mask;
-extern struct Regex QuoteRegexp;
-extern struct Regex ReplyRegexp;
-extern struct Regex Smileys;
-extern struct Regex GecosMask;
-
 void init_regex(void);
 
 #endif /* _MUTT_REGEX_H */

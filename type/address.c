@@ -10,10 +10,10 @@ static void addr_destructor(void **obj)
   if (!obj || !*obj)
     return;
 
-  struct Address *a = *(struct Address **) obj;
-  FREE(&a->personal);
-  FREE(&a->mailbox);
-  FREE(&a);
+  struct Address **a = (struct Address **) obj;
+  FREE((*a)->personal);
+  FREE((*a)->mailbox);
+  FREE(a);
 }
 
 static bool set_addr(struct ConfigSet *set, struct HashElem *e,
@@ -25,24 +25,18 @@ static bool set_addr(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
-  // enum ConfigEvent e = CE_CHANGED;
-  // intptr_t copy = (intptr_t) value;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
 
-  // if (elem)
-  // {
-  //   if (set->destructor && !set->destructor(set, DT_ADDR, (intptr_t) elem->data))
-  //     FREE(&elem->data);
-  //   elem->data = (void *) value;
-  // }
-  // else
-  // {
-  //   e = CE_SET;
-  //   elem = hash_typed_insert(set->hash, name, DT_ADDR, (void *) value);
-  // }
+  struct Address *a = safe_calloc(1, sizeof(*a));
 
-  // notify_listeners(set, name, e);
-  // return elem;
-  return false;
+  addr_destructor(v->variable);
+
+  a->personal = safe_strdup((const char*) value);
+  
+  *(struct Address **) v->variable = a;
+  return true;
 }
 
 static bool get_addr(struct HashElem *e, struct Buffer *result)
@@ -53,7 +47,15 @@ static bool get_addr(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  mutt_buffer_addstr(result, (const char *) e->data);
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct Address *a = *(struct Address **) v->variable;
+  if (!a)
+    return false;
+
+  mutt_buffer_addstr(result, a->personal);
   return true;
 }
 
@@ -65,7 +67,18 @@ static bool reset_addr(struct ConfigSet *set, struct HashElem *e, struct Buffer 
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct Address *a = safe_calloc(1, sizeof(*a));
+
+  addr_destructor(v->variable);
+
+  a->personal = safe_strdup((const char*) v->initial);
+  
+  *(struct Address **) v->variable = a;
+  return true;
 }
 
 
