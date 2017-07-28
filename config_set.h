@@ -4,10 +4,7 @@
 #include <stdint.h>
 #include "hash.h"
 
-struct Address;
 struct Buffer;
-struct MbCharTable;
-struct Regex;
 
 enum ConfigEvent
 {
@@ -60,55 +57,7 @@ void cs_dump_set(struct ConfigSet *set);
 bool cs_register_type     (int type_id, struct ConfigSetType *cst);
 bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[]);
 
-void cs_add_listener  (struct ConfigSet *set, cs_listener fn);
-void cs_add_validator (struct ConfigSet *set, cs_validator fn);
-
-struct HashElem *cs_set_addr     (struct ConfigSet *set, const char *name, struct Address *value,     struct Buffer *result);
-struct HashElem *cs_set_bool     (struct ConfigSet *set, const char *name, bool value,                struct Buffer *result);
-struct HashElem *cs_set_hcache   (struct ConfigSet *set, const char *name, const char *value,         struct Buffer *result);
-struct HashElem *cs_set_magic    (struct ConfigSet *set, const char *name, int value,                 struct Buffer *result);
-struct HashElem *cs_set_mbchartbl(struct ConfigSet *set, const char *name, struct MbCharTable *value, struct Buffer *result);
-struct HashElem *cs_set_num      (struct ConfigSet *set, const char *name, int value,                 struct Buffer *result);
-struct HashElem *cs_set_path     (struct ConfigSet *set, const char *name, const char *value,         struct Buffer *result);
-struct HashElem *cs_set_quad     (struct ConfigSet *set, const char *name, int value,                 struct Buffer *result);
-struct HashElem *cs_set_rx       (struct ConfigSet *set, const char *name, struct Regex *value,       struct Buffer *result);
-struct HashElem *cs_set_sort     (struct ConfigSet *set, const char *name, int value,                 struct Buffer *result);
-struct HashElem *cs_set_str      (struct ConfigSet *set, const char *name, const char *value,         struct Buffer *result);
-
-struct Address *    cs_get_addr     (struct ConfigSet *set, const char *name);
-bool                cs_get_bool     (struct ConfigSet *set, const char *name);
-const char *        cs_get_hcache   (struct ConfigSet *set, const char *name);
-int                 cs_get_magic    (struct ConfigSet *set, const char *name);
-struct MbCharTable *cs_get_mbchartbl(struct ConfigSet *set, const char *name);
-int                 cs_get_num      (struct ConfigSet *set, const char *name);
-const char *        cs_get_path     (struct ConfigSet *set, const char *name);
-int                 cs_get_quad     (struct ConfigSet *set, const char *name);
-struct Regex *      cs_get_rx       (struct ConfigSet *set, const char *name);
-int                 cs_get_sort     (struct ConfigSet *set, const char *name);
-const char *        cs_get_str      (struct ConfigSet *set, const char *name);
-
-struct HashElem *he_set_addr     (struct HashElem *e, struct Address *value);
-struct HashElem *he_set_bool     (struct HashElem *e, bool value);
-struct HashElem *he_set_hcache   (struct HashElem *e, const char *value);
-struct HashElem *he_set_magic    (struct HashElem *e, int value);
-struct HashElem *he_set_mbchartbl(struct HashElem *e, struct MbCharTable *value);
-struct HashElem *he_set_num      (struct HashElem *e, int value);
-struct HashElem *he_set_path     (struct HashElem *e, const char *value);
-struct HashElem *he_set_quad     (struct HashElem *e, int value);
-struct HashElem *he_set_rx       (struct HashElem *e, struct Regex *value);
-struct HashElem *he_set_sort     (struct HashElem *e, int value);
-struct HashElem *he_set_str      (struct HashElem *e, const char *value);
-
-struct Address *     he_get_addr     (struct HashElem *e);
-bool                 he_get_bool     (struct HashElem *e);
-const char *         he_get_hcache   (struct HashElem *e);
-int                  he_get_magic    (struct HashElem *e);
-struct MbCharTable * he_get_mbchartbl(struct HashElem *e);
-int                  he_get_num      (struct HashElem *e);
-const char *         he_get_path     (struct HashElem *e);
-int                  he_get_quad     (struct HashElem *e);
-struct Regex *       he_get_rx       (struct HashElem *e);
-int                  he_get_sort     (struct HashElem *e);
-const char *         he_get_str      (struct HashElem *e);
+void cs_add_listener (struct ConfigSet *set, cs_listener fn);
+void cs_add_validator(struct ConfigSet *set, cs_validator fn);
 
 #endif /* _MUTT_CONFIG_SET_H */
