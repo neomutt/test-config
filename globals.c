@@ -1,5 +1,3 @@
-#include "type/address.h"
-#include "type/mbyte_table.h"
 #include "type/regex.h"
 
 char               *AliasFile;

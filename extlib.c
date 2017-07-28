@@ -28,7 +28,6 @@
 #define WHERE
 #define _EXTLIB_C
 
-#include "config.h"
 #include <stdlib.h>
 #include "lib.h"
 

@@ -1,8 +1,6 @@
 #ifndef _MUTT_SORTS_H
 #define _MUTT_SORTS_H
 
-#include <stdbool.h>
-
 #define SORT_DATE     1 /* the date the mail was sent. */
 #define SORT_SIZE     2
 #define SORT_SUBJECT  3

@@ -1,5 +1,7 @@
-#include <string.h>
 #include "sort.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 #include "buffer.h"
 #include "config_set.h"
 #include "hash.h"

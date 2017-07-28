@@ -27,8 +27,9 @@
 #ifndef _MUTT_REGEX_H
 #define _MUTT_REGEX_H
 
+#include <features.h>
 #include <regex.h>
-#include "where.h"
+#include <stddef.h>
 
 /* this is a non-standard option supported by Solaris 2.5.x which allows
  * patterns of the form \<...\>

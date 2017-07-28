@@ -1,36 +1,11 @@
+#include <stddef.h>
 #include "config.h"
 #include "config_set.h"
 #include "globals.h"
 #include "mutt_options.h"
 #include "options.h"
+#include "type/regex.h"
 #include "type/sort.h"
-
-const char *a = "apple";
-const char *b = "banana";
-const char *c = "cherry";
-const char *d = "damson";
-const char *e = "elderberry";
-const char *f = "fig";
-const char *g = "guava";
-const char *h = "hawthorn";
-const char *i = "ilama";
-const char *j = "jackfruit";
-const char *k = "kumquat";
-const char *l = "lemon";
-const char *m = "mango";
-const char *n = "nectarine";
-const char *o = "olive";
-const char *p = "papaya";
-const char *q = "quince";
-const char *r = "raspberry";
-const char *s = "strawberry";
-const char *t = "tangerine";
-const char *u = "ugli";
-const char *v = "vanilla";
-const char *w = "wolfberry";
-const char *x = "xigua";
-const char *y = "yew";
-const char *z = "ziziphus";
 
 #define MIXMASTER "mixmaster"
 

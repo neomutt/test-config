@@ -1,10 +1,12 @@
 #ifndef _MUTT_CONFIG_SET_H
 #define _MUTT_CONFIG_SET_H
 
+#include <stdbool.h>
 #include <stdint.h>
-#include "hash.h"
 
 struct Buffer;
+struct ConfigSet;
+struct HashElem;
 
 enum ConfigEvent
 {
@@ -12,7 +14,6 @@ enum ConfigEvent
   CE_CHANGED,
 };
 
-struct ConfigSet;
 typedef bool (*cs_listener)  (struct ConfigSet *set, const char *name, enum ConfigEvent e);
 typedef bool (*cs_validator) (struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result);
 typedef bool (*cs_destructor)(struct ConfigSet *set, int type, intptr_t obj);

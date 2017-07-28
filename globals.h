@@ -1,8 +1,6 @@
 #ifndef _MUTT_GLOBAL_H
 #define _MUTT_GLOBAL_H
 
-#include "type/address.h"
-#include "type/mbyte_table.h"
 #include "type/regex.h"
 
 extern char               *AliasFile;

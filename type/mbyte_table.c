@@ -1,6 +1,7 @@
-#include <wchar.h>
-#include <stdbool.h>
 #include "mbyte_table.h"
+#include <stdbool.h>
+#include <string.h>
+#include <wchar.h>
 #include "buffer.h"
 #include "config_set.h"
 #include "hash.h"

@@ -1,3 +1,5 @@
+#include <stdbool.h>
+#include <stddef.h>
 #include "config_set.h"
 #include "mutt_options.h"
 

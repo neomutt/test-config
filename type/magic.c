@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include "buffer.h"
 #include "config_set.h"
 #include "hash.h"

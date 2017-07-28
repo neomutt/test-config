@@ -1,9 +1,8 @@
-#include "config.h"
-#include <limits.h>
+#include "config_set.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "buffer.h"
-#include "config_set.h"
 #include "hash.h"
 #include "lib.h"
 #include "mutt_options.h"

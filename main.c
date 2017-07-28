@@ -1,7 +1,6 @@
-#include "config.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "buffer.h"
 #include "config_set.h"
 #include "data.h"
@@ -17,10 +16,10 @@
 #include "type/bool.h"
 #include "type/magic.h"
 #include "type/mbyte_table.h"
-#include "type/regex.h"
 #include "type/number.h"
 #include "type/path.h"
 #include "type/quad.h"
+#include "type/regex.h"
 #include "type/sort.h"
 #include "type/string.h"
 

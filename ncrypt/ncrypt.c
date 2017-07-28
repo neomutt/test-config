@@ -1,7 +1,9 @@
+#include <stdbool.h>
+#include <stddef.h>
 #include "config_set.h"
 #include "mutt_options.h"
-#include "type/sort.h"
 #include "type/regex.h"
+#include "type/sort.h"
 
 bool          OPT_ASK_CERT_LABEL;
 bool          OPT_CRYPT_AUTO_ENCRYPT;
