@@ -75,6 +75,6 @@ static bool reset_str(struct ConfigSet *set, struct HashElem *e, struct Buffer *
 
 void init_string(void)
 {
-  struct ConfigSetType cst_str = { set_str, get_str, reset_str, str_destructor };
-  cs_register_type("string", DT_STR, &cst_str);
+  struct ConfigSetType cst_str = { "string", set_str, get_str, reset_str, str_destructor };
+  cs_register_type(DT_STR, &cst_str);
 }

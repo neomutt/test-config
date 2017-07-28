@@ -36,6 +36,7 @@ struct VariableDef
 
 struct ConfigSetType
 {
+  const char *name;
   cs_type_string_set   setter;
   cs_type_string_get   getter;
   cs_type_reset        resetter;
@@ -56,7 +57,7 @@ void cs_free(struct ConfigSet *set);
 struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name);
 void cs_dump_set(struct ConfigSet *set);
 
-bool cs_register_type     (const char *name, int type_id, struct ConfigSetType *cst);
+bool cs_register_type     (int type_id, struct ConfigSetType *cst);
 bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[]);
 
 void cs_add_listener  (struct ConfigSet *set, cs_listener fn);

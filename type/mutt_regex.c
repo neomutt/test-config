@@ -62,6 +62,6 @@ static bool reset_rx(struct ConfigSet *set, struct HashElem *e, struct Buffer *e
 
 void init_regex(void)
 {
-  struct ConfigSetType cst_rx = { set_rx, get_rx, reset_rx, rx_destructor };
-  cs_register_type("regex", DT_RX, &cst_rx);
+  struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, reset_rx, rx_destructor };
+  cs_register_type(DT_RX, &cst_rx);
 }

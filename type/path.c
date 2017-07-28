@@ -51,6 +51,6 @@ static bool reset_path(struct ConfigSet *set, struct HashElem *e, struct Buffer 
 
 void init_path(void)
 {
-  struct ConfigSetType cst_path = { set_path, get_path, reset_path, path_destructor };
-  cs_register_type("path", DT_PATH, &cst_path);
+  struct ConfigSetType cst_path = { "path", set_path, get_path, reset_path, path_destructor };
+  cs_register_type(DT_PATH, &cst_path);
 }

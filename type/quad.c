@@ -16,11 +16,15 @@ static bool set_quad(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
   for (intptr_t i = 0; i < mutt_array_size(quad_values); i++)
   {
-    if (strcasecmp(quad_values[i], value) == 0)
+    if (mutt_strcasecmp(quad_values[i], value) == 0)
     {
-      e->data = (void *) i;
+      *(short *) v->variable = i;
       return true;
     }
   }
@@ -37,7 +41,11 @@ static bool get_quad(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  intptr_t index = (intptr_t) e->data;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  int index = *(short *) v->variable;
   if ((index < 0) || (index > mutt_array_size(quad_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
@@ -56,12 +64,17 @@ static bool reset_quad(struct ConfigSet *set, struct HashElem *e, struct Buffer 
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = v->initial;
+  return true;
 }
 
 
 void init_quad(void)
 {
-  struct ConfigSetType cst_quad = { set_quad, get_quad, reset_quad, NULL };
-  cs_register_type("quad", DT_QUAD, &cst_quad);
+  struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, reset_quad, NULL };
+  cs_register_type(DT_QUAD, &cst_quad);
 }

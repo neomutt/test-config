@@ -71,6 +71,6 @@ static bool reset_addr(struct ConfigSet *set, struct HashElem *e, struct Buffer 
 
 void init_addr(void)
 {
-  struct ConfigSetType cst_addr = { set_addr, get_addr, reset_addr, addr_destructor };
-  cs_register_type("address", DT_ADDR, &cst_addr);
+  struct ConfigSetType cst_addr = { "address", set_addr, get_addr, reset_addr, addr_destructor };
+  cs_register_type(DT_ADDR, &cst_addr);
 }

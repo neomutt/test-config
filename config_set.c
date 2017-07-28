@@ -89,19 +89,32 @@ void notify_listeners(struct ConfigSet *set, const char *name, enum ConfigEvent 
 
 void cs_dump_set(struct ConfigSet *set)
 {
-  struct HashElem *entry = NULL;
+  struct HashElem *e = NULL;
   struct HashWalkState state;
   memset(&state, 0, sizeof(state));
 
-  while ((entry = hash_walk(set->hash, &state)))
+  struct Buffer result;
+  mutt_buffer_init(&result);
+  result.data = calloc(1, STRING);
+  result.dsize = STRING;
+
+  while ((e = hash_walk(set->hash, &state)))
   {
-    printf("%s ", entry->key.strkey);
+    struct ConfigSetType *type = get_type_def(e->type);
+    mutt_buffer_reset(&result);
+    printf("%s [%s]", e->key.strkey, type->name);
+
+    if (type && type->getter(e, &result))
+      printf(" = %s\n", result.data);
+    else
+      printf(": ERROR: %s\n", result.data);
   }
-  printf("\n");
+
+  FREE(&result.data);
 }
 
 
-bool cs_register_type(const char *name, int type_id, struct ConfigSetType *cst)
+bool cs_register_type(int type_id, struct ConfigSetType *cst)
 {
   RegisteredTypes[type_id] = *cst;
   return false;

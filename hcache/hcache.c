@@ -86,9 +86,9 @@ struct VariableDef HCVars[] = {
 
 void init_hcache(struct ConfigSet *set)
 {
-  struct ConfigSetType cst = { hc_string_set, hc_string_get, NULL, NULL };
+  struct ConfigSetType cst = { "hcache", hc_string_set, hc_string_get, NULL, NULL };
 
-  cs_register_type("hcache", DT_HCACHE, &cst);
+  cs_register_type(DT_HCACHE, &cst);
 
   cs_register_variables(set, HCVars);
 }

@@ -82,7 +82,7 @@ static const char *find_string(const struct Mapping *map, int type)
 static int find_id(const struct Mapping *map, const char *str)
 {
   for (int i = 0; map[i].name; i++)
-    if (strcasecmp(map[i].name, str) == 0)
+    if (mutt_strcasecmp(map[i].name, str) == 0)
       return map[i].value;
 
   return -1;
@@ -103,19 +103,19 @@ static bool set_sort(struct ConfigSet *set, struct HashElem *e,
   switch (e->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
-      id = find_id(SortAliasMethods, value);
+      id = find_id(SortMethods, value);
       break;
     case DT_SORT_ALIAS:
-      id = find_id(SortAuxMethods, value);
+      id = find_id(SortAliasMethods, value);
       break;
     case DT_SORT_AUX:
-      id = find_id(SortBrowserMethods, value);
+      id = find_id(SortAuxMethods, value);
       break;
     case DT_SORT_BROWSER:
-      id = find_id(SortKeyMethods, value);
+      id = find_id(SortBrowserMethods, value);
       break;
     case DT_SORT_KEYS:
-      id = find_id(SortMethods, value);
+      id = find_id(SortKeyMethods, value);
       break;
     case DT_SORT_SIDEBAR:
       id = find_id(SortSidebarMethods, value);
@@ -130,7 +130,11 @@ static bool set_sort(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
-  e->data = (void *) id;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = id;
   return true;
 }
 
@@ -142,27 +146,33 @@ static bool get_sort(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  int sort = *(short *) v->variable;
+
   const char *str = NULL;
 
   switch (e->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
-      str = find_string(SortAliasMethods, DTYPE(e->type));
+      str = find_string(SortMethods, sort);
       break;
     case DT_SORT_ALIAS:
-      str = find_string(SortAuxMethods, DTYPE(e->type));
+      str = find_string(SortAliasMethods, sort);
       break;
     case DT_SORT_AUX:
-      str = find_string(SortBrowserMethods, DTYPE(e->type));
+      str = find_string(SortAuxMethods, sort);
       break;
     case DT_SORT_BROWSER:
-      str = find_string(SortKeyMethods, DTYPE(e->type));
+      str = find_string(SortBrowserMethods, sort);
       break;
     case DT_SORT_KEYS:
-      str = find_string(SortMethods, DTYPE(e->type));
+      str = find_string(SortKeyMethods, sort);
       break;
     case DT_SORT_SIDEBAR:
-      str = find_string(SortSidebarMethods, DTYPE(e->type));
+      str = find_string(SortSidebarMethods, sort);
       break;
     default:
       break;
@@ -178,9 +188,25 @@ static bool get_sort(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
+static bool reset_sort(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_SORT)
+  {
+    mutt_buffer_printf(err, "Variable is not a sort");
+    return false;
+  }
+
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = v->initial;
+  return true;
+}
+
 
 void init_sorts(void)
 {
-  struct ConfigSetType cst_sort = { set_sort, get_sort, NULL, NULL };
-  cs_register_type("sort", DT_SORT, &cst_sort);
+  struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, reset_sort, NULL };
+  cs_register_type(DT_SORT, &cst_sort);
 }

@@ -335,7 +335,7 @@ void test6(void)
   init_pop(&cs);
   init_sidebar(&cs);
 
-  // cs_dump_set(&cs);
+  cs_dump_set(&cs);
   cs_free(&cs);
   FREE(&err.data);
 }

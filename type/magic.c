@@ -52,6 +52,6 @@ static bool reset_magic(struct ConfigSet *set, struct HashElem *e, struct Buffer
 
 void init_magic(void)
 {
-  struct ConfigSetType cst_magic = { set_magic, get_magic, reset_magic, NULL };
-  cs_register_type("magic", DT_MAGIC, &cst_magic);
+  struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, reset_magic, NULL };
+  cs_register_type(DT_MAGIC, &cst_magic);
 }

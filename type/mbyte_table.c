@@ -56,7 +56,7 @@ static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Bu
 
 void init_mbyte_table(void)
 {
-  struct ConfigSetType cst_mbchartbl = { set_mbchartbl, get_mbchartbl,
+  struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl,
                                          reset_mbchartbl, mbchartbl_destructor };
-  cs_register_type("mbtable", DT_MBCHARTBL, &cst_mbchartbl);
+  cs_register_type(DT_MBCHARTBL, &cst_mbchartbl);
 }

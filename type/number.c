@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <limits.h>
 #include "buffer.h"
 #include "config_set.h"
 #include "hash.h"
@@ -21,8 +22,14 @@ static bool set_num(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
-  intptr_t copy = num;
-  e->data = (void *) copy;
+  if (num > SHRT_MAX)
+    return false;
+
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = num;
   return true;
 }
 
@@ -34,7 +41,11 @@ static bool get_num(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  mutt_buffer_printf(result, "%d", (intptr_t) e->data);
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  mutt_buffer_printf(result, "%d", *(short*) v->variable);
   return true;
 }
 
@@ -46,12 +57,17 @@ static bool reset_num(struct ConfigSet *set, struct HashElem *e, struct Buffer *
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = v->initial;
+  return true;
 }
 
 
 void init_num(void)
 {
-  struct ConfigSetType cst_num = { set_num, get_num, reset_num, NULL };
-  cs_register_type("number", DT_NUM, &cst_num);
+  struct ConfigSetType cst_num = { "number", set_num, get_num, reset_num, NULL };
+  cs_register_type(DT_NUM, &cst_num);
 }
