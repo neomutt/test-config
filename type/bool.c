@@ -57,7 +57,7 @@ static bool get_bool(struct HashElem *e, struct Buffer *result)
     return false;
 
   unsigned int index = *(bool *) v->variable;
-  if (index > mutt_array_size(bool_values))
+  if (index > 1)
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;

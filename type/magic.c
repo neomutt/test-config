@@ -48,7 +48,7 @@ static bool get_magic(struct HashElem *e, struct Buffer *result)
     return false;
 
   unsigned int index = *(short *) v->variable;
-  if ((index < 1) || (index > mutt_array_size(magic_values)))
+  if ((index < 1) || (index >= mutt_array_size(magic_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;

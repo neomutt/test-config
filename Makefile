@@ -21,6 +21,7 @@ CFLAGS	+= -Wall
 # CFLAGS	+= -Wno-unused-parameter
 CFLAGS	+= -Wpedantic
 CFLAGS	+= -g
+CFLAGS	+= -O0
 CFLAGS	+= -I.
 
 CFLAGS	+= -std=c99

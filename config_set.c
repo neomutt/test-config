@@ -97,10 +97,16 @@ void cs_dump_set(struct ConfigSet *set)
   while ((e = hash_walk(set->hash, &state)))
   {
     struct ConfigSetType *type = get_type_def(e->type);
+    if (!type)
+    {
+      printf("Unknown type: %d\n", e->type);
+      continue;
+    }
+
     mutt_buffer_reset(&result);
     printf("%s [%s]", e->key.strkey, type->name);
 
-    if (type && type->getter(e, &result))
+    if (type->getter(e, &result))
       printf(" = %s\n", result.data);
     else
       printf(": ERROR: %s\n", result.data);

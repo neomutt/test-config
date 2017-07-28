@@ -48,7 +48,7 @@ static bool get_quad(struct HashElem *e, struct Buffer *result)
     return false;
 
   unsigned int index = *(short *) v->variable;
-  if (index > mutt_array_size(quad_values))
+  if (index >= mutt_array_size(quad_values))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;
