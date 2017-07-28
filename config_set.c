@@ -19,6 +19,7 @@ struct ConfigSetType RegisteredTypes[16] =
 
 struct ConfigSetType *get_type_def(int type)
 {
+  type = DTYPE(type);
   if ((type < 0) || (type >= mutt_array_size(RegisteredTypes)))
     return NULL;
 
