@@ -23,6 +23,8 @@ CFLAGS	+= -Wpedantic
 CFLAGS	+= -g
 CFLAGS	+= -I.
 
+CFLAGS	+= -std=c99
+
 LDFLAGS	+= -pthread
 LDFLAGS	+= -rdynamic
 

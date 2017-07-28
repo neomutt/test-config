@@ -113,7 +113,7 @@ extern void (*mutt_error)(const char *, ...);
 void mutt_exit(int code);
 
 #ifdef DEBUG
-extern char debugfilename[_POSIX_PATH_MAX];
+extern char debugfilename[];
 extern FILE *debugfile;
 extern int debuglevel;
 extern char *debugfile_cmdline;
