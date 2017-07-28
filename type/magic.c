@@ -5,6 +5,8 @@
 #include "lib.h"
 #include "mutt_options.h"
 
+const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
+
 static bool set_magic(struct ConfigSet *set, struct HashElem *e,
                       const char *value, struct Buffer *err)
 {
@@ -14,27 +16,43 @@ static bool set_magic(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  for (intptr_t i = 0; i < mutt_array_size(magic_values); i++)
+  {
+    if (mutt_strcasecmp(magic_values[i], value) == 0)
+    {
+      *(short *) v->variable = i;
+      return true;
+    }
+  }
+
+  mutt_buffer_printf(err, "Invalid magic value: %s", value);
   return false;
 }
 
 static bool get_magic(struct HashElem *e, struct Buffer *result)
 {
-  const char *text[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
-
   if (DTYPE(e->type) != DT_MAGIC)
   {
     mutt_buffer_printf(result, "Variable is not a mailbox type");
     return false;
   }
 
-  intptr_t index = (intptr_t) e->data;
-  if ((index < 1) || (index > mutt_array_size(text)))
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  int index = *(short *) v->variable;
+  if ((index < 1) || (index > mutt_array_size(magic_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;
   }
 
-  mutt_buffer_addstr(result, text[index]);
+  mutt_buffer_addstr(result, magic_values[index]);
   return true;
 }
 
@@ -46,7 +64,12 @@ static bool reset_magic(struct ConfigSet *set, struct HashElem *e, struct Buffer
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = v->initial;
+  return true;
 }
 
 

@@ -35,26 +35,35 @@ static bool hc_string_set(struct ConfigSet *set, struct HashElem *e, const char 
     return false;
   }
 
-  e->data = (void *) index;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = index;
   return true;
 }
 
-static bool hc_string_get(struct HashElem *e, struct Buffer *err)
+static bool hc_string_get(struct HashElem *e, struct Buffer *result)
 {
   if (DTYPE(e->type) != DT_HCACHE)
   {
-    mutt_buffer_printf(err, "Variable is not an hcache");
+    mutt_buffer_printf(result, "Variable is not an hcache");
     return NULL;
   }
 
-  int index = (intptr_t) e->data;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  int index = *(short *) v->variable;
   if ((index < 0) || (index >= mutt_array_size(hcache_backends)))
   {
-    mutt_buffer_printf(err, "Invalid hcache value: %d", index);
+    mutt_buffer_printf(result, "Invalid hcache value: %d", index);
     return NULL;
   }
 
-  return hcache_backends[index];
+  mutt_buffer_addstr(result, hcache_backends[index]);
+  return true;
 }
 
 
@@ -70,7 +79,7 @@ static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int t
 }
 
 char *HeaderCache;
-char *HeaderCacheBackend;
+short HeaderCacheBackend;
 char *HeaderCachePageSize;
 bool  OPT_HCACHE_COMPRESS;
 

@@ -22,19 +22,12 @@ static bool set_str(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
-  // if (e)
-  // {
-  //   if (!str_destructor(e, err))
-  //     return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
 
-  //   e->data = (void *) value;
-  // }
-  // else
-  // {
-  //   e = hash_typed_insert(hash, name, DT_STR, (void *) value);
-  // }
-
-  return false;
+  mutt_str_replace(v->variable, safe_strdup(value));
+  return true;
 }
 
 static bool get_str(struct HashElem *e, struct Buffer *result)
@@ -45,7 +38,11 @@ static bool get_str(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  mutt_buffer_addstr(result, (const char *) e->data);
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  mutt_buffer_addstr(result, *(const char **) v->variable);
   return true;
 }
 
@@ -57,19 +54,12 @@ static bool reset_str(struct ConfigSet *set, struct HashElem *e, struct Buffer *
     return false;
   }
 
-  // if (e)
-  // {
-  //   if (!str_destructor(e, err))
-  //     return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
 
-  //   e->data = (void *) value;
-  // }
-  // else
-  // {
-  //   e = hash_typed_insert(hash, name, DT_STR, (void *) value);
-  // }
-
-  return false;
+  mutt_str_replace(v->variable, safe_strdup((const char*) v->initial));
+  return true;
 }
 
 

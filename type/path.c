@@ -22,7 +22,12 @@ static bool set_path(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  mutt_str_replace(v->variable, safe_strdup(value));
+  return true;
 }
 
 static bool get_path(struct HashElem *e, struct Buffer *result)
@@ -33,7 +38,11 @@ static bool get_path(struct HashElem *e, struct Buffer *result)
     return false;
   }
 
-  mutt_buffer_addstr(result, (const char *) e->data);
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  mutt_buffer_addstr(result, *(const char **) v->variable);
   return true;
 }
 
@@ -45,7 +54,12 @@ static bool reset_path(struct ConfigSet *set, struct HashElem *e, struct Buffer 
     return false;
   }
 
-  return false;
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  mutt_str_replace(v->variable, safe_strdup((const char*) v->initial));
+  return true;
 }
 
 
