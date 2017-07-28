@@ -17,6 +17,8 @@ OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 
 CFLAGS	+= -Wall
 # CFLAGS	+= -Wextra
+# CFLAGS	+= -Wno-missing-field-initializers
+# CFLAGS	+= -Wno-unused-parameter
 CFLAGS	+= -Wpedantic
 CFLAGS	+= -g
 CFLAGS	+= -I.

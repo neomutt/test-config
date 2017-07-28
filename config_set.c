@@ -13,10 +13,10 @@ struct ConfigSetType RegisteredTypes[16] =
 };
 
 
-struct ConfigSetType *get_type_def(int type)
+struct ConfigSetType *get_type_def(unsigned int type)
 {
   type = DTYPE(type);
-  if ((type < 0) || (type >= mutt_array_size(RegisteredTypes)))
+  if (type >= mutt_array_size(RegisteredTypes))
     return NULL;
 
   return &RegisteredTypes[type];
@@ -109,9 +109,9 @@ void cs_dump_set(struct ConfigSet *set)
   FREE(&result.data);
 }
 
-bool cs_register_type(int type_id, struct ConfigSetType *cst)
+bool cs_register_type(unsigned int type, struct ConfigSetType *cst)
 {
-  RegisteredTypes[type_id] = *cst;
+  RegisteredTypes[type] = *cst;
   return false;
 }
 

@@ -22,7 +22,7 @@ static bool set_magic(struct ConfigSet *set, struct HashElem *e,
   if (!v)
     return false;
 
-  for (intptr_t i = 0; i < mutt_array_size(magic_values); i++)
+  for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
   {
     if (mutt_strcasecmp(magic_values[i], value) == 0)
     {
@@ -47,7 +47,7 @@ static bool get_magic(struct HashElem *e, struct Buffer *result)
   if (!v)
     return false;
 
-  int index = *(short *) v->variable;
+  unsigned int index = *(short *) v->variable;
   if ((index < 1) || (index > mutt_array_size(magic_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");

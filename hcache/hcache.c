@@ -23,7 +23,7 @@ static bool hc_string_set(struct ConfigSet *set, struct HashElem *e, const char 
 
   intptr_t index = -1;
 
-  for (int i = 0; i < mutt_array_size(hcache_backends); i++)
+  for (unsigned int i = 0; i < mutt_array_size(hcache_backends); i++)
   {
     if (strcmp(value, hcache_backends[i]) == 0)
     {
@@ -58,8 +58,8 @@ static bool hc_string_get(struct HashElem *e, struct Buffer *result)
   if (!v)
     return false;
 
-  int index = *(short *) v->variable;
-  if ((index < 0) || (index >= mutt_array_size(hcache_backends)))
+  unsigned int index = *(short *) v->variable;
+  if (index >= mutt_array_size(hcache_backends))
   {
     mutt_buffer_printf(result, "Invalid hcache value: %d", index);
     return NULL;

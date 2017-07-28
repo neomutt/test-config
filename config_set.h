@@ -16,7 +16,7 @@ enum ConfigEvent
 
 typedef bool (*cs_listener)  (struct ConfigSet *set, const char *name, enum ConfigEvent e);
 typedef bool (*cs_validator) (struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result);
-typedef bool (*cs_destructor)(struct ConfigSet *set, int type, intptr_t obj);
+typedef bool (*cs_destructor)(struct ConfigSet *set, unsigned int type, intptr_t obj);
 
 typedef bool (*cs_type_string_set)(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err);
 typedef bool (*cs_type_string_get)(struct HashElem *e, struct Buffer *result);
@@ -27,11 +27,11 @@ typedef void (*cs_type_destructor)(void **obj);
 
 struct VariableDef
 {
-  const char  *name;
-  int          type;
-  void        *variable;
-  intptr_t     initial;
-  cs_validator validator;
+  const char   *name;
+  unsigned int  type;
+  void         *variable;
+  intptr_t      initial;
+  cs_validator  validator;
 };
 
 struct ConfigSetType
@@ -57,7 +57,7 @@ void cs_free(struct ConfigSet *set);
 struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name);
 void cs_dump_set(struct ConfigSet *set);
 
-bool cs_register_type     (int type_id, struct ConfigSetType *cst);
+bool cs_register_type     (unsigned int type, struct ConfigSetType *cst);
 bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[]);
 
 void cs_add_listener (struct ConfigSet *set, cs_listener fn);

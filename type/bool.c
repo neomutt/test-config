@@ -31,7 +31,7 @@ static bool set_bool(struct ConfigSet *set, struct HashElem *e,
   if (!v)
     return false;
 
-  for (intptr_t i = 0; i < mutt_array_size(bool_values); i++)
+  for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
   {
     if (mutt_strcasecmp(bool_values[i], value) == 0)
     {
@@ -56,8 +56,8 @@ static bool get_bool(struct HashElem *e, struct Buffer *result)
   if (!v)
     return false;
 
-  int index = *(bool *) v->variable;
-  if ((index < 0) || (index > mutt_array_size(bool_values)))
+  unsigned int index = *(bool *) v->variable;
+  if (index > mutt_array_size(bool_values))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;
