@@ -1,5 +1,5 @@
 #include <stdbool.h>
-#include "mutt_regex.h"
+#include "regex.h"
 #include "buffer.h"
 #include "config_set.h"
 #include "hash.h"

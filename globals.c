@@ -1,6 +1,6 @@
 #include "type/address.h"
 #include "type/mbyte_table.h"
-#include "type/mutt_regex.h"
+#include "type/regex.h"
 
 char               *AliasFile;
 char               *AliasFmt;

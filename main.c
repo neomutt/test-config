@@ -17,7 +17,7 @@
 #include "type/bool.h"
 #include "type/magic.h"
 #include "type/mbyte_table.h"
-#include "type/mutt_regex.h"
+#include "type/regex.h"
 #include "type/number.h"
 #include "type/path.h"
 #include "type/quad.h"
