@@ -5,4 +5,6 @@ struct ConfigSet;
 
 void init_hcache(struct ConfigSet *set);
 
+extern char *HeaderCachePageSize;
+
 #endif /* _MUTT_HCACHE_H */

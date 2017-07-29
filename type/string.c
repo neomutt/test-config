@@ -26,6 +26,9 @@ static bool set_str(struct ConfigSet *set, struct HashElem *e,
   if (!v)
     return false;
 
+  if (v->validator && !v->validator(set, v->name, v->type, (intptr_t) value, err))
+    return false;
+
   mutt_str_replace(v->variable, value);
   return true;
 }

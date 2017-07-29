@@ -165,3 +165,32 @@ bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[])
   return true;
 }
 
+bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value, struct Buffer *err)
+{
+  struct HashElem *e = hash_find_elem(set->hash, name);
+  if (!e)
+  {
+    mutt_buffer_printf(err, "Unknown variable '%s'", name);
+    return false;
+  }
+
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  struct ConfigSetType *type = get_type_def(v->type);
+  if (!type)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", v->name, v->type);
+    return false;
+  }
+
+  if (!type->setter)
+  {
+    mutt_buffer_printf(err, "No setter for '%s'", name);
+    return false;
+  }
+
+  return type->setter(set, e, value, err);
+}
+

@@ -22,6 +22,7 @@
 #include "type/regex.h"
 #include "type/sort.h"
 #include "type/string.h"
+#include "hcache/hcache.h"
 
 bool init_types(struct ConfigSet *set)
 {
@@ -72,7 +73,15 @@ int main(int argc, char *argv[])
   init_pop(&cs);
   init_sidebar(&cs);
 
-  cs_dump_set(&cs);
+  printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
+  mutt_buffer_reset(&err);
+  if (!cs_set_variable(&cs, "header_cache_pagesize", "32768", &err))
+  {
+    printf("Set failed: %s\n", err.data);
+  }
+  printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
+
+  // cs_dump_set(&cs);
   cs_free(&cs);
   FREE(&err.data);
   return 0;

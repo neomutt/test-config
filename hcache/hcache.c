@@ -70,15 +70,29 @@ static bool hc_string_get(struct HashElem *e, struct Buffer *result)
 }
 
 
-static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result)
+static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *err)
 {
-  int x = 1024;
-
-  if (x < 512)
+  int num = 0;
+  if (mutt_atoi((const char*) value, &num) < 0)
+  {
+    mutt_buffer_printf(err, "Invalid number: %s", value);
     return false;
+  }
+
+  if (num < 512)
+  {
+    mutt_buffer_printf(err, "Number is too small: %d", num);
+    return false;
+  }
 
   // Power of two
-  return (!(x & (x - 1)));
+  if (num & (num - 1))
+  {
+    mutt_buffer_printf(err, "Number is not a power of two: %d", num);
+    return false;
+  }
+
+  return true;
 }
 
 char *HeaderCache;
