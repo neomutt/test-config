@@ -191,6 +191,10 @@ bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value,
     return false;
   }
 
-  return type->setter(set, e, value, err);
+  if (!type->setter(set, e, value, err))
+    return false;
+
+  notify_listeners(set, name, CE_SET);
+  return true;
 }
 
