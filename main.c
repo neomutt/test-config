@@ -24,7 +24,7 @@
 #include "type/string.h"
 #include "hcache/hcache.h"
 
-bool init_types(struct ConfigSet *set)
+void init_types()
 {
   init_addr();
   init_bool();
@@ -36,10 +36,18 @@ bool init_types(struct ConfigSet *set)
   init_quad();
   init_sorts();
   init_string();
+}
 
+void init_variables(struct ConfigSet *set)
+{
   cs_register_variables(set, MuttVars);
-
-  return true;
+  init_hcache(set);
+  init_imap(set);
+  init_ncrypt(set);
+  init_nntp(set);
+  init_notmuch(set);
+  init_pop(set);
+  init_sidebar(set);
 }
 
 bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
@@ -62,16 +70,8 @@ int main(int argc, char *argv[])
   cs_init(&cs, NULL);
   cs_add_listener(&cs, listener);
 
-  init_types(&cs);
-  init_sorts();
-
-  init_hcache(&cs);
-  init_imap(&cs);
-  init_ncrypt(&cs);
-  init_nntp(&cs);
-  init_notmuch(&cs);
-  init_pop(&cs);
-  init_sidebar(&cs);
+  init_types();
+  init_variables(&cs);
 
   mutt_buffer_reset(&err);
 

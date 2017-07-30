@@ -69,7 +69,6 @@ static bool hc_string_get(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-
 static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *err)
 {
   int num = 0;
@@ -85,7 +84,6 @@ static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int t
     return false;
   }
 
-  // Power of two
   if (num & (num - 1))
   {
     mutt_buffer_printf(err, "Number is not a power of two: %d", num);
@@ -94,6 +92,7 @@ static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int t
 
   return true;
 }
+
 
 char *HeaderCache;
 short HeaderCacheBackend;
