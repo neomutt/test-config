@@ -2,9 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "buffer.h"
-#include "hash.h"
-#include "lib.h"
+#include "lib/lib.h"
 #include "mutt_options.h"
 
 struct ConfigSetType RegisteredTypes[16] =

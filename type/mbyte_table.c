@@ -2,10 +2,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include <wchar.h>
-#include "buffer.h"
 #include "config_set.h"
-#include "hash.h"
-#include "lib.h"
+#include "lib/lib.h"
 #include "mutt_options.h"
 
 static struct MbCharTable *parse_mbchar_table(const char *s)

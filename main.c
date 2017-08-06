@@ -1,12 +1,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "buffer.h"
 #include "config_set.h"
 #include "data.h"
 #include "hcache/hcache.h"
 #include "imap/imap.h"
-#include "lib.h"
+#include "lib/lib.h"
 #include "ncrypt/ncrypt.h"
 #include "nntp.h"
 #include "notmuch.h"

@@ -21,8 +21,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_HASH_H
-#define _MUTT_HASH_H
+#ifndef _LIB_HASH_H
+#define _LIB_HASH_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -75,7 +75,6 @@ void hash_set_destructor(struct Hash *hash, hash_destructor fn, intptr_t fn_data
 struct HashElem *hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data);
 struct HashElem *hash_insert(struct Hash *table, const char *strkey, void *data);
 struct HashElem *int_hash_insert(struct Hash *table, unsigned int intkey, void *data);
-struct Hash *hash_resize(struct Hash *ptr, int nelem, int lower);
 
 void *hash_find(const struct Hash *table, const char *strkey);
 struct HashElem *hash_find_elem(const struct Hash *table, const char *strkey);
@@ -98,4 +97,4 @@ struct HashWalkState
 
 struct HashElem *hash_walk(const struct Hash *table, struct HashWalkState *state);
 
-#endif /* _MUTT_HASH_H */
+#endif /* _LIB_HASH_H */

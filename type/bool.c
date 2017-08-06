@@ -1,10 +1,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "buffer.h"
 #include "config_set.h"
-#include "hash.h"
-#include "lib.h"
+#include "lib/lib.h"
 #include "mutt_options.h"
 
 const char *bool_values[] = {

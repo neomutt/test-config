@@ -1,8 +1,6 @@
 #include "address.h"
-#include "buffer.h"
 #include "config_set.h"
-#include "hash.h"
-#include "lib.h"
+#include "lib/lib.h"
 #include "mutt_options.h"
 
 static void addr_destructor(void **obj)

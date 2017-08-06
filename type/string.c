@@ -1,8 +1,6 @@
 #include <stdbool.h>
-#include "buffer.h"
 #include "config_set.h"
-#include "hash.h"
-#include "lib.h"
+#include "lib/lib.h"
 #include "mutt_options.h"
 
 static void str_destructor(void **obj)

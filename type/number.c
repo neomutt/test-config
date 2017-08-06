@@ -1,10 +1,8 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include "buffer.h"
 #include "config_set.h"
-#include "hash.h"
-#include "lib.h"
+#include "lib/lib.h"
 #include "mutt_options.h"
 
 static bool set_num(struct ConfigSet *set, struct HashElem *e,

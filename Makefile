@@ -7,11 +7,12 @@ OBJDIR	= .obj
 
 OUT	= demo
 
-SRC	+= buffer.c config_set.c data.c extlib.c globals.c hash.c lib.c main.c nntp.c notmuch.c options.c pop.c sidebar.c
+SRC	+= config_set.c data.c globals.c main.c nntp.c notmuch.c options.c pop.c sidebar.c
 SRC	+= type/address.c type/bool.c type/magic.c type/mbyte_table.c type/regex.c type/number.c type/path.c type/quad.c type/sort.c type/string.c
 SRC	+= hcache/hcache.c
 SRC	+= imap/imap.c
 SRC	+= ncrypt/ncrypt.c
+SRC	+= lib/base64.c lib/buffer.c lib/date.c lib/debug.c lib/exit.c lib/file.c lib/hash.c lib/md5.c lib/memory.c lib/message.c lib/sha1.c lib/string.c
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 
@@ -48,7 +49,7 @@ $(OUT):	$(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
 $(DEPDIR) $(OBJDIR):
-	$(MKDIR) $@/type $@/ncrypt $@/imap $@/hcache
+	$(MKDIR) $@/type $@/ncrypt $@/imap $@/hcache $@/lib
 
 # ----------------------------------------------------------------------------
 
