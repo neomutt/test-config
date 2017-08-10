@@ -68,7 +68,7 @@ enum
 struct Option
 {
   const char *option; /**< user-visible name */
-  short type;         /**< varible type, e.g. *DT_STR */
+  short type;         /**< variable type, e.g. *DT_STR */
   unsigned long data; /**< pointer to the global variable */
   unsigned long init; /**< initial value */
 };

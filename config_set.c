@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "lib/lib.h"
+#include "data.h"
 #include "mutt_options.h"
 
 struct ConfigSetType RegisteredTypes[16] =
