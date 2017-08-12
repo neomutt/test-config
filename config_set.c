@@ -5,6 +5,7 @@
 #include "lib/lib.h"
 #include "data.h"
 #include "mutt_options.h"
+#include "inheritance.h"
 
 struct ConfigSetType RegisteredTypes[16] =
 {
@@ -25,8 +26,15 @@ static void destroy(int type, void *obj, intptr_t data)
 {
   // struct ConfigSet *set = (struct ConfigSet *) data;
 
-  struct VariableDef *def = obj;
+  if (type & DT_INHERITED)
+  {
+    struct Inheritance *i = obj;
+    FREE(&i->name);
+    FREE(&i);
+    return;
+  }
 
+  struct VariableDef *def = obj;
   struct ConfigSetType *cs = get_type_def(type);
   if (cs->destructor)
     cs->destructor(def->variable);
@@ -42,7 +50,7 @@ struct ConfigSet *cs_set_new(struct ConfigSet *parent)
 bool cs_init(struct ConfigSet *set, struct ConfigSet *parent)
 {
   memset(set, 0, sizeof(*set));
-  set->hash = hash_create(10, 0);
+  set->hash = hash_create(500, 0);
   hash_set_destructor(set->hash, destroy, (intptr_t) set);
   set->parent = parent;
   return true;
@@ -95,6 +103,19 @@ void cs_dump_set(struct ConfigSet *set)
 
   while ((e = hash_walk(set->hash, &state)))
   {
+    const char *name = NULL;
+
+    if (e->type & DT_INHERITED)
+    {
+      struct Inheritance *i = e->data;
+      e = i->parent;
+      name = i->name;
+    }
+    else
+    {
+      name = e->key.strkey;
+    }
+
     struct ConfigSetType *type = get_type_def(e->type);
     if (!type)
     {
@@ -103,7 +124,7 @@ void cs_dump_set(struct ConfigSet *set)
     }
 
     mutt_buffer_reset(&result);
-    printf("%s [%s]", e->key.strkey, type->name);
+    printf("%-7s %s", type->name, name);
 
     if (type->getter(e, &result))
       printf(" = %s\n", result.data);
@@ -195,5 +216,46 @@ bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value,
 
   notify_listeners(set, name, CE_SET);
   return true;
+}
+
+struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name)
+{
+  if (!set || !name)
+    return NULL;
+
+  struct HashElem *he = hash_find_elem(set->hash, name);
+
+  if (he->type & DT_INHERITED)
+    he = he->data;
+
+  return he;
+}
+
+struct HashElem *cs_inherit_variable(struct ConfigSet *set, struct HashElem *parent, const char *name)
+{
+  if (!set || !parent)
+    return NULL;
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = calloc(1, STRING);
+  err.dsize = STRING;
+
+  struct ConfigSetType *type = get_type_def(parent->type);
+  if (!type)
+  {
+    mutt_buffer_printf(&err, "Variable '%s' has an invalid type %d", name, parent->type);
+    return NULL;
+  }
+
+  struct Inheritance *i = safe_malloc(sizeof(*i));
+  i->parent = parent;
+  i->name = safe_strdup(name);
+  i->ac = NULL;
+
+  struct HashElem *e = hash_typed_insert(set->hash, name, parent->type | DT_INHERITED, i);
+
+  FREE(&err.data);
+  return e;
 }
 

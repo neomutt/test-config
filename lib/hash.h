@@ -86,6 +86,8 @@ void hash_delete(struct Hash *table, const char *strkey, const void *data);
 void int_hash_delete(struct Hash *table, unsigned int intkey, const void *data);
 void hash_destroy(struct Hash **ptr);
 
+void hash_dump(struct Hash *table);
+
 /**
  * struct HashWalkState - Cursor to iterate through a Hash Table
  */

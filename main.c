@@ -22,6 +22,9 @@
 #include "type/sort.h"
 #include "type/string.h"
 #include "hcache/hcache.h"
+#include "account.h"
+#include "mutt_options.h"
+#include "inheritance.h"
 
 void init_types()
 {
@@ -58,6 +61,33 @@ bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
   return false;
 }
 
+void hash_dump(struct Hash *table)
+{
+  struct HashElem *he = NULL;
+
+  for (int i = 0; i < table->nelem; i++)
+  {
+    he = table->table[i];
+    if (!he)
+      continue;
+
+    printf("%03d ", i);
+    for (; he; he = he->next)
+    {
+      if (he->type & DT_INHERITED)
+      {
+        struct Inheritance *i = he->data;
+        printf("\033[1;32m[%s]\033[m ", i->name);
+      }
+      else
+      {
+        printf("%s ", *(char**) he->data);
+      }
+    }
+    printf("\n");
+  }
+}
+
 int main(int argc, char *argv[])
 {
   struct Buffer err;
@@ -74,13 +104,20 @@ int main(int argc, char *argv[])
 
   mutt_buffer_reset(&err);
 
-  printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
-  if (!cs_set_variable(&cs, "header_cache_pagesize", "32768", &err))
-    printf("Set failed: %s\n", err.data);
-  printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
+  // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
+  // if (!cs_set_variable(&cs, "header_cache_pagesize", "32768", &err))
+  //   printf("Set failed: %s\n", err.data);
+  // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
 
-  // cs_dump_set(&cs);
+  struct Account *ac = account_create("wibble", &cs);
+  // printf("ac = %p\n", (void *) ac);
+
+  cs_dump_set(&cs);
+  // hash_dump(cs.hash);
+
+  account_free(&ac);
   cs_free(&cs);
   FREE(&err.data);
   return 0;
 }
+

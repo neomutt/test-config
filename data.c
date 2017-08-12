@@ -186,7 +186,7 @@ struct VariableDef MuttVars[] = {
   { "pager_index_lines",                DT_NUM,                  &PagerIndexLines,                   0 },
   { "pager_stop",                       DT_BOOL,                 &OPT_PAGER_STOP,                    0 },
   { "pipe_decode",                      DT_BOOL,                 &OPT_PIPE_DECODE,                   0 },
-  { "pipe_sep",                         DT_STR,                  &PipeSep,                           IP "\n" },
+  { "pipe_sep",                         DT_STR,                  &PipeSep,                           IP "\\n" },
   { "pipe_split",                       DT_BOOL,                 &OPT_PIPE_SPLIT,                    0 },
   { "postpone",                         DT_QUAD,                 &OPT_POSTPONE,                      MUTT_ASKYES },
   { "postponed",                        DT_PATH,                 &Postponed,                         IP "~/postponed" },

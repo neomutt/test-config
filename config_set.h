@@ -18,10 +18,10 @@ typedef bool (*cs_listener)  (struct ConfigSet *set, const char *name, enum Conf
 typedef bool (*cs_validator) (struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result);
 typedef bool (*cs_destructor)(struct ConfigSet *set, unsigned int type, intptr_t obj);
 
-typedef bool (*cs_type_string_set)(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err);
-typedef bool (*cs_type_string_get)(struct HashElem *e, struct Buffer *result);
-typedef bool (*cs_type_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
-typedef void (*cs_type_destructor)(void **obj);
+typedef bool (*cst_string_set)(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err);
+typedef bool (*cst_string_get)(struct HashElem *e, struct Buffer *result);
+typedef bool (*cst_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
+typedef void (*cst_destructor)(void **obj);
 
 #define IP (intptr_t)
 
@@ -37,10 +37,10 @@ struct VariableDef
 struct ConfigSetType
 {
   const char *name;
-  cs_type_string_set   setter;
-  cs_type_string_get   getter;
-  cs_type_reset        resetter;
-  cs_type_destructor   destructor;
+  cst_string_set   setter;
+  cst_string_get   getter;
+  cst_reset        resetter;
+  cst_destructor   destructor;
 };
 
 struct ConfigSet
@@ -59,6 +59,7 @@ void cs_dump_set(struct ConfigSet *set);
 
 bool cs_register_type     (unsigned int type, struct ConfigSetType *cst);
 bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[]);
+struct HashElem *cs_inherit_variable(struct ConfigSet *set, struct HashElem *parent, const char *name);
 
 void cs_add_listener (struct ConfigSet *set, cs_listener fn);
 void cs_add_validator(struct ConfigSet *set, cs_validator fn);

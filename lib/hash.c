@@ -505,3 +505,4 @@ struct HashElem *hash_walk(const struct Hash *table, struct HashWalkState *state
   state->last = NULL;
   return NULL;
 }
+
