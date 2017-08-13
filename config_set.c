@@ -13,10 +13,12 @@ struct ConfigSetType RegisteredTypes[16] =
 };
 
 
+const int ConfigSetSize = 10;// 500;
+
 struct ConfigSetType *get_type_def(unsigned int type)
 {
   type = DTYPE(type);
-  if (type >= mutt_array_size(RegisteredTypes))
+  if ((type < 1) || (type >= mutt_array_size(RegisteredTypes)))
     return NULL;
 
   return &RegisteredTypes[type];
@@ -50,7 +52,7 @@ struct ConfigSet *cs_set_new(struct ConfigSet *parent)
 bool cs_init(struct ConfigSet *set, struct ConfigSet *parent)
 {
   memset(set, 0, sizeof(*set));
-  set->hash = hash_create(500, 0);
+  set->hash = hash_create(ConfigSetSize, 0);
   hash_set_destructor(set->hash, destroy, (intptr_t) set);
   set->parent = parent;
   return true;
@@ -194,27 +196,125 @@ bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value,
     return false;
   }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  struct ConfigSetType *cst = NULL;
 
-  struct ConfigSetType *type = get_type_def(v->type);
-  if (!type)
+  if (e->type & DT_INHERITED)
   {
-    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", v->name, v->type);
+    struct Inheritance *i = e->data;
+    cst = get_type_def(i->parent->type);
+  }
+  else
+  {
+    cst = get_type_def(e->type);
+  }
+
+  if (!cst)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", name, e->type);
     return false;
   }
 
-  if (!type->setter)
+  if (!cst->setter)
   {
     mutt_buffer_printf(err, "No setter for '%s'", name);
     return false;
   }
 
-  if (!type->setter(set, e, value, err))
+  void *variable = NULL;
+
+  if (e->type & DT_INHERITED)
+  {
+    struct Inheritance *i = e->data;
+    variable = &i->var;
+  }
+  else
+  {
+    struct VariableDef *v = e->data;
+    variable = v->variable;
+  }
+
+  if (!variable)
     return false;
 
+  if (!cst->setter(set, variable, value, err))
+    return false;
+
+  if (e->type & DT_INHERITED)
+  {
+    struct Inheritance *i = e->data;
+    e->type = i->parent->type | DT_INHERITED;
+  }
   notify_listeners(set, name, CE_SET);
+  return true;
+}
+
+bool cs_get_variable(struct ConfigSet *set, const char *name, struct Buffer *result)
+{
+  if (!set || !name)
+    return false;
+
+  struct HashElem *e = hash_find_elem(set->hash, name);
+  if (!e)
+  {
+    mutt_buffer_printf(result, "Unknown variable '%s'", name);
+    return false;
+  }
+
+  void *variable = NULL;
+  int type = 0;
+
+  if (e->type & DT_INHERITED)
+  {
+    struct Inheritance *i = e->data;
+
+    if (DTYPE(e->type) == 0)
+    {
+      // Delegate to parent
+      e = i->parent;
+
+      type = DTYPE(e->type);
+
+      struct VariableDef *v = e->data;
+      if (!v)
+        return false;
+
+      variable = v->variable;
+    }
+    else
+    {
+      // Local value
+      type = DTYPE(e->type);
+      variable = &i->var;
+    }
+  }
+  else
+  {
+    // Normal variable
+    type = DTYPE(e->type);
+
+    struct VariableDef *v = e->data;
+    if (!v)
+      return false;
+
+    variable = v->variable;
+  }
+
+  struct ConfigSetType *cst = get_type_def(type);
+  if (!cst)
+  {
+    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", name, type);
+    return false;
+  }
+
+  if (!cst->getter)
+  {
+    mutt_buffer_printf(result, "No getter for '%s'", name);
+    return false;
+  }
+
+  if (!cst->getter(variable, result))
+    return false;
+
   return true;
 }
 
@@ -225,8 +325,11 @@ struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name)
 
   struct HashElem *he = hash_find_elem(set->hash, name);
 
-  if (he->type & DT_INHERITED)
-    he = he->data;
+  if (he && (he->type & DT_INHERITED))
+  {
+    struct Inheritance *i = he->data;
+    he = i->parent;
+  }
 
   return he;
 }
@@ -248,12 +351,11 @@ struct HashElem *cs_inherit_variable(struct ConfigSet *set, struct HashElem *par
     return NULL;
   }
 
-  struct Inheritance *i = safe_malloc(sizeof(*i));
+  struct Inheritance *i = safe_calloc(1, sizeof(*i));
   i->parent = parent;
   i->name = safe_strdup(name);
-  i->ac = NULL;
 
-  struct HashElem *e = hash_typed_insert(set->hash, name, parent->type | DT_INHERITED, i);
+  struct HashElem *e = hash_typed_insert(set->hash, i->name, DT_INHERITED, i);
 
   FREE(&err.data);
   return e;

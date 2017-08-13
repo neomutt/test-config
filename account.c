@@ -4,10 +4,10 @@
 #include "config_set.h"
 
 const char *AccountVarStr[] = {
-  "forward_quote",      "pager_stop",          "pgp_ignore_subkeys",
-  "pop_user",           "postpone_encrypt",    "reflow_space_quotes",
-  "resume_draft_files", "smtp_authenticators", "tmpdir",
-  "ts_status_format",
+  // "forward_quote",      "pager_stop",          "pgp_ignore_subkeys",
+  // "pop_user",           "postpone_encrypt",    "reflow_space_quotes",
+  "resume_draft_files", //"smtp_authenticators", "tmpdir",
+  // "ts_status_format",
 };
 
 struct Account *account_create(const char *name, struct ConfigSet *cs)

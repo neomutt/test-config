@@ -16,24 +16,28 @@ const char *bool_values[] = {
   "on",
 };
 
+
 static bool set_bool(struct ConfigSet *set, struct HashElem *e,
                      const char *value, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_BOOL)
-  {
-    mutt_buffer_printf(err, "Variable is not a boolean");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_BOOL)
+  // {
+  //   mutt_buffer_printf(err, "Variable is not a boolean");
+  //   return false;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
+
+  void *variable = e;
 
   for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
   {
     if (mutt_strcasecmp(bool_values[i], value) == 0)
     {
-      *(bool *) v->variable = i % 2;
+      // *(bool *) v->variable = i % 2;
+      *(bool *) variable = i % 2;
       return true;
     }
   }
@@ -44,17 +48,20 @@ static bool set_bool(struct ConfigSet *set, struct HashElem *e,
 
 static bool get_bool(struct HashElem *e, struct Buffer *result)
 {
-  if (DTYPE(e->type) != DT_BOOL)
-  {
-    mutt_buffer_printf(result, "Variable is not an boolean");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_BOOL)
+  // {
+  //   mutt_buffer_printf(result, "Variable is not an boolean");
+  //   return false;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
-  unsigned int index = *(bool *) v->variable;
+  void *variable = e;
+
+  // unsigned int index = *(bool *) v->variable;
+  unsigned int index = *(bool *) variable;
   if (index > 1)
   {
     mutt_buffer_printf(result, "Variable has an invalid value");

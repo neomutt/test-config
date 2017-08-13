@@ -89,6 +89,8 @@ void safe_free(void *ptr)
   void **p = (void **) ptr;
   if (*p)
   {
+    unsigned int *i = *p;
+    *i = 0xDDEEAADD;
     free(*p);
     *p = 0;
   }

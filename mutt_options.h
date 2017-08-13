@@ -41,7 +41,7 @@ struct Buffer;
 #define DT_MBCHARTBL 11   /**< multibyte char table */
 #define DT_HCACHE    12   /**< header cache backend */
 
-#define DTYPE(x) ((x) &DT_MASK)
+#define DTYPE(x) ((x) & DT_MASK)
 
 /* subtypes */
 #define DT_SUBTYPE_MASK 0xff0

@@ -65,5 +65,6 @@ void cs_add_listener (struct ConfigSet *set, cs_listener fn);
 void cs_add_validator(struct ConfigSet *set, cs_validator fn);
 
 bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value, struct Buffer *err);
+bool cs_get_variable(struct ConfigSet *set, const char *name, struct Buffer *result);
 
 #endif /* _MUTT_CONFIG_SET_H */
