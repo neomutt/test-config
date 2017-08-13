@@ -188,25 +188,9 @@ static bool get_sort(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool reset_sort(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_SORT)
-  {
-    mutt_buffer_printf(err, "Variable is not a sort");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(short *) v->variable = v->initial;
-  return true;
-}
-
 
 void init_sorts(void)
 {
-  struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, reset_sort, NULL };
+  struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, NULL };
   cs_register_type(DT_SORT, &cst_sort);
 }

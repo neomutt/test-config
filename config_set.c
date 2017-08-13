@@ -154,18 +154,8 @@ static struct HashElem *reg_one_var(struct ConfigSet *set, struct VariableDef *v
   }
 
   struct HashElem *e = hash_typed_insert(set->hash, var->name, var->type, var);
-  if (type->resetter)
-  {
-    if (!type->resetter(set, e, err))
-    {
-      hash_delete(set->hash, var->name, (void*) var->variable);
-      return NULL;
-    }
-  }
-  else
-  {
-    //XXX var->variable = var->initial;
-  }
+
+  *(intptr_t*) var->variable = var->initial;
 
   return e;
 }
@@ -245,6 +235,57 @@ bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value,
     e->type = i->parent->type | DT_INHERITED;
   }
   notify_listeners(set, name, CE_SET);
+  return true;
+}
+
+bool cs_reset_variable(struct ConfigSet *set, const char *name, struct Buffer *err)
+{
+  struct HashElem *e = hash_find_elem(set->hash, name);
+  if (!e)
+  {
+    mutt_buffer_printf(err, "Unknown variable '%s'", name);
+    return false;
+  }
+
+  /* An inherited variable that's already pointing to its parent.
+   * Return 'success', but don't send a notification */
+  if ((e->type & DT_INHERITED) && (DTYPE(e->type) == 0))
+    return true;
+
+  struct ConfigSetType *cst = NULL;
+
+  if (e->type & DT_INHERITED)
+  {
+    struct Inheritance *i = e->data;
+    cst = get_type_def(i->parent->type);
+
+    struct VariableDef *v = i->parent->data;
+
+    if (cst->destructor)
+      cst->destructor((void**) &i->var);
+
+    i->var = v->initial;
+    e->type = DT_INHERITED;
+  }
+  else
+  {
+    cst = get_type_def(e->type);
+
+    struct VariableDef *v = e->data;
+
+    if (cst->destructor)
+      cst->destructor(&v->variable);
+
+    *(intptr_t*) v->variable = v->initial;
+  }
+
+  if (!cst)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", name, e->type);
+    return false;
+  }
+
+  notify_listeners(set, name, CE_RESET);
   return true;
 }
 

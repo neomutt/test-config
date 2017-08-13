@@ -57,8 +57,8 @@ void init_variables(struct ConfigSet *set)
 
 bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
 {
-  if (e == CE_CHANGED)
-    printf("\033[1;33m%s has been changed\033[m\n", name);
+  if (e == CE_RESET)
+    printf("\033[1;32m%s has been reset\033[m\n", name);
   else
     printf("\033[1;32m%s has been set\033[m\n", name);
   return false;
@@ -118,6 +118,23 @@ void dump1(struct ConfigSet *cs)
   FREE(&result.data);
 }
 
+void reset1(struct ConfigSet *cs, const char *name)
+{
+  struct Buffer result;
+  mutt_buffer_init(&result);
+  result.data = calloc(1, STRING);
+  result.dsize = STRING;
+
+  mutt_buffer_reset(&result);
+  if (!cs_reset_variable(cs, name, &result))
+  {
+    printf("Error: %s\n", result.data);
+    return;
+  }
+
+  FREE(&result.data);
+}
+
 void set1(struct ConfigSet *cs, const char *name, const char *value)
 {
   struct Buffer result;
@@ -159,14 +176,18 @@ void test1(struct ConfigSet *cs, struct Account *ac)
   dump1(cs);
 
   // reset value of wibble:resume_draft_files = 1
+  reset1(cs, str_child);
 
   // print value of        resume_draft_files | 1
   // print value of wibble:resume_draft_files | 1 (inherited)
+  dump1(cs);
 
   // reset value of        resume_draft_files = 0
+  reset1(cs, str_parent);
 
   // print value of        resume_draft_files | 0
   // print value of wibble:resume_draft_files | 0 (inherited)
+  dump1(cs);
 }
 
 int main(int argc, char *argv[])

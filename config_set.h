@@ -11,7 +11,7 @@ struct HashElem;
 enum ConfigEvent
 {
   CE_SET,
-  CE_CHANGED,
+  CE_RESET,
 };
 
 typedef bool (*cs_listener)  (struct ConfigSet *set, const char *name, enum ConfigEvent e);
@@ -20,7 +20,6 @@ typedef bool (*cs_destructor)(struct ConfigSet *set, unsigned int type, intptr_t
 
 typedef bool (*cst_string_set)(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err);
 typedef bool (*cst_string_get)(struct HashElem *e, struct Buffer *result);
-typedef bool (*cst_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
 typedef void (*cst_destructor)(void **obj);
 
 #define IP (intptr_t)
@@ -39,7 +38,6 @@ struct ConfigSetType
   const char *name;
   cst_string_set   setter;
   cst_string_get   getter;
-  cst_reset        resetter;
   cst_destructor   destructor;
 };
 
@@ -64,7 +62,8 @@ struct HashElem *cs_inherit_variable(struct ConfigSet *set, struct HashElem *par
 void cs_add_listener (struct ConfigSet *set, cs_listener fn);
 void cs_add_validator(struct ConfigSet *set, cs_validator fn);
 
-bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value, struct Buffer *err);
-bool cs_get_variable(struct ConfigSet *set, const char *name, struct Buffer *result);
+bool cs_set_variable  (struct ConfigSet *set, const char *name, const char *value, struct Buffer *err);
+bool cs_reset_variable(struct ConfigSet *set, const char *name, struct Buffer *err);
+bool cs_get_variable  (struct ConfigSet *set, const char *name, struct Buffer *result);
 
 #endif /* _MUTT_CONFIG_SET_H */

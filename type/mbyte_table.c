@@ -47,7 +47,7 @@ static struct MbCharTable *parse_mbchar_table(const char *s)
   return t;
 }
 
-static void mbchartbl_destructor(void **obj)
+static void destroy_mbchartbl(void **obj)
 {
   if (!obj || !*obj)
     return;
@@ -76,7 +76,7 @@ static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e,
   if (!table)
     return false;
 
-  mbchartbl_destructor(v->variable);
+  destroy_mbchartbl(v->variable);
   *(struct MbCharTable **) v->variable = table;
   return true;
 }
@@ -104,31 +104,10 @@ static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_MBCHARTBL)
-  {
-    mutt_buffer_printf(err, "Variable is not a multibyte string");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  struct MbCharTable *table = parse_mbchar_table((const char*) v->initial);
-  if (!table)
-    return false;
-
-  mbchartbl_destructor(v->variable);
-  *(struct MbCharTable **) v->variable = table;
-  return true;
-}
-
 
 void init_mbyte_table(void)
 {
   struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl,
-                                         reset_mbchartbl, mbchartbl_destructor };
+                                         destroy_mbchartbl };
   cs_register_type(DT_MBCHARTBL, &cst_mbchartbl);
 }

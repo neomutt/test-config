@@ -3,7 +3,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void str_destructor(void **obj)
+static void destroy_str(void **obj)
 {
   if (!obj || !*obj)
     return;
@@ -47,25 +47,9 @@ static bool get_str(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool reset_str(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
-{
-  if (e && DTYPE(e->type) != DT_STR)
-  {
-    mutt_buffer_printf(err, "Variable is not a string");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  mutt_str_replace(v->variable, (const char*) v->initial);
-  return true;
-}
-
 
 void init_string(void)
 {
-  struct ConfigSetType cst_str = { "string", set_str, get_str, reset_str, str_destructor };
+  struct ConfigSetType cst_str = { "string", set_str, get_str, destroy_str };
   cs_register_type(DT_STR, &cst_str);
 }

@@ -56,25 +56,9 @@ static bool get_magic(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool reset_magic(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_MAGIC)
-  {
-    mutt_buffer_printf(err, "Variable is not a mailbox magic");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(short *) v->variable = v->initial;
-  return true;
-}
-
 
 void init_magic(void)
 {
-  struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, reset_magic, NULL };
+  struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, NULL };
   cs_register_type(DT_MAGIC, &cst_magic);
 }

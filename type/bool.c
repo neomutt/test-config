@@ -72,25 +72,9 @@ static bool get_bool(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool reset_bool(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_BOOL)
-  {
-    mutt_buffer_printf(err, "Variable is not an boolean");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(bool *) v->variable = v->initial;
-  return true;
-}
-
 
 void init_bool(void)
 {
-  struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, reset_bool, NULL };
+  struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, NULL };
   cs_register_type(DT_BOOL, &cst_bool);
 }

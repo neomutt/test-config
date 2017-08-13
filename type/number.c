@@ -48,25 +48,9 @@ static bool get_num(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool reset_num(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
-{
-  if (DTYPE(e->type) != DT_NUM)
-  {
-    mutt_buffer_printf(err, "Variable is not a number");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(short *) v->variable = v->initial;
-  return true;
-}
-
 
 void init_num(void)
 {
-  struct ConfigSetType cst_num = { "number", set_num, get_num, reset_num, NULL };
+  struct ConfigSetType cst_num = { "number", set_num, get_num, NULL };
   cs_register_type(DT_NUM, &cst_num);
 }
