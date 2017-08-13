@@ -149,79 +149,38 @@ void set(struct ConfigSet *cs, const char *name, const char *value)
   FREE(&result.data);
 }
 
-void test1(struct ConfigSet *cs)
+void test(struct ConfigSet *cs, const char *parent, const char *pvalue, const char *child, const char *cvalue)
 {
-  const char *parent = "resume_draft_files";
-  const char *child  = "wibble:resume_draft_files";
-
-  // print value of        resume_draft_files | 0
-  // print value of wibble:resume_draft_files | 0 (inherited)
+  // print value of parent | 0
+  // print value of child  | 0 (inherited)
   dump(cs, parent, child);
 
-  // set   value of        resume_draft_files = 1
-  set(cs, parent, "1");
+  // set   value of parent = 1
+  set(cs, parent, pvalue);
 
-  // print value of        resume_draft_files | 1
-  // print value of wibble:resume_draft_files | 1 (inherited)
+  // print value of parent | 1
+  // print value of child  | 1 (inherited)
   dump(cs, parent, child);
 
-  // set   value of wibble:resume_draft_files = 0
-  set(cs, child, "0");
+  // set   value of child  = 0
+  set(cs, child, cvalue);
 
-  // print value of        resume_draft_files | 1
-  // print value of wibble:resume_draft_files | 0 (private)
+  // print value of parent | 1
+  // print value of child  | 0 (private)
   dump(cs, parent, child);
 
-  // reset value of wibble:resume_draft_files = 1
+  // reset value of child  = 1
   reset(cs, child);
 
-  // print value of        resume_draft_files | 1
-  // print value of wibble:resume_draft_files | 1 (inherited)
+  // print value of parent | 1
+  // print value of child  | 1 (inherited)
   dump(cs, parent, child);
 
-  // reset value of        resume_draft_files = 0
+  // reset value of parent = 0
   reset(cs, parent);
 
-  // print value of        resume_draft_files | 0
-  // print value of wibble:resume_draft_files | 0 (inherited)
-  dump(cs, parent, child);
-}
-
-void test2(struct ConfigSet *cs)
-{
-  const char *parent = "pager_context";
-  const char *child  = "hatstand:pager_context";
-
-  // print value of          pager_context | 7
-  // print value of hatstand:pager_context | 7 (inherited)
-  dump(cs, parent, child);
-
-  // set   value of          pager_context = 12
-  set(cs, parent, "12");
-
-  // print value of          pager_context | 12
-  // print value of hatstand:pager_context | 12 (inherited)
-  dump(cs, parent, child);
-
-  // set   value of hatstand:pager_context = 9
-  set(cs, child, "9");
-
-  // print value of          pager_context | 12
-  // print value of hatstand:pager_context | 9 (private)
-  dump(cs, parent, child);
-
-  // reset value of hatstand:pager_context = 12
-  reset(cs, child);
-
-  // print value of          pager_context | 12
-  // print value of hatstand:pager_context | 12 (inherited)
-  dump(cs, parent, child);
-
-  // reset value of          pager_context = 7
-  reset(cs, parent);
-
-  // print value of          pager_context | 7
-  // print value of hatstand:pager_context | 7 (inherited)
+  // print value of parent | 0
+  // print value of child  | 0 (inherited)
   dump(cs, parent, child);
 }
 
@@ -253,8 +212,8 @@ int main(int argc, char *argv[])
   // cs_dump_set(&cs);
   // hash_dump(cs.hash);
 
-  test1(&cs);
-  test2(&cs);
+  test(&cs, "resume_draft_files", "0",  "wibble:resume_draft_files", "1");
+  test(&cs, "pager_context",      "12", "hatstand:pager_context",    "9");
 
   account_free(&ac2);
   account_free(&ac1);
