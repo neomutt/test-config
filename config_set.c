@@ -260,49 +260,17 @@ bool cs_get_variable(struct ConfigSet *set, const char *name, struct Buffer *res
     return false;
   }
 
-  void *variable = NULL;
-  int type = 0;
-
-  if (e->type & DT_INHERITED)
+  if ((e->type & DT_INHERITED) && (DTYPE(e->type) == 0))
   {
+    // Delegate to parent
     struct Inheritance *i = e->data;
-
-    if (DTYPE(e->type) == 0)
-    {
-      // Delegate to parent
-      e = i->parent;
-
-      type = DTYPE(e->type);
-
-      struct VariableDef *v = e->data;
-      if (!v)
-        return false;
-
-      variable = v->variable;
-    }
-    else
-    {
-      // Local value
-      type = DTYPE(e->type);
-      variable = &i->var;
-    }
-  }
-  else
-  {
-    // Normal variable
-    type = DTYPE(e->type);
-
-    struct VariableDef *v = e->data;
-    if (!v)
-      return false;
-
-    variable = v->variable;
+    e = i->parent;
   }
 
-  struct ConfigSetType *cst = get_type_def(type);
+  struct ConfigSetType *cst = get_type_def(e->type);
   if (!cst)
   {
-    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", name, type);
+    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", name, DTYPE(e->type));
     return false;
   }
 
@@ -310,6 +278,24 @@ bool cs_get_variable(struct ConfigSet *set, const char *name, struct Buffer *res
   {
     mutt_buffer_printf(result, "No getter for '%s'", name);
     return false;
+  }
+
+  void *variable = NULL;
+
+  if ((e->type & DT_INHERITED) && (DTYPE(e->type) != 0))
+  {
+    // Local value
+    struct Inheritance *i = e->data;
+    variable = &i->var;
+  }
+  else
+  {
+    // Normal variable
+    struct VariableDef *v = e->data;
+    if (!v)
+      return false;
+
+    variable = v->variable;
   }
 
   if (!cst->getter(variable, result))
