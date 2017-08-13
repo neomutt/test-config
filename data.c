@@ -181,7 +181,7 @@ struct VariableDef MuttVars[] = {
   // { "net_inc",                          DT_NUM,                  &NetInc,                            10 },
   // { "new_mail_command",                 DT_PATH,                 &NewMailCmd,                        IP NULL },
   // { "pager",                            DT_PATH,                 &Pager,                             IP "builtin" },
-  // { "pager_context",                    DT_NUM,                  &PagerContext,                      0 },
+  { "pager_context",                    DT_NUM,                  &PagerContext,                      7 },
   // { "pager_format",                     DT_STR,                  &PagerFmt,                          IP "-%Z- %C/%m: %-20.20n %s%* -- (%P)" },
   // { "pager_index_lines",                DT_NUM,                  &PagerIndexLines,                   0 },
   // { "pager_stop",                       DT_BOOL,                 &OPT_PAGER_STOP,                    0 },

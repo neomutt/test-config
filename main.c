@@ -26,9 +26,6 @@
 #include "type/sort.h"
 #include "type/string.h"
 
-const char *str_parent = "resume_draft_files";
-const char *str_child  = "wibble:resume_draft_files";
-
 void init_types()
 {
   init_addr();
@@ -91,7 +88,7 @@ void hash_dump(struct Hash *table)
   }
 }
 
-void dump1(struct ConfigSet *cs)
+void dump(struct ConfigSet *cs, const char *parent, const char *child)
 {
   struct Buffer result;
   mutt_buffer_init(&result);
@@ -99,26 +96,26 @@ void dump1(struct ConfigSet *cs)
   result.dsize = STRING;
 
   mutt_buffer_reset(&result);
-  if (!cs_get_variable(cs, str_parent, &result))
+  if (!cs_get_variable(cs, parent, &result))
   {
     printf("Error: %s\n", result.data);
     return;
   }
-  // printf("%25s = %d\n", str_parent, OPT_RESUME_DRAFT_FILES);
-  printf("%25s = %s\n", str_parent, result.data);                               // print value of        resume_draft_files | 0
+
+  printf("%30s = %s\n", parent, result.data);
 
   mutt_buffer_reset(&result);
-  if (!cs_get_variable(cs, str_child, &result))                                 
+  if (!cs_get_variable(cs, child, &result))                                 
   {
     printf("Error: %s\n", result.data);
     return;
   }
-  printf("%25s = %s\n", str_child, result.data);                                // print value of wibble:resume_draft_files | 0 (inherited)
+  printf("%30s = %s\n", child, result.data);
 
   FREE(&result.data);
 }
 
-void reset1(struct ConfigSet *cs, const char *name)
+void reset(struct ConfigSet *cs, const char *name)
 {
   struct Buffer result;
   mutt_buffer_init(&result);
@@ -135,7 +132,7 @@ void reset1(struct ConfigSet *cs, const char *name)
   FREE(&result.data);
 }
 
-void set1(struct ConfigSet *cs, const char *name, const char *value)
+void set(struct ConfigSet *cs, const char *name, const char *value)
 {
   struct Buffer result;
   mutt_buffer_init(&result);
@@ -152,42 +149,80 @@ void set1(struct ConfigSet *cs, const char *name, const char *value)
   FREE(&result.data);
 }
 
-void test1(struct ConfigSet *cs, struct Account *ac)
+void test1(struct ConfigSet *cs)
 {
-  // struct HashElem *he_parent = cs_get_elem(cs, str_parent);
-  // struct HashElem *he_child  = cs_get_elem(cs, str_child);
+  const char *parent = "resume_draft_files";
+  const char *child  = "wibble:resume_draft_files";
 
   // print value of        resume_draft_files | 0
   // print value of wibble:resume_draft_files | 0 (inherited)
-  dump1(cs);
+  dump(cs, parent, child);
 
   // set   value of        resume_draft_files = 1
-  set1(cs, str_parent, "1");
+  set(cs, parent, "1");
 
   // print value of        resume_draft_files | 1
   // print value of wibble:resume_draft_files | 1 (inherited)
-  dump1(cs);
+  dump(cs, parent, child);
 
   // set   value of wibble:resume_draft_files = 0
-  set1(cs, str_child, "0");
+  set(cs, child, "0");
 
   // print value of        resume_draft_files | 1
   // print value of wibble:resume_draft_files | 0 (private)
-  dump1(cs);
+  dump(cs, parent, child);
 
   // reset value of wibble:resume_draft_files = 1
-  reset1(cs, str_child);
+  reset(cs, child);
 
   // print value of        resume_draft_files | 1
   // print value of wibble:resume_draft_files | 1 (inherited)
-  dump1(cs);
+  dump(cs, parent, child);
 
   // reset value of        resume_draft_files = 0
-  reset1(cs, str_parent);
+  reset(cs, parent);
 
   // print value of        resume_draft_files | 0
   // print value of wibble:resume_draft_files | 0 (inherited)
-  dump1(cs);
+  dump(cs, parent, child);
+}
+
+void test2(struct ConfigSet *cs)
+{
+  const char *parent = "pager_context";
+  const char *child  = "hatstand:pager_context";
+
+  // print value of          pager_context | 7
+  // print value of hatstand:pager_context | 7 (inherited)
+  dump(cs, parent, child);
+
+  // set   value of          pager_context = 12
+  set(cs, parent, "12");
+
+  // print value of          pager_context | 12
+  // print value of hatstand:pager_context | 12 (inherited)
+  dump(cs, parent, child);
+
+  // set   value of hatstand:pager_context = 9
+  set(cs, child, "9");
+
+  // print value of          pager_context | 12
+  // print value of hatstand:pager_context | 9 (private)
+  dump(cs, parent, child);
+
+  // reset value of hatstand:pager_context = 12
+  reset(cs, child);
+
+  // print value of          pager_context | 12
+  // print value of hatstand:pager_context | 12 (inherited)
+  dump(cs, parent, child);
+
+  // reset value of          pager_context = 7
+  reset(cs, parent);
+
+  // print value of          pager_context | 7
+  // print value of hatstand:pager_context | 7 (inherited)
+  dump(cs, parent, child);
 }
 
 int main(int argc, char *argv[])
@@ -211,15 +246,18 @@ int main(int argc, char *argv[])
   //   printf("Set failed: %s\n", err.data);
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
 
-  struct Account *ac = account_create("wibble", &cs);
+  struct Account *ac1 = account_create("wibble",   &cs);
+  struct Account *ac2 = account_create("hatstand", &cs);
   // printf("ac = %p\n", (void *) ac);
 
   // cs_dump_set(&cs);
   // hash_dump(cs.hash);
 
-  test1(&cs, ac);
+  test1(&cs);
+  test2(&cs);
 
-  account_free(&ac);
+  account_free(&ac2);
+  account_free(&ac1);
   cs_free(&cs);
   FREE(&err.data);
   return 0;
