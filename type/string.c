@@ -4,35 +4,35 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_str(void **obj, struct VariableDef *def)
+static void destroy_str(void **obj, struct VariableDef *vdef)
 {
-  if (!obj || !*obj || !def)
+  if (!obj || !*obj || !vdef)
     return;
 
   /* Don't free strings from the variable definition */
-  if (*obj == (void *) def->initial)
+  if (*obj == (void *) vdef->initial)
     return;
 
   FREE(obj);
 }
 
-static bool set_str(struct ConfigSet *set, void *variable,
-                    struct VariableDef *def, const char *value, struct Buffer *err)
+static bool set_str(struct ConfigSet *cs, void *variable,
+                    struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
-  if (!set || !variable || !def || !value)
+  if (!cs || !variable || !vdef || !value)
     return false;
 
-  if (def->validator && !def->validator(set, def, (intptr_t) value, err))
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
     return false;
 
-  destroy_str(variable, def);
+  destroy_str(variable, vdef);
   *(const char **) variable = safe_strdup(value);
   return true;
 }
 
-static bool get_str(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_str(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !def)
+  if (!variable || !vdef)
     return false;
 
   const char *str = *(const char **) variable;
@@ -43,14 +43,14 @@ static bool get_str(void *variable, struct VariableDef *def, struct Buffer *resu
   return true;
 }
 
-static bool reset_str(struct ConfigSet *set, void *variable,
-                      struct VariableDef *def, struct Buffer *err)
+static bool reset_str(struct ConfigSet *cs, void *variable,
+                      struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!set || !variable || !def)
+  if (!cs || !variable || !vdef)
     return false;
 
-  destroy_str(variable, def);
-  *(const char **) variable = (const char *) def->initial; 
+  destroy_str(variable, vdef);
+  *(const char **) variable = (const char *) vdef->initial; 
   return true;
 }
 

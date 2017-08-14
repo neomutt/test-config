@@ -1,25 +1,20 @@
-#include <stdbool.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include "config_set.h"
 #include "lib/lib.h"
 #include "mutt_options.h"
 
 const char *bool_values[] = {
-  "no",
-  "yes",
-  "false",
-  "true",
-  "0",
-  "1",
-  "off",
-  "on",
+  "no", "yes", "false", "true", "0", "1", "off", "on",
 };
 
-
-static bool set_bool(struct ConfigSet *set, void *variable, struct VariableDef *def,
-                     const char *value, struct Buffer *err)
+static bool set_bool(struct ConfigSet *cs, void *variable,
+                     struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
+  if (!cs || !variable || !vdef || !value)
+    return false;
+
   for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
   {
     if (mutt_strcasecmp(bool_values[i], value) == 0)
@@ -33,8 +28,14 @@ static bool set_bool(struct ConfigSet *set, void *variable, struct VariableDef *
   return false;
 }
 
-static bool get_bool(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_bool(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
+  if (!variable || !vdef)
+    return false;
+
+  if (!variable || !vdef)
+    return false;
+
   unsigned int index = *(bool *) variable;
   if (index > 1)
   {
@@ -46,12 +47,15 @@ static bool get_bool(void *variable, struct VariableDef *def, struct Buffer *res
   return true;
 }
 
-static bool reset_bool(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
+static bool reset_bool(struct ConfigSet *cs, void *variable,
+                       struct VariableDef *vdef, struct Buffer *err)
 {
-  *(bool *) variable = def->initial;
+  if (!cs || !variable || !vdef)
+    return false;
+
+  *(bool *) variable = vdef->initial;
   return true;
 }
-
 
 void init_bool(void)
 {

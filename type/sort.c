@@ -89,12 +89,15 @@ static int find_id(const struct Mapping *map, const char *str)
 }
 
 
-static bool set_sort(struct ConfigSet *set, void *variable, struct VariableDef *def,
+static bool set_sort(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
+  if (!cs || !variable || !vdef || !value)
+    return false;
+
   intptr_t id = -1;
 
-  switch (def->type & DT_SUBTYPE_MASK)
+  switch (vdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
       id = find_id(SortMethods, value);
@@ -128,13 +131,16 @@ static bool set_sort(struct ConfigSet *set, void *variable, struct VariableDef *
   return true;
 }
 
-static bool get_sort(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_sort(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
+  if (!variable || !vdef)
+    return false;
+
   int sort = *(short *) variable;
 
   const char *str = NULL;
 
-  switch (def->type & DT_SUBTYPE_MASK)
+  switch (vdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
       str = find_string(SortMethods, sort);
@@ -168,9 +174,12 @@ static bool get_sort(void *variable, struct VariableDef *def, struct Buffer *res
   return true;
 }
 
-static bool reset_sort(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
+static bool reset_sort(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
 {
-  *(short *) variable = def->initial;
+  if (!cs || !variable || !vdef)
+    return false;
+
+  *(short *) variable = vdef->initial;
   return true;
 }
 

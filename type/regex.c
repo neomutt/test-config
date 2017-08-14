@@ -6,7 +6,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_rx(void **obj, struct VariableDef *def)
+static void destroy_rx(void **obj, struct VariableDef *vdef)
 {
   if (!obj || !*obj)
     return;
@@ -17,9 +17,12 @@ static void destroy_rx(void **obj, struct VariableDef *def)
   // FREE(r);
 }
 
-static bool set_rx(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value,
+static bool set_rx(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, const char *value,
                    struct Buffer *err)
 {
+  if (!cs || !variable || !vdef || !value)
+    return false;
+
   struct Regex *r = variable;
   if (!r)
     return false;
@@ -30,8 +33,11 @@ static bool set_rx(struct ConfigSet *set, void *variable, struct VariableDef *de
   return true;
 }
 
-static bool get_rx(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_rx(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
+  if (!variable || !vdef)
+    return false;
+
   struct Regex *r = variable;
   if (!r)
     return false;
@@ -40,16 +46,19 @@ static bool get_rx(void *variable, struct VariableDef *def, struct Buffer *resul
   return true;
 }
 
-static bool reset_rx(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
+static bool reset_rx(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
 {
-  destroy_rx(variable, def);
+  if (!cs || !variable || !vdef)
+    return false;
+
+  destroy_rx(variable, vdef);
 
   struct Regex *r = variable;
   if (!r)
     return false;
 
   r->rx = NULL; //XXX regenerate r->rx
-  mutt_str_replace(&r->pattern, (const char*) def->initial);
+  mutt_str_replace(&r->pattern, (const char*) vdef->initial);
   return true;
 }
 

@@ -5,9 +5,12 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static bool set_num(struct ConfigSet *set, void *variable, struct VariableDef *def,
+static bool set_num(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
                     const char *value, struct Buffer *err)
 {
+  if (!cs || !variable || !vdef || !value)
+    return false;
+
   int num = 0;
   if (mutt_atoi(value, &num) < 0)
   {
@@ -22,15 +25,21 @@ static bool set_num(struct ConfigSet *set, void *variable, struct VariableDef *d
   return true;
 }
 
-static bool get_num(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_num(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
+  if (!variable || !vdef)
+    return false;
+
   mutt_buffer_printf(result, "%d", *(short*) variable);
   return true;
 }
 
-static bool reset_num(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
+static bool reset_num(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
 {
-  *(short *) variable = def->initial;
+  if (!cs || !variable || !vdef)
+    return false;
+
+  *(short *) variable = vdef->initial;
   return true;
 }
 

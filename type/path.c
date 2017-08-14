@@ -3,7 +3,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_path(void **obj, struct VariableDef *def)
+static void destroy_path(void **obj, struct VariableDef *vdef)
 {
   if (!obj || !*obj)
     return;
@@ -11,24 +11,33 @@ static void destroy_path(void **obj, struct VariableDef *def)
   //XXX FREE(obj);
 }
 
-static bool set_path(struct ConfigSet *set, void *variable, struct VariableDef *def,
+static bool set_path(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
+  if (!cs || !variable || !vdef || !value)
+    return false;
+
   *(const char **) variable = safe_strdup(value);
   return true;
 }
 
-static bool get_path(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_path(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
+  if (!variable || !vdef)
+    return false;
+
   // return true; /* empty string */
 
   mutt_buffer_addstr(result, *(const char **) variable);
   return true;
 }
 
-static bool reset_path(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
+static bool reset_path(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
 {
-  mutt_str_replace(variable, (const char*) def->initial);
+  if (!cs || !variable || !vdef)
+    return false;
+
+  mutt_str_replace(variable, (const char*) vdef->initial);
   return true;
 }
 

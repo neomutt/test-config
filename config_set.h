@@ -15,9 +15,8 @@ enum ConfigEvent
   CE_RESET,
 };
 
-typedef bool (*cs_listener)  (struct ConfigSet *set, const char *name, enum ConfigEvent e);
-typedef bool (*cs_validator) (struct ConfigSet *set, struct VariableDef *def, intptr_t value, struct Buffer *result);
-typedef bool (*cs_destructor)(struct ConfigSet *set, unsigned int type, intptr_t obj);
+typedef bool (*cs_listener)  (struct ConfigSet *cs, const char *name, enum ConfigEvent e);
+typedef bool (*cs_validator) (struct ConfigSet *cs, struct VariableDef *def, intptr_t value, struct Buffer *result);
 
 struct VariableDef
 {
@@ -28,10 +27,10 @@ struct VariableDef
   cs_validator  validator;
 };
 
-typedef bool (*cst_string_set)(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value, struct Buffer *err);
+typedef bool (*cst_string_set)(struct ConfigSet *cs, void *variable, struct VariableDef *def, const char *value, struct Buffer *err);
 typedef bool (*cst_string_get)(void *variable, struct VariableDef *def, struct Buffer *result);
-typedef bool (*cst_reset)     (struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err);
-typedef void (*cst_destructor)(void **obj, struct VariableDef *def);
+typedef bool (*cst_reset)     (struct ConfigSet *cs, void *variable, struct VariableDef *def, struct Buffer *err);
+typedef void (*cst_destructor)(void **variable, struct VariableDef *def);
 
 #define IP (intptr_t)
 
@@ -52,20 +51,20 @@ struct ConfigSet
 };
 
 struct ConfigSet *cs_new(struct ConfigSet *parent);
-bool cs_init(struct ConfigSet *set, struct ConfigSet *parent);
-void cs_free(struct ConfigSet *set);
-struct HashElem *cs_get_elem(struct ConfigSet *set, const char *name);
-void cs_dump_set(struct ConfigSet *set);
+bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent);
+void cs_free(struct ConfigSet *cs);
+struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name);
+void cs_dump_set(struct ConfigSet *cs);
 
 bool cs_register_type     (unsigned int type, struct ConfigSetType *cst);
-bool cs_register_variables(struct ConfigSet *set, struct VariableDef vars[]);
-struct HashElem *cs_inherit_variable(struct ConfigSet *set, struct HashElem *parent, const char *name);
+bool cs_register_variables(struct ConfigSet *cs, struct VariableDef vars[]);
+struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *parent, const char *name);
 
-void cs_add_listener (struct ConfigSet *set, cs_listener fn);
-void cs_add_validator(struct ConfigSet *set, cs_validator fn);
+void cs_add_listener (struct ConfigSet *cs, cs_listener fn);
+void cs_add_validator(struct ConfigSet *cs, cs_validator fn);
 
-bool cs_set_variable  (struct ConfigSet *set, const char *name, const char *value, struct Buffer *err);
-bool cs_reset_variable(struct ConfigSet *set, const char *name, struct Buffer *err);
-bool cs_get_variable  (struct ConfigSet *set, const char *name, struct Buffer *result);
+bool cs_set_variable  (struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
+bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *err);
+bool cs_get_variable  (struct ConfigSet *cs, const char *name, struct Buffer *result);
 
 #endif /* _MUTT_CONFIG_SET_H */

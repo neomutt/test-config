@@ -7,9 +7,12 @@
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 
-static bool set_magic(struct ConfigSet *set, void *variable, struct VariableDef *def,
+static bool set_magic(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
                       const char *value, struct Buffer *err)
 {
+  if (!cs || !variable || !vdef || !value)
+    return false;
+
   for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
   {
     if (mutt_strcasecmp(magic_values[i], value) == 0)
@@ -23,8 +26,11 @@ static bool set_magic(struct ConfigSet *set, void *variable, struct VariableDef 
   return false;
 }
 
-static bool get_magic(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_magic(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
+  if (!variable || !vdef)
+    return false;
+
   unsigned int index = *(short *) variable;
   if ((index < 1) || (index >= mutt_array_size(magic_values)))
   {
@@ -36,9 +42,12 @@ static bool get_magic(void *variable, struct VariableDef *def, struct Buffer *re
   return true;
 }
 
-static bool reset_magic(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
+static bool reset_magic(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
 {
-  *(short *) variable = def->initial;
+  if (!cs || !variable || !vdef)
+    return false;
+
+  *(short *) variable = vdef->initial;
   return true;
 }
 
