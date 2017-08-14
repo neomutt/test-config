@@ -29,7 +29,7 @@ struct Regex *ReplyRegexp;
 struct Regex *Smileys;
 struct Regex *GecosMask;
 
-struct VariableDef MuttVars[] = {
+const struct VariableDef MuttVars[] = {
   { "alias_file",                       DT_PATH,                 &AliasFile,                         IP "~/.muttrc" },
   { "attribution",                      DT_STR,                  &Attribution,                       IP "On %d, %n wrote:" },
   { "from",                             DT_ADDR,                 &From,                              0 },

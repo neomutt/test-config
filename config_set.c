@@ -146,7 +146,7 @@ bool cs_register_type(unsigned int type, const struct ConfigSetType *cst)
 }
 
 
-static struct HashElem *reg_one_var(struct ConfigSet *cs, struct VariableDef *vdef, struct Buffer *err)
+static struct HashElem *reg_one_var(struct ConfigSet *cs, const struct VariableDef *vdef, struct Buffer *err)
 {
   struct ConfigSetType *cst = get_type_def(vdef->type);
   if (!cst)
@@ -155,7 +155,7 @@ static struct HashElem *reg_one_var(struct ConfigSet *cs, struct VariableDef *vd
     return NULL;
   }
 
-  struct HashElem *e = hash_typed_insert(cs->hash, vdef->name, vdef->type, vdef);
+  struct HashElem *e = hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
 
   if (cst->resetter)
     cst->resetter(cs, vdef->variable, vdef, err);
@@ -163,7 +163,7 @@ static struct HashElem *reg_one_var(struct ConfigSet *cs, struct VariableDef *vd
   return e;
 }
 
-bool cs_register_variables(struct ConfigSet *cs, struct VariableDef vars[])
+bool cs_register_variables(struct ConfigSet *cs, const struct VariableDef vars[])
 {
   struct Buffer err;
   mutt_buffer_init(&err);

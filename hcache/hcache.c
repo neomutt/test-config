@@ -11,7 +11,7 @@ const char *hcache_backends[] = {
 };
 
 
-static bool set_hcache(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, const char *value, struct Buffer *err)
+static bool set_hcache(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
     return false;
@@ -37,7 +37,7 @@ static bool set_hcache(struct ConfigSet *cs, void *variable, struct VariableDef 
   return true;
 }
 
-static bool get_hcache(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_hcache(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -53,7 +53,7 @@ static bool get_hcache(void *variable, struct VariableDef *vdef, struct Buffer *
   return true;
 }
 
-static bool reset_hcache(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
+static bool reset_hcache(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;
@@ -63,7 +63,7 @@ static bool reset_hcache(struct ConfigSet *cs, void *variable, struct VariableDe
 }
 
 // static
-bool hc_pagesize_validator(struct ConfigSet *cs, struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+bool hc_pagesize_validator(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !vdef || !value)
     return false;
@@ -96,7 +96,7 @@ short HeaderCacheBackend;
 char *HeaderCachePageSize;
 bool  OPT_HCACHE_COMPRESS;
 
-struct VariableDef HCVars[] = {
+const struct VariableDef HCVars[] = {
   // { "header_cache",          DT_PATH,   &HeaderCache,         0 },
   { "header_cache_backend",  DT_HCACHE, &HeaderCacheBackend,  0 },
   // { "header_cache_compress", DT_BOOL,   &OPT_HCACHE_COMPRESS, 1 },
