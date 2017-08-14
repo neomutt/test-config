@@ -40,7 +40,7 @@ static void destroy(int type, void *obj, intptr_t data)
 
   struct ConfigSetType *cs = get_type_def(type);
   if (cs->destructor)
-    cs->destructor(vdef->variable, vdef);
+    cs->destructor(vdef->var, vdef);
 }
 
 struct ConfigSet *cs_set_new(struct ConfigSet *parent)
@@ -130,7 +130,7 @@ void cs_dump_set(struct ConfigSet *cs)
 
     struct VariableDef *vdef = e->data;
 
-    if (type->getter(vdef->variable, vdef, &result))
+    if (type->getter(vdef->var, vdef, &result))
       printf(" = %s\n", result.data);
     else
       printf(": ERROR: %s\n", result.data);
@@ -158,7 +158,7 @@ static struct HashElem *reg_one_var(struct ConfigSet *cs, const struct VariableD
   struct HashElem *e = hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
 
   if (cst->resetter)
-    cst->resetter(cs, vdef->variable, vdef, err);
+    cst->resetter(cs, vdef->var, vdef, err);
 
   return e;
 }
@@ -185,7 +185,7 @@ bool cs_set_variable(struct ConfigSet *cs, const char *name, const char *value, 
   struct HashElem *e = hash_find_elem(cs->hash, name);
   if (!e)
   {
-    mutt_buffer_printf(err, "Unknown variable '%s'", name);
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
     return false;
   }
 
@@ -213,7 +213,7 @@ bool cs_set_variable(struct ConfigSet *cs, const char *name, const char *value, 
     return false;
   }
 
-  void *variable = NULL;
+  void *var = NULL;
 
   struct VariableDef *vdef = NULL;
 
@@ -221,18 +221,18 @@ bool cs_set_variable(struct ConfigSet *cs, const char *name, const char *value, 
   {
     struct Inheritance *i = e->data;
     vdef = i->parent->data;
-    variable = &i->var;
+    var = &i->var;
   }
   else
   {
     vdef = e->data;
-    variable = vdef->variable;
+    var = vdef->var;
   }
 
-  if (!variable)
+  if (!var)
     return false;
 
-  if (!cst->setter(cs, variable, vdef, value, err))
+  if (!cst->setter(cs, var, vdef, value, err))
     return false;
 
   if (e->type & DT_INHERITED)
@@ -249,11 +249,11 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
   struct HashElem *e = hash_find_elem(cs->hash, name);
   if (!e)
   {
-    mutt_buffer_printf(err, "Unknown variable '%s'", name);
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
     return false;
   }
 
-  /* An inherited variable that's already pointing to its parent.
+  /* An inherited var that's already pointing to its parent.
    * Return 'success', but don't send a notification. */
   if ((e->type & DT_INHERITED) && (DTYPE(e->type) == 0))
     return true;
@@ -282,11 +282,11 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
 
     if (cst->resetter)
     {
-      cst->resetter(cs, vdef->variable, vdef, err);
+      cst->resetter(cs, vdef->var, vdef, err);
     }
     else
     {
-      //XXX *(intptr_t*) vdef->variable = vdef->initial;
+      //XXX *(intptr_t*) vdef->var = vdef->initial;
     }
   }
 
@@ -308,7 +308,7 @@ bool cs_get_variable(struct ConfigSet *cs, const char *name, struct Buffer *resu
   struct HashElem *e = hash_find_elem(cs->hash, name);
   if (!e)
   {
-    mutt_buffer_printf(result, "Unknown variable '%s'", name);
+    mutt_buffer_printf(result, "Unknown var '%s'", name);
     return false;
   }
 
@@ -332,7 +332,7 @@ bool cs_get_variable(struct ConfigSet *cs, const char *name, struct Buffer *resu
     return false;
   }
 
-  void *variable = NULL;
+  void *var = NULL;
   struct VariableDef *vdef = NULL;
 
   if ((e->type & DT_INHERITED) && (DTYPE(e->type) != 0))
@@ -340,19 +340,19 @@ bool cs_get_variable(struct ConfigSet *cs, const char *name, struct Buffer *resu
     // Local value
     struct Inheritance *i = e->data;
     vdef = i->parent->data;
-    variable = &i->var;
+    var = &i->var;
   }
   else
   {
-    // Normal variable
+    // Normal var
     vdef = e->data;
     if (!vdef)
       return false;
 
-    variable = vdef->variable;
+    var = vdef->var;
   }
 
-  if (!cst->getter(variable, vdef, result))
+  if (!cst->getter(var, vdef, result))
     return false;
 
   return true;

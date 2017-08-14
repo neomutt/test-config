@@ -9,17 +9,17 @@ const char *bool_values[] = {
   "no", "yes", "false", "true", "0", "1", "off", "on",
 };
 
-static bool set_bool(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+static bool set_bool(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
   for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
   {
     if (mutt_strcasecmp(bool_values[i], value) == 0)
     {
-      *(bool *) variable = i % 2;
+      *(bool *) var = i % 2;
       return true;
     }
   }
@@ -28,15 +28,15 @@ static bool set_bool(struct ConfigSet *cs, void *variable, const struct Variable
   return false;
 }
 
-static bool get_bool(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  unsigned int index = *(bool *) variable;
+  unsigned int index = *(bool *) var;
   if (index > 1)
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
@@ -47,13 +47,13 @@ static bool get_bool(void *variable, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
-static bool reset_bool(struct ConfigSet *cs, void *variable,
+static bool reset_bool(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  *(bool *) variable = vdef->initial;
+  *(bool *) var = vdef->initial;
   return true;
 }
 

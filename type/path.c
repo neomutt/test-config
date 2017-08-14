@@ -8,30 +8,30 @@ static void destroy_path(void **obj, const struct VariableDef *vdef)
   if (!obj || !*obj || !vdef)
     return;
 
-  /* Don't free strings from the variable definition */
+  /* Don't free strings from the var definition */
   if (*obj == (void *) vdef->initial)
     return;
 
   FREE(obj);
 }
 
-static bool set_path(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+static bool set_path(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
-  destroy_path(variable, vdef);
-  *(const char **) variable = safe_strdup(value);
+  destroy_path(var, vdef);
+  *(const char **) var = safe_strdup(value);
   return true;
 }
 
-static bool get_path(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_path(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  const char *str = *(const char **) variable;
+  const char *str = *(const char **) var;
   if (!str)
     return true; /* empty string */
 
@@ -39,14 +39,14 @@ static bool get_path(void *variable, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
-static bool reset_path(struct ConfigSet *cs, void *variable,
+static bool reset_path(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  destroy_path(variable, vdef);
-  *(const char **) variable = (const char *) vdef->initial;
+  destroy_path(var, vdef);
+  *(const char **) var = (const char *) vdef->initial;
   return true;
 }
 

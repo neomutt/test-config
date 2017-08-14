@@ -7,17 +7,17 @@
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
-static bool set_quad(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+static bool set_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
   for (unsigned int i = 0; i < mutt_array_size(quad_values); i++)
   {
     if (mutt_strcasecmp(quad_values[i], value) == 0)
     {
-      *(short *) variable = i;
+      *(short *) var = i;
       return true;
     }
   }
@@ -26,12 +26,12 @@ static bool set_quad(struct ConfigSet *cs, void *variable, const struct Variable
   return false;
 }
 
-static bool get_quad(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  unsigned int index = *(short *) variable;
+  unsigned int index = *(short *) var;
   if ((index < 0) || (index >= mutt_array_size(quad_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
@@ -42,13 +42,13 @@ static bool get_quad(void *variable, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
-static bool reset_quad(struct ConfigSet *cs, void *variable,
+static bool reset_quad(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  *(short *) variable = vdef->initial;
+  *(short *) var = vdef->initial;
   return true;
 }
 

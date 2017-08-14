@@ -3,7 +3,7 @@
 
 struct ConfigSet;
 
-void init_hcache(struct ConfigSet *set);
+void init_hcache(struct ConfigSet *cs);
 
 extern char *HeaderCachePageSize;
 

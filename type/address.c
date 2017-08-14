@@ -15,29 +15,29 @@ static void destroy_addr(void **obj, const struct VariableDef *vdef)
   FREE(a);
 }
 
-static bool set_addr(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+static bool set_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
-  destroy_addr(variable, vdef);
+  destroy_addr(var, vdef);
 
   struct Address *a = safe_calloc(1, sizeof(*a));
 
   a->personal = safe_strdup((const char *) value);
   a->mailbox = safe_strdup("dummy1");
 
-  *(struct Address **) variable = a;
+  *(struct Address **) var = a;
   return true;
 }
 
-static bool get_addr(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_addr(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  struct Address *a = *(struct Address **) variable;
+  struct Address *a = *(struct Address **) var;
   if (!a)
     return true; /* empty string */
 
@@ -45,20 +45,20 @@ static bool get_addr(void *variable, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
-static bool reset_addr(struct ConfigSet *cs, void *variable,
+static bool reset_addr(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  destroy_addr(variable, vdef);
+  destroy_addr(var, vdef);
 
   struct Address *a = safe_calloc(1, sizeof(*a));
 
   a->personal = (char *) vdef->initial;
   a->mailbox = safe_strdup("dummy2");
 
-  *(struct Address **) variable = a;
+  *(struct Address **) var = a;
   return true;
 }
 

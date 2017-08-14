@@ -5,10 +5,10 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static bool set_num(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+static bool set_num(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                     const char *value, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
   int num = 0;
@@ -21,26 +21,26 @@ static bool set_num(struct ConfigSet *cs, void *variable, const struct VariableD
   if (num > SHRT_MAX)
     return false;
 
-  *(short *) variable = num;
+  *(short *) var = num;
   return true;
 }
 
-static bool get_num(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_num(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  mutt_buffer_printf(result, "%d", *(short *) variable);
+  mutt_buffer_printf(result, "%d", *(short *) var);
   return true;
 }
 
-static bool reset_num(struct ConfigSet *cs, void *variable,
+static bool reset_num(struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  *(short *) variable = vdef->initial;
+  *(short *) var = vdef->initial;
   return true;
 }
 

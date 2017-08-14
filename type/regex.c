@@ -18,29 +18,29 @@ static void destroy_rx(void **obj, const struct VariableDef *vdef)
   FREE(r);
 }
 
-static bool set_rx(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+static bool set_rx(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                    const char *value, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
-  destroy_rx(variable, vdef);
+  destroy_rx(var, vdef);
 
   struct Regex *r = safe_calloc(1, sizeof(*r));
 
   r->pattern = safe_strdup(value);
   r->rx = NULL; //XXX regenerate r->rx
 
-  *(struct Regex **) variable = r;
+  *(struct Regex **) var = r;
   return true;
 }
 
-static bool get_rx(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_rx(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  struct Regex *r = *(struct Regex **) variable;
+  struct Regex *r = *(struct Regex **) var;
   if (!r)
     return false;
 
@@ -48,20 +48,20 @@ static bool get_rx(void *variable, const struct VariableDef *vdef, struct Buffer
   return true;
 }
 
-static bool reset_rx(struct ConfigSet *cs, void *variable,
+static bool reset_rx(struct ConfigSet *cs, void *var,
                      const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  destroy_rx(variable, vdef);
+  destroy_rx(var, vdef);
 
   struct Regex *r = safe_calloc(1, sizeof(*r));
 
   r->pattern = (char *) vdef->initial;
   r->rx = NULL; //XXX regenerate r->rx
 
-  *(struct Regex **) variable = r;
+  *(struct Regex **) var = r;
   return true;
 }
 

@@ -60,29 +60,29 @@ static void destroy_mbchartbl(void **obj, const struct VariableDef *vdef)
   FREE(m);
 }
 
-static bool set_mbchartbl(struct ConfigSet *cs, void *variable,
+static bool set_mbchartbl(struct ConfigSet *cs, void *var,
                           const struct VariableDef *vdef, const char *value,
                           struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
-  destroy_mbchartbl(variable, vdef);
+  destroy_mbchartbl(var, vdef);
 
   struct MbCharTable *table = parse_mbchar_table(value);
   if (!table)
     return false;
 
-  *(struct MbCharTable **) variable = table;
+  *(struct MbCharTable **) var = table;
   return true;
 }
 
-static bool get_mbchartbl(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  struct MbCharTable *table = *(struct MbCharTable **) variable;
+  struct MbCharTable *table = *(struct MbCharTable **) var;
   if (!table)
     return true; /* empty string */
 
@@ -93,19 +93,19 @@ static bool get_mbchartbl(void *variable, const struct VariableDef *vdef, struct
   return true;
 }
 
-static bool reset_mbchartbl(struct ConfigSet *cs, void *variable,
+static bool reset_mbchartbl(struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  destroy_mbchartbl(variable, vdef);
+  destroy_mbchartbl(var, vdef);
 
   struct MbCharTable *table = parse_mbchar_table((const char *) vdef->initial);
   if (!table)
     return false;
 
-  *(struct MbCharTable **) variable = table;
+  *(struct MbCharTable **) var = table;
   return true;
 }
 

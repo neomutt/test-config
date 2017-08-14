@@ -11,9 +11,9 @@ const char *hcache_backends[] = {
 };
 
 
-static bool set_hcache(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, const char *value, struct Buffer *err)
+static bool set_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef || !value)
+  if (!cs || !var || !vdef || !value)
     return false;
 
   intptr_t index = -1;
@@ -33,16 +33,16 @@ static bool set_hcache(struct ConfigSet *cs, void *variable, const struct Variab
     return false;
   }
 
-  *(short *) variable = index;
+  *(short *) var = index;
   return true;
 }
 
-static bool get_hcache(void *variable, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_hcache(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!variable || !vdef)
+  if (!var || !vdef)
     return false;
 
-  unsigned int index = *(short *) variable;
+  unsigned int index = *(short *) var;
   if (index >= mutt_array_size(hcache_backends))
   {
     mutt_buffer_printf(result, "Invalid hcache value: %d", index);
@@ -53,12 +53,12 @@ static bool get_hcache(void *variable, const struct VariableDef *vdef, struct Bu
   return true;
 }
 
-static bool reset_hcache(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!cs || !variable || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  *(short *) variable = vdef->initial;
+  *(short *) var = vdef->initial;
   return true;
 }
 
