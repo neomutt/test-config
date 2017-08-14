@@ -33,9 +33,6 @@ static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *r
   if (!var || !vdef)
     return false;
 
-  if (!var || !vdef)
-    return false;
-
   unsigned int index = *(bool *) var;
   if (index > 1)
   {

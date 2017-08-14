@@ -6,12 +6,15 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_rx(void **obj, const struct VariableDef *vdef)
+static void destroy_rx(void *var, const struct VariableDef *vdef)
 {
-  if (!obj || !*obj)
+  if (!var || !vdef)
     return;
 
-  struct Regex **r = (struct Regex **) obj;
+  struct Regex **r = (struct Regex **) var;
+  if (!*r)
+    return;
+
   if ((*r)->pattern != (char *) vdef->initial)
     FREE(&(*r)->pattern);
   //regfree(r->rx)

@@ -3,14 +3,18 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_addr(void **obj, const struct VariableDef *vdef)
+static void destroy_addr(void *var, const struct VariableDef *vdef)
 {
-  if (!obj || !*obj)
+  if (!var || !vdef)
     return;
 
-  struct Address **a = (struct Address **) obj;
+  struct Address **a = (struct Address **) var;
+  if (!*a)
+    return;
+
   if ((*a)->personal != (char *) vdef->initial)
     FREE(&(*a)->personal);
+
   FREE(&(*a)->mailbox);
   FREE(a);
 }

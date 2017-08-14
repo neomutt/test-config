@@ -47,12 +47,15 @@ static struct MbCharTable *parse_mbchar_table(const char *s)
   return t;
 }
 
-static void destroy_mbchartbl(void **obj, const struct VariableDef *vdef)
+static void destroy_mbchartbl(void *var, const struct VariableDef *vdef)
 {
-  if (!obj || !*obj)
+  if (!var || !vdef)
     return;
 
-  struct MbCharTable **m = (struct MbCharTable **) obj;
+  struct MbCharTable **m = (struct MbCharTable **) var;
+  if (!*m)
+    return;
+
   if ((*m)->orig_str != (char *) vdef->initial)
     FREE(&(*m)->orig_str);
   FREE(&(*m)->chars);

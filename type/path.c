@@ -3,16 +3,16 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_path(void **obj, const struct VariableDef *vdef)
+static void destroy_path(void *var, const struct VariableDef *vdef)
 {
-  if (!obj || !*obj || !vdef)
+  if (!var || !vdef)
     return;
 
   /* Don't free strings from the var definition */
-  if (*obj == (void *) vdef->initial)
+  if (*(char **) var == (char *) vdef->initial)
     return;
 
-  FREE(obj);
+  FREE(var);
 }
 
 static bool set_path(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
