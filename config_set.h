@@ -29,7 +29,7 @@ struct VariableDef
 
 typedef bool (*cst_string_set)(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value, struct Buffer *err);
 typedef bool (*cst_string_get)(void *variable, struct VariableDef *def, struct Buffer *result);
-typedef bool (*cst_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
+typedef bool (*cst_reset)     (struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err);
 typedef void (*cst_destructor)(void **obj, struct VariableDef *def);
 
 #define IP (intptr_t)

@@ -46,19 +46,9 @@ static bool get_bool(void *variable, struct VariableDef *def, struct Buffer *res
   return true;
 }
 
-static bool reset_bool(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_bool(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_BOOL)
-  {
-    mutt_buffer_printf(err, "Variable is not an boolean");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(bool *) v->variable = v->initial;
+  *(bool *) variable = def->initial;
   return true;
 }
 

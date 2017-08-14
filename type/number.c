@@ -28,19 +28,9 @@ static bool get_num(void *variable, struct VariableDef *def, struct Buffer *resu
   return true;
 }
 
-static bool reset_num(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_num(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_NUM)
-  {
-    mutt_buffer_printf(err, "Variable is not a number");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(short *) v->variable = v->initial;
+  *(short *) variable = def->initial;
   return true;
 }
 

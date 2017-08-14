@@ -168,19 +168,9 @@ static bool get_sort(void *variable, struct VariableDef *def, struct Buffer *res
   return true;
 }
 
-static bool reset_sort(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_sort(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_SORT)
-  {
-    mutt_buffer_printf(err, "Variable is not a sort");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(short *) v->variable = v->initial;
+  *(short *) variable = def->initial;
   return true;
 }
 

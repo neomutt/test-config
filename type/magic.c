@@ -36,19 +36,9 @@ static bool get_magic(void *variable, struct VariableDef *def, struct Buffer *re
   return true;
 }
 
-static bool reset_magic(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_magic(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_MAGIC)
-  {
-    mutt_buffer_printf(err, "Variable is not a mailbox magic");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  *(short *) v->variable = v->initial;
+  *(short *) variable = def->initial;
   return true;
 }
 

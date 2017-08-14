@@ -37,25 +37,15 @@ static bool get_addr(void *variable, struct VariableDef *def, struct Buffer *res
   return true;
 }
 
-static bool reset_addr(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_addr(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_ADDR)
-  {
-    mutt_buffer_printf(err, "Variable is not an address");
-    return false;
-  }
-
-  struct VariableDef *def = e->data;
-  if (!def)
-    return false;
-
   struct Address *a = safe_calloc(1, sizeof(*a));
 
-  destroy_addr(def->variable, def);
+  destroy_addr(variable, def);
 
   a->personal = safe_strdup((const char*) def->initial);
   
-  *(struct Address **) def->variable = a;
+  *(struct Address **) variable = a;
   return true;
 }
 

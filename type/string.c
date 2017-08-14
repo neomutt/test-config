@@ -36,19 +36,9 @@ static bool get_str(void *variable, struct VariableDef *def, struct Buffer *resu
   return true;
 }
 
-static bool reset_str(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_str(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (e && DTYPE(e->type) != DT_STR)
-  {
-    mutt_buffer_printf(err, "Variable is not a string");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  mutt_str_replace(v->variable, (const char*) v->initial);
+  mutt_str_replace(variable, (const char*) def->initial);
   return true;
 }
 

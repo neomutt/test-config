@@ -84,24 +84,14 @@ static bool get_mbchartbl(void *variable, struct VariableDef *def, struct Buffer
   return true;
 }
 
-static bool reset_mbchartbl(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_mbchartbl(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_MBCHARTBL)
-  {
-    mutt_buffer_printf(err, "Variable is not a multibyte string");
-    return false;
-  }
-
-  struct VariableDef *def = e->data;
-  if (!def)
-    return false;
-
   struct MbCharTable *table = parse_mbchar_table((const char*) def->initial);
   if (!table)
     return false;
 
-  destroy_mbchartbl(def->variable, def);
-  *(struct MbCharTable **) def->variable = table;
+  destroy_mbchartbl(variable, def);
+  *(struct MbCharTable **) variable = table;
   return true;
 }
 

@@ -40,21 +40,11 @@ static bool get_rx(void *variable, struct VariableDef *def, struct Buffer *resul
   return true;
 }
 
-static bool reset_rx(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_rx(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_RX)
-  {
-    mutt_buffer_printf(err, "Variable is not a regex");
-    return false;
-  }
+  destroy_rx(variable, def);
 
-  struct VariableDef *def = e->data;
-  if (!def)
-    return false;
-
-  destroy_rx(def->variable, def);
-
-  struct Regex *r = def->variable;
+  struct Regex *r = variable;
   if (!r)
     return false;
 

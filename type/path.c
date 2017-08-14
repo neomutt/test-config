@@ -26,19 +26,9 @@ static bool get_path(void *variable, struct VariableDef *def, struct Buffer *res
   return true;
 }
 
-static bool reset_path(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+static bool reset_path(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_PATH)
-  {
-    mutt_buffer_printf(err, "Variable is not a path");
-    return false;
-  }
-
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
-
-  mutt_str_replace(v->variable, (const char*) v->initial);
+  mutt_str_replace(variable, (const char*) def->initial);
   return true;
 }
 
