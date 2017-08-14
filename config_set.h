@@ -50,8 +50,8 @@ struct ConfigSet
   cs_validator validator;
 };
 
-struct ConfigSet *cs_new(struct ConfigSet *parent);
-bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent);
+struct ConfigSet *cs_new(struct ConfigSet *parent, int size);
+bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent, int size);
 void cs_free(struct ConfigSet *cs);
 struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name);
 void cs_dump_set(struct ConfigSet *cs);

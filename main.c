@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
   err.dsize = STRING;
 
   struct ConfigSet cs;
-  cs_init(&cs, NULL);
+  cs_init(&cs, NULL, 30);
   cs_add_listener(&cs, listener);
 
   init_types();

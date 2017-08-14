@@ -13,8 +13,6 @@ struct ConfigSetType RegisteredTypes[16] =
 };
 
 
-const int ConfigSetSize = 30;// 500;
-
 struct ConfigSetType *get_type_def(unsigned int type)
 {
   type = DTYPE(type);
@@ -43,17 +41,17 @@ static void destroy(int type, void *obj, intptr_t data)
     cs->destructor(vdef->var, vdef);
 }
 
-struct ConfigSet *cs_set_new(struct ConfigSet *parent)
+struct ConfigSet *cs_set_new(struct ConfigSet *parent, int size)
 {
   struct ConfigSet *cs = safe_calloc(1, sizeof(*cs));
-  cs_init(cs, parent);
+  cs_init(cs, parent, size);
   return cs;
 }
 
-bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent)
+bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent, int size)
 {
   memset(cs, 0, sizeof(*cs));
-  cs->hash = hash_create(ConfigSetSize, 0);
+  cs->hash = hash_create(size, 0);
   hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
   return true;
 }
