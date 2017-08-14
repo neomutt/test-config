@@ -89,7 +89,7 @@ static int find_id(const struct Mapping *map, const char *str)
 }
 
 
-static bool set_sort(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
+static bool set_sort(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
@@ -131,7 +131,7 @@ static bool set_sort(struct ConfigSet *cs, void *variable, struct VariableDef *v
   return true;
 }
 
-static bool get_sort(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_sort(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -174,7 +174,7 @@ static bool get_sort(void *variable, struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool reset_sort(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
+static bool reset_sort(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

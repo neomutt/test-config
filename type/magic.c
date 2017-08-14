@@ -7,7 +7,7 @@
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 
-static bool set_magic(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
+static bool set_magic(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
                       const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
@@ -26,7 +26,7 @@ static bool set_magic(struct ConfigSet *cs, void *variable, struct VariableDef *
   return false;
 }
 
-static bool get_magic(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_magic(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -42,7 +42,7 @@ static bool get_magic(void *variable, struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool reset_magic(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
+static bool reset_magic(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

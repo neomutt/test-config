@@ -5,7 +5,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static bool set_num(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
+static bool set_num(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
                     const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
@@ -25,7 +25,7 @@ static bool set_num(struct ConfigSet *cs, void *variable, struct VariableDef *vd
   return true;
 }
 
-static bool get_num(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_num(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -34,7 +34,7 @@ static bool get_num(void *variable, struct VariableDef *vdef, struct Buffer *res
   return true;
 }
 
-static bool reset_num(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
+static bool reset_num(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

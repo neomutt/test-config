@@ -6,7 +6,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_rx(void **obj, struct VariableDef *vdef)
+static void destroy_rx(void **obj, const struct VariableDef *vdef)
 {
   if (!obj || !*obj)
     return;
@@ -18,7 +18,7 @@ static void destroy_rx(void **obj, struct VariableDef *vdef)
   FREE(r);
 }
 
-static bool set_rx(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, const char *value,
+static bool set_rx(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, const char *value,
                    struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
@@ -35,7 +35,7 @@ static bool set_rx(struct ConfigSet *cs, void *variable, struct VariableDef *vde
   return true;
 }
 
-static bool get_rx(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_rx(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -48,7 +48,7 @@ static bool get_rx(void *variable, struct VariableDef *vdef, struct Buffer *resu
   return true;
 }
 
-static bool reset_rx(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
+static bool reset_rx(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

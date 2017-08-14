@@ -3,7 +3,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_str(void **obj, struct VariableDef *vdef)
+static void destroy_str(void **obj, const struct VariableDef *vdef)
 {
   if (!obj || !*obj || !vdef)
     return;
@@ -15,7 +15,7 @@ static void destroy_str(void **obj, struct VariableDef *vdef)
   FREE(obj);
 }
 
-static bool set_str(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
+static bool set_str(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
                     const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
@@ -29,7 +29,7 @@ static bool set_str(struct ConfigSet *cs, void *variable, struct VariableDef *vd
   return true;
 }
 
-static bool get_str(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_str(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -43,7 +43,7 @@ static bool get_str(void *variable, struct VariableDef *vdef, struct Buffer *res
 }
 
 static bool reset_str(struct ConfigSet *cs, void *variable,
-                      struct VariableDef *vdef, struct Buffer *err)
+                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

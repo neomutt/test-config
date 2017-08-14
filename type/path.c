@@ -3,7 +3,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_path(void **obj, struct VariableDef *vdef)
+static void destroy_path(void **obj, const struct VariableDef *vdef)
 {
   if (!obj || !*obj || !vdef)
     return;
@@ -15,7 +15,7 @@ static void destroy_path(void **obj, struct VariableDef *vdef)
   FREE(obj);
 }
 
-static bool set_path(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
+static bool set_path(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
@@ -26,7 +26,7 @@ static bool set_path(struct ConfigSet *cs, void *variable, struct VariableDef *v
   return true;
 }
 
-static bool get_path(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_path(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -40,7 +40,7 @@ static bool get_path(void *variable, struct VariableDef *vdef, struct Buffer *re
 }
 
 static bool reset_path(struct ConfigSet *cs, void *variable,
-                       struct VariableDef *vdef, struct Buffer *err)
+                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

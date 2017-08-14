@@ -7,7 +7,7 @@
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
-static bool set_quad(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
+static bool set_quad(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
@@ -26,7 +26,7 @@ static bool set_quad(struct ConfigSet *cs, void *variable, struct VariableDef *v
   return false;
 }
 
-static bool get_quad(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_quad(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -42,7 +42,7 @@ static bool get_quad(void *variable, struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool reset_quad(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
+static bool reset_quad(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

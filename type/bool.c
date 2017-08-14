@@ -10,7 +10,7 @@ const char *bool_values[] = {
 };
 
 static bool set_bool(struct ConfigSet *cs, void *variable,
-                     struct VariableDef *vdef, const char *value, struct Buffer *err)
+                     const struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
     return false;
@@ -28,7 +28,7 @@ static bool set_bool(struct ConfigSet *cs, void *variable,
   return false;
 }
 
-static bool get_bool(void *variable, struct VariableDef *vdef, struct Buffer *result)
+static bool get_bool(void *variable, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!variable || !vdef)
     return false;
@@ -48,7 +48,7 @@ static bool get_bool(void *variable, struct VariableDef *vdef, struct Buffer *re
 }
 
 static bool reset_bool(struct ConfigSet *cs, void *variable,
-                       struct VariableDef *vdef, struct Buffer *err)
+                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;
