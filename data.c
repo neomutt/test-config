@@ -23,11 +23,11 @@ enum
   MUTT_COMPRESSED,
 };
 
-struct Regex Mask;
-struct Regex QuoteRegexp;
-struct Regex ReplyRegexp;
-struct Regex Smileys;
-struct Regex GecosMask;
+struct Regex *Mask;
+struct Regex *QuoteRegexp;
+struct Regex *ReplyRegexp;
+struct Regex *Smileys;
+struct Regex *GecosMask;
 
 struct VariableDef MuttVars[] = {
   { "alias_file",                       DT_PATH,                 &AliasFile,                         IP "~/.muttrc" },

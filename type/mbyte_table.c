@@ -52,11 +52,12 @@ static void destroy_mbchartbl(void **obj, struct VariableDef *vdef)
   if (!obj || !*obj)
     return;
 
-  // struct MbCharTable *m = *(struct MbCharTable **) obj;
-  //XXX FREE(&m->chars);
-  //XXX FREE(&m->segmented_str);
-  //XXX FREE(&m->orig_str);
-  //XXX FREE(&m);
+  struct MbCharTable **m = (struct MbCharTable **) obj;
+  if ((*m)->orig_str != (char *) vdef->initial)
+    FREE(&(*m)->orig_str);
+  FREE(&(*m)->chars);
+  FREE(&(*m)->segmented_str);
+  FREE(m);
 }
 
 static bool set_mbchartbl(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
@@ -65,11 +66,12 @@ static bool set_mbchartbl(struct ConfigSet *cs, void *variable, struct VariableD
   if (!cs || !variable || !vdef || !value)
     return false;
 
+  destroy_mbchartbl(variable, vdef);
+
   struct MbCharTable *table = parse_mbchar_table(value);
   if (!table)
     return false;
 
-  // destroy_mbchartbl(vdef->variable);
   *(struct MbCharTable **) variable = table;
   return true;
 }
@@ -95,11 +97,12 @@ static bool reset_mbchartbl(struct ConfigSet *cs, void *variable, struct Variabl
   if (!cs || !variable || !vdef)
     return false;
 
+  destroy_mbchartbl(variable, vdef);
+
   struct MbCharTable *table = parse_mbchar_table((const char*) vdef->initial);
   if (!table)
     return false;
 
-  destroy_mbchartbl(variable, vdef);
   *(struct MbCharTable **) variable = table;
   return true;
 }
@@ -107,7 +110,7 @@ static bool reset_mbchartbl(struct ConfigSet *cs, void *variable, struct Variabl
 
 void init_mbyte_table(void)
 {
-  struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl,
+  const struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl,
                                          reset_mbchartbl, destroy_mbchartbl };
   cs_register_type(DT_MBCHARTBL, &cst_mbchartbl);
 }

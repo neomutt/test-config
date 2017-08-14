@@ -11,8 +11,11 @@ const char *hcache_backends[] = {
 };
 
 
-static bool hc_string_set(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value, struct Buffer *err)
+static bool set_hcache(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
+  if (!cs || !variable || !vdef || !value)
+    return false;
+
   intptr_t index = -1;
 
   for (unsigned int i = 0; i < mutt_array_size(hcache_backends); i++)
@@ -34,8 +37,11 @@ static bool hc_string_set(struct ConfigSet *set, void *variable, struct Variable
   return true;
 }
 
-static bool hc_string_get(void *variable, struct VariableDef *def, struct Buffer *result)
+static bool get_hcache(void *variable, struct VariableDef *vdef, struct Buffer *result)
 {
+  if (!variable || !vdef)
+    return false;
+
   unsigned int index = *(short *) variable;
   if (index >= mutt_array_size(hcache_backends))
   {
@@ -47,9 +53,21 @@ static bool hc_string_get(void *variable, struct VariableDef *def, struct Buffer
   return true;
 }
 
-// static
-bool hc_pagesize_validator(struct ConfigSet *set, struct VariableDef *def, intptr_t value, struct Buffer *err)
+static bool reset_hcache(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
 {
+  if (!cs || !variable || !vdef)
+    return false;
+
+  *(short *) variable = vdef->initial;
+  return true;
+}
+
+// static
+bool hc_pagesize_validator(struct ConfigSet *cs, struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  if (!cs || !vdef || !value)
+    return false;
+
   int num = 0;
   if (mutt_atoi((const char*) value, &num) < 0)
   {
@@ -86,12 +104,12 @@ struct VariableDef HCVars[] = {
   { NULL },
 };
 
-void init_hcache(struct ConfigSet *set)
+void init_hcache(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst = { "hcache", hc_string_set, hc_string_get, NULL };
+  struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, reset_hcache, NULL };
 
   cs_register_type(DT_HCACHE, &cst);
 
-  cs_register_variables(set, HCVars);
+  cs_register_variables(cs, HCVars);
 }
 

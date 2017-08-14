@@ -9,7 +9,7 @@ static void destroy_addr(void **obj, struct VariableDef *vdef)
     return;
 
   struct Address **a = (struct Address **) obj;
-  if ((*a)->personal != (const char *) vdef->initial)
+  if ((*a)->personal != (char *) vdef->initial)
     FREE(&(*a)->personal);
   FREE(&(*a)->mailbox);
   FREE(a);
@@ -64,6 +64,6 @@ static bool reset_addr(struct ConfigSet *cs, void *variable, struct VariableDef 
 
 void init_addr(void)
 {
-  struct ConfigSetType cst_addr = { "address", set_addr, get_addr, reset_addr, destroy_addr };
+  const struct ConfigSetType cst_addr = { "address", set_addr, get_addr, reset_addr, destroy_addr };
   cs_register_type(DT_ADDR, &cst_addr);
 }

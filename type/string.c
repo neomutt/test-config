@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <string.h>
 #include "config_set.h"
 #include "lib/lib.h"
 #include "mutt_options.h"
@@ -16,8 +15,8 @@ static void destroy_str(void **obj, struct VariableDef *vdef)
   FREE(obj);
 }
 
-static bool set_str(struct ConfigSet *cs, void *variable,
-                    struct VariableDef *vdef, const char *value, struct Buffer *err)
+static bool set_str(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
+                    const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
     return false;
@@ -50,12 +49,12 @@ static bool reset_str(struct ConfigSet *cs, void *variable,
     return false;
 
   destroy_str(variable, vdef);
-  *(const char **) variable = (const char *) vdef->initial; 
+  *(const char **) variable = (const char *) vdef->initial;
   return true;
 }
 
 void init_string(void)
 {
-  struct ConfigSetType cst_str = { "string", set_str, get_str, reset_str, destroy_str };
+  const struct ConfigSetType cst_str = { "string", set_str, get_str, reset_str, destroy_str };
   cs_register_type(DT_STR, &cst_str);
 }

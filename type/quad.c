@@ -32,7 +32,7 @@ static bool get_quad(void *variable, struct VariableDef *vdef, struct Buffer *re
     return false;
 
   unsigned int index = *(short *) variable;
-  if (index >= mutt_array_size(quad_values))
+  if ((index < 0) || (index >= mutt_array_size(quad_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;
@@ -54,6 +54,6 @@ static bool reset_quad(struct ConfigSet *cs, void *variable, struct VariableDef 
 
 void init_quad(void)
 {
-  struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, reset_quad, NULL };
+  const struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, reset_quad, NULL };
   cs_register_type(DT_QUAD, &cst_quad);
 }

@@ -5,10 +5,14 @@
 
 static void destroy_path(void **obj, struct VariableDef *vdef)
 {
-  if (!obj || !*obj)
+  if (!obj || !*obj || !vdef)
     return;
 
-  //XXX FREE(obj);
+  /* Don't free strings from the variable definition */
+  if (*obj == (void *) vdef->initial)
+    return;
+
+  FREE(obj);
 }
 
 static bool set_path(struct ConfigSet *cs, void *variable, struct VariableDef *vdef,
@@ -17,6 +21,7 @@ static bool set_path(struct ConfigSet *cs, void *variable, struct VariableDef *v
   if (!cs || !variable || !vdef || !value)
     return false;
 
+  destroy_path(variable, vdef);
   *(const char **) variable = safe_strdup(value);
   return true;
 }
@@ -26,24 +31,28 @@ static bool get_path(void *variable, struct VariableDef *vdef, struct Buffer *re
   if (!variable || !vdef)
     return false;
 
-  // return true; /* empty string */
+  const char *str = *(const char **) variable;
+  if (!str)
+    return true; /* empty string */
 
-  mutt_buffer_addstr(result, *(const char **) variable);
+  mutt_buffer_addstr(result, str);
   return true;
 }
 
-static bool reset_path(struct ConfigSet *cs, void *variable, struct VariableDef *vdef, struct Buffer *err)
+static bool reset_path(struct ConfigSet *cs, void *variable,
+                       struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;
 
-  mutt_str_replace(variable, (const char*) vdef->initial);
+  destroy_path(variable, vdef);
+  *(const char **) variable = (const char *) vdef->initial;
   return true;
 }
 
 
 void init_path(void)
 {
-  struct ConfigSetType cst_path = { "path", set_path, get_path, reset_path, destroy_path };
+  const struct ConfigSetType cst_path = { "path", set_path, get_path, reset_path, destroy_path };
   cs_register_type(DT_PATH, &cst_path);
 }

@@ -197,17 +197,17 @@ int main(int argc, char *argv[])
 #if 0
   test(&cs, "apple",  "attribution",          "date %d",   "from %n");  // DT_STR
   test(&cs, "apple",  "resume_draft_files",   "1",         "0");        // DT_BOOL
-#endif
   test(&cs, "apple",  "from",                 "a@b.com",   "x@y.org");  // DT_ADDR
-#if 0
-  test(&cs, "banana", "quote_regexp",         ">.*",       "#.*");      // DT_RX
-  test(&cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
   test(&cs, "apple",  "mbox_type",            "mh",        "Maildir");  // DT_MAGIC
   test(&cs, "banana", "pager_context",        "12",        "9");        // DT_NUM
   test(&cs, "banana", "sort",                 "threads",   "score");    // DT_SORT
   test(&cs, "banana", "post_moderated",       "ask-no",    "yes");      // DT_QUAD
   test(&cs, "apple",  "alias_file",           "~/a",       "/etc/b");   // DT_PATH
   test(&cs, "apple",  "header_cache_backend", "lmdb",      "qdbm");     // DT_HCACHE
+  test(&cs, "banana", "quote_regexp",         ">.*",       "#.*");      // DT_RX
+#endif
+  test(&cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
+#if 0
 #endif
 
   account_free(&ac2);
