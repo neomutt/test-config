@@ -13,12 +13,6 @@ const char *hcache_backends[] = {
 
 static bool hc_string_set(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value, struct Buffer *err)
 {
-  // if (DTYPE(e->type) != DT_HCACHE)
-  // {
-  //   mutt_buffer_printf(err, "Variable is not an hcache");
-  //   return false;
-  // }
-
   intptr_t index = -1;
 
   for (unsigned int i = 0; i < mutt_array_size(hcache_backends); i++)
@@ -36,28 +30,12 @@ static bool hc_string_set(struct ConfigSet *set, void *variable, struct Variable
     return false;
   }
 
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // *(short *) v->variable = index;
   *(short *) variable = index;
   return true;
 }
 
 static bool hc_string_get(void *variable, struct VariableDef *def, struct Buffer *result)
 {
-  // if (DTYPE(e->type) != DT_HCACHE)
-  // {
-  //   mutt_buffer_printf(result, "Variable is not an hcache");
-  //   return NULL;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // unsigned int index = *(short *) v->variable;
   unsigned int index = *(short *) variable;
   if (index >= mutt_array_size(hcache_backends))
   {

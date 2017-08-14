@@ -8,12 +8,6 @@
 static bool set_num(struct ConfigSet *set, void *variable, struct VariableDef *def,
                     const char *value, struct Buffer *err)
 {
-  // if (DTYPE(e->type) != DT_NUM)
-  // {
-  //   mutt_buffer_printf(err, "Variable is not a number");
-  //   return false;
-  // }
-
   int num = 0;
   if (mutt_atoi(value, &num) < 0)
   {
@@ -24,28 +18,12 @@ static bool set_num(struct ConfigSet *set, void *variable, struct VariableDef *d
   if (num > SHRT_MAX)
     return false;
 
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // *(short *) v->variable = num;
   *(short *) variable = num;
   return true;
 }
 
 static bool get_num(void *variable, struct VariableDef *def, struct Buffer *result)
 {
-  // if (DTYPE(e->type) != DT_NUM)
-  // {
-  //   mutt_buffer_printf(result, "Variable is not a string");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // mutt_buffer_printf(result, "%d", *(short*) v->variable);
   mutt_buffer_printf(result, "%d", *(short*) variable);
   return true;
 }

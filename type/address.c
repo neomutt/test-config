@@ -17,40 +17,18 @@ static void destroy_addr(void **obj, struct VariableDef *def)
 static bool set_addr(struct ConfigSet *set, void *variable, struct VariableDef *def,
                      const char *value, struct Buffer *err)
 {
-  // if (DTYPE(e->type) != DT_ADDR)
-  // {
-  //   mutt_buffer_printf(err, "Variable is not an address");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
   struct Address *a = safe_calloc(1, sizeof(*a));
 
   // destroy_addr(v->variable);
 
   a->personal = safe_strdup((const char*) value);
   
-  // *(struct Address **) v->variable = a;
   *(struct Address **) variable = a;
   return true;
 }
 
 static bool get_addr(void *variable, struct VariableDef *def, struct Buffer *result)
 {
-  // if (DTYPE(e->type) != DT_ADDR)
-  // {
-  //   mutt_buffer_printf(result, "Variable is not an address");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // struct Address *a = *(struct Address **) v->variable;
   struct Address *a = *(struct Address **) variable;
   if (!a)
     return true; /* empty string */

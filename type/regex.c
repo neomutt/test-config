@@ -20,17 +20,6 @@ static void destroy_rx(void **obj, struct VariableDef *def)
 static bool set_rx(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value,
                    struct Buffer *err)
 {
-  // if (DTYPE(e->type) != DT_RX)
-  // {
-  //   mutt_buffer_printf(err, "Variable is not a regex");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // struct Regex *r = v->variable;
   struct Regex *r = variable;
   if (!r)
     return false;
@@ -43,17 +32,6 @@ static bool set_rx(struct ConfigSet *set, void *variable, struct VariableDef *de
 
 static bool get_rx(void *variable, struct VariableDef *def, struct Buffer *result)
 {
-  // if (DTYPE(e->type) != DT_RX)
-  // {
-  //   mutt_buffer_printf(result, "Variable is not a regex");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // struct Regex *r = v->variable;
   struct Regex *r = variable;
   if (!r)
     return false;

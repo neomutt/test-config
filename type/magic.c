@@ -10,21 +10,10 @@ const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 static bool set_magic(struct ConfigSet *set, void *variable, struct VariableDef *def,
                       const char *value, struct Buffer *err)
 {
-  // if (DTYPE(e->type) != DT_MAGIC)
-  // {
-  //   mutt_buffer_printf(err, "Variable is not a mailbox type");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
   for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
   {
     if (mutt_strcasecmp(magic_values[i], value) == 0)
     {
-      // *(short *) v->variable = i;
       *(short *) variable = i;
       return true;
     }
@@ -36,17 +25,6 @@ static bool set_magic(struct ConfigSet *set, void *variable, struct VariableDef 
 
 static bool get_magic(void *variable, struct VariableDef *def, struct Buffer *result)
 {
-  // if (DTYPE(e->type) != DT_MAGIC)
-  // {
-  //   mutt_buffer_printf(result, "Variable is not a mailbox type");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // unsigned int index = *(short *) v->variable;
   unsigned int index = *(short *) variable;
   if ((index < 1) || (index >= mutt_array_size(magic_values)))
   {

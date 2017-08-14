@@ -14,36 +14,14 @@ static void destroy_path(void **obj, struct VariableDef *def)
 static bool set_path(struct ConfigSet *set, void *variable, struct VariableDef *def,
                      const char *value, struct Buffer *err)
 {
-  // if (DTYPE(e->type) != DT_PATH)
-  // {
-  //   mutt_buffer_printf(err, "Variable is not a path");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
-  // mutt_str_replace(v->variable, value);
   *(const char **) variable = safe_strdup(value);
   return true;
 }
 
 static bool get_path(void *variable, struct VariableDef *def, struct Buffer *result)
 {
-  // if (DTYPE(e->type) != DT_PATH)
-  // {
-  //   mutt_buffer_printf(result, "Variable is not a path");
-  //   return false;
-  // }
-
-  // struct VariableDef *v = e->data;
-  // if (!v)
-  //   return false;
-
   // return true; /* empty string */
 
-  // mutt_buffer_addstr(result, *(const char **) v->variable);
   mutt_buffer_addstr(result, *(const char **) variable);
   return true;
 }
