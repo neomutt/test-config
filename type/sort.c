@@ -69,7 +69,6 @@ const struct Mapping SortSidebarMethods[] = {
   { NULL, 0 },
 };
 
-
 static const char *find_string(const struct Mapping *map, int type)
 {
   for (int i = 0; map[i].name; i++)
@@ -87,7 +86,6 @@ static int find_id(const struct Mapping *map, const char *str)
 
   return -1;
 }
-
 
 static bool set_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
@@ -183,7 +181,6 @@ static bool reset_sort(struct ConfigSet *cs, void *var,
   *(short *) var = vdef->initial;
   return true;
 }
-
 
 void init_sorts(void)
 {

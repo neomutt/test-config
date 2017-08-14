@@ -12,7 +12,6 @@ struct ConfigSetType RegisteredTypes[16] =
   { NULL, NULL, NULL, },
 };
 
-
 struct ConfigSetType *get_type_def(unsigned int type)
 {
   type = DTYPE(type);
@@ -72,7 +71,6 @@ void cs_add_validator(struct ConfigSet *cs, cs_validator fn)
 {
   cs->validator = fn;
 }
-
 
 void cs_free(struct ConfigSet *cs)
 {
@@ -148,7 +146,6 @@ bool cs_register_type(unsigned int type, const struct ConfigSetType *cst)
   RegisteredTypes[type] = *cst;
   return false;
 }
-
 
 static struct HashElem *reg_one_var(struct ConfigSet *cs, const struct VariableDef *vdef, struct Buffer *err)
 {

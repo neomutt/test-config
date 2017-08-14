@@ -52,7 +52,6 @@ static bool reset_magic(struct ConfigSet *cs, void *var,
   return true;
 }
 
-
 void init_magic(void)
 {
   const struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, reset_magic, NULL };

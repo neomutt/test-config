@@ -50,7 +50,6 @@ static bool reset_path(struct ConfigSet *cs, void *var,
   return true;
 }
 
-
 void init_path(void)
 {
   const struct ConfigSetType cst_path = { "path", set_path, get_path, reset_path, destroy_path };

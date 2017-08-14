@@ -10,7 +10,6 @@ const char *hcache_backends[] = {
   "tokyocabinet", "kyotocabinet", "qdbm", "gdbm", "bdb", "lmdb",
 };
 
-
 static bool set_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
@@ -89,7 +88,6 @@ bool hc_pagesize_validator(struct ConfigSet *cs, const struct VariableDef *vdef,
 
   return true;
 }
-
 
 char *HeaderCache;
 short HeaderCacheBackend;

@@ -44,7 +44,6 @@ static bool reset_num(struct ConfigSet *cs, void *var,
   return true;
 }
 
-
 void init_num(void)
 {
   const struct ConfigSetType cst_num = { "number", set_num, get_num, reset_num, NULL };

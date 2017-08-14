@@ -55,7 +55,7 @@
 #define HAVE_USE_EXTENDED_NAMES 1
 #define HAVE_WCSCASECMP 1
 #define HAVE_WC_FUNCS 1
-#define ICONV_CONST 
+#define ICONV_CONST
 #define ISPELL "/usr/bin/ispell"
 #define MAILPATH "/var/mail"
 #define MAKEDOC_FULL 1
