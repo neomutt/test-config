@@ -17,7 +17,7 @@ const char *bool_values[] = {
 };
 
 
-static bool set_bool(struct ConfigSet *set, struct HashElem *e,
+static bool set_bool(struct ConfigSet *set, void *variable, struct VariableDef *def,
                      const char *value, struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_BOOL)
@@ -29,8 +29,6 @@ static bool set_bool(struct ConfigSet *set, struct HashElem *e,
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
   {

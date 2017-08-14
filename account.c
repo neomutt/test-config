@@ -4,17 +4,17 @@
 #include "config_set.h"
 
 const char *AccountVarStr[] = {
-  "alias_file",           /* DT_PATH */
+  // "alias_file",           /* DT_PATH */
   "attribution",          /* DT_STR */
-  "from",                 /* DT_ADDR */
-  "header_cache_backend", /* DT_HCACHE */
-  "mbox_type",            /* DT_MAGIC */
-  "pager_context",        /* DT_NUM */
-  "post_moderated",       /* DT_QUAD */
-  "quote_regexp",         /* DT_RX */
-  "resume_draft_files",   /* DT_BOOL */
-  "sort",                 /* DT_SORT */
-  "status_chars",         /* DT_MBCHARTBL */
+  // "from",                 /* DT_ADDR */
+  // "header_cache_backend", /* DT_HCACHE */
+  // "mbox_type",            /* DT_MAGIC */
+  // "pager_context",        /* DT_NUM */
+  // "post_moderated",       /* DT_QUAD */
+  // "quote_regexp",         /* DT_RX */
+  // "resume_draft_files",   /* DT_BOOL */
+  // "sort",                 /* DT_SORT */
+  // "status_chars",         /* DT_MBCHARTBL */
 };
 
 struct Account *account_create(const char *name, struct ConfigSet *cs)

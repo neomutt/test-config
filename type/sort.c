@@ -89,7 +89,7 @@ static int find_id(const struct Mapping *map, const char *str)
 }
 
 
-static bool set_sort(struct ConfigSet *set, struct HashElem *e,
+static bool set_sort(struct ConfigSet *set, void *variable, struct VariableDef *def,
                      const char *value, struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_SORT)
@@ -100,7 +100,7 @@ static bool set_sort(struct ConfigSet *set, struct HashElem *e,
 
   intptr_t id = -1;
 
-  switch (e->type & DT_SUBTYPE_MASK)
+  switch (def->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
       id = find_id(SortMethods, value);
@@ -133,8 +133,6 @@ static bool set_sort(struct ConfigSet *set, struct HashElem *e,
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // *(short *) v->variable = id;
   *(short *) variable = id;

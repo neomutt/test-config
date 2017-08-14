@@ -14,7 +14,7 @@ static void destroy_addr(void **obj, struct VariableDef *def)
   //XXX FREE(a);
 }
 
-static bool set_addr(struct ConfigSet *set, struct HashElem *e,
+static bool set_addr(struct ConfigSet *set, void *variable, struct VariableDef *def,
                      const char *value, struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_ADDR)
@@ -28,8 +28,6 @@ static bool set_addr(struct ConfigSet *set, struct HashElem *e,
   //   return false;
 
   struct Address *a = safe_calloc(1, sizeof(*a));
-
-  void *variable = e;
 
   // destroy_addr(v->variable);
 

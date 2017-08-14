@@ -59,7 +59,7 @@ static void destroy_mbchartbl(void **obj, struct VariableDef *def)
   //XXX FREE(&m);
 }
 
-static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e,
+static bool set_mbchartbl(struct ConfigSet *set, void *variable, struct VariableDef *def,
                           const char *value, struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_MBCHARTBL)
@@ -75,8 +75,6 @@ static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e,
   struct MbCharTable *table = parse_mbchar_table(value);
   if (!table)
     return false;
-
-  void *variable = e;
 
   // destroy_mbchartbl(def->variable);
   // *(struct MbCharTable **) def->variable = table;

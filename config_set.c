@@ -13,7 +13,7 @@ struct ConfigSetType RegisteredTypes[16] =
 };
 
 
-const int ConfigSetSize = 10;// 500;
+const int ConfigSetSize = 30;// 500;
 
 struct ConfigSetType *get_type_def(unsigned int type)
 {
@@ -216,21 +216,24 @@ bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value,
 
   void *variable = NULL;
 
+  struct VariableDef *def = NULL;
+
   if (e->type & DT_INHERITED)
   {
     struct Inheritance *i = e->data;
+    def = i->parent->data;
     variable = &i->var;
   }
   else
   {
-    struct VariableDef *def = e->data;
+    def = e->data;
     variable = def->variable;
   }
 
   if (!variable)
     return false;
 
-  if (!cst->setter(set, variable, value, err))
+  if (!cst->setter(set, variable, def, value, err))
     return false;
 
   if (e->type & DT_INHERITED)
@@ -278,7 +281,7 @@ bool cs_reset_variable(struct ConfigSet *set, const char *name, struct Buffer *e
     struct VariableDef *def = e->data;
 
     if (cst->destructor)
-      cst->destructor(&def->variable, def);
+      cst->destructor(def->variable, def);
 
     *(intptr_t*) def->variable = def->initial;
   }

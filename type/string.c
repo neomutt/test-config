@@ -9,10 +9,20 @@ static void destroy_str(void **obj, struct VariableDef *def)
   if (!obj || !*obj)
     return;
 
-  //XXX FREE(obj);
+  // printf("obj: '%s'\n", (const char*) *obj);
+  // printf("def: '%s'\n", (const char*) def->initial);
+
+  if (*obj == (void*) def->initial)
+  {
+    // printf("ORIG STRING: '%s'\n", (const char*) *obj);
+  }
+  else
+  {
+    FREE(obj);
+  }
 }
 
-static bool set_str(struct ConfigSet *set, struct HashElem *e,
+static bool set_str(struct ConfigSet *set, void *variable, struct VariableDef *def,
                     const char *value, struct Buffer *err)
 {
   // if (e && DTYPE(e->type) != DT_STR)
@@ -21,16 +31,15 @@ static bool set_str(struct ConfigSet *set, struct HashElem *e,
   //   return false;
   // }
 
-  // struct VariableDef *v = e->data;
-  // if (!v)
+  // struct VariableDef *def = e->data;
+  // if (!def)
   //   return false;
 
-  //XXX if (v->validator && !v->validator(set, v->name, v->type, (intptr_t) value, err))
+  //XXX if (def->validator && !def->validator(set, def->name, def->type, (intptr_t) value, err))
   //XXX   return false;
 
-  void *variable = e;
-
-  // mutt_str_replace(v->variable, value);
+  destroy_str(variable, def);
+  // mutt_str_replace(def->variable, value);
   *(const char **) variable = safe_strdup(value);
   return true;
 }

@@ -5,7 +5,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static bool set_num(struct ConfigSet *set, struct HashElem *e,
+static bool set_num(struct ConfigSet *set, void *variable, struct VariableDef *def,
                     const char *value, struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_NUM)
@@ -29,7 +29,7 @@ static bool set_num(struct ConfigSet *set, struct HashElem *e,
   //   return false;
 
   // *(short *) v->variable = num;
-  *(short *) e = num;
+  *(short *) variable = num;
   return true;
 }
 

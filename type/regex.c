@@ -17,7 +17,7 @@ static void destroy_rx(void **obj, struct VariableDef *def)
   // FREE(r);
 }
 
-static bool set_rx(struct ConfigSet *set, struct HashElem *e, const char *value,
+static bool set_rx(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value,
                    struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_RX)
@@ -29,8 +29,6 @@ static bool set_rx(struct ConfigSet *set, struct HashElem *e, const char *value,
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // struct Regex *r = v->variable;
   struct Regex *r = variable;

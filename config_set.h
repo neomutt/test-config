@@ -27,7 +27,7 @@ struct VariableDef
   cs_validator  validator;
 };
 
-typedef bool (*cst_string_set)(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err);
+typedef bool (*cst_string_set)(struct ConfigSet *set, void *variable, struct VariableDef *def, const char *value, struct Buffer *err);
 typedef bool (*cst_string_get)(struct HashElem *e, struct Buffer *result);
 typedef bool (*cst_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
 typedef void (*cst_destructor)(void **obj, struct VariableDef *def);

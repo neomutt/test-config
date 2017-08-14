@@ -11,7 +11,7 @@ static void destroy_path(void **obj, struct VariableDef *def)
   //XXX FREE(obj);
 }
 
-static bool set_path(struct ConfigSet *set, struct HashElem *e,
+static bool set_path(struct ConfigSet *set, void *variable, struct VariableDef *def,
                      const char *value, struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_PATH)
@@ -23,8 +23,6 @@ static bool set_path(struct ConfigSet *set, struct HashElem *e,
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // mutt_str_replace(v->variable, value);
   *(const char **) variable = safe_strdup(value);

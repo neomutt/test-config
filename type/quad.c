@@ -7,7 +7,7 @@
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
-static bool set_quad(struct ConfigSet *set, struct HashElem *e,
+static bool set_quad(struct ConfigSet *set, void *variable, struct VariableDef *def,
                      const char *value, struct Buffer *err)
 {
   // if (DTYPE(e->type) != DT_QUAD)
@@ -19,8 +19,6 @@ static bool set_quad(struct ConfigSet *set, struct HashElem *e,
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   for (unsigned int i = 0; i < mutt_array_size(quad_values); i++)
   {
