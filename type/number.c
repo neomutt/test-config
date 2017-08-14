@@ -1,6 +1,6 @@
+#include <stddef.h>
 #include <limits.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include "config_set.h"
 #include "lib/lib.h"
 #include "mutt_options.h"
@@ -30,11 +30,12 @@ static bool get_num(void *variable, const struct VariableDef *vdef, struct Buffe
   if (!variable || !vdef)
     return false;
 
-  mutt_buffer_printf(result, "%d", *(short*) variable);
+  mutt_buffer_printf(result, "%d", *(short *) variable);
   return true;
 }
 
-static bool reset_num(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_num(struct ConfigSet *cs, void *variable,
+                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

@@ -25,9 +25,9 @@ static bool set_addr(struct ConfigSet *cs, void *variable, const struct Variable
 
   struct Address *a = safe_calloc(1, sizeof(*a));
 
-  a->personal = safe_strdup((const char*) value);
+  a->personal = safe_strdup((const char *) value);
   a->mailbox = safe_strdup("dummy1");
-  
+
   *(struct Address **) variable = a;
   return true;
 }
@@ -45,7 +45,8 @@ static bool get_addr(void *variable, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
-static bool reset_addr(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_addr(struct ConfigSet *cs, void *variable,
+                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;
@@ -56,7 +57,7 @@ static bool reset_addr(struct ConfigSet *cs, void *variable, const struct Variab
 
   a->personal = (char *) vdef->initial;
   a->mailbox = safe_strdup("dummy2");
-  
+
   *(struct Address **) variable = a;
   return true;
 }
@@ -64,6 +65,7 @@ static bool reset_addr(struct ConfigSet *cs, void *variable, const struct Variab
 
 void init_addr(void)
 {
-  const struct ConfigSetType cst_addr = { "address", set_addr, get_addr, reset_addr, destroy_addr };
+  const struct ConfigSetType cst_addr = { "address", set_addr, get_addr,
+                                          reset_addr, destroy_addr };
   cs_register_type(DT_ADDR, &cst_addr);
 }

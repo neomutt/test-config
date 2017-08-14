@@ -1,7 +1,7 @@
-#include "mbyte_table.h"
 #include <stdbool.h>
 #include <string.h>
 #include <wchar.h>
+#include "mbyte_table.h"
 #include "config_set.h"
 #include "lib/lib.h"
 #include "mutt_options.h"
@@ -60,8 +60,9 @@ static void destroy_mbchartbl(void **obj, const struct VariableDef *vdef)
   FREE(m);
 }
 
-static bool set_mbchartbl(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
-                          const char *value, struct Buffer *err)
+static bool set_mbchartbl(struct ConfigSet *cs, void *variable,
+                          const struct VariableDef *vdef, const char *value,
+                          struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
     return false;
@@ -92,14 +93,15 @@ static bool get_mbchartbl(void *variable, const struct VariableDef *vdef, struct
   return true;
 }
 
-static bool reset_mbchartbl(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_mbchartbl(struct ConfigSet *cs, void *variable,
+                            const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;
 
   destroy_mbchartbl(variable, vdef);
 
-  struct MbCharTable *table = parse_mbchar_table((const char*) vdef->initial);
+  struct MbCharTable *table = parse_mbchar_table((const char *) vdef->initial);
   if (!table)
     return false;
 
@@ -111,6 +113,6 @@ static bool reset_mbchartbl(struct ConfigSet *cs, void *variable, const struct V
 void init_mbyte_table(void)
 {
   const struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl,
-                                         reset_mbchartbl, destroy_mbchartbl };
+                                               reset_mbchartbl, destroy_mbchartbl };
   cs_register_type(DT_MBCHARTBL, &cst_mbchartbl);
 }

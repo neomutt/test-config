@@ -1,7 +1,7 @@
-#include "regex.h"
-#include <stdbool.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <string.h>
+#include "regex.h"
 #include "config_set.h"
 #include "lib/lib.h"
 #include "mutt_options.h"
@@ -18,8 +18,8 @@ static void destroy_rx(void **obj, const struct VariableDef *vdef)
   FREE(r);
 }
 
-static bool set_rx(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, const char *value,
-                   struct Buffer *err)
+static bool set_rx(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+                   const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
     return false;
@@ -48,7 +48,8 @@ static bool get_rx(void *variable, const struct VariableDef *vdef, struct Buffer
   return true;
 }
 
-static bool reset_rx(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_rx(struct ConfigSet *cs, void *variable,
+                     const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

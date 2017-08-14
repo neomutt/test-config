@@ -1,7 +1,7 @@
-#include "sort.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "sort.h"
 #include "config_set.h"
 #include "lib/lib.h"
 #include "mapping.h"
@@ -174,7 +174,8 @@ static bool get_sort(void *variable, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
-static bool reset_sort(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_sort(struct ConfigSet *cs, void *variable,
+                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

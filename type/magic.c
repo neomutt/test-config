@@ -1,5 +1,5 @@
-#include <stdbool.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include "config_set.h"
 #include "lib/lib.h"
@@ -42,7 +42,8 @@ static bool get_magic(void *variable, const struct VariableDef *vdef, struct Buf
   return true;
 }
 
-static bool reset_magic(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_magic(struct ConfigSet *cs, void *variable,
+                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !variable || !vdef)
     return false;

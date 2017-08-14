@@ -9,8 +9,8 @@ const char *bool_values[] = {
   "no", "yes", "false", "true", "0", "1", "off", "on",
 };
 
-static bool set_bool(struct ConfigSet *cs, void *variable,
-                     const struct VariableDef *vdef, const char *value, struct Buffer *err)
+static bool set_bool(struct ConfigSet *cs, void *variable, const struct VariableDef *vdef,
+                     const char *value, struct Buffer *err)
 {
   if (!cs || !variable || !vdef || !value)
     return false;
