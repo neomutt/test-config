@@ -7,6 +7,7 @@
 struct Buffer;
 struct ConfigSet;
 struct HashElem;
+struct VariableDef;
 
 enum ConfigEvent
 {
@@ -15,7 +16,7 @@ enum ConfigEvent
 };
 
 typedef bool (*cs_listener)  (struct ConfigSet *set, const char *name, enum ConfigEvent e);
-typedef bool (*cs_validator) (struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result);
+typedef bool (*cs_validator) (struct ConfigSet *set, struct VariableDef *def, intptr_t value, struct Buffer *result);
 typedef bool (*cs_destructor)(struct ConfigSet *set, unsigned int type, intptr_t obj);
 
 struct VariableDef

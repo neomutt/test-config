@@ -48,7 +48,7 @@ static bool hc_string_get(void *variable, struct VariableDef *def, struct Buffer
 }
 
 // static
-bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *err)
+bool hc_pagesize_validator(struct ConfigSet *set, struct VariableDef *def, intptr_t value, struct Buffer *err)
 {
   int num = 0;
   if (mutt_atoi((const char*) value, &num) < 0)

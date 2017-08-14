@@ -30,16 +30,17 @@ struct Regex Smileys;
 struct Regex GecosMask;
 
 struct VariableDef MuttVars[] = {
-  // { "alias_file",                       DT_PATH,                 &AliasFile,                         IP "~/.muttrc" },
+  { "alias_file",                       DT_PATH,                 &AliasFile,                         IP "~/.muttrc" },
   { "attribution",                      DT_STR,                  &Attribution,                       IP "On %d, %n wrote:" },
-  // { "from",                             DT_ADDR,                 &From,                              0 },
-  // { "mbox_type",                        DT_MAGIC,                &DefaultMagic,                      MUTT_MBOX },
-  // { "pager_context",                    DT_NUM,                  &PagerContext,                      7 },
-  // { "post_moderated",                   DT_QUAD,                 &OPT_TO_MODERATED,                  MUTT_ASKYES },
-  // { "quote_regexp",                     DT_RX,                   &QuoteRegexp,                       IP "^([ \t]*[|>:}#])+" },
-  // { "resume_draft_files",               DT_BOOL,                 &OPT_RESUME_DRAFT_FILES,            0 },
-  // { "sort",                             DT_SORT,                 &Sort,                              SORT_DATE },
-  // { "status_chars",                     DT_MBCHARTBL,            &StChars,                           0 },
+  { "from",                             DT_ADDR,                 &From,                              0 },
+  { "mbox_type",                        DT_MAGIC,                &DefaultMagic,                      MUTT_MBOX },
+  { "pager_context",                    DT_NUM,                  &PagerContext,                      7 },
+  { "post_moderated",                   DT_QUAD,                 &OPT_TO_MODERATED,                  MUTT_ASKYES },
+  { "quote_regexp",                     DT_RX,                   &QuoteRegexp,                       IP "^([ \t]*[|>:}#])+" },
+  { "resume_draft_files",               DT_BOOL,                 &OPT_RESUME_DRAFT_FILES,            0 },
+  { "sort",                             DT_SORT,                 &Sort,                              SORT_DATE },
+  { "status_chars",                     DT_MBCHARTBL,            &StChars,                           0 },
+
   // { "abort_noattach",                   DT_QUAD,                 &OPT_ATTACH,                        MUTT_NO },
   // { "abort_nosubject",                  DT_QUAD,                 &OPT_SUBJECT,                       MUTT_ASKYES },
   // { "abort_unmodified",                 DT_QUAD,                 &OPT_ABORT,                         MUTT_YES },

@@ -6,42 +6,53 @@
 
 static void destroy_str(void **obj, struct VariableDef *def)
 {
-  if (!obj || !*obj)
+  if (!obj || !*obj || !def)
     return;
 
-  // printf("obj: '%s'\n", (const char*) *obj);
-  // printf("def: '%s'\n", (const char*) def->initial);
+  /* Don't free strings from the variable definition */
+  if (*obj == (void *) def->initial)
+    return;
 
-  if (*obj != (void*) def->initial)
-    FREE(obj);
+  FREE(obj);
 }
 
-static bool set_str(struct ConfigSet *set, void *variable, struct VariableDef *def,
-                    const char *value, struct Buffer *err)
+static bool set_str(struct ConfigSet *set, void *variable,
+                    struct VariableDef *def, const char *value, struct Buffer *err)
 {
-  //XXX if (def->validator && !def->validator(set, def->name, def->type, (intptr_t) value, err))
-  //XXX   return false;
+  if (!set || !variable || !def || !value)
+    return false;
+
+  if (def->validator && !def->validator(set, def, (intptr_t) value, err))
+    return false;
 
   destroy_str(variable, def);
-  // mutt_str_replace(def->variable, value);
   *(const char **) variable = safe_strdup(value);
   return true;
 }
 
 static bool get_str(void *variable, struct VariableDef *def, struct Buffer *result)
 {
-  // return true; /* empty string */
+  if (!variable || !def)
+    return false;
 
-  mutt_buffer_addstr(result, *(const char **) variable);
+  const char *str = *(const char **) variable;
+  if (!str)
+    return true; /* empty string */
+
+  mutt_buffer_addstr(result, str);
   return true;
 }
 
-static bool reset_str(struct ConfigSet *set, void *variable, struct VariableDef *def, struct Buffer *err)
+static bool reset_str(struct ConfigSet *set, void *variable,
+                      struct VariableDef *def, struct Buffer *err)
 {
-  mutt_str_replace(variable, (const char*) def->initial);
+  if (!set || !variable || !def)
+    return false;
+
+  destroy_str(variable, def);
+  *(const char **) variable = (const char *) def->initial; 
   return true;
 }
-
 
 void init_string(void)
 {

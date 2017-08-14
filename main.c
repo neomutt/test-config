@@ -28,22 +28,22 @@
 
 void init_types()
 {
-  // init_addr();
-  // init_bool();
-  // init_magic();
-  // init_mbyte_table();
-  // init_regex();
-  // init_num();
-  // init_path();
-  // init_quad();
-  // init_sorts();
+  init_addr();
+  init_bool();
+  init_magic();
+  init_mbyte_table();
+  init_regex();
+  init_num();
+  init_path();
+  init_quad();
+  init_sorts();
   init_string();
 }
 
 void init_variables(struct ConfigSet *set)
 {
   cs_register_variables(set, MuttVars);
-  // init_hcache(set);
+  init_hcache(set);
   // init_imap(set);
   // init_ncrypt(set);
   // init_nntp(set);
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
 
   struct Account *ac1 = account_create("apple",  &cs);
-  // struct Account *ac2 = account_create("banana", &cs);
+  struct Account *ac2 = account_create("banana", &cs);
   // printf("ac = %p\n", (void *) ac);
 
   // cs_dump_set(&cs);
@@ -197,18 +197,18 @@ int main(int argc, char *argv[])
   test(&cs, "apple",  "attribution",          "date %d",   "from %n");  // DT_STR
 #if 0
   test(&cs, "apple",  "resume_draft_files",   "1",         "0");        // DT_BOOL
-  test(&cs, "banana", "pager_context",        "12",        "9");        // DT_NUM
-  test(&cs, "apple",  "header_cache_backend", "lmdb",      "qdbm");     // DT_HCACHE
-  test(&cs, "apple",  "mbox_type",            "mh",        "Maildir");  // DT_MAGIC
   test(&cs, "banana", "quote_regexp",         ">.*",       "#.*");      // DT_RX
-  test(&cs, "banana", "post_moderated",       "ask-no",    "yes");      // DT_QUAD
-  test(&cs, "banana", "sort",                 "threads",   "score");    // DT_SORT
-  test(&cs, "apple",  "alias_file",           "~/a",       "/etc/b");   // DT_PATH
   test(&cs, "apple",  "from",                 "a@b.com",   "x@y.org");  // DT_ADDR
   test(&cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
+  test(&cs, "apple",  "mbox_type",            "mh",        "Maildir");  // DT_MAGIC
+  test(&cs, "banana", "pager_context",        "12",        "9");        // DT_NUM
+  test(&cs, "banana", "sort",                 "threads",   "score");    // DT_SORT
+  test(&cs, "banana", "post_moderated",       "ask-no",    "yes");      // DT_QUAD
+  test(&cs, "apple",  "alias_file",           "~/a",       "/etc/b");   // DT_PATH
+  test(&cs, "apple",  "header_cache_backend", "lmdb",      "qdbm");     // DT_HCACHE
 #endif
 
-  // account_free(&ac2);
+  account_free(&ac2);
   account_free(&ac1);
   cs_free(&cs);
   FREE(&err.data);

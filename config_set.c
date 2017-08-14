@@ -256,7 +256,7 @@ bool cs_reset_variable(struct ConfigSet *set, const char *name, struct Buffer *e
   }
 
   /* An inherited variable that's already pointing to its parent.
-   * Return 'success', but don't send a notification */
+   * Return 'success', but don't send a notification. */
   if ((e->type & DT_INHERITED) && (DTYPE(e->type) == 0))
     return true;
 
@@ -281,10 +281,10 @@ bool cs_reset_variable(struct ConfigSet *set, const char *name, struct Buffer *e
 
     struct VariableDef *def = e->data;
 
-    if (cst->destructor)
-      cst->destructor(def->variable, def);
-
-    *(intptr_t*) def->variable = def->initial;
+    if (cst->resetter)
+      cst->resetter(set, def->variable, def, err);
+    else
+      *(intptr_t*) def->variable = def->initial;
   }
 
   if (!cst)
