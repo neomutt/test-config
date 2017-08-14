@@ -24,7 +24,7 @@
 #include "type/quad.h"
 #include "type/regex.h"
 #include "type/sort.h"
-#include "type/string.h"
+#include "type/string3.h"
 
 void init_types()
 {
@@ -43,7 +43,7 @@ void init_types()
 void init_variables(struct ConfigSet *set)
 {
   cs_register_variables(set, MuttVars);
-  // init_hcache(set);
+  init_hcache(set);
   // init_imap(set);
   // init_ncrypt(set);
   // init_nntp(set);
@@ -102,15 +102,15 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
     return;
   }
 
-  printf("%30s = %s\n", parent, result.data);
+  printf("%26s = %s\n", parent, result.data);
 
   mutt_buffer_reset(&result);
-  if (!cs_get_variable(cs, child, &result))                                 
+  if (!cs_get_variable(cs, child, &result))
   {
     printf("Error: %s\n", result.data);
     return;
   }
-  printf("%30s = %s\n", child, result.data);
+  printf("%26s = %s\n", child, result.data);
 
   FREE(&result.data);
 }
@@ -149,39 +149,21 @@ void set(struct ConfigSet *cs, const char *name, const char *value)
   FREE(&result.data);
 }
 
-void test(struct ConfigSet *cs, const char *parent, const char *pvalue, const char *child, const char *cvalue)
+void test(struct ConfigSet *cs, const char *account, const char *parent, const char *pvalue, const char *cvalue)
 {
-  // print value of parent | 0
-  // print value of child  | 0 (inherited)
-  dump(cs, parent, child);
+  char child[128];
+  snprintf(child, sizeof(child), "%s:%s", account, parent);
 
-  // set   value of parent = 1
+  dump(cs, parent, child);
   set(cs, parent, pvalue);
-
-  // print value of parent | 1
-  // print value of child  | 1 (inherited)
   dump(cs, parent, child);
-
-  // set   value of child  = 0
   set(cs, child, cvalue);
-
-  // print value of parent | 1
-  // print value of child  | 0 (private)
   dump(cs, parent, child);
-
-  // reset value of child  = 1
   reset(cs, child);
-
-  // print value of parent | 1
-  // print value of child  | 1 (inherited)
   dump(cs, parent, child);
-
-  // reset value of parent = 0
   reset(cs, parent);
-
-  // print value of parent | 0
-  // print value of child  | 0 (inherited)
   dump(cs, parent, child);
+  printf("\n");
 }
 
 int main(int argc, char *argv[])
@@ -205,15 +187,26 @@ int main(int argc, char *argv[])
   //   printf("Set failed: %s\n", err.data);
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
 
-  struct Account *ac1 = account_create("wibble",   &cs);
-  struct Account *ac2 = account_create("hatstand", &cs);
+  struct Account *ac1 = account_create("apple",  &cs);
+  struct Account *ac2 = account_create("banana", &cs);
   // printf("ac = %p\n", (void *) ac);
 
   // cs_dump_set(&cs);
   // hash_dump(cs.hash);
 
-  test(&cs, "resume_draft_files", "0",  "wibble:resume_draft_files", "1");
-  test(&cs, "pager_context",      "12", "hatstand:pager_context",    "9");
+#if 1
+  test(&cs, "apple",  "resume_draft_files",   "1",         "0");        // DT_BOOL
+  test(&cs, "banana", "pager_context",        "12",        "9");        // DT_NUM
+  test(&cs, "apple",  "header_cache_backend", "lmdb",      "qdbm");     // DT_HCACHE
+  test(&cs, "apple",  "mbox_type",            "mh",        "Maildir");  // DT_MAGIC
+  test(&cs, "banana", "quote_regexp",         ">.*",       "#.*");      // DT_RX
+  test(&cs, "banana", "post_moderated",       "ask-no",    "yes");      // DT_QUAD
+  test(&cs, "banana", "sort",                 "threads",   "score");    // DT_SORT
+  test(&cs, "apple",  "attribution",          "date %d",   "from %n");  // DT_STR
+  test(&cs, "apple",  "alias_file",           "~/a",       "/etc/b");   // DT_PATH
+  test(&cs, "apple",  "from",                 "a@b.com",   "x@y.org");  // DT_ADDR
+  test(&cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
+#endif
 
   account_free(&ac2);
   account_free(&ac1);

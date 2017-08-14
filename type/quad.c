@@ -10,21 +10,24 @@ const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 static bool set_quad(struct ConfigSet *set, struct HashElem *e,
                      const char *value, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_QUAD)
-  {
-    mutt_buffer_printf(err, "Variable is not a quad");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_QUAD)
+  // {
+  //   mutt_buffer_printf(err, "Variable is not a quad");
+  //   return false;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
+
+  void *variable = e;
 
   for (unsigned int i = 0; i < mutt_array_size(quad_values); i++)
   {
     if (mutt_strcasecmp(quad_values[i], value) == 0)
     {
-      *(short *) v->variable = i;
+      // *(short *) v->variable = i;
+      *(short *) variable = i;
       return true;
     }
   }
@@ -35,17 +38,20 @@ static bool set_quad(struct ConfigSet *set, struct HashElem *e,
 
 static bool get_quad(struct HashElem *e, struct Buffer *result)
 {
-  if (DTYPE(e->type) != DT_QUAD)
-  {
-    mutt_buffer_printf(result, "Variable is not a quad");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_QUAD)
+  // {
+  //   mutt_buffer_printf(result, "Variable is not a quad");
+  //   return false;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
-  unsigned int index = *(short *) v->variable;
+  void *variable = e;
+
+  // unsigned int index = *(short *) v->variable;
+  unsigned int index = *(short *) variable;
   if (index >= mutt_array_size(quad_values))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");

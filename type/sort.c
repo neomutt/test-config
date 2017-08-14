@@ -92,11 +92,11 @@ static int find_id(const struct Mapping *map, const char *str)
 static bool set_sort(struct ConfigSet *set, struct HashElem *e,
                      const char *value, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_SORT)
-  {
-    mutt_buffer_printf(err, "Variable is not a sort");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_SORT)
+  // {
+  //   mutt_buffer_printf(err, "Variable is not a sort");
+  //   return false;
+  // }
 
   intptr_t id = -1;
 
@@ -130,27 +130,33 @@ static bool set_sort(struct ConfigSet *set, struct HashElem *e,
     return false;
   }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
-  *(short *) v->variable = id;
+  void *variable = e;
+
+  // *(short *) v->variable = id;
+  *(short *) variable = id;
   return true;
 }
 
 static bool get_sort(struct HashElem *e, struct Buffer *result)
 {
-  if (DTYPE(e->type) != DT_SORT)
-  {
-    mutt_buffer_printf(result, "Variable is not a sort");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_SORT)
+  // {
+  //   mutt_buffer_printf(result, "Variable is not a sort");
+  //   return false;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
-  int sort = *(short *) v->variable;
+  void *variable = e;
+
+  // int sort = *(short *) v->variable;
+  int sort = *(short *) variable;
 
   const char *str = NULL;
 

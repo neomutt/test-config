@@ -52,53 +52,59 @@ static void destroy_mbchartbl(void **obj)
   if (!obj || !*obj)
     return;
 
-  struct MbCharTable *m = *(struct MbCharTable **) obj;
-  FREE(&m->chars);
-  FREE(&m->segmented_str);
-  FREE(&m->orig_str);
-  FREE(&m);
+  // struct MbCharTable *m = *(struct MbCharTable **) obj;
+  //XXX FREE(&m->chars);
+  //XXX FREE(&m->segmented_str);
+  //XXX FREE(&m->orig_str);
+  //XXX FREE(&m);
 }
 
 static bool set_mbchartbl(struct ConfigSet *set, struct HashElem *e,
                           const char *value, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_MBCHARTBL)
-  {
-    mutt_buffer_printf(err, "Variable is not a multibyte string");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_MBCHARTBL)
+  // {
+  //   mutt_buffer_printf(err, "Variable is not a multibyte string");
+  //   return false;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
   struct MbCharTable *table = parse_mbchar_table(value);
   if (!table)
     return false;
 
-  destroy_mbchartbl(v->variable);
-  *(struct MbCharTable **) v->variable = table;
+  void *variable = e;
+
+  // destroy_mbchartbl(v->variable);
+  // *(struct MbCharTable **) v->variable = table;
+  *(struct MbCharTable **) variable = table;
   return true;
 }
 
 static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
 {
-  if (DTYPE(e->type) != DT_MBCHARTBL)
-  {
-    mutt_buffer_printf(result, "Variable is not a multibyte string");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_MBCHARTBL)
+  // {
+  //   mutt_buffer_printf(result, "Variable is not a multibyte string");
+  //   return false;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
-  struct MbCharTable *table = *(struct MbCharTable **) v->variable;
+  void *variable = e;
+
+  // struct MbCharTable *table = *(struct MbCharTable **) v->variable;
+  struct MbCharTable *table = *(struct MbCharTable **) variable;
   if (!table)
-    return false;
+    return true; /* empty string */
 
   if (!table->orig_str)
-    return false;
+    return true; /* empty string */
 
   mutt_buffer_addstr(result, table->orig_str);
   return true;

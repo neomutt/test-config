@@ -4,12 +4,17 @@
 #include "config_set.h"
 
 const char *AccountVarStr[] = {
-  // "forward_quote",
-  "pager_context",
-  //"pgp_ignore_subkeys",
-  // "pop_user",           "postpone_encrypt",    "reflow_space_quotes",
-  "resume_draft_files", //"smtp_authenticators", "tmpdir",
-  // "ts_status_format",
+  "alias_file",           /* DT_PATH */
+  "attribution",          /* DT_STR */
+  "from",                 /* DT_ADDR */
+  "header_cache_backend", /* DT_HCACHE */
+  "mbox_type",            /* DT_MAGIC */
+  "pager_context",        /* DT_NUM */
+  "post_moderated",       /* DT_QUAD */
+  "quote_regexp",         /* DT_RX */
+  "resume_draft_files",   /* DT_BOOL */
+  "sort",                 /* DT_SORT */
+  "status_chars",         /* DT_MBCHARTBL */
 };
 
 struct Account *account_create(const char *name, struct ConfigSet *cs)

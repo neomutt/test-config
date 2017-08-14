@@ -13,11 +13,11 @@ const char *hcache_backends[] = {
 
 static bool hc_string_set(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err)
 {
-  if (DTYPE(e->type) != DT_HCACHE)
-  {
-    mutt_buffer_printf(err, "Variable is not an hcache");
-    return false;
-  }
+  // if (DTYPE(e->type) != DT_HCACHE)
+  // {
+  //   mutt_buffer_printf(err, "Variable is not an hcache");
+  //   return false;
+  // }
 
   intptr_t index = -1;
 
@@ -36,27 +36,33 @@ static bool hc_string_set(struct ConfigSet *set, struct HashElem *e, const char 
     return false;
   }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
-  *(short *) v->variable = index;
+  void *variable = e;
+
+  // *(short *) v->variable = index;
+  *(short *) variable = index;
   return true;
 }
 
 static bool hc_string_get(struct HashElem *e, struct Buffer *result)
 {
-  if (DTYPE(e->type) != DT_HCACHE)
-  {
-    mutt_buffer_printf(result, "Variable is not an hcache");
-    return NULL;
-  }
+  // if (DTYPE(e->type) != DT_HCACHE)
+  // {
+  //   mutt_buffer_printf(result, "Variable is not an hcache");
+  //   return NULL;
+  // }
 
-  struct VariableDef *v = e->data;
-  if (!v)
-    return false;
+  // struct VariableDef *v = e->data;
+  // if (!v)
+  //   return false;
 
-  unsigned int index = *(short *) v->variable;
+  void *variable = e;
+
+  // unsigned int index = *(short *) v->variable;
+  unsigned int index = *(short *) variable;
   if (index >= mutt_array_size(hcache_backends))
   {
     mutt_buffer_printf(result, "Invalid hcache value: %d", index);
@@ -67,7 +73,8 @@ static bool hc_string_get(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
-static bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *err)
+// static
+bool hc_pagesize_validator(struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *err)
 {
   int num = 0;
   if (mutt_atoi((const char*) value, &num) < 0)
@@ -98,16 +105,16 @@ char *HeaderCachePageSize;
 bool  OPT_HCACHE_COMPRESS;
 
 struct VariableDef HCVars[] = {
-  { "header_cache",          DT_PATH,   &HeaderCache,         0 },
+  // { "header_cache",          DT_PATH,   &HeaderCache,         0 },
   { "header_cache_backend",  DT_HCACHE, &HeaderCacheBackend,  0 },
-  { "header_cache_compress", DT_BOOL,   &OPT_HCACHE_COMPRESS, 1 },
-  { "header_cache_pagesize", DT_STR,    &HeaderCachePageSize, IP "16384", hc_pagesize_validator },
+  // { "header_cache_compress", DT_BOOL,   &OPT_HCACHE_COMPRESS, 1 },
+  // { "header_cache_pagesize", DT_STR,    &HeaderCachePageSize, IP "16384", hc_pagesize_validator },
   { NULL },
 };
 
 void init_hcache(struct ConfigSet *set)
 {
-  struct ConfigSetType cst = { "hcache", hc_string_set, hc_string_get, NULL, NULL };
+  struct ConfigSetType cst = { "hcache", hc_string_set, hc_string_get, NULL };
 
   cs_register_type(DT_HCACHE, &cst);
 

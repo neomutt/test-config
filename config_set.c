@@ -37,6 +37,10 @@ static void destroy(int type, void *obj, intptr_t data)
   }
 
   struct VariableDef *def = obj;
+
+  if (*(intptr_t*) def->variable == def->initial)
+    return;
+
   struct ConfigSetType *cs = get_type_def(type);
   if (cs->destructor)
     cs->destructor(def->variable);
