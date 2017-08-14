@@ -44,7 +44,7 @@ static bool set_str(struct ConfigSet *set, void *variable, struct VariableDef *d
   return true;
 }
 
-static bool get_str(struct HashElem *e, struct Buffer *result)
+static bool get_str(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_STR)
   // {
@@ -55,8 +55,6 @@ static bool get_str(struct HashElem *e, struct Buffer *result)
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // return true; /* empty string */
 

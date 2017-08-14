@@ -41,7 +41,7 @@ static bool set_rx(struct ConfigSet *set, void *variable, struct VariableDef *de
   return true;
 }
 
-static bool get_rx(struct HashElem *e, struct Buffer *result)
+static bool get_rx(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_RX)
   // {
@@ -52,8 +52,6 @@ static bool get_rx(struct HashElem *e, struct Buffer *result)
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // struct Regex *r = v->variable;
   struct Regex *r = variable;

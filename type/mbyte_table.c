@@ -82,7 +82,7 @@ static bool set_mbchartbl(struct ConfigSet *set, void *variable, struct Variable
   return true;
 }
 
-static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
+static bool get_mbchartbl(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_MBCHARTBL)
   // {
@@ -93,8 +93,6 @@ static bool get_mbchartbl(struct HashElem *e, struct Buffer *result)
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // struct MbCharTable *table = *(struct MbCharTable **) v->variable;
   struct MbCharTable *table = *(struct MbCharTable **) variable;

@@ -38,7 +38,7 @@ static bool set_addr(struct ConfigSet *set, void *variable, struct VariableDef *
   return true;
 }
 
-static bool get_addr(struct HashElem *e, struct Buffer *result)
+static bool get_addr(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_ADDR)
   // {
@@ -49,8 +49,6 @@ static bool get_addr(struct HashElem *e, struct Buffer *result)
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // struct Address *a = *(struct Address **) v->variable;
   struct Address *a = *(struct Address **) variable;

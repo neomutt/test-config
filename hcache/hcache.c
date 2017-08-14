@@ -45,7 +45,7 @@ static bool hc_string_set(struct ConfigSet *set, void *variable, struct Variable
   return true;
 }
 
-static bool hc_string_get(struct HashElem *e, struct Buffer *result)
+static bool hc_string_get(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_HCACHE)
   // {
@@ -56,8 +56,6 @@ static bool hc_string_get(struct HashElem *e, struct Buffer *result)
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // unsigned int index = *(short *) v->variable;
   unsigned int index = *(short *) variable;

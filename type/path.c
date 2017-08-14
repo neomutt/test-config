@@ -29,7 +29,7 @@ static bool set_path(struct ConfigSet *set, void *variable, struct VariableDef *
   return true;
 }
 
-static bool get_path(struct HashElem *e, struct Buffer *result)
+static bool get_path(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_PATH)
   // {
@@ -41,8 +41,6 @@ static bool get_path(struct HashElem *e, struct Buffer *result)
   // if (!v)
   //   return false;
 
-  void *variable = e;
-  
   // return true; /* empty string */
 
   // mutt_buffer_addstr(result, *(const char **) v->variable);

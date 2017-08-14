@@ -44,7 +44,7 @@ static bool set_bool(struct ConfigSet *set, void *variable, struct VariableDef *
   return false;
 }
 
-static bool get_bool(struct HashElem *e, struct Buffer *result)
+static bool get_bool(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_BOOL)
   // {
@@ -55,8 +55,6 @@ static bool get_bool(struct HashElem *e, struct Buffer *result)
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // unsigned int index = *(bool *) v->variable;
   unsigned int index = *(bool *) variable;

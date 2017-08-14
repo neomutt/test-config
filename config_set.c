@@ -58,7 +58,6 @@ bool cs_init(struct ConfigSet *set, struct ConfigSet *parent)
   memset(set, 0, sizeof(*set));
   set->hash = hash_create(ConfigSetSize, 0);
   hash_set_destructor(set->hash, destroy, (intptr_t) set);
-  set->parent = parent;
   return true;
 }
 
@@ -132,7 +131,9 @@ void cs_dump_set(struct ConfigSet *set)
     mutt_buffer_reset(&result);
     printf("%-7s %s", type->name, name);
 
-    if (type->getter(e, &result))
+    struct VariableDef *def = e->data;
+
+    if (type->getter(def->variable, def, &result))
       printf(" = %s\n", result.data);
     else
       printf(": ERROR: %s\n", result.data);
@@ -329,24 +330,26 @@ bool cs_get_variable(struct ConfigSet *set, const char *name, struct Buffer *res
   }
 
   void *variable = NULL;
+  struct VariableDef *def = NULL;
 
   if ((e->type & DT_INHERITED) && (DTYPE(e->type) != 0))
   {
     // Local value
     struct Inheritance *i = e->data;
+    def = i->parent->data;
     variable = &i->var;
   }
   else
   {
     // Normal variable
-    struct VariableDef *def = e->data;
+    def = e->data;
     if (!def)
       return false;
 
     variable = def->variable;
   }
 
-  if (!cst->getter(variable, result))
+  if (!cst->getter(variable, def, result))
     return false;
 
   return true;

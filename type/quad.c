@@ -34,7 +34,7 @@ static bool set_quad(struct ConfigSet *set, void *variable, struct VariableDef *
   return false;
 }
 
-static bool get_quad(struct HashElem *e, struct Buffer *result)
+static bool get_quad(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_QUAD)
   // {
@@ -45,8 +45,6 @@ static bool get_quad(struct HashElem *e, struct Buffer *result)
   // struct VariableDef *v = e->data;
   // if (!v)
   //   return false;
-
-  void *variable = e;
 
   // unsigned int index = *(short *) v->variable;
   unsigned int index = *(short *) variable;

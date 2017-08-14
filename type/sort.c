@@ -139,7 +139,7 @@ static bool set_sort(struct ConfigSet *set, void *variable, struct VariableDef *
   return true;
 }
 
-static bool get_sort(struct HashElem *e, struct Buffer *result)
+static bool get_sort(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_SORT)
   // {
@@ -151,14 +151,12 @@ static bool get_sort(struct HashElem *e, struct Buffer *result)
   // if (!v)
   //   return false;
 
-  void *variable = e;
-
   // int sort = *(short *) v->variable;
   int sort = *(short *) variable;
 
   const char *str = NULL;
 
-  switch (e->type & DT_SUBTYPE_MASK)
+  switch (def->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
       str = find_string(SortMethods, sort);

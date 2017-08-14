@@ -33,7 +33,7 @@ static bool set_num(struct ConfigSet *set, void *variable, struct VariableDef *d
   return true;
 }
 
-static bool get_num(struct HashElem *e, struct Buffer *result)
+static bool get_num(void *variable, struct VariableDef *def, struct Buffer *result)
 {
   // if (DTYPE(e->type) != DT_NUM)
   // {
@@ -46,7 +46,7 @@ static bool get_num(struct HashElem *e, struct Buffer *result)
   //   return false;
 
   // mutt_buffer_printf(result, "%d", *(short*) v->variable);
-  mutt_buffer_printf(result, "%d", *(short*) e);
+  mutt_buffer_printf(result, "%d", *(short*) variable);
   return true;
 }
 
