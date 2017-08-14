@@ -141,6 +141,12 @@ void cs_dump_set(struct ConfigSet *cs)
 
 bool cs_register_type(unsigned int type, const struct ConfigSetType *cst)
 {
+  if (!cst)
+    return false;
+
+  if (!cst->name || !cst->setter || !cst->getter || !cst->resetter)
+    return false;
+
   RegisteredTypes[type] = *cst;
   return false;
 }
@@ -157,8 +163,7 @@ static struct HashElem *reg_one_var(struct ConfigSet *cs, const struct VariableD
 
   struct HashElem *e = hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
 
-  if (cst->resetter)
-    cst->resetter(cs, vdef->var, vdef, err);
+  cst->resetter(cs, vdef->var, vdef, err);
 
   return e;
 }
@@ -204,12 +209,6 @@ bool cs_set_variable(struct ConfigSet *cs, const char *name, const char *value, 
   if (!cst)
   {
     mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", name, e->type);
-    return false;
-  }
-
-  if (!cst->setter)
-  {
-    mutt_buffer_printf(err, "No setter for '%s'", name);
     return false;
   }
 
@@ -270,8 +269,7 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
     if (cst->destructor)
       cst->destructor((void**) &i->var, vdef);
 
-    if (cst->resetter)
-      cst->resetter(cs, &i->var, vdef, err);
+    cst->resetter(cs, &i->var, vdef, err);
     e->type = DT_INHERITED;
   }
   else
@@ -280,14 +278,7 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
 
     struct VariableDef *vdef = e->data;
 
-    if (cst->resetter)
-    {
-      cst->resetter(cs, vdef->var, vdef, err);
-    }
-    else
-    {
-      //XXX *(intptr_t*) vdef->var = vdef->initial;
-    }
+    cst->resetter(cs, vdef->var, vdef, err);
   }
 
   if (!cst)
@@ -323,12 +314,6 @@ bool cs_get_variable(struct ConfigSet *cs, const char *name, struct Buffer *resu
   if (!cst)
   {
     mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", name, DTYPE(e->type));
-    return false;
-  }
-
-  if (!cst->getter)
-  {
-    mutt_buffer_printf(result, "No getter for '%s'", name);
     return false;
   }
 
