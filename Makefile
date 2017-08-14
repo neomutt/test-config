@@ -1,4 +1,4 @@
-CC	?= gcc
+CC	= gcc
 RM	= rm -fr
 MKDIR	= mkdir -p
 
@@ -24,11 +24,13 @@ CFLAGS	+= -Wpedantic
 CFLAGS	+= -g
 CFLAGS	+= -O0
 CFLAGS	+= -I.
+CFLAGS	+= -fprofile-arcs -ftest-coverage
 
 CFLAGS	+= -std=c99
 
 LDFLAGS	+= -pthread
 LDFLAGS	+= -rdynamic
+LDFLAGS	+= -fprofile-arcs -ftest-coverage
 
 CFLAGS	+= -fno-omit-frame-pointer
 
