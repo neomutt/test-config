@@ -18,12 +18,6 @@ typedef bool (*cs_listener)  (struct ConfigSet *set, const char *name, enum Conf
 typedef bool (*cs_validator) (struct ConfigSet *set, const char *name, int type, intptr_t value, struct Buffer *result);
 typedef bool (*cs_destructor)(struct ConfigSet *set, unsigned int type, intptr_t obj);
 
-typedef bool (*cst_string_set)(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err);
-typedef bool (*cst_string_get)(struct HashElem *e, struct Buffer *result);
-typedef void (*cst_destructor)(void **obj);
-
-#define IP (intptr_t)
-
 struct VariableDef
 {
   const char   *name;
@@ -33,11 +27,19 @@ struct VariableDef
   cs_validator  validator;
 };
 
+typedef bool (*cst_string_set)(struct ConfigSet *set, struct HashElem *e, const char *value, struct Buffer *err);
+typedef bool (*cst_string_get)(struct HashElem *e, struct Buffer *result);
+typedef bool (*cst_reset)     (struct ConfigSet *set, struct HashElem *e, struct Buffer *err);
+typedef void (*cst_destructor)(void **obj, struct VariableDef *def);
+
+#define IP (intptr_t)
+
 struct ConfigSetType
 {
   const char *name;
   cst_string_set   setter;
   cst_string_get   getter;
+  cst_reset        resetter;
   cst_destructor   destructor;
 };
 

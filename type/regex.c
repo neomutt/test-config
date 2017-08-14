@@ -6,7 +6,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static void destroy_rx(void **obj)
+static void destroy_rx(void **obj, struct VariableDef *def)
 {
   if (!obj || !*obj)
     return;
@@ -66,9 +66,32 @@ static bool get_rx(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
+static bool reset_rx(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_RX)
+  {
+    mutt_buffer_printf(err, "Variable is not a regex");
+    return false;
+  }
+
+  struct VariableDef *def = e->data;
+  if (!def)
+    return false;
+
+  destroy_rx(def->variable, def);
+
+  struct Regex *r = def->variable;
+  if (!r)
+    return false;
+
+  r->rx = NULL; //XXX regenerate r->rx
+  mutt_str_replace(&r->pattern, (const char*) def->initial);
+  return true;
+}
+
 
 void init_regex(void)
 {
-  struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, destroy_rx };
+  struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, reset_rx, destroy_rx };
   cs_register_type(DT_RX, &cst_rx);
 }

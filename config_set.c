@@ -43,7 +43,7 @@ static void destroy(int type, void *obj, intptr_t data)
 
   struct ConfigSetType *cs = get_type_def(type);
   if (cs->destructor)
-    cs->destructor(def->variable);
+    cs->destructor(def->variable, def);
 }
 
 struct ConfigSet *cs_set_new(struct ConfigSet *parent)
@@ -223,8 +223,8 @@ bool cs_set_variable(struct ConfigSet *set, const char *name, const char *value,
   }
   else
   {
-    struct VariableDef *v = e->data;
-    variable = v->variable;
+    struct VariableDef *def = e->data;
+    variable = def->variable;
   }
 
   if (!variable)
@@ -263,24 +263,24 @@ bool cs_reset_variable(struct ConfigSet *set, const char *name, struct Buffer *e
     struct Inheritance *i = e->data;
     cst = get_type_def(i->parent->type);
 
-    struct VariableDef *v = i->parent->data;
+    struct VariableDef *def = i->parent->data;
 
     if (cst->destructor)
-      cst->destructor((void**) &i->var);
+      cst->destructor((void**) &i->var, def);
 
-    i->var = v->initial;
+    i->var = def->initial;
     e->type = DT_INHERITED;
   }
   else
   {
     cst = get_type_def(e->type);
 
-    struct VariableDef *v = e->data;
+    struct VariableDef *def = e->data;
 
     if (cst->destructor)
-      cst->destructor(&v->variable);
+      cst->destructor(&def->variable, def);
 
-    *(intptr_t*) v->variable = v->initial;
+    *(intptr_t*) def->variable = def->initial;
   }
 
   if (!cst)
@@ -336,11 +336,11 @@ bool cs_get_variable(struct ConfigSet *set, const char *name, struct Buffer *res
   else
   {
     // Normal variable
-    struct VariableDef *v = e->data;
-    if (!v)
+    struct VariableDef *def = e->data;
+    if (!def)
       return false;
 
-    variable = v->variable;
+    variable = def->variable;
   }
 
   if (!cst->getter(variable, result))

@@ -62,9 +62,25 @@ static bool get_quad(struct HashElem *e, struct Buffer *result)
   return true;
 }
 
+static bool reset_quad(struct ConfigSet *set, struct HashElem *e, struct Buffer *err)
+{
+  if (DTYPE(e->type) != DT_QUAD)
+  {
+    mutt_buffer_printf(err, "Variable is not a quad");
+    return false;
+  }
+
+  struct VariableDef *v = e->data;
+  if (!v)
+    return false;
+
+  *(short *) v->variable = v->initial;
+  return true;
+}
+
 
 void init_quad(void)
 {
-  struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, NULL };
+  struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, reset_quad, NULL };
   cs_register_type(DT_QUAD, &cst_quad);
 }
