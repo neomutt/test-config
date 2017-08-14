@@ -17,7 +17,7 @@ char  *SidebarIndentString;
 short  SidebarSortMethod;
 short  SidebarWidth;
 
-struct VariableDef SidebarVars[] = {
+const struct VariableDef SidebarVars[] = {
   { "sidebar_delim_chars",   DT_STR,                  &SidebarDelimChars,         IP "/." },
   { "sidebar_divider_char",  DT_STR,                  &SidebarDividerChar,        0 },
   { "sidebar_folder_indent", DT_BOOL,                 &OPT_SIDEBAR_FOLDER_INDENT, 0 },
@@ -33,8 +33,8 @@ struct VariableDef SidebarVars[] = {
   { NULL },
 };
 
-void init_sidebar(struct ConfigSet *set)
+void init_sidebar(struct ConfigSet *cs)
 {
-  cs_register_variables(set, SidebarVars);
+  cs_register_variables(cs, SidebarVars);
 }
 

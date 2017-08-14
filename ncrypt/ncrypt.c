@@ -76,7 +76,7 @@ short         SmimeTimeout;
 char         *SmimeVerifyCommand;
 char         *SmimeVerifyOpaqueCommand;
 
-struct VariableDef NcryptVars[] = {
+const struct VariableDef NcryptVars[] = {
   { "crypt_autoencrypt",             DT_BOOL,              &OPT_CRYPT_AUTO_ENCRYPT,          0 },
   { "crypt_autopgp",                 DT_BOOL,              &OPT_CRYPT_AUTO_PGP,              1 },
   { "crypt_autosign",                DT_BOOL,              &OPT_CRYPT_AUTO_SIGN,             0 },
@@ -149,8 +149,8 @@ struct VariableDef NcryptVars[] = {
   { NULL },
 };
 
-void init_ncrypt(struct ConfigSet *set)
+void init_ncrypt(struct ConfigSet *cs)
 {
-  cs_register_variables(set, NcryptVars);
+  cs_register_variables(cs, NcryptVars);
 }
 

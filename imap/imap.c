@@ -18,7 +18,7 @@ bool   OPT_IMAP_PASSIVE;
 bool   OPT_IMAP_PEEK;
 bool   OPT_IMAP_SERVER_NOISE;
 
-struct VariableDef ImapVars[] = {
+const struct VariableDef ImapVars[] = {
   { "imap_authenticators",   DT_STR,  &ImapAuthenticators,        0 },
   { "imap_check_subscribed", DT_BOOL, &OPT_IMAP_CHECK_SUBSCRIBED, 0 },
   { "imap_delim_chars",      DT_STR,  &ImapDelimChars,            IP "/." },
@@ -36,8 +36,8 @@ struct VariableDef ImapVars[] = {
   { NULL },
 };
 
-void init_imap(struct ConfigSet *set)
+void init_imap(struct ConfigSet *cs)
 {
-  cs_register_variables(set, ImapVars);
+  cs_register_variables(cs, ImapVars);
 }
 

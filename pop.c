@@ -13,7 +13,7 @@ char  *PopHost;
 char  *PopPass;
 char  *PopUser;
 
-struct VariableDef PopVars[] = {
+const struct VariableDef PopVars[] = {
   { "pop_authenticators", DT_STR,  &PopAuthenticators,    0           },
   { "pop_auth_try_all",   DT_BOOL, &OPT_POP_AUTH_TRY_ALL, 1           },
   { "pop_checkinterval",  DT_NUM,  &PopCheckTimeout,      60          },
@@ -26,8 +26,8 @@ struct VariableDef PopVars[] = {
   { NULL },
 };
 
-void init_pop(struct ConfigSet *set)
+void init_pop(struct ConfigSet *cs)
 {
-  cs_register_variables(set, PopVars);
+  cs_register_variables(cs, PopVars);
 }
 
