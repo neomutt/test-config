@@ -47,6 +47,14 @@ static struct MbCharTable *parse_mbchar_table(const char *s)
   return t;
 }
 
+static void free_mbchartbl(struct MbCharTable **table)
+{
+  FREE(&(*table)->orig_str);
+  FREE(&(*table)->chars);
+  FREE(&(*table)->segmented_str);
+  FREE(table);
+}
+
 static void destroy_mbchartbl(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
@@ -56,11 +64,7 @@ static void destroy_mbchartbl(void *var, const struct VariableDef *vdef)
   if (!*m)
     return;
 
-  if ((*m)->orig_str != (char *) vdef->initial)
-    FREE(&(*m)->orig_str);
-  FREE(&(*m)->chars);
-  FREE(&(*m)->segmented_str);
-  FREE(m);
+  free_mbchartbl(m);
 }
 
 static bool set_mbchartbl(struct ConfigSet *cs, void *var,
@@ -70,11 +74,20 @@ static bool set_mbchartbl(struct ConfigSet *cs, void *var,
   if (!cs || !var || !vdef || !value)
     return false;
 
-  destroy_mbchartbl(var, vdef);
-
   struct MbCharTable *table = parse_mbchar_table(value);
   if (!table)
+  {
+    //XXX error message
     return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
+  {
+    free_mbchartbl(&table);
+    return false;
+  }
+
+  destroy_mbchartbl(var, vdef);
 
   *(struct MbCharTable **) var = table;
   return true;

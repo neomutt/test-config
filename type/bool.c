@@ -15,17 +15,27 @@ static bool set_bool(struct ConfigSet *cs, void *var, const struct VariableDef *
   if (!cs || !var || !vdef || !value)
     return false;
 
+  int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
   {
     if (mutt_strcasecmp(bool_values[i], value) == 0)
     {
-      *(bool *) var = i % 2;
-      return true;
+      num = i % 2;
+      break;
     }
   }
 
-  mutt_buffer_printf(err, "Invalid boolean value: %s", value);
-  return false;
+  if (num < 0)
+  {
+    mutt_buffer_printf(err, "Invalid boolean value: %s", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
+    return false;
+
+  *(bool *) var = num;
+  return true;
 }
 
 static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *result)

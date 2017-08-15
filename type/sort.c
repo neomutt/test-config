@@ -125,6 +125,9 @@ static bool set_sort(struct ConfigSet *cs, void *var, const struct VariableDef *
     return false;
   }
 
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) id, err))
+    return false;
+
   *(short *) var = id;
   return true;
 }

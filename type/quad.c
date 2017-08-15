@@ -13,17 +13,27 @@ static bool set_quad(struct ConfigSet *cs, void *var, const struct VariableDef *
   if (!cs || !var || !vdef || !value)
     return false;
 
+  int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(quad_values); i++)
   {
     if (mutt_strcasecmp(quad_values[i], value) == 0)
     {
-      *(short *) var = i;
-      return true;
+      num = i;
+      break;
     }
   }
 
-  mutt_buffer_printf(err, "Invalid quad value: %s", value);
-  return false;
+  if (num < 0)
+  {
+    mutt_buffer_printf(err, "Invalid quad value: %s", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
+    return false;
+
+  *(short *) var = num;
+  return true;
 }
 
 static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *result)

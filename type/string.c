@@ -29,6 +29,7 @@ static bool set_str(struct ConfigSet *cs, void *var, const struct VariableDef *v
     return false;
 
   destroy_str(var, vdef);
+
   *(const char **) var = safe_strdup(value);
   return true;
 }

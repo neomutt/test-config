@@ -19,6 +19,12 @@ static bool set_num(struct ConfigSet *cs, void *var, const struct VariableDef *v
   }
 
   if (num > SHRT_MAX)
+  {
+    //XXX too big
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
     return false;
 
   *(short *) var = num;

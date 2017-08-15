@@ -13,17 +13,27 @@ static bool set_magic(struct ConfigSet *cs, void *var, const struct VariableDef 
   if (!cs || !var || !vdef || !value)
     return false;
 
+  int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
   {
     if (mutt_strcasecmp(magic_values[i], value) == 0)
     {
-      *(short *) var = i;
-      return true;
+      num = i;
+      break;
     }
   }
 
-  mutt_buffer_printf(err, "Invalid magic value: %s", value);
-  return false;
+  if (num < 0)
+  {
+    mutt_buffer_printf(err, "Invalid magic value: %s", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
+    return false;
+
+  *(short *) var = num;
+  return true;
 }
 
 static bool get_magic(void *var, const struct VariableDef *vdef, struct Buffer *result)

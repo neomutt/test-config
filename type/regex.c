@@ -6,6 +6,16 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
+static void free_rx(struct Regex **r)
+{
+  if (!r || !*r)
+    return;
+
+  FREE(&(*r)->pattern);
+  //regfree(r->rx)
+  FREE(r);
+}
+
 static void destroy_rx(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
@@ -15,10 +25,7 @@ static void destroy_rx(void *var, const struct VariableDef *vdef)
   if (!*r)
     return;
 
-  if ((*r)->pattern != (char *) vdef->initial)
-    FREE(&(*r)->pattern);
-  //regfree(r->rx)
-  FREE(r);
+  free_rx(r);
 }
 
 static bool set_rx(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
@@ -27,12 +34,18 @@ static bool set_rx(struct ConfigSet *cs, void *var, const struct VariableDef *vd
   if (!cs || !var || !vdef || !value)
     return false;
 
-  destroy_rx(var, vdef);
-
   struct Regex *r = safe_calloc(1, sizeof(*r));
 
   r->pattern = safe_strdup(value);
   r->rx = NULL; //XXX regenerate r->rx
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) r, err))
+  {
+    free_rx(&r);
+    return false;
+  }
+
+  destroy_rx(var, vdef);
 
   *(struct Regex **) var = r;
   return true;
@@ -61,7 +74,7 @@ static bool reset_rx(struct ConfigSet *cs, void *var,
 
   struct Regex *r = safe_calloc(1, sizeof(*r));
 
-  r->pattern = (char *) vdef->initial;
+  r->pattern = safe_strdup((char *) vdef->initial);
   r->rx = NULL; //XXX regenerate r->rx
 
   *(struct Regex **) var = r;

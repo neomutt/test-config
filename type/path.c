@@ -21,7 +21,11 @@ static bool set_path(struct ConfigSet *cs, void *var, const struct VariableDef *
   if (!cs || !var || !vdef || !value)
     return false;
 
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
+    return false;
+
   destroy_path(var, vdef);
+
   *(const char **) var = safe_strdup(value);
   return true;
 }

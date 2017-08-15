@@ -25,10 +25,12 @@ static bool set_addr(struct ConfigSet *cs, void *var, const struct VariableDef *
   if (!cs || !var || !vdef || !value)
     return false;
 
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
+    return false;
+
   destroy_addr(var, vdef);
 
   struct Address *a = safe_calloc(1, sizeof(*a));
-
   a->personal = safe_strdup((const char *) value);
   a->mailbox = safe_strdup("dummy1");
 
