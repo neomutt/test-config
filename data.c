@@ -6,6 +6,7 @@
 #include "options.h"
 #include "type/regex.h"
 #include "type/sort.h"
+#include "validate.h"
 
 #define MIXMASTER "mixmaster"
 
@@ -30,6 +31,8 @@ struct Regex *Smileys;
 struct Regex *GecosMask;
 
 const struct VariableDef MuttVars[] = {
+#if 0
+  /* test_set_reset */
   { "alias_file",                       DT_PATH,                 &AliasFile,                         IP "~/.muttrc" },
   { "attribution",                      DT_STR,                  &Attribution,                       IP "On %d, %n wrote:" },
   { "from",                             DT_ADDR,                 &From,                              0 },
@@ -40,12 +43,24 @@ const struct VariableDef MuttVars[] = {
   { "resume_draft_files",               DT_BOOL,                 &OPT_RESUME_DRAFT_FILES,            0 },
   { "sort",                             DT_SORT,                 &Sort,                              SORT_DATE },
   { "status_chars",                     DT_MBCHARTBL,            &StChars,                           0 },
+#endif
 
-  // { "abort_noattach",                   DT_QUAD,                 &OPT_ATTACH,                        MUTT_NO },
+#if 1
+  /* test_validators */
+  { "certificate_file",                 DT_PATH,                 &SslCertFile,                       0, val_path,      },
+  { "alias_format",                     DT_STR,                  &AliasFmt,                          0, val_str,       },
+  { "envelope_from_address",            DT_ADDR,                 &EnvFrom,                           0, val_addr,      },
+  { "mbox_type",                        DT_MAGIC,                &DefaultMagic,                      0, val_magic,     },
+  { "connect_timeout",                  DT_NUM,                  &ConnectTimeout,                    0, val_num,       },
+  { "abort_noattach",                   DT_QUAD,                 &OPT_ATTACH,                        0, val_quad,      },
+  { "attach_keyword",                   DT_RX,                   &AttachKeyword,                     0, val_rx,        },
+  { "allow_8bit",                       DT_BOOL,                 &OPT_ALLOW_8BIT,                    0, val_bool,      },
+  { "sort_aux",                         DT_SORT|DT_SORT_AUX,     &SortAux,                           0, val_sort,      },
+  { "flag_chars",                       DT_MBCHARTBL,            &Flagchars,                         0, val_mbchartbl, },
+#endif
+
   // { "abort_nosubject",                  DT_QUAD,                 &OPT_SUBJECT,                       MUTT_ASKYES },
   // { "abort_unmodified",                 DT_QUAD,                 &OPT_ABORT,                         MUTT_YES },
-  // { "alias_format",                     DT_STR,                  &AliasFmt,                          IP "%4n %2f %t %-10a %r" },
-  // { "allow_8bit",                       DT_BOOL,                 &OPT_ALLOW_8BIT,                    1 },
   // { "allow_ansi",                       DT_BOOL,                 &OPT_ALLOW_ANSI,                    0 },
   // { "arrow_cursor",                     DT_BOOL,                 &OPT_ARROW_CURSOR,                  0 },
   // { "ascii_chars",                      DT_BOOL,                 &OPT_ASCII_CHARS,                   0 },
@@ -56,7 +71,6 @@ const struct VariableDef MuttVars[] = {
   // { "assumed_charset",                  DT_STR,                  &AssumedCharset,                    0 },
   // { "attach_charset",                   DT_STR,                  &AttachCharset,                     0 },
   // { "attach_format",                    DT_STR,                  &AttachFormat,                      IP "%u%D%I %t%4n %T%.40d%> [%.7m/%.10M, %.6e%?C?, %C?, %s] " },
-  // { "attach_keyword",                   DT_RX,                   &AttachKeyword,                     IP "\\<(attach|attached|attachments?)\\>" },
   // { "attach_sep",                       DT_STR,                  &AttachSep,                         IP "\n" },
   // { "attach_split",                     DT_BOOL,                 &OPT_ATTACH_SPLIT,                  1 },
   // { "attribution_locale",               DT_STR,                  &AttributionLocale,                 IP "" },
@@ -68,7 +82,6 @@ const struct VariableDef MuttVars[] = {
   // { "bounce_delivered",                 DT_BOOL,                 &OPT_BOUNCE_DELIVERED,              1 },
   // { "braille_friendly",                 DT_BOOL,                 &OPT_BRAILLE_FRIENDLY,              0 },
   // { "catchup_newsgroup",                DT_QUAD,                 &OPT_CATCHUP,                       MUTT_ASKYES },
-  // { "certificate_file",                 DT_PATH,                 &SslCertFile,                       IP "~/.mutt_certificates" },
   // { "charset",                          DT_STR,                  &Charset,                           0 },
   // { "check_mbox_size",                  DT_BOOL,                 &OPT_CHECK_MBOX_SIZE,               0 },
   // { "check_new",                        DT_BOOL,                 &OPT_CHECK_NEW,                     1 },
@@ -79,7 +92,6 @@ const struct VariableDef MuttVars[] = {
   // { "config_charset",                   DT_STR,                  &ConfigCharset,                     0 },
   // { "confirmappend",                    DT_BOOL,                 &OPT_CONFIRM_APPEND,                1 },
   // { "confirmcreate",                    DT_BOOL,                 &OPT_CONFIRM_CREATE,                1 },
-  // { "connect_timeout",                  DT_NUM,                  &ConnectTimeout,                    30 },
   // { "content_type",                     DT_STR,                  &ContentType,                       IP "text/plain" },
   // { "copy",                             DT_QUAD,                 &OPT_COPY,                          MUTT_YES },
   // { "date_format",                      DT_STR,                  &DateFmt,                           IP "!%a, %b %d, %Y at %I:%M:%S%p %Z" },
@@ -98,12 +110,10 @@ const struct VariableDef MuttVars[] = {
   // { "empty_subject",                    DT_STR,                  &EmptySubject,                      IP "Re: your mail" },
   // { "encode_from",                      DT_BOOL,                 &OPT_ENCODE_FROM,                   0 },
   // { "entropy_file",                     DT_PATH,                 &SslEntropyFile,                    0 },
-  // { "envelope_from_address",            DT_ADDR,                 &EnvFrom,                           0 },
   // { "escape",                           DT_STR,                  &EscChar,                           IP "~" },
   // { "fast_reply",                       DT_BOOL,                 &OPT_FAST_REPLY,                    0 },
   // { "fcc_attach",                       DT_QUAD,                 &OPT_FCC_ATTACH,                    MUTT_YES },
   // { "fcc_clear",                        DT_BOOL,                 &OPT_FCC_CLEAR,                     0 },
-  // { "flag_chars",                       DT_MBCHARTBL,            &Flagchars,                         IP "*!DdrONon- " },
   // { "flag_safe",                        DT_BOOL,                 &OPT_FLAG_SAFE,                     0 },
   // { "folder",                           DT_PATH,                 &Maildir,                           IP "~/Mail" },
   // { "folder_format",                    DT_STR,                  &FolderFormat,                      IP "%2C %t %N %F %2l %-8.8u %-8.8g %8s %d %f" },
@@ -254,7 +264,6 @@ const struct VariableDef MuttVars[] = {
   // { "smtp_pass",                        DT_STR,                  &SmtpPass,                          0 },
   // { "smtp_url",                         DT_STR,                  &SmtpUrl,                           0 },
   // { "sort_alias",                       DT_SORT|DT_SORT_ALIAS,   &SortAlias,                         SORT_ALIAS },
-  // { "sort_aux",                         DT_SORT|DT_SORT_AUX,     &SortAux,                           SORT_DATE },
   // { "sort_browser",                     DT_SORT|DT_SORT_BROWSER, &BrowserSort,                       SORT_ALPHA },
   // { "sort_re",                          DT_BOOL,                 &OPT_SORT_RE,                       1 },
   // { "spam_separator",                   DT_STR,                  &SpamSep,                           IP "," },

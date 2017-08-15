@@ -141,10 +141,7 @@ void set(struct ConfigSet *cs, const char *name, const char *value)
 
   mutt_buffer_reset(&result);
   if (!cs_set_variable(cs, name, value, &result))
-  {
     printf("Error: %s\n", result.data);
-    return;
-  }
 
   FREE(&result.data);
 }
@@ -188,6 +185,33 @@ void test_set_reset(struct ConfigSet *cs)
   account_free(cs, &ac1);
 }
 
+void test_validators(struct ConfigSet *cs)
+{
+  /* failing tests */
+  set(cs, "certificate_file",      "file");               // DT_PATH
+  set(cs, "alias_format",          "format");             // DT_STR
+  set(cs, "envelope_from_address", "jim(at)example.com"); // DT_ADDR
+  set(cs, "mbox_type",             "mbox");               // DT_MAGIC
+  set(cs, "connect_timeout",       "99");                 // DT_NUM
+  set(cs, "abort_noattach",        "ask-no");             // DT_QUAD
+  set(cs, "attach_keyword",        "attach.*");           // DT_RX
+  set(cs, "allow_8bit",            "yes");                // DT_BOOL
+  set(cs, "sort_aux",              "date");               // DT_SORT
+  set(cs, "flag_chars",            "ABcd");               // DT_MBCHARTBL
+
+  /* succeeding tests */
+  set(cs, "certificate_file",      "dir");                // DT_PATH
+  set(cs, "alias_format",          "alias");              // DT_STR
+  set(cs, "envelope_from_address", "jim@example.com");    // DT_ADDR
+  set(cs, "mbox_type",             "maildir");            // DT_MAGIC
+  set(cs, "connect_timeout",       "32");                 // DT_NUM
+  set(cs, "abort_noattach",        "ask-yes");            // DT_QUAD
+  set(cs, "attach_keyword",        ".*ment");             // DT_RX
+  set(cs, "allow_8bit",            "yes");                // DT_BOOL
+  set(cs, "sort_aux",              "spam");               // DT_SORT
+  set(cs, "flag_chars",            "pQrS");               // DT_MBCHARTBL
+}
+
 int main(int argc, char *argv[])
 {
   struct Buffer err;
@@ -206,7 +230,8 @@ int main(int argc, char *argv[])
 
   // cs_dump_set(&cs);
   // hash_dump(cs.hash);
-  test_set_reset(&cs);
+  // test_set_reset(&cs);
+  test_validators(&cs);
 
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
   // if (!cs_set_variable(&cs, "header_cache_pagesize", "32768", &err))

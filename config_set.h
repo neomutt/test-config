@@ -16,7 +16,7 @@ enum ConfigEvent
 };
 
 typedef bool (*cs_listener)  (struct ConfigSet *cs, const char *name, enum ConfigEvent e);
-typedef bool (*cs_validator) (struct ConfigSet *cs, const struct VariableDef *def, intptr_t value, struct Buffer *result);
+typedef bool (*cs_validator) (const struct ConfigSet *cs, const struct VariableDef *def, intptr_t value, struct Buffer *result);
 
 typedef bool (*cst_string_set)(struct ConfigSet *cs, void *var, const struct VariableDef *def, const char *value, struct Buffer *err);
 typedef bool (*cst_string_get)(void *var, const struct VariableDef *def, struct Buffer *result);

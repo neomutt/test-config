@@ -29,7 +29,7 @@ static bool set_magic(struct ConfigSet *cs, void *var, const struct VariableDef 
     return false;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
     return false;
 
   *(short *) var = num;
