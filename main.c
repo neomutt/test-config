@@ -166,6 +166,28 @@ void test(struct ConfigSet *cs, const char *account, const char *parent, const c
   printf("\n");
 }
 
+void test_set_reset(struct ConfigSet *cs)
+{
+  struct Account *ac1 = account_create(cs, "apple");
+  struct Account *ac2 = account_create(cs, "banana");
+  // printf("ac = %p\n", (void *) ac);
+
+  test(cs, "apple",  "attribution",          "date %d",   "from %n");  // DT_STR
+  test(cs, "apple",  "resume_draft_files",   "1",         "0");        // DT_BOOL
+  test(cs, "apple",  "from",                 "a@b.com",   "x@y.org");  // DT_ADDR
+  test(cs, "apple",  "mbox_type",            "mh",        "Maildir");  // DT_MAGIC
+  test(cs, "banana", "pager_context",        "12",        "9");        // DT_NUM
+  test(cs, "banana", "sort",                 "threads",   "score");    // DT_SORT
+  test(cs, "banana", "post_moderated",       "ask-no",    "yes");      // DT_QUAD
+  test(cs, "apple",  "alias_file",           "~/a",       "/etc/b");   // DT_PATH
+  test(cs, "apple",  "header_cache_backend", "lmdb",      "qdbm");     // DT_HCACHE
+  test(cs, "banana", "quote_regexp",         ">.*",       "#.*");      // DT_RX
+  test(cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
+
+  account_free(cs, &ac2);
+  account_free(cs, &ac1);
+}
+
 int main(int argc, char *argv[])
 {
   struct Buffer err;
@@ -182,34 +204,15 @@ int main(int argc, char *argv[])
 
   mutt_buffer_reset(&err);
 
+  // cs_dump_set(&cs);
+  // hash_dump(cs.hash);
+  test_set_reset(&cs);
+
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
   // if (!cs_set_variable(&cs, "header_cache_pagesize", "32768", &err))
   //   printf("Set failed: %s\n", err.data);
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
 
-  struct Account *ac1 = account_create(&cs, "apple");
-  struct Account *ac2 = account_create(&cs, "banana");
-  // printf("ac = %p\n", (void *) ac);
-
-  // cs_dump_set(&cs);
-  // hash_dump(cs.hash);
-
-#if 1
-  test(&cs, "apple",  "attribution",          "date %d",   "from %n");  // DT_STR
-  test(&cs, "apple",  "resume_draft_files",   "1",         "0");        // DT_BOOL
-  test(&cs, "apple",  "from",                 "a@b.com",   "x@y.org");  // DT_ADDR
-  test(&cs, "apple",  "mbox_type",            "mh",        "Maildir");  // DT_MAGIC
-  test(&cs, "banana", "pager_context",        "12",        "9");        // DT_NUM
-  test(&cs, "banana", "sort",                 "threads",   "score");    // DT_SORT
-  test(&cs, "banana", "post_moderated",       "ask-no",    "yes");      // DT_QUAD
-  test(&cs, "apple",  "alias_file",           "~/a",       "/etc/b");   // DT_PATH
-  test(&cs, "apple",  "header_cache_backend", "lmdb",      "qdbm");     // DT_HCACHE
-  test(&cs, "banana", "quote_regexp",         ">.*",       "#.*");      // DT_RX
-  test(&cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
-#endif
-
-  account_free(&cs, &ac2);
-  account_free(&cs, &ac1);
   cs_free(&cs);
   FREE(&err.data);
   return 0;
