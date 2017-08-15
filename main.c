@@ -44,12 +44,12 @@ void init_variables(struct ConfigSet *set)
 {
   cs_register_variables(set, MuttVars);
   init_hcache(set);
-  // init_imap(set);
-  // init_ncrypt(set);
-  // init_nntp(set);
-  // init_notmuch(set);
-  // init_pop(set);
-  // init_sidebar(set);
+  init_imap(set);
+  init_ncrypt(set);
+  init_nntp(set);
+  init_notmuch(set);
+  init_pop(set);
+  init_sidebar(set);
 }
 
 bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
@@ -187,8 +187,8 @@ int main(int argc, char *argv[])
   //   printf("Set failed: %s\n", err.data);
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
 
-  struct Account *ac1 = account_create("apple",  &cs);
-  struct Account *ac2 = account_create("banana", &cs);
+  struct Account *ac1 = account_create(&cs, "apple");
+  struct Account *ac2 = account_create(&cs, "banana");
   // printf("ac = %p\n", (void *) ac);
 
   // cs_dump_set(&cs);
@@ -208,8 +208,8 @@ int main(int argc, char *argv[])
   test(&cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
 #endif
 
-  account_free(&ac2);
-  account_free(&ac1);
+  account_free(&cs, &ac2);
+  account_free(&cs, &ac1);
   cs_free(&cs);
   FREE(&err.data);
   return 0;

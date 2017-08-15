@@ -29,7 +29,7 @@ struct Account
   struct HashElem *vars[V_MAX];
 };
 
-struct Account *account_create(const char *name, struct ConfigSet *cs);
-void account_free(struct Account **ac);
+struct Account *account_create(struct ConfigSet *cs, const char *name);
+void account_free(struct ConfigSet *cs, struct Account **ac);
 
 #endif /* _MUTT_ACCOUNT_H */

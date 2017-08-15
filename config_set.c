@@ -25,19 +25,28 @@ static void destroy(int type, void *obj, intptr_t data)
 {
   // struct ConfigSet *cs = (struct ConfigSet *) data;
 
+  struct ConfigSetType *cst = NULL;
+
   if (type & DT_INHERITED)
   {
     struct Inheritance *i = obj;
+    // struct VariableDef *vdef = i->parent->data;
+    // cst = get_type_def(i->parent->type);
+
+    // if (cst->destructor)
+    //   cst->destructor(&i->var, vdef);
+
     FREE(&i->name);
     FREE(&i);
-    return;
   }
+  else
+  {
+    struct VariableDef *vdef = obj;
 
-  struct VariableDef *vdef = obj;
-
-  struct ConfigSetType *cs = get_type_def(type);
-  if (cs->destructor)
-    cs->destructor(vdef->var, vdef);
+    cst = get_type_def(type);
+    if (cst->destructor)
+      cst->destructor(vdef->var, vdef);
+  }
 }
 
 struct ConfigSet *cs_set_new(struct ConfigSet *parent, int size)
@@ -264,7 +273,6 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
     if (cst->destructor)
       cst->destructor((void**) &i->var, vdef);
 
-    cst->resetter(cs, &i->var, vdef, err);
     e->type = DT_INHERITED;
   }
   else

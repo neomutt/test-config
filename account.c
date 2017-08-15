@@ -18,12 +18,15 @@ const char *AccountVarStr[] = {
   NULL,
 };
 
-struct Account *account_create(const char *name, struct ConfigSet *cs)
+struct Account *account_create(struct ConfigSet *cs, const char *name)
 {
-  if (!name || !cs)
+  if (!cs || !name)
     return NULL;
 
   struct Account *ac = safe_calloc(1, sizeof(*ac));
+  ac->name = safe_strdup(name);
+  ac->cs = cs;
+
   bool success = true;
   char acname[64];
 
@@ -50,12 +53,24 @@ struct Account *account_create(const char *name, struct ConfigSet *cs)
   if (success)
     return ac;
 
-  account_free(&ac);
+  account_free(cs, &ac);
   return NULL;
 }
 
-void account_free(struct Account **ac)
+void account_free(struct ConfigSet *cs, struct Account **ac)
 {
+  if (!ac)
+    return;
+
+  char child[128];
+
+  for (int i = 0; i < V_MAX; i++)
+  {
+    snprintf(child, sizeof(child), "%s:%s", (*ac)->name, AccountVarStr[i]);
+    cs_reset_variable(cs, child, NULL);
+  }
+
+  FREE(&(*ac)->name);
   FREE(ac);
 }
 

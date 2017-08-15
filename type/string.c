@@ -53,6 +53,7 @@ static bool reset_str(struct ConfigSet *cs, void *var,
     return false;
 
   destroy_str(var, vdef);
+
   *(const char **) var = (const char *) vdef->initial;
   return true;
 }

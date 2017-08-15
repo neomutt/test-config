@@ -46,6 +46,7 @@ static bool reset_path(struct ConfigSet *cs, void *var,
     return false;
 
   destroy_path(var, vdef);
+
   *(const char **) var = (const char *) vdef->initial;
   return true;
 }
