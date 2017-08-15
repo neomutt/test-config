@@ -32,7 +32,7 @@ static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *r
     return false;
 
   unsigned int index = *(short *) var;
-  if ((index < 0) || (index >= mutt_array_size(quad_values)))
+  if (index >= mutt_array_size(quad_values))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
     return false;

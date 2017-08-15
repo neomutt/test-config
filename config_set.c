@@ -284,12 +284,6 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
     cst->resetter(cs, vdef->var, vdef, err);
   }
 
-  if (!cst)
-  {
-    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", name, e->type);
-    return false;
-  }
-
   notify_listeners(cs, name, CE_RESET);
   return true;
 }
