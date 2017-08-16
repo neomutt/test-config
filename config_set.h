@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+struct Account;
 struct Buffer;
 struct ConfigSet;
 struct HashElem;
@@ -15,7 +16,7 @@ enum ConfigEvent
   CE_RESET,
 };
 
-typedef bool (*cs_listener)  (struct ConfigSet *cs, const char *name, enum ConfigEvent e);
+typedef bool (*cs_listener)  (struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent e);
 typedef bool (*cs_validator) (const struct ConfigSet *cs, const struct VariableDef *def, intptr_t value, struct Buffer *result);
 
 typedef bool (*cst_string_set)(struct ConfigSet *cs, void *var, const struct VariableDef *def, const char *value, struct Buffer *err);
@@ -66,5 +67,9 @@ void cs_add_validator(struct ConfigSet *cs, cs_validator fn);
 bool cs_set_variable  (struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
 bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *err);
 bool cs_get_variable  (struct ConfigSet *cs, const char *name, struct Buffer *result);
+
+void notify_listeners(struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
+bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err);
+bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 
 #endif /* _MUTT_CONFIG_SET_H */

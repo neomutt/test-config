@@ -4,8 +4,10 @@
 #include <string.h>
 #include "lib/lib.h"
 #include "data.h"
+#include "account.h"
 #include "mutt_options.h"
 #include "inheritance.h"
+#include "type/bool.h" //XXX temp
 
 struct ConfigSetType RegisteredTypes[16] =
 {
@@ -86,14 +88,14 @@ void cs_free(struct ConfigSet *cs)
   hash_destroy(&cs->hash);
 }
 
-void notify_listeners(struct ConfigSet *cs, const char *name, enum ConfigEvent e)
+void notify_listeners(struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
 {
   for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (!cs->listeners[i])
       return;
 
-    cs->listeners[i](cs, name, e);
+    cs->listeners[i](cs, he, name, ev);
   }
 }
 
@@ -243,7 +245,7 @@ bool cs_set_variable(struct ConfigSet *cs, const char *name, const char *value, 
     struct Inheritance *i = e->data;
     e->type = i->parent->type | DT_INHERITED;
   }
-  notify_listeners(cs, name, CE_SET);
+  notify_listeners(cs, e, name, CE_SET);
   return true;
 }
 
@@ -284,7 +286,7 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
     cst->resetter(cs, vdef->var, vdef, err);
   }
 
-  notify_listeners(cs, name, CE_RESET);
+  notify_listeners(cs, e, name, CE_RESET);
   return true;
 }
 
@@ -383,3 +385,81 @@ struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *pare
   return e;
 }
 
+
+bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err)
+{
+  void *var = NULL;
+
+  struct VariableDef *vdef = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    vdef = i->parent->data;
+    var = &i->var;
+  }
+  else
+  {
+    vdef = he->data;
+    var = vdef->var;
+  }
+
+  if (!var)
+    return false;
+
+  struct ConfigSetType *cst = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    cst = get_type_def(i->parent->type);
+  }
+  else
+  {
+    cst = get_type_def(he->type);
+  }
+
+  if (!cst)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  if (cst->destructor)
+    cst->destructor(var, vdef);
+
+  //XXX don't know size of destination
+  //XXX *(bool *) var = num;
+  bool result = set_bool_native(cs, var, vdef, value, err);
+  if (result)
+    notify_listeners(cs, he, vdef->name, CE_SET);
+
+  return result;
+}
+
+bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
+{
+  void *var = NULL;
+
+  struct VariableDef *vdef = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    vdef = i->parent->data;
+    var = &i->var;
+  }
+  else
+  {
+    vdef = he->data;
+    var = vdef->var;
+  }
+
+  if (!var)
+    return false;
+
+  return get_bool_native(cs, var, vdef, err);
+}

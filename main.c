@@ -52,7 +52,7 @@ void init_variables(struct ConfigSet *set)
   init_sidebar(set);
 }
 
-bool listener(struct ConfigSet *set, const char *name, enum ConfigEvent e)
+bool listener(struct ConfigSet *set, struct HashElem *he, const char *name, enum ConfigEvent e)
 {
   if (e == CE_RESET)
     printf("\033[1;32m%s has been reset\033[m\n", name);
@@ -212,6 +212,40 @@ void test_validators(struct ConfigSet *cs)
   set(cs, "flag_chars",            "pQrS");               // DT_MBCHARTBL
 }
 
+void test_native(struct ConfigSet *cs)
+{
+  // struct Buffer result;
+  // mutt_buffer_init(&result);
+  // result.data = calloc(1, STRING);
+  // result.dsize = STRING;
+
+  struct Account *ac = account_create(cs, "cherry");
+  bool rdf;
+
+  rdf = get_he_bool(ac, V_RESUME_DRAFT_FILES);
+  printf("resume_draft_files = %d\n", rdf);
+
+  // printf("resume_draft_files = %d\n", OPT_RESUME_DRAFT_FILES);
+  set_he_bool(ac, V_RESUME_DRAFT_FILES, true);              // DT_BOOL
+
+  rdf = get_he_bool(ac, V_RESUME_DRAFT_FILES);
+  printf("resume_draft_files = %d\n", rdf);
+
+  // set_he_addr     (ac, V_FROM,                 "jim@example.com"); // DT_ADDR
+  // set_he_hcache   (ac, V_HEADER_CACHE_BACKEND, "lmdb");            // DT_HCACHE
+  // set_he_magic    (ac, V_MBOX_TYPE,            "maildir");         // DT_MAGIC
+  // set_he_mbchartbl(ac, V_STATUS_CHARS,         "ABCD");            // DT_MBCHARTBL
+  // set_he_num      (ac, V_PAGER_CONTEXT,        12);                // DT_NUM
+  // set_he_path     (ac, V_ALIAS_FILE,           "/home");           // DT_PATH
+  // set_he_quad     (ac, V_POST_MODERATED,       MUTT_ASKYES);       // DT_QUAD
+  // set_he_rx       (ac, V_QUOTE_REGEXP,         rx);                // DT_RX
+  // set_he_sort     (ac, V_SORT,                 SORT_SPAM);         // DT_SORT
+  // set_he_str      (ac, V_ATTRIBUTION,          "flatcap");         // DT_STR
+
+  account_free(cs, &ac);
+  // FREE(&result.data);
+}
+
 int main(int argc, char *argv[])
 {
   struct Buffer err;
@@ -231,7 +265,8 @@ int main(int argc, char *argv[])
   // cs_dump_set(&cs);
   // hash_dump(cs.hash);
   // test_set_reset(&cs);
-  test_validators(&cs);
+  // test_validators(&cs);
+  test_native(&cs);
 
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
   // if (!cs_set_variable(&cs, "header_cache_pagesize", "32768", &err))

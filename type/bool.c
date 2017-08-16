@@ -4,6 +4,7 @@
 #include "config_set.h"
 #include "lib/lib.h"
 #include "mutt_options.h"
+#include "account.h"
 
 const char *bool_values[] = {
   "no", "yes", "false", "true", "0", "1", "off", "on",
@@ -38,6 +39,25 @@ static bool set_bool(struct ConfigSet *cs, void *var, const struct VariableDef *
   return true;
 }
 
+bool set_bool_native(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+                     intptr_t value, struct Buffer *err)
+{
+  if (!cs || !var || !vdef)
+    return false;
+
+  if ((value < 0) || (value > 1))
+  {
+    mutt_buffer_printf(err, "Invalid boolean value: %s", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  *(bool *) var = value;
+  return true;
+}
+
 static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
@@ -68,4 +88,57 @@ void init_bool(void)
 {
   const struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, reset_bool, NULL };
   cs_register_type(DT_BOOL, &cst_bool);
+}
+
+bool set_he_bool_err(struct Account *ac, int vid, bool value, struct Buffer *err)
+{
+  intptr_t copy = value;
+  return account_set_value(ac, vid, copy, err);
+}
+
+bool set_he_bool(struct Account *ac, int vid, bool value)
+{
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  mutt_buffer_reset(&err);
+
+  bool result = set_he_bool_err(ac, vid, value, &err);
+  if (!result)
+    printf("%s\n", err.data);
+
+  FREE(&err.data);
+  return result;
+}
+
+bool get_he_bool_err(struct Account *ac, int vid, struct Buffer *err)
+{
+  return account_get_value(ac, vid, err);
+}
+
+bool get_he_bool(struct Account *ac, int vid)
+{
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  mutt_buffer_reset(&err);
+
+  bool result = get_he_bool_err(ac, vid, &err);
+  // if (!result)
+  //   printf("%s\n", err.data);
+
+  FREE(&err.data);
+  return result;
+}
+
+bool get_bool_native(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  if (!cs || !var || !vdef)
+    return false;
+
+  return *(bool *) var;
 }

@@ -45,7 +45,7 @@ const struct VariableDef MuttVars[] = {
   { "status_chars",                     DT_MBCHARTBL,            &StChars,                           0 },
 #endif
 
-#if 1
+#if 0
   /* test_validators */
   { "certificate_file",                 DT_PATH,                 &SslCertFile,                       0, val_path,      },
   { "alias_format",                     DT_STR,                  &AliasFmt,                          0, val_str,       },
@@ -57,6 +57,20 @@ const struct VariableDef MuttVars[] = {
   { "allow_8bit",                       DT_BOOL,                 &OPT_ALLOW_8BIT,                    0, val_bool,      },
   { "sort_aux",                         DT_SORT|DT_SORT_AUX,     &SortAux,                           0, val_sort,      },
   { "flag_chars",                       DT_MBCHARTBL,            &Flagchars,                         0, val_mbchartbl, },
+#endif
+
+#if 1
+  /* test_native */
+  { "alias_file",                       DT_PATH,                 &AliasFile,                         0 },
+  { "attribution",                      DT_STR,                  &Attribution,                       0 },
+  { "from",                             DT_ADDR,                 &From,                              0 },
+  { "mbox_type",                        DT_MAGIC,                &DefaultMagic,                      0 },
+  { "pager_context",                    DT_NUM,                  &PagerContext,                      0 },
+  { "post_moderated",                   DT_QUAD,                 &OPT_TO_MODERATED,                  0 },
+  { "quote_regexp",                     DT_RX,                   &QuoteRegexp,                       0 },
+  { "resume_draft_files",               DT_BOOL,                 &OPT_RESUME_DRAFT_FILES,            0 },
+  { "sort",                             DT_SORT,                 &Sort,                              0 },
+  { "status_chars",                     DT_MBCHARTBL,            &StChars,                           0 },
 #endif
 
   // { "abort_nosubject",                  DT_QUAD,                 &OPT_SUBJECT,                       MUTT_ASKYES },
