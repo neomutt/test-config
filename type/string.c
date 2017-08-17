@@ -47,6 +47,16 @@ static bool get_str(void *var, const struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
+static bool set_native_str(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_str(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_str(struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -61,6 +71,6 @@ static bool reset_str(struct ConfigSet *cs, void *var,
 
 void init_string(void)
 {
-  const struct ConfigSetType cst_str = { "string", set_str, get_str, NULL, NULL, reset_str, destroy_str };
+  const struct ConfigSetType cst_str = { "string", set_str, get_str, set_native_str, get_native_str, reset_str, destroy_str, };
   cs_register_type(DT_STR, &cst_str);
 }

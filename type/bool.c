@@ -39,7 +39,23 @@ static bool set_bool(struct ConfigSet *cs, void *var, const struct VariableDef *
   return true;
 }
 
-bool set_bool_native(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *result)
+{
+  if (!var || !vdef)
+    return false;
+
+  unsigned int index = *(bool *) var;
+  if (index > 1)
+  {
+    mutt_buffer_printf(result, "Variable has an invalid value");
+    return false;
+  }
+
+  mutt_buffer_addstr(result, bool_values[index]);
+  return true;
+}
+
+static bool set_native_bool(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -57,20 +73,12 @@ bool set_bool_native(struct ConfigSet *cs, void *var, const struct VariableDef *
   return true;
 }
 
-static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static intptr_t get_native_bool(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  if (!var || !vdef)
+  if (!cs || !var || !vdef)
     return false;
 
-  unsigned int index = *(bool *) var;
-  if (index > 1)
-  {
-    mutt_buffer_printf(result, "Variable has an invalid value");
-    return false;
-  }
-
-  mutt_buffer_addstr(result, bool_values[index]);
-  return true;
+  return *(bool *) var;
 }
 
 static bool reset_bool(struct ConfigSet *cs, void *var,
@@ -128,17 +136,9 @@ bool get_he_bool(struct Account *ac, int vid)
   return result;
 }
 
-intptr_t get_bool_native(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
-{
-  if (!cs || !var || !vdef)
-    return false;
-
-  return *(bool *) var;
-}
-
 void init_bool(void)
 {
-  const struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, set_bool_native, get_bool_native, reset_bool, };
+  const struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, set_native_bool, get_native_bool, reset_bool, NULL, };
   cs_register_type(DT_BOOL, &cst_bool);
 }
 

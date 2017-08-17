@@ -52,6 +52,16 @@ static bool get_magic(void *var, const struct VariableDef *vdef, struct Buffer *
   return true;
 }
 
+static bool set_native_magic(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_magic(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_magic(struct ConfigSet *cs, void *var,
                         const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -64,6 +74,6 @@ static bool reset_magic(struct ConfigSet *cs, void *var,
 
 void init_magic(void)
 {
-  const struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, NULL, NULL, reset_magic, NULL };
+  const struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, set_native_magic, get_native_magic, reset_magic, NULL, };
   cs_register_type(DT_MAGIC, &cst_magic);
 }

@@ -52,6 +52,16 @@ static bool get_hcache(void *var, const struct VariableDef *vdef, struct Buffer 
   return true;
 }
 
+static bool set_native_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -104,7 +114,7 @@ const struct VariableDef HCVars[] = {
 
 void init_hcache(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, NULL, NULL, reset_hcache, NULL };
+  struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, set_native_hcache, get_native_hcache, reset_hcache, NULL, };
 
   cs_register_type(DT_HCACHE, &cst);
 

@@ -52,6 +52,16 @@ static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
+static bool set_native_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_quad(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -64,6 +74,6 @@ static bool reset_quad(struct ConfigSet *cs, void *var,
 
 void init_quad(void)
 {
-  const struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, NULL, NULL, reset_quad, NULL };
+  const struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, set_native_quad, get_native_quad, reset_quad, NULL, };
   cs_register_type(DT_QUAD, &cst_quad);
 }

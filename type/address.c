@@ -51,6 +51,16 @@ static bool get_addr(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
+static bool set_native_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_addr(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -70,6 +80,6 @@ static bool reset_addr(struct ConfigSet *cs, void *var,
 
 void init_addr(void)
 {
-  const struct ConfigSetType cst_addr = { "address", set_addr, get_addr, NULL, NULL, reset_addr, destroy_addr };
+  const struct ConfigSetType cst_addr = { "address", set_addr, get_addr, set_native_addr, get_native_addr, reset_addr, destroy_addr, };
   cs_register_type(DT_ADDR, &cst_addr);
 }

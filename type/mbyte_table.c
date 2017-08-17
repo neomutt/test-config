@@ -109,6 +109,16 @@ static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
+static bool set_native_mbchartbl(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_mbchartbl(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_mbchartbl(struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -127,6 +137,6 @@ static bool reset_mbchartbl(struct ConfigSet *cs, void *var,
 
 void init_mbyte_table(void)
 {
-  const struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl, NULL, NULL, reset_mbchartbl, destroy_mbchartbl };
+  const struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl, set_native_mbchartbl, get_native_mbchartbl, reset_mbchartbl, destroy_mbchartbl, };
   cs_register_type(DT_MBCHARTBL, &cst_mbchartbl);
 }

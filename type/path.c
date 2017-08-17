@@ -43,6 +43,16 @@ static bool get_path(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
+static bool set_native_path(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_path(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_path(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -57,6 +67,6 @@ static bool reset_path(struct ConfigSet *cs, void *var,
 
 void init_path(void)
 {
-  const struct ConfigSetType cst_path = { "path", set_path, get_path, NULL, NULL, reset_path, destroy_path };
+  const struct ConfigSetType cst_path = { "path", set_path, get_path, set_native_path, get_native_path, reset_path, destroy_path, };
   cs_register_type(DT_PATH, &cst_path);
 }

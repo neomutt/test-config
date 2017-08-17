@@ -175,6 +175,16 @@ static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
+static bool set_native_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+{
+  return false;
+}
+
+static intptr_t get_native_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+{
+  return -1;
+}
+
 static bool reset_sort(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -187,6 +197,6 @@ static bool reset_sort(struct ConfigSet *cs, void *var,
 
 void init_sorts(void)
 {
-  const struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, NULL, NULL, reset_sort, NULL };
+  const struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, set_native_sort, get_native_sort, reset_sort, NULL, };
   cs_register_type(DT_SORT, &cst_sort);
 }
