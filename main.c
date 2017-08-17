@@ -52,9 +52,9 @@ void init_variables(struct ConfigSet *set)
   init_sidebar(set);
 }
 
-bool listener(struct ConfigSet *set, struct HashElem *he, const char *name, enum ConfigEvent e)
+bool listener(struct ConfigSet *set, struct HashElem *he, const char *name, enum ConfigEvent ev)
 {
-  if (e == CE_RESET)
+  if (ev == CE_RESET)
     printf("\033[1;32m%s has been reset\033[m\n", name);
   else
     printf("\033[1;32m%s has been set\033[m\n", name);

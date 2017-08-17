@@ -16,14 +16,14 @@ enum ConfigEvent
 };
 
 typedef bool     (*cs_listener)  (struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent e);
-typedef bool     (*cs_validator) (const struct ConfigSet *cs, const struct VariableDef *def, intptr_t value, struct Buffer *result);
+typedef bool     (*cs_validator) (const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result);
 
-typedef bool     (*cst_string_set)(struct ConfigSet *cs, void *var, const struct VariableDef *def, const char *value, struct Buffer *err);
-typedef bool     (*cst_string_get)(void *var, const struct VariableDef *def, struct Buffer *result);
-typedef bool     (*cst_reset)     (struct ConfigSet *cs, void *var, const struct VariableDef *def, struct Buffer *err);
-typedef void     (*cst_destructor)(void *var, const struct VariableDef *def);
+typedef bool     (*cst_string_set)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err);
+typedef bool     (*cst_string_get)(void *var, const struct VariableDef *vdef, struct Buffer *result);
+typedef bool     (*cst_reset)     (struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
+typedef void     (*cst_destructor)(void *var, const struct VariableDef *vdef);
 
-typedef bool     (*cst_native_set)(struct ConfigSet *cs, void *var, const struct VariableDef *def, intptr_t value, struct Buffer *err);
+typedef bool     (*cst_native_set)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err);
 typedef intptr_t (*cst_native_get)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
 
 #define IP (intptr_t)
