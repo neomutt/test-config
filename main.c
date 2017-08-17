@@ -214,22 +214,22 @@ void test_validators(struct ConfigSet *cs)
 
 void test_native(struct ConfigSet *cs)
 {
-  // struct Buffer result;
-  // mutt_buffer_init(&result);
-  // result.data = calloc(1, STRING);
-  // result.dsize = STRING;
+  struct Buffer result;
+  mutt_buffer_init(&result);
+  result.data = calloc(1, STRING);
+  result.dsize = STRING;
 
   struct Account *ac = account_create(cs, "cherry");
-  bool rdf;
 
-  rdf = get_he_bool(ac, V_RESUME_DRAFT_FILES);
-  printf("resume_draft_files = %d\n", rdf);
+  printf("resume_draft_files = %d / %d\n", OPT_RESUME_DRAFT_FILES, get_he_bool(ac, V_RESUME_DRAFT_FILES));
 
-  // printf("resume_draft_files = %d\n", OPT_RESUME_DRAFT_FILES);
   set_he_bool(ac, V_RESUME_DRAFT_FILES, true);              // DT_BOOL
 
-  rdf = get_he_bool(ac, V_RESUME_DRAFT_FILES);
-  printf("resume_draft_files = %d\n", rdf);
+  printf("resume_draft_files = %d / %d\n", OPT_RESUME_DRAFT_FILES, get_he_bool(ac, V_RESUME_DRAFT_FILES));
+
+  cs_set_value2(cs, "resume_draft_files", true, &result);      // DT_BOOL
+
+  printf("resume_draft_files = %d / %d\n", OPT_RESUME_DRAFT_FILES, get_he_bool(ac, V_RESUME_DRAFT_FILES));
 
   // set_he_addr     (ac, V_FROM,                 "jim@example.com"); // DT_ADDR
   // set_he_hcache   (ac, V_HEADER_CACHE_BACKEND, "lmdb");            // DT_HCACHE
@@ -243,7 +243,7 @@ void test_native(struct ConfigSet *cs)
   // set_he_str      (ac, V_ATTRIBUTION,          "flatcap");         // DT_STR
 
   account_free(cs, &ac);
-  // FREE(&result.data);
+  FREE(&result.data);
 }
 
 int main(int argc, char *argv[])

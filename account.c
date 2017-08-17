@@ -2,6 +2,8 @@
 #include "account.h"
 #include "lib/lib.h"
 #include "config_set.h"
+#include "mutt_options.h"
+#include "inheritance.h"
 
 const char *AccountVarStr[] = {
   "alias_file",           /* DT_PATH */
@@ -83,6 +85,13 @@ bool account_set_value(struct Account *ac, int vid, intptr_t value, struct Buffe
 bool account_get_value(struct Account *ac, int vid, struct Buffer *err)
 {
   struct HashElem *he = ac->vars[vid];
+
+  if ((he->type & DT_INHERITED) && (DTYPE(he->type) == 0))
+  {
+    struct Inheritance *i = he->data;
+    he = i->parent;
+  }
+
   return cs_get_value(ac->cs, he, err);
 }
 

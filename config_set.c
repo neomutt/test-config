@@ -3,11 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "lib/lib.h"
-#include "data.h"
-#include "account.h"
 #include "mutt_options.h"
 #include "inheritance.h"
-#include "type/bool.h" //XXX temp
 
 struct ConfigSetType RegisteredTypes[16] =
 {
@@ -431,17 +428,68 @@ bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, str
   if (cst->destructor)
     cst->destructor(var, vdef);
 
-  //XXX don't know size of destination
-  //XXX *(bool *) var = num;
-  bool result = set_bool_native(cs, var, vdef, value, err);
+  if (!cst->nsetter) //XXX compulsory
+    return false;
+
+  bool result = cst->nsetter(cs, var, vdef, value, err);
   if (result)
+  {
+    he->type = DT_INHERITED | vdef->type;
     notify_listeners(cs, he, vdef->name, CE_SET);
+  }
 
   return result;
 }
 
 bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
+  void *var = NULL;
+
+  const struct VariableDef *vdef = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    vdef = i->parent->data;
+    var = &i->var;
+  }
+  else
+  {
+    vdef = he->data;
+    var = vdef->var;
+  }
+
+  if (!var)
+    return false;
+
+  struct ConfigSetType *cst = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    cst = get_type_def(i->parent->type);
+  }
+  else
+  {
+    cst = get_type_def(he->type);
+  }
+
+  if (!cst)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
+    return false;
+  }
+
+  return cst->ngetter(cs, var, vdef, err);
+}
+
+
+bool cs_set_value2(struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err)
+{
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+    return false;
+
   void *var = NULL;
 
   struct VariableDef *vdef = NULL;
@@ -461,5 +509,80 @@ bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
   if (!var)
     return false;
 
-  return get_bool_native(cs, var, vdef, err);
+  struct ConfigSetType *cst = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    cst = get_type_def(i->parent->type);
+  }
+  else
+  {
+    cst = get_type_def(he->type);
+  }
+
+  if (!cst)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  if (cst->destructor)
+    cst->destructor(var, vdef);
+
+  bool result = cst->nsetter(cs, var, vdef, value, err);
+  if (result)
+    notify_listeners(cs, he, vdef->name, CE_SET);
+
+  return result;
 }
+
+bool cs_get_value2(struct ConfigSet *cs, const char *name, struct Buffer *err)
+{
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+    return false;
+
+  void *var = NULL;
+
+  struct VariableDef *vdef = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    vdef = i->parent->data;
+    var = &i->var;
+  }
+  else
+  {
+    vdef = he->data;
+    var = vdef->var;
+  }
+
+  if (!var)
+    return false;
+
+  struct ConfigSetType *cst = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    cst = get_type_def(i->parent->type);
+  }
+  else
+  {
+    cst = get_type_def(he->type);
+  }
+
+  if (!cst)
+  {
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
+    return false;
+  }
+
+  return cst->ngetter(cs, var, vdef, err);
+}
+
