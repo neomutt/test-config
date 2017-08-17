@@ -56,7 +56,10 @@ static bool set_native_str(struct ConfigSet *cs, void *var, const struct Variabl
     return false;
 
   FREE(var);
-  *(char *) var = value;
+
+  const char *str = safe_strdup((const char *) value);
+
+  *(const char **) var = str;
   return true;
 }
 
@@ -65,7 +68,9 @@ static intptr_t get_native_str(struct ConfigSet *cs, void *var, const struct Var
   if (!cs || !var || !vdef)
     return false;
 
-  return (intptr_t) var;
+  const char *str = *(const char **) var;
+
+  return (intptr_t) str;
 }
 
 static bool reset_str(struct ConfigSet *cs, void *var,

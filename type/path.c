@@ -45,12 +45,28 @@ static bool get_path(void *var, const struct VariableDef *vdef, struct Buffer *r
 
 static bool set_native_path(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  FREE(var);
+
+  const char *str = safe_strdup((const char *) value);
+
+  *(const char **) var = str;
+  return true;
 }
 
 static intptr_t get_native_path(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  const char *str = *(const char **) var;
+
+  return (intptr_t) str;
 }
 
 static bool reset_path(struct ConfigSet *cs, void *var,

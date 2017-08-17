@@ -251,21 +251,21 @@ void test_native(struct ConfigSet *cs)
 {
   struct Account *ac = account_create(cs, "cherry");
 
-#if 1
-  test2(ac, "resume_draft_files",   V_RESUME_DRAFT_FILES,   true,          false);              // DT_BOOL
-  test2(ac, "pager_context",        V_PAGER_CONTEXT,        42,            99);                 // DT_NUM
-  test2(ac, "sort",                 V_SORT,                 SORT_SPAM,     SORT_LABEL);         // DT_SORT
-  test2(ac, "post_moderated",       V_POST_MODERATED,       MUTT_ASKYES,   MUTT_YES);           // DT_QUAD
-  test2(ac, "mbox_type",            V_MBOX_TYPE,            MUTT_MMDF,     MUTT_MH);            // DT_MAGIC
+#if 0
+  test2(ac, "resume_draft_files",   V_RESUME_DRAFT_FILES,   true,             false);                 // DT_BOOL
+  test2(ac, "pager_context",        V_PAGER_CONTEXT,        42,               99);                    // DT_NUM
+  test2(ac, "sort",                 V_SORT,                 SORT_SPAM,        SORT_LABEL);            // DT_SORT
+  test2(ac, "post_moderated",       V_POST_MODERATED,       MUTT_ASKYES,      MUTT_YES);              // DT_QUAD
+  test2(ac, "mbox_type",            V_MBOX_TYPE,            MUTT_MMDF,        MUTT_MH);               // DT_MAGIC
+  test2(ac, "attribution",          V_ATTRIBUTION,          IP "flatcap",     IP "phil");             // DT_STR
+  test2(ac, "alias_file",           V_ALIAS_FILE,           IP "/home",       IP "/etc");             // DT_PATH
 #endif
 
 #if 0
-  test2(ac, "attribution",          V_ATTRIBUTION,          IP "flatcap",  IP "phil");          // DT_STR
-  test2(ac, "alias_file",           V_ALIAS_FILE,           "/home",       "/etc");             // DT_PATH
-  test2(ac, "from",                 V_FROM,                 "jim@abc.com", "dave@example.com"); // DT_ADDR
-  test2(ac, "quote_regexp",         V_QUOTE_REGEXP,         rx,            rx2);                // DT_RX
-  test2(ac, "header_cache_backend", V_HEADER_CACHE_BACKEND, "lmdb",        "qdbm");             // DT_HCACHE
-  test2(ac, "status_chars",         V_STATUS_CHARS,         "ABCD",        "PQRS");             // DT_MBCHARTBL
+  test2(ac, "from",                 V_FROM,                 IP "jim@abc.com", IP "dave@example.com"); // DT_ADDR
+  test2(ac, "quote_regexp",         V_QUOTE_REGEXP,         rx,               rx2);                   // DT_RX
+  test2(ac, "header_cache_backend", V_HEADER_CACHE_BACKEND, "lmdb",           "qdbm");                // DT_HCACHE
+  test2(ac, "status_chars",         V_STATUS_CHARS,         "ABCD",           "PQRS");                // DT_MBCHARTBL
 #endif
 
   account_free(cs, &ac);
