@@ -47,14 +47,6 @@ static struct MbCharTable *parse_mbchar_table(const char *s)
   return t;
 }
 
-static void free_mbchartbl(struct MbCharTable **table)
-{
-  FREE(&(*table)->orig_str);
-  FREE(&(*table)->chars);
-  FREE(&(*table)->segmented_str);
-  FREE(table);
-}
-
 static void destroy_mbchartbl(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
@@ -109,14 +101,37 @@ static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
+static struct MbCharTable *dup_mbchartbl(struct MbCharTable *table)
+{
+  struct MbCharTable *m = safe_calloc(1, sizeof(*m));
+  m->orig_str = safe_strdup(table->orig_str);
+  return m;
+}
+
 static bool set_native_mbchartbl(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  free_mbchartbl(var);
+
+  struct MbCharTable *table = dup_mbchartbl((struct MbCharTable *) value);
+
+  *(struct MbCharTable **) var = table;
+  return true;
 }
 
 static intptr_t get_native_mbchartbl(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  struct MbCharTable *table = *(struct MbCharTable **) var;
+
+  return (intptr_t) table;
 }
 
 static bool reset_mbchartbl(struct ConfigSet *cs, void *var,
@@ -133,6 +148,24 @@ static bool reset_mbchartbl(struct ConfigSet *cs, void *var,
 
   *(struct MbCharTable **) var = table;
   return true;
+}
+
+void free_mbchartbl(struct MbCharTable **table)
+{
+  if (!table || !*table)
+    return;
+
+  FREE(&(*table)->orig_str);
+  FREE(&(*table)->chars);
+  FREE(&(*table)->segmented_str);
+  FREE(table);
+}
+
+struct MbCharTable *mb_create(const char *str)
+{
+  struct MbCharTable *m = safe_calloc(1, sizeof(*m));
+  m->orig_str = safe_strdup(str);
+  return m;
 }
 
 void init_mbyte_table(void)

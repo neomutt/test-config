@@ -32,12 +32,15 @@
  */
 struct MbCharTable
 {
+  char *orig_str;
   int len;             /**< number of characters */
   char **chars;        /**< the array of multibyte character strings */
   char *segmented_str; /**< each chars entry points inside this string */
-  char *orig_str;
 };
 
 void init_mbyte_table(void);
+
+struct MbCharTable *mb_create(const char *str);
+void free_mbchartbl(struct MbCharTable **table);
 
 #endif /* _MUTT_MBYTE_TABLE_H */

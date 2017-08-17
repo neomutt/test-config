@@ -54,12 +54,28 @@ static bool get_hcache(void *var, const struct VariableDef *vdef, struct Buffer 
 
 static bool set_native_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if ((value < 0) || (value >= mutt_array_size(hcache_backends)))
+  {
+    mutt_buffer_printf(err, "Invalid hcache: %ld", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  *(short *) var = value;
+  return true;
 }
 
 static intptr_t get_native_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  return *(short *) var;
 }
 
 static bool reset_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
