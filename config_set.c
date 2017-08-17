@@ -43,7 +43,7 @@ static void destroy(int type, void *obj, intptr_t data)
     struct VariableDef *vdef = obj;
 
     cst = get_type_def(type);
-    if (cst->destructor)
+    if (cst && cst->destructor)
       cst->destructor(vdef->var, vdef);
   }
 }
@@ -122,19 +122,19 @@ void cs_dump_set(struct ConfigSet *cs)
       name = he->key.strkey;
     }
 
-    struct ConfigSetType *type = get_type_def(he->type);
-    if (!type)
+    struct ConfigSetType *cst = get_type_def(he->type);
+    if (!cst)
     {
       printf("Unknown type: %d\n", he->type);
       continue;
     }
 
     mutt_buffer_reset(&result);
-    printf("%-7s %s", type->name, name);
+    printf("%-7s %s", cst->name, name);
 
     struct VariableDef *vdef = he->data;
 
-    if (type->getter(vdef->var, vdef, &result))
+    if (cst->getter(vdef->var, vdef, &result))
       printf(" = %s\n", result.data);
     else
       printf(": ERROR: %s\n", result.data);
@@ -269,7 +269,7 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
 
     struct VariableDef *vdef = i->parent->data;
 
-    if (cst->destructor)
+    if (cst && cst->destructor)
       cst->destructor((void**) &i->var, vdef);
 
     he->type = DT_INHERITED;
@@ -280,7 +280,8 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
 
     struct VariableDef *vdef = he->data;
 
-    cst->resetter(cs, vdef->var, vdef, err);
+    if (cst)
+      cst->resetter(cs, vdef->var, vdef, err);
   }
 
   notify_listeners(cs, he, name, CE_RESET);
@@ -351,13 +352,6 @@ struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *pare
   mutt_buffer_init(&err);
   err.data = calloc(1, STRING);
   err.dsize = STRING;
-
-  struct ConfigSetType *type = get_type_def(parent->type);
-  if (!type)
-  {
-    mutt_buffer_printf(&err, "Variable '%s' has an invalid type %d", name, parent->type);
-    return NULL;
-  }
 
   struct Inheritance *i = safe_calloc(1, sizeof(*i));
   i->parent = parent;
