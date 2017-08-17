@@ -70,7 +70,6 @@ static bool reset_addr(struct ConfigSet *cs, void *var,
 
 void init_addr(void)
 {
-  const struct ConfigSetType cst_addr = { "address", set_addr, get_addr,
-                                          reset_addr, destroy_addr };
+  const struct ConfigSetType cst_addr = { "address", set_addr, get_addr, NULL, NULL, reset_addr, destroy_addr };
   cs_register_type(DT_ADDR, &cst_addr);
 }

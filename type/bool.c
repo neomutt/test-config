@@ -138,7 +138,7 @@ intptr_t get_bool_native(struct ConfigSet *cs, void *var, const struct VariableD
 
 void init_bool(void)
 {
-  const struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, reset_bool, NULL, set_bool_native, get_bool_native, };
+  const struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, set_bool_native, get_bool_native, reset_bool, };
   cs_register_type(DT_BOOL, &cst_bool);
 }
 

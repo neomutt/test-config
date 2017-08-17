@@ -20,11 +20,11 @@ typedef bool     (*cs_validator) (const struct ConfigSet *cs, const struct Varia
 
 typedef bool     (*cst_string_set)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err);
 typedef bool     (*cst_string_get)(void *var, const struct VariableDef *vdef, struct Buffer *result);
+typedef bool     (*cst_native_set)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err);
+typedef intptr_t (*cst_native_get)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
 typedef bool     (*cst_reset)     (struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
 typedef void     (*cst_destructor)(void *var, const struct VariableDef *vdef);
 
-typedef bool     (*cst_native_set)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err);
-typedef intptr_t (*cst_native_get)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
 
 #define IP (intptr_t)
 
@@ -42,10 +42,10 @@ struct ConfigSetType
   const char *name;
   cst_string_set   setter;
   cst_string_get   getter;
-  cst_reset        resetter;
-  cst_destructor   destructor;
   cst_native_set   nsetter;
   cst_native_get   ngetter;
+  cst_reset        resetter;
+  cst_destructor   destructor;
 };
 
 struct ConfigSet

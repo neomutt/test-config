@@ -64,6 +64,6 @@ static bool reset_quad(struct ConfigSet *cs, void *var,
 
 void init_quad(void)
 {
-  const struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, reset_quad, NULL };
+  const struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, NULL, NULL, reset_quad, NULL };
   cs_register_type(DT_QUAD, &cst_quad);
 }

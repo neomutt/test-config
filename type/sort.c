@@ -187,6 +187,6 @@ static bool reset_sort(struct ConfigSet *cs, void *var,
 
 void init_sorts(void)
 {
-  const struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, reset_sort, NULL };
+  const struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, NULL, NULL, reset_sort, NULL };
   cs_register_type(DT_SORT, &cst_sort);
 }

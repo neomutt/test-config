@@ -104,7 +104,7 @@ const struct VariableDef HCVars[] = {
 
 void init_hcache(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, reset_hcache, NULL };
+  struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, NULL, NULL, reset_hcache, NULL };
 
   cs_register_type(DT_HCACHE, &cst);
 
