@@ -247,7 +247,7 @@ void test_native(struct ConfigSet *cs)
   dump_native(cs, ac_str, var_str);              // 0 0
   cs_set_value2(cs, var_str, true, &result);
   dump_native(cs, ac_str, var_str);              // 1 1 (inherited)
-  set_he_bool(ac, V_RESUME_DRAFT_FILES, false);
+  account_set_value(ac, V_RESUME_DRAFT_FILES, false, &result);
   dump_native(cs, ac_str, var_str);              // 1 0 (overridden)
   reset(cs, "cherry:resume_draft_files");
   dump_native(cs, ac_str, var_str);              // 1 1 (inherited)

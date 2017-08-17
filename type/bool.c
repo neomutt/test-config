@@ -91,51 +91,6 @@ static bool reset_bool(struct ConfigSet *cs, void *var,
   return true;
 }
 
-bool set_he_bool_err(struct Account *ac, int vid, bool value, struct Buffer *err)
-{
-  intptr_t copy = value;
-  return account_set_value(ac, vid, copy, err);
-}
-
-bool set_he_bool(struct Account *ac, int vid, bool value)
-{
-  struct Buffer err;
-  mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
-  err.dsize = STRING;
-
-  mutt_buffer_reset(&err);
-
-  bool result = set_he_bool_err(ac, vid, value, &err);
-  if (!result)
-    printf("%s\n", err.data);
-
-  FREE(&err.data);
-  return result;
-}
-
-bool get_he_bool_err(struct Account *ac, int vid, struct Buffer *err)
-{
-  return account_get_value(ac, vid, err);
-}
-
-bool get_he_bool(struct Account *ac, int vid)
-{
-  struct Buffer err;
-  mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
-  err.dsize = STRING;
-
-  mutt_buffer_reset(&err);
-
-  bool result = get_he_bool_err(ac, vid, &err);
-  // if (!result)
-  //   printf("%s\n", err.data);
-
-  FREE(&err.data);
-  return result;
-}
-
 void init_bool(void)
 {
   const struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, set_native_bool, get_native_bool, reset_bool, NULL, };
