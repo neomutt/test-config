@@ -299,44 +299,39 @@ bool cs_get_variable(struct ConfigSet *cs, const char *name, struct Buffer *resu
     return false;
   }
 
-  if ((he->type & DT_INHERITED) && (DTYPE(he->type) == 0))
+  struct Inheritance *i = NULL;
+  struct VariableDef *vdef = NULL;
+  struct ConfigSetType *cst = NULL;
+  void *var = NULL;
+
+  if (he->type & DT_INHERITED)
   {
-    // Delegate to parent
-    struct Inheritance *i = he->data;
-    he = i->parent;
+    i = he->data;
+    vdef = i->parent->data;
+    cst = get_type_def(i->parent->type);
+  }
+  else
+  {
+    vdef = he->data;
+    cst = get_type_def(he->type);
   }
 
-  struct ConfigSetType *cst = get_type_def(he->type);
+  if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
+  {
+    var = &i->var;  // Local value
+  }
+  else
+  {
+    var = vdef->var; // Normal var
+  }
+
   if (!cst)
   {
     mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", name, DTYPE(he->type));
     return false;
   }
 
-  void *var = NULL;
-  struct VariableDef *vdef = NULL;
-
-  if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
-  {
-    // Local value
-    struct Inheritance *i = he->data;
-    vdef = i->parent->data;
-    var = &i->var;
-  }
-  else
-  {
-    // Normal var
-    vdef = he->data;
-    if (!vdef)
-      return false;
-
-    var = vdef->var;
-  }
-
-  if (!cst->getter(var, vdef, result))
-    return false;
-
-  return true;
+  return cst->getter(var, vdef, result);
 }
 
 struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name)
@@ -344,15 +339,7 @@ struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name)
   if (!cs || !name)
     return NULL;
 
-  struct HashElem *he = hash_find_elem(cs->hash, name);
-
-  if (he && (he->type & DT_INHERITED))
-  {
-    struct Inheritance *i = he->data;
-    he = i->parent;
-  }
-
-  return he;
+  return hash_find_elem(cs->hash, name);
 }
 
 struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *parent, const char *name)
@@ -385,34 +372,24 @@ struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *pare
 
 bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err)
 {
-  void *var = NULL;
+  if (!cs || !he)
+    return false;
 
   struct VariableDef *vdef = NULL;
+  struct ConfigSetType *cst = NULL;
+  void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
     vdef = i->parent->data;
     var = &i->var;
+    cst = get_type_def(i->parent->type);
   }
   else
   {
     vdef = he->data;
     var = vdef->var;
-  }
-
-  if (!var)
-    return false;
-
-  struct ConfigSetType *cst = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    struct Inheritance *i = he->data;
-    cst = get_type_def(i->parent->type);
-  }
-  else
-  {
     cst = get_type_def(he->type);
   }
 
@@ -434,7 +411,8 @@ bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, str
   bool result = cst->nsetter(cs, var, vdef, value, err);
   if (result)
   {
-    he->type = DT_INHERITED | vdef->type;
+    if (he->type & DT_INHERITED)
+      he->type = DT_INHERITED | vdef->type;
     notify_listeners(cs, he, vdef->name, CE_SET);
   }
 
@@ -443,34 +421,24 @@ bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, str
 
 bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
-  void *var = NULL;
+  if (!cs || !he)
+    return false;
 
-  const struct VariableDef *vdef = NULL;
+  struct VariableDef *vdef = NULL;
+  struct ConfigSetType *cst = NULL;
+  void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
     vdef = i->parent->data;
     var = &i->var;
+    cst = get_type_def(i->parent->type);
   }
   else
   {
     vdef = he->data;
     var = vdef->var;
-  }
-
-  if (!var)
-    return false;
-
-  struct ConfigSetType *cst = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    struct Inheritance *i = he->data;
-    cst = get_type_def(i->parent->type);
-  }
-  else
-  {
     cst = get_type_def(he->type);
   }
 
@@ -486,38 +454,31 @@ bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 
 bool cs_set_value2(struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err)
 {
-  struct HashElem *he = cs_get_elem(cs, name);
-  if (!he)
+  if (!cs || !name)
     return false;
 
-  void *var = NULL;
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+  {
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
+    return false;
+  }
 
   struct VariableDef *vdef = NULL;
+  struct ConfigSetType *cst = NULL;
+  void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
     vdef = i->parent->data;
     var = &i->var;
+    cst = get_type_def(i->parent->type);
   }
   else
   {
     vdef = he->data;
     var = vdef->var;
-  }
-
-  if (!var)
-    return false;
-
-  struct ConfigSetType *cst = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    struct Inheritance *i = he->data;
-    cst = get_type_def(i->parent->type);
-  }
-  else
-  {
     cst = get_type_def(he->type);
   }
 
@@ -533,54 +494,62 @@ bool cs_set_value2(struct ConfigSet *cs, const char *name, intptr_t value, struc
   if (cst->destructor)
     cst->destructor(var, vdef);
 
+  if (!cst->nsetter) //XXX compulsory
+    return false;
+
   bool result = cst->nsetter(cs, var, vdef, value, err);
   if (result)
+  {
+    if (he->type & DT_INHERITED)
+      he->type = DT_INHERITED | vdef->type;
     notify_listeners(cs, he, vdef->name, CE_SET);
+  }
 
   return result;
 }
 
-bool cs_get_value2(struct ConfigSet *cs, const char *name, struct Buffer *err)
+intptr_t cs_get_value2(struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
+  if (!cs || !name)
+    return -1;
+
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
-    return false;
+  {
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
+    return -1;
+  }
 
+  struct Inheritance *i = NULL;
+  struct VariableDef *vdef = NULL;
+  struct ConfigSetType *cst = NULL;
   void *var = NULL;
 
-  struct VariableDef *vdef = NULL;
-
   if (he->type & DT_INHERITED)
   {
-    struct Inheritance *i = he->data;
+    i = he->data;
     vdef = i->parent->data;
-    var = &i->var;
-  }
-  else
-  {
-    vdef = he->data;
-    var = vdef->var;
-  }
-
-  if (!var)
-    return false;
-
-  struct ConfigSetType *cst = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    struct Inheritance *i = he->data;
     cst = get_type_def(i->parent->type);
   }
   else
   {
+    vdef = he->data;
     cst = get_type_def(he->type);
+  }
+
+  if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
+  {
+    var = &i->var;
+  }
+  else
+  {
+    var = vdef->var;
   }
 
   if (!cst)
   {
     mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
-    return false;
+    return -1;
   }
 
   return cst->ngetter(cs, var, vdef, err);

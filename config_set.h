@@ -77,7 +77,7 @@ void notify_listeners(struct ConfigSet *cs, struct HashElem *he, const char *nam
 bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err);
 bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 
-bool cs_set_value2(struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
-bool cs_get_value2(struct ConfigSet *cs, const char *name, struct Buffer *err);
+bool     cs_set_value2(struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
+intptr_t cs_get_value2(struct ConfigSet *cs, const char *name, struct Buffer *err);
 
 #endif /* _MUTT_CONFIG_SET_H */

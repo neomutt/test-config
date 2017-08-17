@@ -115,6 +115,24 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
   FREE(&result.data);
 }
 
+void dump_native(struct ConfigSet *cs, const char *account, const char *parent)
+{
+  char child[128];
+  snprintf(child, sizeof(child), "%s:%s", account, parent);
+
+  struct Buffer result;
+  mutt_buffer_init(&result);
+  result.data = calloc(1, STRING);
+  result.dsize = STRING;
+
+  mutt_buffer_reset(&result);
+
+  printf("%26s = %ld\n", parent, cs_get_value2(cs, parent, &result));
+  printf("%26s = %ld\n", child,  cs_get_value2(cs, child,  &result));
+
+  FREE(&result.data);
+}
+
 void reset(struct ConfigSet *cs, const char *name)
 {
   struct Buffer result;
@@ -214,22 +232,27 @@ void test_validators(struct ConfigSet *cs)
 
 void test_native(struct ConfigSet *cs)
 {
+  const char *ac_str = "cherry";
+  const char *var_str = NULL;
+
   struct Buffer result;
   mutt_buffer_init(&result);
   result.data = calloc(1, STRING);
   result.dsize = STRING;
 
-  struct Account *ac = account_create(cs, "cherry");
+  struct Account *ac = account_create(cs, ac_str);
 
-  printf("resume_draft_files = %d / %d\n", OPT_RESUME_DRAFT_FILES, get_he_bool(ac, V_RESUME_DRAFT_FILES));
+  var_str = "resume_draft_files"; // DT_BOOL
 
-  set_he_bool(ac, V_RESUME_DRAFT_FILES, true);              // DT_BOOL
-
-  printf("resume_draft_files = %d / %d\n", OPT_RESUME_DRAFT_FILES, get_he_bool(ac, V_RESUME_DRAFT_FILES));
-
-  cs_set_value2(cs, "resume_draft_files", true, &result);      // DT_BOOL
-
-  printf("resume_draft_files = %d / %d\n", OPT_RESUME_DRAFT_FILES, get_he_bool(ac, V_RESUME_DRAFT_FILES));
+  dump_native(cs, ac_str, var_str);              // 0 0
+  cs_set_value2(cs, var_str, true, &result);
+  dump_native(cs, ac_str, var_str);              // 1 1 (inherited)
+  set_he_bool(ac, V_RESUME_DRAFT_FILES, false);
+  dump_native(cs, ac_str, var_str);              // 1 0 (overridden)
+  reset(cs, "cherry:resume_draft_files");
+  dump_native(cs, ac_str, var_str);              // 1 1 (inherited)
+  reset(cs, "resume_draft_files");
+  dump_native(cs, ac_str, var_str);              // 0 0 (inherited
 
   // set_he_addr     (ac, V_FROM,                 "jim@example.com"); // DT_ADDR
   // set_he_hcache   (ac, V_HEADER_CACHE_BACKEND, "lmdb");            // DT_HCACHE
