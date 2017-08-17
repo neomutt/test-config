@@ -143,7 +143,7 @@ void cs_dump_set(struct ConfigSet *cs)
   FREE(&result.data);
 }
 
-bool cs_register_type(unsigned int type, const struct ConfigSetType *cst)
+bool cs_register_type(unsigned int type, struct ConfigSetType *cst)
 {
   if (!cst)
     return false;

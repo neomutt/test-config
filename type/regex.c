@@ -93,6 +93,6 @@ static bool reset_rx(struct ConfigSet *cs, void *var,
 
 void init_regex(void)
 {
-  const struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, set_native_rx, get_native_rx, reset_rx, destroy_rx, };
+  struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, set_native_rx, get_native_rx, reset_rx, destroy_rx, };
   cs_register_type(DT_RX, &cst_rx);
 }

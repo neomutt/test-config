@@ -54,12 +54,28 @@ static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *r
 
 static bool set_native_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if ((value < 0) || (value >= mutt_array_size(quad_values)))
+  {
+    mutt_buffer_printf(err, "Invalid quad value: %s", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  *(short *) var = value;
+  return true;
 }
 
 static intptr_t get_native_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  return *(short *) var;
 }
 
 static bool reset_quad(struct ConfigSet *cs, void *var,
@@ -74,6 +90,6 @@ static bool reset_quad(struct ConfigSet *cs, void *var,
 
 void init_quad(void)
 {
-  const struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, set_native_quad, get_native_quad, reset_quad, NULL, };
+  struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, set_native_quad, get_native_quad, reset_quad, NULL, };
   cs_register_type(DT_QUAD, &cst_quad);
 }

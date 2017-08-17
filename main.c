@@ -117,8 +117,19 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
 
 void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
-  printf("%26s = %ld\n", parent, cs_get_value2(cs, parent, NULL));
-  printf("%26s = %ld\n", child,  cs_get_value2(cs, child,  NULL));
+  intptr_t pval = cs_get_value2(cs, parent, NULL);
+  intptr_t cval = cs_get_value2(cs, child,  NULL);
+
+  if (pval > 1000000)
+  {
+    printf("%26s = %s\n", parent, (char *) pval);
+    printf("%26s = %s\n", child,  (char *) cval);
+  }
+  else
+  {
+    printf("%26s = %ld\n", parent, pval);
+    printf("%26s = %ld\n", child,  cval);
+  }
 }
 
 void reset(struct ConfigSet *cs, const char *name)
@@ -218,10 +229,11 @@ void test_validators(struct ConfigSet *cs)
   set(cs, "flag_chars",            "pQrS");               // DT_MBCHARTBL
 }
 
-void test2(struct ConfigSet *cs, const struct Account *ac, const char *account, const char *parent, int vid, intptr_t pvalue, intptr_t cvalue)
+void test2(const struct Account *ac, const char *parent, int vid, intptr_t pvalue, intptr_t cvalue)
 {
+  struct ConfigSet *cs = ac->cs;
   char child[128];
-  snprintf(child, sizeof(child), "%s:%s", account, parent);
+  snprintf(child, sizeof(child), "%s:%s", ac->name, parent);
 
   dump_native(cs, parent, child);
   cs_set_value2(cs, parent, pvalue, NULL);
@@ -237,27 +249,24 @@ void test2(struct ConfigSet *cs, const struct Account *ac, const char *account, 
 
 void test_native(struct ConfigSet *cs)
 {
-  const char *account = "cherry";
-  const char *parent = "resume_draft_files"; // DT_BOOL
-  char child[128];
-  snprintf(child, sizeof(child), "%s:%s", account, parent);
-
-  struct Account *ac = account_create(cs, account);
+  struct Account *ac = account_create(cs, "cherry");
 
 #if 1
-  test2(cs, ac, account, parent, V_RESUME_DRAFT_FILES, true, false);
+  test2(ac, "resume_draft_files",   V_RESUME_DRAFT_FILES,   true,          false);              // DT_BOOL
+  test2(ac, "pager_context",        V_PAGER_CONTEXT,        42,            99);                 // DT_NUM
+  test2(ac, "sort",                 V_SORT,                 SORT_SPAM,     SORT_LABEL);         // DT_SORT
+  test2(ac, "post_moderated",       V_POST_MODERATED,       MUTT_ASKYES,   MUTT_YES);           // DT_QUAD
+  test2(ac, "mbox_type",            V_MBOX_TYPE,            MUTT_MMDF,     MUTT_MH);            // DT_MAGIC
 #endif
 
-  // set_he_addr     (ac, V_FROM,                 "jim@example.com"); // DT_ADDR
-  // set_he_hcache   (ac, V_HEADER_CACHE_BACKEND, "lmdb");            // DT_HCACHE
-  // set_he_magic    (ac, V_MBOX_TYPE,            "maildir");         // DT_MAGIC
-  // set_he_mbchartbl(ac, V_STATUS_CHARS,         "ABCD");            // DT_MBCHARTBL
-  // set_he_num      (ac, V_PAGER_CONTEXT,        12);                // DT_NUM
-  // set_he_path     (ac, V_ALIAS_FILE,           "/home");           // DT_PATH
-  // set_he_quad     (ac, V_POST_MODERATED,       MUTT_ASKYES);       // DT_QUAD
-  // set_he_rx       (ac, V_QUOTE_REGEXP,         rx);                // DT_RX
-  // set_he_sort     (ac, V_SORT,                 SORT_SPAM);         // DT_SORT
-  // set_he_str      (ac, V_ATTRIBUTION,          "flatcap");         // DT_STR
+#if 0
+  test2(ac, "attribution",          V_ATTRIBUTION,          IP "flatcap",  IP "phil");          // DT_STR
+  test2(ac, "alias_file",           V_ALIAS_FILE,           "/home",       "/etc");             // DT_PATH
+  test2(ac, "from",                 V_FROM,                 "jim@abc.com", "dave@example.com"); // DT_ADDR
+  test2(ac, "quote_regexp",         V_QUOTE_REGEXP,         rx,            rx2);                // DT_RX
+  test2(ac, "header_cache_backend", V_HEADER_CACHE_BACKEND, "lmdb",        "qdbm");             // DT_HCACHE
+  test2(ac, "status_chars",         V_STATUS_CHARS,         "ABCD",        "PQRS");             // DT_MBCHARTBL
+#endif
 
   account_free(cs, &ac);
 }

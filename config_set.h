@@ -16,7 +16,7 @@ enum ConfigEvent
 };
 
 typedef bool     (*cs_listener)  (struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent e);
-typedef bool     (*cs_validator) (const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result);
+typedef bool     (*cs_validator) (struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result);
 
 typedef bool     (*cst_string_set)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err);
 typedef bool     (*cst_string_get)(void *var, const struct VariableDef *vdef, struct Buffer *result);
@@ -61,7 +61,7 @@ void cs_free(struct ConfigSet *cs);
 struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name);
 void cs_dump_set(struct ConfigSet *cs);
 
-bool cs_register_type     (unsigned int type, const struct ConfigSetType *cst);
+bool cs_register_type     (unsigned int type, struct ConfigSetType *cst);
 bool cs_register_variables(struct ConfigSet *cs, const struct VariableDef vars[]);
 struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *parent, const char *name);
 

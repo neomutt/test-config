@@ -54,12 +54,28 @@ static bool get_magic(void *var, const struct VariableDef *vdef, struct Buffer *
 
 static bool set_native_magic(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if ((value < 1) || (value >= mutt_array_size(magic_values)))
+  {
+    mutt_buffer_printf(err, "Invalid magic value: %ld", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  *(short *) var = value;
+  return true;
 }
 
 static intptr_t get_native_magic(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  return *(short *) var;
 }
 
 static bool reset_magic(struct ConfigSet *cs, void *var,
@@ -74,6 +90,6 @@ static bool reset_magic(struct ConfigSet *cs, void *var,
 
 void init_magic(void)
 {
-  const struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, set_native_magic, get_native_magic, reset_magic, NULL, };
+  struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, set_native_magic, get_native_magic, reset_magic, NULL, };
   cs_register_type(DT_MAGIC, &cst_magic);
 }

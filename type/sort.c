@@ -177,12 +177,54 @@ static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *r
 
 static bool set_native_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  const char *str = NULL;
+
+  switch (vdef->type & DT_SUBTYPE_MASK)
+  {
+    case DT_SORT_INDEX:
+      str = find_string(SortMethods, value);
+      break;
+    case DT_SORT_ALIAS:
+      str = find_string(SortAliasMethods, value);
+      break;
+    case DT_SORT_AUX:
+      str = find_string(SortAuxMethods, value);
+      break;
+    case DT_SORT_BROWSER:
+      str = find_string(SortBrowserMethods, value);
+      break;
+    case DT_SORT_KEYS:
+      str = find_string(SortKeyMethods, value);
+      break;
+    case DT_SORT_SIDEBAR:
+      str = find_string(SortSidebarMethods, value);
+      break;
+    default:
+      break;
+  }
+
+  if (!str)
+  {
+    mutt_buffer_printf(err, "Invalid sort type: %ld", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  *(short *) var = value;
+  return true;
 }
 
 static intptr_t get_native_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  return *(short *) var;
 }
 
 static bool reset_sort(struct ConfigSet *cs, void *var,
@@ -197,6 +239,6 @@ static bool reset_sort(struct ConfigSet *cs, void *var,
 
 void init_sorts(void)
 {
-  const struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, set_native_sort, get_native_sort, reset_sort, NULL, };
+  struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, set_native_sort, get_native_sort, reset_sort, NULL, };
   cs_register_type(DT_SORT, &cst_sort);
 }

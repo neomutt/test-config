@@ -41,6 +41,20 @@ struct Buffer;
 #define DT_MBCHARTBL 11   /**< multibyte char table */
 #define DT_HCACHE    12   /**< header cache backend */
 
+/* supported mailbox formats */
+enum
+{
+  MUTT_MBOX = 1,
+  MUTT_MMDF,
+  MUTT_MH,
+  MUTT_MAILDIR,
+  MUTT_NNTP,
+  MUTT_IMAP,
+  MUTT_NOTMUCH,
+  MUTT_POP,
+  MUTT_COMPRESSED,
+};
+
 #define DTYPE(x) ((x) & DT_MASK)
 
 /* subtypes */

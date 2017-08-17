@@ -42,12 +42,28 @@ static bool get_num(void *var, const struct VariableDef *vdef, struct Buffer *re
 
 static bool set_native_num(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if ((value < SHRT_MIN) || (value > SHRT_MAX))
+  {
+    mutt_buffer_printf(err, "Invalid number: %ld", value);
+    return false;
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  *(short *) var = value;
+  return true;
 }
 
 static intptr_t get_native_num(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  return *(short *) var;
 }
 
 static bool reset_num(struct ConfigSet *cs, void *var,
@@ -62,6 +78,6 @@ static bool reset_num(struct ConfigSet *cs, void *var,
 
 void init_num(void)
 {
-  const struct ConfigSetType cst_num = { "number", set_num, get_num, set_native_num, get_native_num, reset_num, NULL, };
+  struct ConfigSetType cst_num = { "number", set_num, get_num, set_native_num, get_native_num, reset_num, NULL, };
   cs_register_type(DT_NUM, &cst_num);
 }
