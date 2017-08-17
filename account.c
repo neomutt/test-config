@@ -76,13 +76,13 @@ void account_free(struct ConfigSet *cs, struct Account **ac)
   FREE(ac);
 }
 
-bool account_set_value(struct Account *ac, int vid, intptr_t value, struct Buffer *err)
+bool account_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err)
 {
   struct HashElem *he = ac->vars[vid];
   return cs_set_value(ac->cs, he, value, err);
 }
 
-bool account_get_value(struct Account *ac, int vid, struct Buffer *err)
+bool account_get_value(const struct Account *ac, int vid, struct Buffer *err)
 {
   struct HashElem *he = ac->vars[vid];
 

@@ -36,7 +36,7 @@ struct Account
 struct Account *account_create(struct ConfigSet *cs, const char *name);
 void account_free(struct ConfigSet *cs, struct Account **ac);
 
-bool account_set_value(struct Account *ac, int vid, intptr_t value, struct Buffer *err);
-bool account_get_value(struct Account *ac, int vid, struct Buffer *err);
+bool account_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err);
+bool account_get_value(const struct Account *ac, int vid, struct Buffer *err);
 
 #endif /* _MUTT_ACCOUNT_H */

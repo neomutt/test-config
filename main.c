@@ -115,22 +115,10 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
   FREE(&result.data);
 }
 
-void dump_native(struct ConfigSet *cs, const char *account, const char *parent)
+void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
-  char child[128];
-  snprintf(child, sizeof(child), "%s:%s", account, parent);
-
-  struct Buffer result;
-  mutt_buffer_init(&result);
-  result.data = calloc(1, STRING);
-  result.dsize = STRING;
-
-  mutt_buffer_reset(&result);
-
-  printf("%26s = %ld\n", parent, cs_get_value2(cs, parent, &result));
-  printf("%26s = %ld\n", child,  cs_get_value2(cs, child,  &result));
-
-  FREE(&result.data);
+  printf("%26s = %ld\n", parent, cs_get_value2(cs, parent, NULL));
+  printf("%26s = %ld\n", child,  cs_get_value2(cs, child,  NULL));
 }
 
 void reset(struct ConfigSet *cs, const char *name)
@@ -230,29 +218,35 @@ void test_validators(struct ConfigSet *cs)
   set(cs, "flag_chars",            "pQrS");               // DT_MBCHARTBL
 }
 
+void test2(struct ConfigSet *cs, const struct Account *ac, const char *account, const char *parent, int vid, intptr_t pvalue, intptr_t cvalue)
+{
+  char child[128];
+  snprintf(child, sizeof(child), "%s:%s", account, parent);
+
+  dump_native(cs, parent, child);
+  cs_set_value2(cs, parent, pvalue, NULL);
+  dump_native(cs, parent, child);
+  account_set_value(ac, vid, cvalue, NULL);
+  dump_native(cs, parent, child);
+  reset(cs, child);
+  dump_native(cs, parent, child);
+  reset(cs, parent);
+  dump_native(cs, parent, child);
+
+}
+
 void test_native(struct ConfigSet *cs)
 {
-  const char *ac_str = "cherry";
-  const char *var_str = NULL;
+  const char *account = "cherry";
+  const char *parent = "resume_draft_files"; // DT_BOOL
+  char child[128];
+  snprintf(child, sizeof(child), "%s:%s", account, parent);
 
-  struct Buffer result;
-  mutt_buffer_init(&result);
-  result.data = calloc(1, STRING);
-  result.dsize = STRING;
+  struct Account *ac = account_create(cs, account);
 
-  struct Account *ac = account_create(cs, ac_str);
-
-  var_str = "resume_draft_files"; // DT_BOOL
-
-  dump_native(cs, ac_str, var_str);              // 0 0
-  cs_set_value2(cs, var_str, true, &result);
-  dump_native(cs, ac_str, var_str);              // 1 1 (inherited)
-  account_set_value(ac, V_RESUME_DRAFT_FILES, false, &result);
-  dump_native(cs, ac_str, var_str);              // 1 0 (overridden)
-  reset(cs, "cherry:resume_draft_files");
-  dump_native(cs, ac_str, var_str);              // 1 1 (inherited)
-  reset(cs, "resume_draft_files");
-  dump_native(cs, ac_str, var_str);              // 0 0 (inherited
+#if 1
+  test2(cs, ac, account, parent, V_RESUME_DRAFT_FILES, true, false);
+#endif
 
   // set_he_addr     (ac, V_FROM,                 "jim@example.com"); // DT_ADDR
   // set_he_hcache   (ac, V_HEADER_CACHE_BACKEND, "lmdb");            // DT_HCACHE
@@ -266,7 +260,6 @@ void test_native(struct ConfigSet *cs)
   // set_he_str      (ac, V_ATTRIBUTION,          "flatcap");         // DT_STR
 
   account_free(cs, &ac);
-  FREE(&result.data);
 }
 
 int main(int argc, char *argv[])
