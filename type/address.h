@@ -39,5 +39,7 @@ struct Address
 };
 
 void init_addr(void);
+struct Address *addr_create(const char *addr);
+void addr_free(struct Address **addr);
 
 #endif /* _MUTT_ADDRESS_H */

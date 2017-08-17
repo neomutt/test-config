@@ -51,14 +51,37 @@ static bool get_addr(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
+static struct Address *dup_address(struct Address *addr)
+{
+  struct Address *a = safe_calloc(1, sizeof(*a));
+  a->personal = safe_strdup(addr->personal);
+  return a;
+}
+
 static bool set_native_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  addr_free(var);
+
+  struct Address *addr = dup_address((struct Address *) value);
+
+  *(struct Address **) var = addr;
+  return true;
 }
 
 static intptr_t get_native_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  struct Address *addr = *(struct Address **) var;
+
+  return (intptr_t) addr;
 }
 
 static bool reset_addr(struct ConfigSet *cs, void *var,
@@ -82,4 +105,17 @@ void init_addr(void)
 {
   struct ConfigSetType cst_addr = { "address", set_addr, get_addr, set_native_addr, get_native_addr, reset_addr, destroy_addr, };
   cs_register_type(DT_ADDR, &cst_addr);
+}
+
+struct Address *addr_create(const char *addr)
+{
+  struct Address *a = safe_calloc(1, sizeof(*a));
+  a->personal = safe_strdup(addr);
+  return a;
+}
+
+void addr_free(struct Address **addr)
+{
+  FREE(&(*addr)->personal);
+  FREE(addr);
 }

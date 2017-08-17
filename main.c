@@ -262,7 +262,7 @@ void test_native(struct ConfigSet *cs)
   test2(ac, "header_cache_backend", V_HEADER_CACHE_BACKEND, 4,                2);                     // DT_HCACHE
 #endif
 
-#if 1
+#if 0
   struct MbCharTable *m1 = mb_create("ABCD");
   struct MbCharTable *m2 = mb_create("PQRS");
   test2(ac, "status_chars",         V_STATUS_CHARS,         IP m1,            IP m2);                 // DT_MBCHARTBL
@@ -270,8 +270,15 @@ void test_native(struct ConfigSet *cs)
   free_mbchartbl(&m1);
 #endif
 
+#if 1
+  struct Address *a1 = addr_create("jim@abc.com");
+  struct Address *a2 = addr_create("dave@example.com");
+  test2(ac, "from",                 V_FROM,                 IP a1,            IP a2);                 // DT_ADDR
+  addr_free(&a2);
+  addr_free(&a1);
+#endif
+
 #if 0
-  test2(ac, "from",                 V_FROM,                 IP "jim@abc.com", IP "dave@example.com"); // DT_ADDR
   test2(ac, "quote_regexp",         V_QUOTE_REGEXP,         rx,               rx2);                   // DT_RX
 #endif
 
