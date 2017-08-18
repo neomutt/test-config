@@ -237,8 +237,8 @@ static bool reset_sort(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_sorts(void)
+void init_sorts(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, set_native_sort, get_native_sort, reset_sort, NULL, };
-  cs_register_type(DT_SORT, &cst_sort);
+  cs_register_type(cs, DT_SORT, &cst_sort);
 }

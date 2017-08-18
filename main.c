@@ -28,18 +28,49 @@
 #include "type/string3.h"
 #include "test/bool.h"
 
-void init_types()
+const char *AccountVarStr[] = {
+  "alias_file",           /* DT_PATH */
+  "attribution",          /* DT_STR */
+  "from",                 /* DT_ADDR */
+  "header_cache_backend", /* DT_HCACHE */
+  "mbox_type",            /* DT_MAGIC */
+  "pager_context",        /* DT_NUM */
+  "post_moderated",       /* DT_QUAD */
+  "quote_regexp",         /* DT_RX */
+  "resume_draft_files",   /* DT_BOOL */
+  "sort",                 /* DT_SORT */
+  "status_chars",         /* DT_MBCHARTBL */
+  NULL,
+};
+
+enum AccountVar
 {
-  init_addr();
-  init_bool();
-  init_magic();
-  init_mbyte_table();
-  init_regex();
-  init_num();
-  init_path();
-  init_quad();
-  init_sorts();
-  init_string();
+  V_ALIAS_FILE,
+  V_ATTRIBUTION,
+  V_FROM,
+  V_HEADER_CACHE_BACKEND,
+  V_MBOX_TYPE,
+  V_PAGER_CONTEXT,
+  V_POST_MODERATED,
+  V_QUOTE_REGEXP,
+  V_RESUME_DRAFT_FILES,
+  V_SORT,
+  V_STATUS_CHARS,
+  V_MAX,
+};
+
+void init_types(struct ConfigSet *cs)
+{
+  init_addr(cs);
+  init_bool(cs);
+  init_magic(cs);
+  init_mbyte_table(cs);
+  init_regex(cs);
+  init_num(cs);
+  init_path(cs);
+  init_quad(cs);
+  init_sorts(cs);
+  init_string(cs);
 }
 
 void init_variables(struct ConfigSet *set)
@@ -168,8 +199,8 @@ void test(struct ConfigSet *cs, const char *account, const char *parent, const c
 
 void test_set_reset(struct ConfigSet *cs)
 {
-  struct Account *ac1 = ac_create(cs, "apple");
-  struct Account *ac2 = ac_create(cs, "banana");
+  struct Account *ac1 = ac_create(cs, "apple",  AccountVarStr);
+  struct Account *ac2 = ac_create(cs, "banana", AccountVarStr);
   // printf("ac = %p\n", (void *) ac);
 
   test(cs, "apple",  "attribution",          "date %d",   "from %n");  // DT_STR
@@ -235,7 +266,7 @@ void test2(const struct Account *ac, const char *parent, int vid, intptr_t pvalu
 
 void test_native(struct ConfigSet *cs)
 {
-  struct Account *ac = ac_create(cs, "cherry");
+  struct Account *ac = ac_create(cs, "cherry", AccountVarStr);
 
 #if 1
   test2(ac, "resume_draft_files",   V_RESUME_DRAFT_FILES,   true,             false);                 // DT_BOOL
@@ -282,23 +313,22 @@ int main(int argc, char *argv[])
   err.data = calloc(1, STRING);
   err.dsize = STRING;
 
-  struct ConfigSet cs;
-  cs_init(&cs, NULL, 30);
-  cs_add_listener(&cs, listener);
+  struct ConfigSet *cs = cs_new_set(30);
+  cs_add_listener(cs, listener);
 
-  init_types();
-  init_variables(&cs);
+  init_types(cs);
+  init_variables(cs);
 
   mutt_buffer_reset(&err);
 
-  // cs_dump_set(&cs);
+  // cs_dump_set(cs);
   // hash_dump(cs.hash);
-  test_set_reset(&cs);
-  test_validators(&cs);
-  test_native(&cs);
+  test_set_reset(cs);
+  test_validators(cs);
+  test_native(cs);
 
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
-  // if (!cs_set_variable(&cs, "header_cache_pagesize", "32768", &err))
+  // if (!cs_set_variable(cs, "header_cache_pagesize", "32768", &err))
   //   printf("Set failed: %s\n", err.data);
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
 

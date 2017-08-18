@@ -50,20 +50,23 @@ struct ConfigSetType
 struct ConfigSet
 {
   struct Hash *hash;
+  struct ConfigSetType types[16];
   cs_listener listeners[4];
 };
 
-struct ConfigSet *cs_new(struct ConfigSet *parent, int size);
-bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent, int size);
-void cs_free(struct ConfigSet *cs);
-struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name);
-struct ConfigSetType *cs_get_type_def(unsigned int type);
+struct ConfigSet *cs_new_set(int size);
+void cs_init(struct ConfigSet *cs, int size);
+void cs_free(struct ConfigSet **cs);
 
-bool cs_register_type     (unsigned int type, struct ConfigSetType *cst);
+struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name);
+struct ConfigSetType *cs_get_type_def(struct ConfigSet *cs, unsigned int type);
+
+bool cs_register_type     (struct ConfigSet *cs, unsigned int type, struct ConfigSetType *cst);
 bool cs_register_variables(struct ConfigSet *cs, const struct VariableDef vars[]);
 struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *parent, const char *name);
 
 void cs_add_listener (struct ConfigSet *cs, cs_listener fn);
+//XXX void cs_remove_listener (struct ConfigSet *cs, cs_listener fn);
 
 bool cs_set_variable  (struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
 bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *err);

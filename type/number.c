@@ -76,8 +76,8 @@ static bool reset_num(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_num(void)
+void init_num(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_num = { "number", set_num, get_num, set_native_num, get_native_num, reset_num, NULL, };
-  cs_register_type(DT_NUM, &cst_num);
+  cs_register_type(cs, DT_NUM, &cst_num);
 }

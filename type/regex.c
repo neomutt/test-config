@@ -114,10 +114,10 @@ static bool reset_rx(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_regex(void)
+void init_regex(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, set_native_rx, get_native_rx, reset_rx, destroy_rx, };
-  cs_register_type(DT_RX, &cst_rx);
+  cs_register_type(cs, DT_RX, &cst_rx);
 }
 struct Regex *regex_create(const char *str)
 {

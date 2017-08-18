@@ -168,8 +168,8 @@ struct MbCharTable *mb_create(const char *str)
   return m;
 }
 
-void init_mbyte_table(void)
+void init_mbyte_table(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl, set_native_mbchartbl, get_native_mbchartbl, reset_mbchartbl, destroy_mbchartbl, };
-  cs_register_type(DT_MBCHARTBL, &cst_mbchartbl);
+  cs_register_type(cs, DT_MBCHARTBL, &cst_mbchartbl);
 }

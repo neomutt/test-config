@@ -58,7 +58,7 @@ void cs_dump_set(struct ConfigSet *cs)
       name = he->key.strkey;
     }
 
-    struct ConfigSetType *cst = cs_get_type_def(he->type);
+    struct ConfigSetType *cst = cs_get_type_def(cs, he->type);
     if (!cst)
     {
       printf("Unknown type: %d\n", he->type);

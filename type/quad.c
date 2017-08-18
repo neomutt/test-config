@@ -88,8 +88,8 @@ static bool reset_quad(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_quad(void)
+void init_quad(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_quad = { "quad", set_quad, get_quad, set_native_quad, get_native_quad, reset_quad, NULL, };
-  cs_register_type(DT_QUAD, &cst_quad);
+  cs_register_type(cs, DT_QUAD, &cst_quad);
 }

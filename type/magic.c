@@ -88,8 +88,8 @@ static bool reset_magic(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_magic(void)
+void init_magic(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, set_native_magic, get_native_magic, reset_magic, NULL, };
-  cs_register_type(DT_MAGIC, &cst_magic);
+  cs_register_type(cs, DT_MAGIC, &cst_magic);
 }

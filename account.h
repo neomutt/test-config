@@ -8,32 +8,16 @@ struct Buffer;
 struct ConfigSet;
 struct HashElem;
 
-extern const char *AccountVarStr[];
-
-enum AccountVar
-{
-  V_ALIAS_FILE,
-  V_ATTRIBUTION,
-  V_FROM,
-  V_HEADER_CACHE_BACKEND,
-  V_MBOX_TYPE,
-  V_PAGER_CONTEXT,
-  V_POST_MODERATED,
-  V_QUOTE_REGEXP,
-  V_RESUME_DRAFT_FILES,
-  V_SORT,
-  V_STATUS_CHARS,
-  V_MAX,
-};
-
 struct Account
 {
   char *name;
   struct ConfigSet *cs;
-  struct HashElem *vars[V_MAX];
+  const char **var_names;
+  int num_vars;
+  struct HashElem **vars;
 };
 
-struct Account *ac_create(struct ConfigSet *cs, const char *name);
+struct Account *ac_create(struct ConfigSet *cs, const char *name, const char *var_names[]);
 void ac_free(struct ConfigSet *cs, struct Account **ac);
 
 bool ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err);

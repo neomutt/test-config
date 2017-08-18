@@ -1,6 +1,8 @@
 #ifndef _MUTT_SORTS_H
 #define _MUTT_SORTS_H
 
+struct ConfigSet;
+
 #define SORT_DATE     1 /* the date the mail was sent. */
 #define SORT_SIZE     2
 #define SORT_SUBJECT  3
@@ -23,6 +25,6 @@
 #define SORT_LABEL    19
 #define SORT_DESC     20
 
-void init_sorts(void);
+void init_sorts(struct ConfigSet *cs);
 
 #endif /* _MUTT_SORTS_H */

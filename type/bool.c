@@ -91,9 +91,9 @@ static bool reset_bool(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_bool(void)
+void init_bool(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, set_native_bool, get_native_bool, reset_bool, NULL, };
-  cs_register_type(DT_BOOL, &cst_bool);
+  cs_register_type(cs, DT_BOOL, &cst_bool);
 }
 

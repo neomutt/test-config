@@ -1,6 +1,8 @@
 #ifndef _MUTT_STRING_H
 #define _MUTT_STRING_H
 
-void init_string(void);
+struct ConfigSet;
+
+void init_string(struct ConfigSet *cs);
 
 #endif /* _MUTT_STRING_H */

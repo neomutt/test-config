@@ -132,7 +132,7 @@ void init_hcache(struct ConfigSet *cs)
 {
   struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, set_native_hcache, get_native_hcache, reset_hcache, NULL, };
 
-  cs_register_type(DT_HCACHE, &cst);
+  cs_register_type(cs, DT_HCACHE, &cst);
 
   cs_register_variables(cs, HCVars);
 }

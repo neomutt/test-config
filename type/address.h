@@ -25,6 +25,8 @@
 
 #include <stdbool.h>
 
+struct ConfigSet;
+
 /**
  * struct Address - An email address
  */
@@ -38,7 +40,7 @@ struct Address
   bool intl_checked : 1;
 };
 
-void init_addr(void);
+void init_addr(struct ConfigSet *cs);
 struct Address *addr_create(const char *addr);
 void addr_free(struct Address **addr);
 

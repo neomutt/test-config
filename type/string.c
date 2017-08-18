@@ -85,8 +85,8 @@ static bool reset_str(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_string(void)
+void init_string(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_str = { "string", set_str, get_str, set_native_str, get_native_str, reset_str, destroy_str, };
-  cs_register_type(DT_STR, &cst_str);
+  cs_register_type(cs, DT_STR, &cst_str);
 }

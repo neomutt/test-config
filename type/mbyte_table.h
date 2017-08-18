@@ -23,6 +23,8 @@
 #ifndef _MUTT_MBYTE_TABLE_H
 #define _MUTT_MBYTE_TABLE_H
 
+struct ConfigSet;
+
 /**
  * struct MbCharTable - multibyte character table
  *
@@ -38,7 +40,7 @@ struct MbCharTable
   char *segmented_str; /**< each chars entry points inside this string */
 };
 
-void init_mbyte_table(void);
+void init_mbyte_table(struct ConfigSet *cs);
 
 struct MbCharTable *mb_create(const char *str);
 void free_mbchartbl(struct MbCharTable **table);

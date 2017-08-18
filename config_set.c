@@ -13,7 +13,7 @@ struct ConfigSetType RegisteredTypes[16] =
 
 static void destroy(int type, void *obj, intptr_t data)
 {
-  // struct ConfigSet *cs = (struct ConfigSet *) data;
+  struct ConfigSet *cs = (struct ConfigSet *) data;
 
   struct ConfigSetType *cst = NULL;
 
@@ -21,7 +21,7 @@ static void destroy(int type, void *obj, intptr_t data)
   {
     struct Inheritance *i = obj;
     // struct VariableDef *vdef = i->parent->data;
-    // cst = cs_get_type_def(i->parent->type);
+    // cst = cs_get_type_def(cs, i->parent->type);
 
     // if (cst->destructor)
     //   cst->destructor(&i->var, vdef);
@@ -33,7 +33,7 @@ static void destroy(int type, void *obj, intptr_t data)
   {
     struct VariableDef *vdef = obj;
 
-    cst = cs_get_type_def(type);
+    cst = cs_get_type_def(cs, type);
     if (cst && cst->destructor)
       cst->destructor(vdef->var, vdef);
   }
@@ -41,7 +41,7 @@ static void destroy(int type, void *obj, intptr_t data)
 
 static struct HashElem *reg_one_var(struct ConfigSet *cs, const struct VariableDef *vdef, struct Buffer *err)
 {
-  struct ConfigSetType *cst = cs_get_type_def(vdef->type);
+  struct ConfigSetType *cst = cs_get_type_def(cs, vdef->type);
   if (!cst)
   {
     mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, vdef->type);
@@ -55,28 +55,27 @@ static struct HashElem *reg_one_var(struct ConfigSet *cs, const struct VariableD
   return he;
 }
 
-struct ConfigSetType *cs_get_type_def(unsigned int type)
+struct ConfigSetType *cs_get_type_def(struct ConfigSet *cs, unsigned int type)
 {
   type = DTYPE(type);
-  if ((type < 1) || (type >= mutt_array_size(RegisteredTypes)))
+  if ((type < 1) || (type >= mutt_array_size(cs->types)))
     return NULL;
 
-  return &RegisteredTypes[type];
+  return &cs->types[type];
 }
 
-struct ConfigSet *cs_set_new(struct ConfigSet *parent, int size)
-{
-  struct ConfigSet *cs = safe_calloc(1, sizeof(*cs));
-  cs_init(cs, parent, size);
-  return cs;
-}
-
-bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent, int size)
+void cs_init(struct ConfigSet *cs, int size)
 {
   memset(cs, 0, sizeof(*cs));
   cs->hash = hash_create(size, 0);
   hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
-  return true;
+}
+
+struct ConfigSet *cs_new_set(int size)
+{
+  struct ConfigSet *cs = safe_malloc(sizeof(*cs));
+  cs_init(cs, size);
+  return cs;
 }
 
 void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
@@ -91,9 +90,13 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
   }
 }
 
-void cs_free(struct ConfigSet *cs)
+void cs_free(struct ConfigSet **cs)
 {
-  hash_destroy(&cs->hash);
+  if (!cs || !*cs)
+    return;
+
+  hash_destroy(&(*cs)->hash);
+  FREE(cs);
 }
 
 void notify_listeners(struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
@@ -107,15 +110,18 @@ void notify_listeners(struct ConfigSet *cs, struct HashElem *he, const char *nam
   }
 }
 
-bool cs_register_type(unsigned int type, struct ConfigSetType *cst)
+bool cs_register_type(struct ConfigSet *cs, unsigned int type, struct ConfigSetType *cst)
 {
-  if (!cst)
+  if (!cs || !cst)
     return false;
 
-  if (!cst->name || !cst->setter || !cst->getter || !cst->resetter)
+  if (!cst->name || !cst->setter || !cst->getter || !cst->resetter || !cst->nsetter || !cst->ngetter)
     return false;
 
-  RegisteredTypes[type] = *cst;
+  //XXX already registered?
+  //XXX range check type
+
+  cs->types[type] = *cst;
   return false;
 }
 
@@ -150,11 +156,11 @@ bool cs_set_variable(struct ConfigSet *cs, const char *name, const char *value, 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
-    cst = cs_get_type_def(i->parent->type);
+    cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
-    cst = cs_get_type_def(he->type);
+    cst = cs_get_type_def(cs, he->type);
   }
 
   if (!cst)
@@ -213,7 +219,7 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
-    cst = cs_get_type_def(i->parent->type);
+    cst = cs_get_type_def(cs, i->parent->type);
 
     struct VariableDef *vdef = i->parent->data;
 
@@ -224,7 +230,7 @@ bool cs_reset_variable(struct ConfigSet *cs, const char *name, struct Buffer *er
   }
   else
   {
-    cst = cs_get_type_def(he->type);
+    cst = cs_get_type_def(cs, he->type);
 
     struct VariableDef *vdef = he->data;
 
@@ -257,12 +263,12 @@ bool cs_get_variable(struct ConfigSet *cs, const char *name, struct Buffer *resu
   {
     i = he->data;
     vdef = i->parent->data;
-    cst = cs_get_type_def(i->parent->type);
+    cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
     vdef = he->data;
-    cst = cs_get_type_def(he->type);
+    cst = cs_get_type_def(cs, he->type);
   }
 
   if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
@@ -326,13 +332,13 @@ bool cs_he_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, 
     struct Inheritance *i = he->data;
     vdef = i->parent->data;
     var = &i->var;
-    cst = cs_get_type_def(i->parent->type);
+    cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
     vdef = he->data;
     var = vdef->var;
-    cst = cs_get_type_def(he->type);
+    cst = cs_get_type_def(cs, he->type);
   }
 
   if (!cst)
@@ -346,9 +352,6 @@ bool cs_he_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, 
 
   if (cst->destructor)
     cst->destructor(var, vdef);
-
-  if (!cst->nsetter) //XXX compulsory
-    return false;
 
   bool result = cst->nsetter(cs, var, vdef, value, err);
   if (result)
@@ -375,13 +378,13 @@ bool cs_he_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *e
     struct Inheritance *i = he->data;
     vdef = i->parent->data;
     var = &i->var;
-    cst = cs_get_type_def(i->parent->type);
+    cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
     vdef = he->data;
     var = vdef->var;
-    cst = cs_get_type_def(he->type);
+    cst = cs_get_type_def(cs, he->type);
   }
 
   if (!cst)
@@ -415,13 +418,13 @@ bool cs_str_set_value(struct ConfigSet *cs, const char *name, intptr_t value, st
     struct Inheritance *i = he->data;
     vdef = i->parent->data;
     var = &i->var;
-    cst = cs_get_type_def(i->parent->type);
+    cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
     vdef = he->data;
     var = vdef->var;
-    cst = cs_get_type_def(he->type);
+    cst = cs_get_type_def(cs, he->type);
   }
 
   if (!cst)
@@ -435,9 +438,6 @@ bool cs_str_set_value(struct ConfigSet *cs, const char *name, intptr_t value, st
 
   if (cst->destructor)
     cst->destructor(var, vdef);
-
-  if (!cst->nsetter) //XXX compulsory
-    return false;
 
   bool result = cst->nsetter(cs, var, vdef, value, err);
   if (result)
@@ -471,12 +471,12 @@ intptr_t cs_str_get_value(struct ConfigSet *cs, const char *name, struct Buffer 
   {
     i = he->data;
     vdef = i->parent->data;
-    cst = cs_get_type_def(i->parent->type);
+    cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
     vdef = he->data;
-    cst = cs_get_type_def(he->type);
+    cst = cs_get_type_def(cs, he->type);
   }
 
   if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))

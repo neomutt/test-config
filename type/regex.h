@@ -31,6 +31,8 @@
 #include <regex.h>
 #include <stddef.h>
 
+struct ConfigSet;
+
 /* this is a non-standard option supported by Solaris 2.5.x which allows
  * patterns of the form \<...\>
  */
@@ -71,7 +73,7 @@ struct ReplaceList
   struct ReplaceList *next;
 };
 
-void init_regex(void);
+void init_regex(struct ConfigSet *cs);
 struct Regex *regex_create(const char *str);
 void regex_free(struct Regex **rx);
 

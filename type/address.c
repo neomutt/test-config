@@ -101,10 +101,10 @@ static bool reset_addr(struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_addr(void)
+void init_addr(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_addr = { "address", set_addr, get_addr, set_native_addr, get_native_addr, reset_addr, destroy_addr, };
-  cs_register_type(DT_ADDR, &cst_addr);
+  cs_register_type(cs, DT_ADDR, &cst_addr);
 }
 
 struct Address *addr_create(const char *addr)
