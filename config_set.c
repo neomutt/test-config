@@ -347,12 +347,6 @@ bool cs_he_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, 
     return false;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
-
-  if (cst->destructor)
-    cst->destructor(var, vdef);
-
   bool result = cst->nsetter(cs, var, vdef, value, err);
   if (result)
   {
@@ -432,12 +426,6 @@ bool cs_str_set_value(struct ConfigSet *cs, const char *name, intptr_t value, st
     mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
     return false;
   }
-
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
-
-  if (cst->destructor)
-    cst->destructor(var, vdef);
 
   bool result = cst->nsetter(cs, var, vdef, value, err);
   if (result)

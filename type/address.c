@@ -12,9 +12,7 @@ static void destroy_addr(void *var, const struct VariableDef *vdef)
   if (!*a)
     return;
 
-  if ((*a)->personal != (char *) vdef->initial)
-    FREE(&(*a)->personal);
-
+  FREE(&(*a)->personal);
   FREE(&(*a)->mailbox);
   FREE(a);
 }
@@ -94,7 +92,7 @@ static bool reset_addr(struct ConfigSet *cs, void *var,
 
   struct Address *a = safe_calloc(1, sizeof(*a));
 
-  a->personal = (char *) vdef->initial;
+  a->personal = safe_strdup((char *) vdef->initial);
   a->mailbox = safe_strdup("dummy2");
 
   *(struct Address **) var = a;
@@ -116,6 +114,10 @@ struct Address *addr_create(const char *addr)
 
 void addr_free(struct Address **addr)
 {
+  if (!addr || !*addr)
+    return;
+
   FREE(&(*addr)->personal);
+  FREE(&(*addr)->mailbox);
   FREE(addr);
 }
