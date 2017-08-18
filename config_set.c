@@ -312,7 +312,7 @@ struct HashElem *cs_inherit_variable(struct ConfigSet *cs, struct HashElem *pare
 }
 
 
-bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err)
+bool cs_he_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err)
 {
   if (!cs || !he)
     return false;
@@ -361,7 +361,7 @@ bool cs_set_value(struct ConfigSet *cs, struct HashElem *he, intptr_t value, str
   return result;
 }
 
-bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
+bool cs_he_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)
     return false;
@@ -394,7 +394,7 @@ bool cs_get_value(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 }
 
 
-bool cs_set_value2(struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err)
+bool cs_str_set_value(struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err)
 {
   if (!cs || !name)
     return false;
@@ -450,7 +450,7 @@ bool cs_set_value2(struct ConfigSet *cs, const char *name, intptr_t value, struc
   return result;
 }
 
-intptr_t cs_get_value2(struct ConfigSet *cs, const char *name, struct Buffer *err)
+intptr_t cs_str_get_value(struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
     return -1;

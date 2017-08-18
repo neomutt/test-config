@@ -20,7 +20,7 @@ const char *AccountVarStr[] = {
   NULL,
 };
 
-struct Account *account_create(struct ConfigSet *cs, const char *name)
+struct Account *ac_create(struct ConfigSet *cs, const char *name)
 {
   if (!cs || !name)
     return NULL;
@@ -55,11 +55,11 @@ struct Account *account_create(struct ConfigSet *cs, const char *name)
   if (success)
     return ac;
 
-  account_free(cs, &ac);
+  ac_free(cs, &ac);
   return NULL;
 }
 
-void account_free(struct ConfigSet *cs, struct Account **ac)
+void ac_free(struct ConfigSet *cs, struct Account **ac)
 {
   if (!ac)
     return;
@@ -76,13 +76,13 @@ void account_free(struct ConfigSet *cs, struct Account **ac)
   FREE(ac);
 }
 
-bool account_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err)
+bool ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err)
 {
   struct HashElem *he = ac->vars[vid];
-  return cs_set_value(ac->cs, he, value, err);
+  return cs_he_set_value(ac->cs, he, value, err);
 }
 
-bool account_get_value(const struct Account *ac, int vid, struct Buffer *err)
+bool ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
 {
   struct HashElem *he = ac->vars[vid];
 
@@ -92,6 +92,6 @@ bool account_get_value(const struct Account *ac, int vid, struct Buffer *err)
     he = i->parent;
   }
 
-  return cs_get_value(ac->cs, he, err);
+  return cs_he_get_value(ac->cs, he, err);
 }
 

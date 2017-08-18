@@ -94,8 +94,8 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
 
 void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
-  intptr_t pval = cs_get_value2(cs, parent, NULL);
-  intptr_t cval = cs_get_value2(cs, child,  NULL);
+  intptr_t pval = cs_str_get_value(cs, parent, NULL);
+  intptr_t cval = cs_str_get_value(cs, child,  NULL);
 
   if (pval > 1000000)
   {
@@ -168,8 +168,8 @@ void test(struct ConfigSet *cs, const char *account, const char *parent, const c
 
 void test_set_reset(struct ConfigSet *cs)
 {
-  struct Account *ac1 = account_create(cs, "apple");
-  struct Account *ac2 = account_create(cs, "banana");
+  struct Account *ac1 = ac_create(cs, "apple");
+  struct Account *ac2 = ac_create(cs, "banana");
   // printf("ac = %p\n", (void *) ac);
 
   test(cs, "apple",  "attribution",          "date %d",   "from %n");  // DT_STR
@@ -184,8 +184,8 @@ void test_set_reset(struct ConfigSet *cs)
   test(cs, "banana", "quote_regexp",         ">.*",       "#.*");      // DT_RX
   test(cs, "banana", "status_chars",         "ABCD",      "prqs");     // DT_MBCHARTBL
 
-  account_free(cs, &ac2);
-  account_free(cs, &ac1);
+  ac_free(cs, &ac2);
+  ac_free(cs, &ac1);
 }
 
 void test_validators(struct ConfigSet *cs)
@@ -222,9 +222,9 @@ void test2(const struct Account *ac, const char *parent, int vid, intptr_t pvalu
   snprintf(child, sizeof(child), "%s:%s", ac->name, parent);
 
   dump_native(cs, parent, child);
-  cs_set_value2(cs, parent, pvalue, NULL);
+  cs_str_set_value(cs, parent, pvalue, NULL);
   dump_native(cs, parent, child);
-  account_set_value(ac, vid, cvalue, NULL);
+  ac_set_value(ac, vid, cvalue, NULL);
   dump_native(cs, parent, child);
   reset(cs, child);
   dump_native(cs, parent, child);
@@ -235,7 +235,7 @@ void test2(const struct Account *ac, const char *parent, int vid, intptr_t pvalu
 
 void test_native(struct ConfigSet *cs)
 {
-  struct Account *ac = account_create(cs, "cherry");
+  struct Account *ac = ac_create(cs, "cherry");
 
 #if 1
   test2(ac, "resume_draft_files",   V_RESUME_DRAFT_FILES,   true,             false);                 // DT_BOOL
@@ -272,7 +272,7 @@ void test_native(struct ConfigSet *cs)
   regex_free(&r1);
 #endif
 
-  account_free(cs, &ac);
+  ac_free(cs, &ac);
 }
 
 int main(int argc, char *argv[])
