@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,18 +100,20 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
   if (!cs_get_variable(cs, parent, &result))
   {
     printf("Error: %s\n", result.data);
+    FREE(&result.data);
     return;
   }
 
-  printf("%26s = %s\n", parent, result.data);
+  printf("%28s = %s\n", parent, result.data);
 
   mutt_buffer_reset(&result);
   if (!cs_get_variable(cs, child, &result))
   {
     printf("Error: %s\n", result.data);
+    FREE(&result.data);
     return;
   }
-  printf("%26s = %s\n", child, result.data);
+  printf("%28s = %s\n", child, result.data);
 
   FREE(&result.data);
 }
@@ -122,13 +125,22 @@ void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 
   if (pval > 1000000)
   {
-    printf("%26s = %s\n", parent, *(char **) pval);
-    printf("%26s = %s\n", child,  *(char **) cval);
+    const unsigned char *str = (const unsigned char *) pval;
+    if (isprint(str[0]) && isprint(str[1]) && isprint(str[2]) && isprint(str[3]))
+    {
+      printf("%28s = %s\n", parent, (char *) pval);
+      printf("%28s = %s\n", child,  (char *) cval);
+    }
+    else
+    {
+      printf("%28s = %s\n", parent, *(char **) pval);
+      printf("%28s = %s\n", child,  *(char **) cval);
+    }
   }
   else
   {
-    printf("%26s = %ld\n", parent, pval);
-    printf("%26s = %ld\n", child,  cval);
+    printf("%28s = %ld\n", parent, pval);
+    printf("%28s = %ld\n", child,  cval);
   }
 }
 
@@ -251,7 +263,7 @@ void test_native(struct ConfigSet *cs)
 {
   struct Account *ac = account_create(cs, "cherry");
 
-#if 0
+#if 1
   test2(ac, "resume_draft_files",   V_RESUME_DRAFT_FILES,   true,             false);                 // DT_BOOL
   test2(ac, "pager_context",        V_PAGER_CONTEXT,        42,               99);                    // DT_NUM
   test2(ac, "sort",                 V_SORT,                 SORT_SPAM,        SORT_LABEL);            // DT_SORT
@@ -262,7 +274,7 @@ void test_native(struct ConfigSet *cs)
   test2(ac, "header_cache_backend", V_HEADER_CACHE_BACKEND, 4,                2);                     // DT_HCACHE
 #endif
 
-#if 0
+#if 1
   struct MbCharTable *m1 = mb_create("ABCD");
   struct MbCharTable *m2 = mb_create("PQRS");
   test2(ac, "status_chars",         V_STATUS_CHARS,         IP m1,            IP m2);                 // DT_MBCHARTBL
@@ -270,7 +282,7 @@ void test_native(struct ConfigSet *cs)
   free_mbchartbl(&m1);
 #endif
 
-#if 0
+#if 1
   struct Address *a1 = addr_create("jim@abc.com");
   struct Address *a2 = addr_create("dave@example.com");
   test2(ac, "from",                 V_FROM,                 IP a1,            IP a2);                 // DT_ADDR
@@ -278,7 +290,7 @@ void test_native(struct ConfigSet *cs)
   addr_free(&a1);
 #endif
 
-#if 0
+#if 1
   struct Regex *r1 = regex_create("quot.*");
   struct Regex *r2 = regex_create(".*ation");
   test2(ac, "quote_regexp",         V_QUOTE_REGEXP,         IP r1,            IP r2);                 // DT_RX
@@ -307,8 +319,8 @@ int main(int argc, char *argv[])
 
   // cs_dump_set(&cs);
   // hash_dump(cs.hash);
-  // test_set_reset(&cs);
-  // test_validators(&cs);
+  test_set_reset(&cs);
+  test_validators(&cs);
   test_native(&cs);
 
   // printf("header_cache_pagesize = %s\n", HeaderCachePageSize);
