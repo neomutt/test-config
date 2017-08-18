@@ -26,6 +26,7 @@
 #include "type/regex.h"
 #include "type/sort.h"
 #include "type/string3.h"
+#include "test/bool.h"
 
 void init_types()
 {
@@ -330,6 +331,8 @@ int main(int argc, char *argv[])
 
   cs_free(&cs);
   FREE(&err.data);
+
+  test_bool();
   return 0;
 }
 
