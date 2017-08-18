@@ -52,14 +52,13 @@ struct ConfigSet
 {
   struct Hash *hash;
   cs_listener listeners[4];
-  cs_validator validator;
 };
 
 struct ConfigSet *cs_new(struct ConfigSet *parent, int size);
 bool cs_init(struct ConfigSet *cs, struct ConfigSet *parent, int size);
 void cs_free(struct ConfigSet *cs);
 struct HashElem *cs_get_elem(struct ConfigSet *cs, const char *name);
-void cs_dump_set(struct ConfigSet *cs);
+struct ConfigSetType *cs_get_type_def(unsigned int type);
 
 bool cs_register_type     (unsigned int type, struct ConfigSetType *cst);
 bool cs_register_variables(struct ConfigSet *cs, const struct VariableDef vars[]);

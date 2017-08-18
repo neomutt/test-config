@@ -63,33 +63,6 @@ bool listener(struct ConfigSet *set, struct HashElem *he, const char *name, enum
   return false;
 }
 
-void hash_dump(struct Hash *table)
-{
-  struct HashElem *he = NULL;
-
-  for (int i = 0; i < table->nelem; i++)
-  {
-    he = table->table[i];
-    if (!he)
-      continue;
-
-    printf("%03d ", i);
-    for (; he; he = he->next)
-    {
-      if (he->type & DT_INHERITED)
-      {
-        struct Inheritance *i = he->data;
-        printf("\033[1;32m[%s]\033[m ", i->name);
-      }
-      else
-      {
-        printf("%s ", *(char**) he->data);
-      }
-    }
-    printf("\n");
-  }
-}
-
 void dump(struct ConfigSet *cs, const char *parent, const char *child)
 {
   struct Buffer result;
