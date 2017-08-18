@@ -72,5 +72,7 @@ struct ReplaceList
 };
 
 void init_regex(void);
+struct Regex *regex_create(const char *str);
+void regex_free(struct Regex **rx);
 
 #endif /* _MUTT_REGEX_H */

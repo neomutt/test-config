@@ -64,14 +64,37 @@ static bool get_rx(void *var, const struct VariableDef *vdef, struct Buffer *res
   return true;
 }
 
+static struct Regex *dup_regex(struct Regex *addr)
+{
+  struct Regex *rx = safe_calloc(1, sizeof(*rx));
+  rx->pattern = safe_strdup(addr->pattern);
+  return rx;
+}
+
 static bool set_native_rx(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
-  return false;
+  if (!cs || !var || !vdef)
+    return false;
+
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
+
+  regex_free(var);
+
+  struct Regex *rx = dup_regex((struct Regex *) value);
+
+  *(struct Regex **) var = rx;
+  return true;
 }
 
 static intptr_t get_native_rx(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
-  return -1;
+  if (!cs || !var || !vdef)
+    return false;
+
+  struct Regex *rx = *(struct Regex **) var;
+
+  return (intptr_t) rx;
 }
 
 static bool reset_rx(struct ConfigSet *cs, void *var,
@@ -95,4 +118,16 @@ void init_regex(void)
 {
   struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, set_native_rx, get_native_rx, reset_rx, destroy_rx, };
   cs_register_type(DT_RX, &cst_rx);
+}
+struct Regex *regex_create(const char *str)
+{
+  struct Regex *rx = safe_calloc(1, sizeof(*rx));
+  rx->pattern = safe_strdup(str);
+  return rx;
+}
+
+void regex_free(struct Regex **rx)
+{
+  FREE(&(*rx)->pattern);
+  FREE(rx);
 }

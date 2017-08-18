@@ -270,7 +270,7 @@ void test_native(struct ConfigSet *cs)
   free_mbchartbl(&m1);
 #endif
 
-#if 1
+#if 0
   struct Address *a1 = addr_create("jim@abc.com");
   struct Address *a2 = addr_create("dave@example.com");
   test2(ac, "from",                 V_FROM,                 IP a1,            IP a2);                 // DT_ADDR
@@ -279,7 +279,11 @@ void test_native(struct ConfigSet *cs)
 #endif
 
 #if 0
-  test2(ac, "quote_regexp",         V_QUOTE_REGEXP,         rx,               rx2);                   // DT_RX
+  struct Regex *r1 = regex_create("quot.*");
+  struct Regex *r2 = regex_create(".*ation");
+  test2(ac, "quote_regexp",         V_QUOTE_REGEXP,         IP r1,            IP r2);                 // DT_RX
+  regex_free(&r2);
+  regex_free(&r1);
 #endif
 
   account_free(cs, &ac);
