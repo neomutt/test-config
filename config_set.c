@@ -118,8 +118,11 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, struct ConfigSetT
   if (!cst->name || !cst->setter || !cst->getter || !cst->resetter || !cst->nsetter || !cst->ngetter)
     return false;
 
-  //XXX already registered?
-  //XXX range check type
+  if ((type < 0) || (type >= mutt_array_size(cs->types)))
+    return false;
+
+  if (cs->types[type].name)
+    return false; // already registered?
 
   cs->types[type] = *cst;
   return false;
