@@ -123,7 +123,7 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
   FREE(&result.data);
 }
 
-void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
+static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
   intptr_t cval = cs_str_get_value(cs, child,  NULL);

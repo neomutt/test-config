@@ -1,0 +1,77 @@
+--------------------------------------------------------------------------------
+---- bool_list() -------------------------------------------
+boolean Damson = no
+boolean Cherry = no
+boolean Fig = no
+boolean Elderberry = no
+boolean Ilama = no
+boolean Banana = yes
+boolean Apple = no
+boolean Guava = no
+boolean Hawthorn = no
+boolean Jackfruit = no
+---- bool_test_initial_values() ----------------------------
+Apple = 0
+Banana = 1
+---- bool_test_basic_string_set() --------------------------
+Event: Cherry has been set
+Cherry = 0, set by 'no'
+Event: Cherry has been set
+Cherry = 1, set by 'yes'
+Event: Cherry has been set
+Cherry = 0, set by 'n'
+Event: Cherry has been set
+Cherry = 1, set by 'y'
+Event: Cherry has been set
+Cherry = 0, set by 'false'
+Event: Cherry has been set
+Cherry = 1, set by 'true'
+Event: Cherry has been set
+Cherry = 0, set by '0'
+Event: Cherry has been set
+Cherry = 1, set by '1'
+Event: Cherry has been set
+Cherry = 0, set by 'off'
+Event: Cherry has been set
+Cherry = 1, set by 'on'
+Expected error: Invalid boolean value: nope
+Expected error: Invalid boolean value: ye
+Expected error: Invalid boolean value: 
+Expected error: 
+---- bool_test_basic_string_get() --------------------------
+Damson = 0, no
+Damson = 1, yes
+---- bool_test_basic_native_set() --------------------------
+Event: Elderberry has been set
+Elderberry = 1, set to '1'
+Expected error: Invalid boolean value: -1
+Expected error: Invalid boolean value: 2
+---- bool_test_basic_native_get() --------------------------
+Fig = 1
+---- bool_test_reset() -------------------------------------
+Event: Guava has been reset
+Reset: Guava = 0
+---- bool_test_validator() ---------------------------------
+Event: Hawthorn has been set
+validator_succeed: Hawthorn, 1
+String: Hawthorn = 1
+Event: Hawthorn has been set
+validator_succeed: Hawthorn, 1
+Native: Hawthorn = 1
+Expected error: validator_fail: Ilama, 1
+String: Ilama = 0
+Expected error: validator_fail: Ilama, 1
+Native: Ilama = 0
+---- bool_test_inherit() -----------------------------------
+Event: Jackfruit has been set
+      Jackfruit = 1
+apple:Jackfruit = 1
+Event: apple:Jackfruit has been set
+      Jackfruit = 1
+apple:Jackfruit = 0
+Event: apple:Jackfruit has been reset
+      Jackfruit = 1
+apple:Jackfruit = 1
+Event: Jackfruit has been reset
+      Jackfruit = 0
+apple:Jackfruit = 0

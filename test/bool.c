@@ -4,6 +4,7 @@
 #include "config_set.h"
 #include "debug.h"
 #include "mutt_options.h"
+#include "account.h"
 #include "lib/lib.h"
 
 const char *line = "--------------------------------------------------------------------------------";
@@ -18,22 +19,6 @@ bool VarGuava;
 bool VarHawthorn;
 bool VarIlama;
 bool VarJackfruit;
-// bool VarKumquat;
-// bool VarLemon;
-// bool VarMango;
-// bool VarNectarine;
-// bool VarOlive;
-// bool VarPapaya;
-// bool VarQuince;
-// bool VarRaspberry;
-// bool VarStrawberry;
-// bool VarTangerine;
-// bool VarUgli;
-// bool VarVanilla;
-// bool VarWolfberry;
-// bool VarXigua;
-// bool VarYew;
-// bool VarZiziphus;
 
 bool validator_fail(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result)
 {
@@ -63,24 +48,7 @@ const struct VariableDef BoolVars[] = {
   { "Guava",      DT_BOOL, &VarGuava,      0, NULL              }, /* bool_test_reset */
   { "Hawthorn",   DT_BOOL, &VarHawthorn,   0, validator_succeed }, /* bool_test_validator */
   { "Ilama",      DT_BOOL, &VarIlama,      0, validator_fail    },
-  { "Jackfruit",  DT_BOOL, &VarJackfruit,  0                    }, /* bool_test_initial */
-
-  // { "Kumquat",    DT_BOOL, &VarKumquat,    0 },
-  // { "Lemon",      DT_BOOL, &VarLemon,      0 },
-  // { "Mango",      DT_BOOL, &VarMango,      0 },
-  // { "Nectarine",  DT_BOOL, &VarNectarine,  0 },
-  // { "Olive",      DT_BOOL, &VarOlive,      0 },
-  // { "Papaya",     DT_BOOL, &VarPapaya,     0 },
-  // { "Quince",     DT_BOOL, &VarQuince,     0 },
-  // { "Raspberry",  DT_BOOL, &VarRaspberry,  0 },
-  // { "Strawberry", DT_BOOL, &VarStrawberry, 0 },
-  // { "Tangerine",  DT_BOOL, &VarTangerine,  0 },
-  // { "Ugli",       DT_BOOL, &VarUgli,       0 },
-  // { "Vanilla",    DT_BOOL, &VarVanilla,    0 },
-  // { "Wolfberry",  DT_BOOL, &VarWolfberry,  0 },
-  // { "Xigua",      DT_BOOL, &VarXigua,      0 },
-  // { "Yew",        DT_BOOL, &VarYew,        0 },
-  // { "Ziziphus",   DT_BOOL, &VarZiziphus,   0 },
+  { "Jackfruit",  DT_BOOL, &VarJackfruit,  0                    }, /* bool_test_inherit */
   { NULL },
 };
 
@@ -376,6 +344,15 @@ btv_out:
   return result;
 }
 
+static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
+{
+  intptr_t pval = cs_str_get_value(cs, parent, NULL);
+  intptr_t cval = cs_str_get_value(cs, child,  NULL);
+
+  printf("%15s = %ld\n", parent, pval);
+  printf("%15s = %ld\n", child,  cval);
+}
+
 bool bool_test_inherit(struct ConfigSet *cs)
 {
   log_line(__func__);
@@ -386,24 +363,55 @@ bool bool_test_inherit(struct ConfigSet *cs)
   err.data = safe_calloc(1, STRING);
   err.dsize = STRING;
 
-  char *name = "Jackfruit";
-  VarJackfruit = true;
+  const char *account = "apple";
+  const char *parent = "Jackfruit";
+  char child[128];
+  snprintf(child, sizeof(child), "%s:%s", account, parent);
+
+  const char *AccountVarStr[] = { parent, NULL, };
+
+  struct Account *ac = ac_create(cs, account,  AccountVarStr);
+
+  // set parent
+  VarJackfruit = false;
   mutt_buffer_reset(&err);
-  if (!cs_reset_variable(cs, name, &err))
+  if (!cs_set_variable(cs, parent, "1", &err))
   {
-    printf("%s\n", err.data);
+    printf("Error: %s\n", err.data);
     goto bti_out;
   }
+  dump_native(cs, parent, child);
 
-  if (VarJackfruit == true)
+  // set child
+  mutt_buffer_reset(&err);
+  if (!cs_set_variable(cs, child, "0", &err))
   {
-    printf("Value of %s wasn't changed\n", name);
+    printf("Error: %s\n", err.data);
     goto bti_out;
   }
+  dump_native(cs, parent, child);
 
-  printf("Reset: %s = %d\n", name, VarJackfruit);
+  // reset child
+  mutt_buffer_reset(&err);
+  if (!cs_reset_variable(cs, child, &err))
+  {
+    printf("Error: %s\n", err.data);
+    goto bti_out;
+  }
+  dump_native(cs, parent, child);
 
+  // reset parent
+  mutt_buffer_reset(&err);
+  if (!cs_reset_variable(cs, parent, &err))
+  {
+    printf("Error: %s\n", err.data);
+    goto bti_out;
+  }
+  dump_native(cs, parent, child);
+
+  result = true;
 bti_out:
+  ac_free(cs, &ac);
   FREE(&err.data);
   return result;
 }
@@ -435,7 +443,7 @@ bool bool_test(void)
   if (!bool_test_basic_native_get(cs)) return false;
   if (!bool_test_reset(cs))            return false;
   if (!bool_test_validator(cs))        return false;
-  // if (!bool_test_inherit(cs))          return false;
+  if (!bool_test_inherit(cs))          return false;
 
   // hash_dump(cs->hash);
 
