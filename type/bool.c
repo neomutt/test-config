@@ -7,7 +7,7 @@
 #include "account.h"
 
 const char *bool_values[] = {
-  "no", "yes", "false", "true", "0", "1", "off", "on",
+  "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",
 };
 
 static bool set_bool(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
@@ -62,7 +62,7 @@ static bool set_native_bool(struct ConfigSet *cs, void *var, const struct Variab
 
   if ((value < 0) || (value > 1))
   {
-    mutt_buffer_printf(err, "Invalid boolean value: %s", value);
+    mutt_buffer_printf(err, "Invalid boolean value: %ld", value);
     return false;
   }
 

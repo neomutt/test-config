@@ -118,7 +118,7 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, struct ConfigSetT
   if (!cst->name || !cst->setter || !cst->getter || !cst->resetter || !cst->nsetter || !cst->ngetter)
     return false;
 
-  if ((type < 0) || (type >= mutt_array_size(cs->types)))
+  if (type >= mutt_array_size(cs->types))
     return false;
 
   if (cs->types[type].name)
@@ -135,14 +135,19 @@ bool cs_register_variables(struct ConfigSet *cs, const struct VariableDef vars[]
   err.data = calloc(1, STRING);
   err.dsize = STRING;
 
+  bool result = true;
+
   for (int i = 0; vars[i].name; i++)
   {
-    reg_one_var(cs, &vars[i], &err);
-    // printf("register: %s\n", vars[i].name);
+    if (!reg_one_var(cs, &vars[i], &err))
+    {
+      // printf("register: %s\n", vars[i].name);
+      result = false;
+    }
   }
 
   FREE(&err.data);
-  return true;
+  return result;
 }
 
 bool cs_set_variable(struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err)

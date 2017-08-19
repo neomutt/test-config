@@ -73,19 +73,19 @@ void init_types(struct ConfigSet *cs)
   init_string(cs);
 }
 
-void init_variables(struct ConfigSet *set)
+void init_variables(struct ConfigSet *cs)
 {
-  cs_register_variables(set, MuttVars);
-  init_hcache(set);
-  init_imap(set);
-  init_ncrypt(set);
-  init_nntp(set);
-  init_notmuch(set);
-  init_pop(set);
-  init_sidebar(set);
+  cs_register_variables(cs, MuttVars);
+  init_hcache(cs);
+  init_imap(cs);
+  init_ncrypt(cs);
+  init_nntp(cs);
+  init_notmuch(cs);
+  init_pop(cs);
+  init_sidebar(cs);
 }
 
-bool listener(struct ConfigSet *set, struct HashElem *he, const char *name, enum ConfigEvent ev)
+bool listener(struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
 {
   if (ev == CE_RESET)
     printf("\033[1;32m%s has been reset\033[m\n", name);
@@ -253,7 +253,9 @@ void test2(const struct Account *ac, const char *parent, int vid, intptr_t pvalu
   snprintf(child, sizeof(child), "%s:%s", ac->name, parent);
 
   dump_native(cs, parent, child);
-  cs_str_set_value(cs, parent, pvalue, NULL);
+  if (!cs_str_set_value(cs, parent, pvalue, NULL))
+  {
+  }
   dump_native(cs, parent, child);
   ac_set_value(ac, vid, cvalue, NULL);
   dump_native(cs, parent, child);
@@ -306,7 +308,7 @@ void test_native(struct ConfigSet *cs)
   ac_free(cs, &ac);
 }
 
-int main(int argc, char *argv[])
+void old_tests(void)
 {
   struct Buffer err;
   mutt_buffer_init(&err);
@@ -334,8 +336,13 @@ int main(int argc, char *argv[])
 
   cs_free(&cs);
   FREE(&err.data);
+}
 
-  test_bool();
+int main(int argc, char *argv[])
+{
+  if (!bool_test())
+    printf("bool_test() failed\n");
+
   return 0;
 }
 

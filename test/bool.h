@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool test_bool(void);
+bool bool_test(void);
 
 #endif /* _TEST_BOOL_H */

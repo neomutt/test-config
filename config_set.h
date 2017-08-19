@@ -15,7 +15,7 @@ enum ConfigEvent
   CE_RESET,
 };
 
-typedef bool     (*cs_listener)  (struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent e);
+typedef bool     (*cs_listener)  (struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
 typedef bool     (*cs_validator) (struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result);
 
 typedef bool     (*cst_string_set)(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err);
