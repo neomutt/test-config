@@ -26,8 +26,8 @@ bool validator_succeed(struct ConfigSet *cs, const struct VariableDef *vdef, int
 
 void log_line(const char *fn)
 {
-  int len = 52 - mutt_strlen(fn);
-  printf("---- %s() %.*s\n", fn, len, line);
+  int len = 54 - mutt_strlen(fn);
+  printf("---- %s %.*s\n", fn, len, line);
 }
 
 bool log_listener(struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)

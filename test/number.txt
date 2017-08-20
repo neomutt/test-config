@@ -1,5 +1,5 @@
---------------------------------------------------------------------------------
----- set_list() --------------------------------------------
+---- number_test -------------------------------------------
+---- set_list ----------------------------------------------
 number Damson = 0
 number Cherry = 0
 number Fig = 0
@@ -10,10 +10,10 @@ number Apple = -42
 number Guava = 99
 number Hawthorn = 0
 number Jackfruit = 0
----- number_test_initial_values() --------------------------
+---- test_initial_values -----------------------------------
 Apple = -42
 Banana = 99
----- number_test_basic_string_set() ------------------------
+---- test_basic_string_set ---------------------------------
 Event: Cherry has been set
 Cherry = -123, set by '-123'
 Event: Cherry has been set
@@ -26,20 +26,20 @@ Expected error: Number is too big: 32768
 Expected error: Invalid number: junk
 Expected error: 
 
----- number_test_basic_string_get() ------------------------
+---- test_basic_string_get ---------------------------------
 Damson = 123, 123
 Damson = -789, -789
----- number_test_basic_native_set() ------------------------
+---- test_basic_native_set ---------------------------------
 Event: Elderberry has been set
 Elderberry = 12345, set to '12345'
 Expected error: Invalid number: -32769
 Expected error: Invalid number: 32768
----- number_test_basic_native_get() ------------------------
+---- test_basic_native_get ---------------------------------
 Fig = 3456
----- number_test_reset() -----------------------------------
+---- test_reset --------------------------------------------
 Event: Guava has been reset
 Reset: Guava = 99
----- number_test_validator() -------------------------------
+---- test_validator ----------------------------------------
 Event: Hawthorn has been set
 validator_succeed: Hawthorn, 456
 String: Hawthorn = 456
@@ -50,7 +50,7 @@ Expected error: validator_fail: Ilama, 456
 String: Ilama = 123
 Expected error: validator_fail: Ilama, 123
 Native: Ilama = 456
----- number_test_inherit() ---------------------------------
+---- test_inherit ------------------------------------------
 Event: Jackfruit has been set
       Jackfruit = 456
 fruit:Jackfruit = 456

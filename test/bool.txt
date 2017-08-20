@@ -1,5 +1,5 @@
---------------------------------------------------------------------------------
----- set_list() --------------------------------------------
+---- bool_test ---------------------------------------------
+---- set_list ----------------------------------------------
 boolean Damson = no
 boolean Cherry = no
 boolean Fig = no
@@ -10,10 +10,10 @@ boolean Apple = no
 boolean Guava = no
 boolean Hawthorn = no
 boolean Jackfruit = no
----- bool_test_initial_values() ----------------------------
+---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 1
----- bool_test_basic_string_set() --------------------------
+---- test_basic_string_set ---------------------------------
 Event: Cherry has been set
 Cherry = 0, set by 'no'
 Event: Cherry has been set
@@ -38,20 +38,20 @@ Expected error: Invalid boolean value: nope
 Expected error: Invalid boolean value: ye
 Expected error: Invalid boolean value: 
 Expected error: 
----- bool_test_basic_string_get() --------------------------
+---- test_basic_string_get ---------------------------------
 Damson = 0, no
 Damson = 1, yes
----- bool_test_basic_native_set() --------------------------
+---- test_basic_native_set ---------------------------------
 Event: Elderberry has been set
 Elderberry = 1, set to '1'
 Expected error: Invalid boolean value: -1
 Expected error: Invalid boolean value: 2
----- bool_test_basic_native_get() --------------------------
+---- test_basic_native_get ---------------------------------
 Fig = 1
----- bool_test_reset() -------------------------------------
+---- test_reset --------------------------------------------
 Event: Guava has been reset
 Reset: Guava = 0
----- bool_test_validator() ---------------------------------
+---- test_validator ----------------------------------------
 Event: Hawthorn has been set
 validator_succeed: Hawthorn, 1
 String: Hawthorn = 1
@@ -62,7 +62,7 @@ Expected error: validator_fail: Ilama, 1
 String: Ilama = 0
 Expected error: validator_fail: Ilama, 1
 Native: Ilama = 0
----- bool_test_inherit() -----------------------------------
+---- test_inherit ------------------------------------------
 Event: Jackfruit has been set
       Jackfruit = 1
 fruit:Jackfruit = 1

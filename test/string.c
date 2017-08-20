@@ -24,24 +24,24 @@ static char *VarMango;
 static char *VarNectarine;
 
 const struct VariableDef StringVars[] = {
-  { "Apple",      DT_STR, &VarApple,      IP "apple",   NULL              }, /* string_test_initial() */
+  { "Apple",      DT_STR, &VarApple,      IP "apple",   NULL              }, /* test_initial() */
   { "Banana",     DT_STR, &VarBanana,     IP "banana",  NULL              },
-  { "Cherry",     DT_STR, &VarCherry,     0,            NULL              }, /* string_test_basic_string_set */
+  { "Cherry",     DT_STR, &VarCherry,     0,            NULL              }, /* test_basic_string_set */
   { "Damson",     DT_STR, &VarDamson,     IP "damson",  NULL              },
-  { "Elderberry", DT_STR, &VarElderberry, 0,            NULL              }, /* string_test_basic_string_get */
+  { "Elderberry", DT_STR, &VarElderberry, 0,            NULL              }, /* test_basic_string_get */
   { "Fig",        DT_STR, &VarFig,        IP "fig",     NULL              },
   { "Guava",      DT_STR, &VarGuava,      0,            NULL              },
-  { "Hawthorn",   DT_STR, &VarHawthorn,   0,            NULL              }, /* string_test_basic_native_set */
+  { "Hawthorn",   DT_STR, &VarHawthorn,   0,            NULL              }, /* test_basic_native_set */
   { "Ilama",      DT_STR, &VarIlama,      IP "ilama",   NULL              },
-  { "Jackfruit",  DT_STR, &VarJackfruit,  0,            NULL              }, /* string_test_basic_native_get */
-  { "Kumquat",    DT_STR, &VarKumquat,    IP "kumquat", NULL              }, /* string_test_reset */
-  { "Lemon",      DT_STR, &VarLemon,      IP "lemon",   validator_succeed }, /* string_test_validator */
+  { "Jackfruit",  DT_STR, &VarJackfruit,  0,            NULL              }, /* test_basic_native_get */
+  { "Kumquat",    DT_STR, &VarKumquat,    IP "kumquat", NULL              }, /* test_reset */
+  { "Lemon",      DT_STR, &VarLemon,      IP "lemon",   validator_succeed }, /* test_validator */
   { "Mango",      DT_STR, &VarMango,      IP "mango",   validator_fail    },
-  { "Nectarine",  DT_STR, &VarNectarine,  0,            NULL              }, /* string_test_inherit */
+  { "Nectarine",  DT_STR, &VarNectarine,  0,            NULL              }, /* test_inherit */
   { NULL },
 };
 
-static bool string_test_initial_values(struct ConfigSet *cs, struct Buffer *err)
+static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   printf("Apple = %s\n", VarApple);
@@ -51,7 +51,7 @@ static bool string_test_initial_values(struct ConfigSet *cs, struct Buffer *err)
           (mutt_strcmp(VarBanana, "banana") == 0));
 }
 
-static bool string_test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -96,7 +96,7 @@ static bool string_test_basic_string_set(struct ConfigSet *cs, struct Buffer *er
   return true;
 }
 
-static bool string_test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Elderberry";
@@ -133,7 +133,7 @@ static bool string_test_basic_string_get(struct ConfigSet *cs, struct Buffer *er
   return true;
 }
 
-static bool string_test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -178,7 +178,7 @@ static bool string_test_basic_native_set(struct ConfigSet *cs, struct Buffer *er
   return true;
 }
 
-static bool string_test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Jackfruit";
@@ -198,7 +198,7 @@ static bool string_test_basic_native_get(struct ConfigSet *cs, struct Buffer *er
   return true;
 }
 
-static bool string_test_reset(struct ConfigSet *cs, struct Buffer *err)
+static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -227,7 +227,7 @@ static bool string_test_reset(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool string_test_validator(struct ConfigSet *cs, struct Buffer *err)
+static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -293,7 +293,7 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   printf("%15s = %s\n", child,  (char *) cval);
 }
 
-static bool string_test_inherit(struct ConfigSet *cs, struct Buffer *err)
+static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   bool result = false;
@@ -351,7 +351,7 @@ bti_out:
 
 bool string_test(void)
 {
-  printf("%s\n", line);
+  log_line(__func__);
 
   struct Buffer err;
   mutt_buffer_init(&err);
@@ -369,14 +369,14 @@ bool string_test(void)
 
   set_list(cs);
 
-  if (!string_test_initial_values(cs, &err))   return false;
-  if (!string_test_basic_string_set(cs, &err)) return false;
-  if (!string_test_basic_string_get(cs, &err)) return false;
-  if (!string_test_basic_native_set(cs, &err)) return false;
-  if (!string_test_basic_native_get(cs, &err)) return false;
-  if (!string_test_reset(cs, &err))            return false;
-  if (!string_test_validator(cs, &err))        return false;
-  if (!string_test_inherit(cs, &err))          return false;
+  if (!test_initial_values(cs, &err))   return false;
+  if (!test_basic_string_set(cs, &err)) return false;
+  if (!test_basic_string_get(cs, &err)) return false;
+  if (!test_basic_native_set(cs, &err)) return false;
+  if (!test_basic_native_get(cs, &err)) return false;
+  if (!test_reset(cs, &err))            return false;
+  if (!test_validator(cs, &err))        return false;
+  if (!test_inherit(cs, &err))          return false;
 
   cs_free(&cs);
   FREE(&err.data);
