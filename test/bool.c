@@ -29,7 +29,7 @@ const struct VariableDef BoolVars[] = {
   { "Guava",      DT_BOOL, &VarGuava,      0, NULL              }, /* bool_test_reset */
   { "Hawthorn",   DT_BOOL, &VarHawthorn,   0, validator_succeed }, /* bool_test_validator */
   { "Ilama",      DT_BOOL, &VarIlama,      0, validator_fail    },
-  { "Jackfruit",  DT_BOOL, &VarJackfruit,  0                    }, /* bool_test_inherit */
+  { "Jackfruit",  DT_BOOL, &VarJackfruit,  0, NULL              }, /* bool_test_inherit */
   { NULL },
 };
 
@@ -331,7 +331,7 @@ bool bool_test_inherit(struct ConfigSet *cs)
   err.data = safe_calloc(1, STRING);
   err.dsize = STRING;
 
-  const char *account = "apple";
+  const char *account = "fruit";
   const char *parent = "Jackfruit";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);

@@ -29,7 +29,7 @@ const struct VariableDef NumberVars[] = {
   { "Guava",      DT_NUM, &VarGuava,       99, NULL              }, /* number_test_reset */
   { "Hawthorn",   DT_NUM, &VarHawthorn,     0, validator_succeed }, /* number_test_validator */
   { "Ilama",      DT_NUM, &VarIlama,        0, validator_fail    },
-  { "Jackfruit",  DT_NUM, &VarJackfruit,    0                    }, /* number_test_inherit */
+  { "Jackfruit",  DT_NUM, &VarJackfruit,    0, NULL              }, /* number_test_inherit */
   { NULL },
 };
 
@@ -334,7 +334,7 @@ bool number_test_inherit(struct ConfigSet *cs)
   err.data = safe_calloc(1, STRING);
   err.dsize = STRING;
 
-  const char *account = "apple";
+  const char *account = "fruit";
   const char *parent = "Jackfruit";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);

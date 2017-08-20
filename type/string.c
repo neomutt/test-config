@@ -22,7 +22,7 @@ static void destroy_str(void *var, const struct VariableDef *vdef)
 static bool set_str(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                     const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !vdef || !value)
+  if (!cs || !var || !vdef)
     return false;
 
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
@@ -55,7 +55,9 @@ static bool set_native_str(struct ConfigSet *cs, void *var, const struct Variabl
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
 
-  FREE(var);
+  /* Don't free strings from the var definition */
+  if (*(char **) var != (char *) vdef->initial)
+    FREE(var);
 
   const char *str = safe_strdup((const char *) value);
 

@@ -1,0 +1,452 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include "type/string3.h"
+#include "config_set.h"
+#include "debug.h"
+#include "mutt_options.h"
+#include "account.h"
+#include "lib/lib.h"
+#include "test/common.h"
+
+char *VarApple;
+char *VarBanana;
+char *VarCherry;
+char *VarDamson;
+char *VarElderberry;
+char *VarFig;
+char *VarGuava;
+char *VarHawthorn;
+char *VarIlama;
+char *VarJackfruit;
+char *VarKumquat;
+char *VarLemon;
+char *VarMango;
+char *VarNectarine;
+
+const struct VariableDef StringVars[] = {
+  { "Apple",      DT_STR, &VarApple,      IP "apple",   NULL              }, /* string_test_initial() */
+  { "Banana",     DT_STR, &VarBanana,     IP "banana",  NULL              },
+  { "Cherry",     DT_STR, &VarCherry,     0,            NULL              }, /* string_test_basic_string_set */
+  { "Damson",     DT_STR, &VarDamson,     IP "damson",  NULL              },
+  { "Elderberry", DT_STR, &VarElderberry, 0,            NULL              }, /* string_test_basic_string_get */
+  { "Fig",        DT_STR, &VarFig,        IP "fig",     NULL              },
+  { "Guava",      DT_STR, &VarGuava,      0,            NULL              },
+  { "Hawthorn",   DT_STR, &VarHawthorn,   0,            NULL              }, /* string_test_basic_native_set */
+  { "Ilama",      DT_STR, &VarIlama,      IP "ilama",   NULL              },
+  { "Jackfruit",  DT_STR, &VarJackfruit,  0,            NULL              }, /* string_test_basic_native_get */
+  { "Kumquat",    DT_STR, &VarKumquat,    IP "kumquat", NULL              }, /* string_test_reset */
+  { "Lemon",      DT_STR, &VarLemon,      IP "lemon",   validator_succeed }, /* string_test_validator */
+  { "Mango",      DT_STR, &VarMango,      IP "mango",   validator_fail    },
+  { "Nectarine",  DT_STR, &VarNectarine,  0,            NULL              }, /* string_test_inherit */
+  { NULL },
+};
+
+bool string_test_initial_values(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  printf("Apple = %s\n", VarApple);
+  printf("Banana = %s\n", VarBanana);
+
+  return ((mutt_strcmp(VarApple, "apple") == 0) &&
+          (mutt_strcmp(VarBanana, "banana") == 0));
+}
+
+bool string_test_basic_string_set(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  bool result = false;
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  const char *valid[] = { "hello", "world", NULL };
+  char *name = "Cherry";
+
+  for (int i = 0; i < mutt_array_size(valid); i++)
+  {
+    mutt_buffer_reset(&err);
+    if (!cs_set_variable(cs, name, valid[i], &err))
+    {
+      printf("%s\n", err.data);
+      goto btbss_out;
+    }
+
+    if (mutt_strcmp(VarCherry, valid[i]) != 0)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      goto btbss_out;
+    }
+    printf("%s = %s, set by '%s'\n", name, NONULL(VarCherry), NONULL(valid[i]));
+  }
+
+  name = "Damson";
+  for (int i = 0; i < mutt_array_size(valid); i++)
+  {
+    mutt_buffer_reset(&err);
+    if (!cs_set_variable(cs, name, valid[i], &err))
+    {
+      printf("%s\n", err.data);
+      goto btbss_out;
+    }
+
+    if (mutt_strcmp(VarDamson, valid[i]) != 0)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      goto btbss_out;
+    }
+    printf("%s = %s, set by '%s'\n", name, NONULL(VarDamson), NONULL(valid[i]));
+  }
+
+  result = true;
+btbss_out:
+  FREE(&err.data);
+  return result;
+}
+
+bool string_test_basic_string_get(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  bool result = false;
+  const char *name = "Elderberry";
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  mutt_buffer_reset(&err);
+  if (!cs_get_variable(cs, name, &err))
+  {
+    printf("Get failed: %s\n", err.data);
+    goto btbsg_out;
+  }
+  printf("%s = '%s', '%s'\n", name, NONULL(VarElderberry), err.data);
+
+  name = "Fig";
+  mutt_buffer_reset(&err);
+  if (!cs_get_variable(cs, name, &err))
+  {
+    printf("Get failed: %s\n", err.data);
+    goto btbsg_out;
+  }
+  printf("%s = '%s', '%s'\n", name, NONULL(VarFig), err.data);
+
+  name = "Guava";
+  if (!cs_set_variable(cs, name, "guava", &err))
+    return false;
+
+  mutt_buffer_reset(&err);
+  if (!cs_get_variable(cs, name, &err))
+  {
+    printf("Get failed: %s\n", err.data);
+    goto btbsg_out;
+  }
+  printf("%s = '%s', '%s'\n", name, NONULL(VarGuava), err.data);
+
+  result = true;
+btbsg_out:
+  FREE(&err.data);
+  return result;
+}
+
+bool string_test_basic_native_set(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  bool result = false;
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  const char *valid[] = { "hello", "world", NULL };
+  char *name = "Hawthorn";
+
+  for (int i = 0; i < mutt_array_size(valid); i++)
+  {
+    mutt_buffer_reset(&err);
+    if (!cs_str_set_value(cs, name, (intptr_t) valid[i], &err))
+    {
+      printf("%s\n", err.data);
+      goto btbns_out;
+    }
+
+    if (mutt_strcmp(VarHawthorn, valid[i]) != 0)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      goto btbns_out;
+    }
+    printf("%s = %s, set by '%s'\n", name, NONULL(VarHawthorn), NONULL(valid[i]));
+  }
+
+  name = "Ilama";
+  for (int i = 0; i < mutt_array_size(valid); i++)
+  {
+    mutt_buffer_reset(&err);
+    if (!cs_str_set_value(cs, name, (intptr_t) valid[i], &err))
+    {
+      printf("%s\n", err.data);
+      goto btbns_out;
+    }
+
+    if (mutt_strcmp(VarIlama, valid[i]) != 0)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      goto btbns_out;
+    }
+    printf("%s = %s, set by '%s'\n", name, NONULL(VarIlama), NONULL(valid[i]));
+  }
+
+  result = true;
+btbns_out:
+  FREE(&err.data);
+  return result;
+}
+
+bool string_test_basic_native_get(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  bool result = false;
+  char *name = "Jackfruit";
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  if (!cs_set_variable(cs, name, "jackfruit", &err))
+    return false;
+
+  mutt_buffer_reset(&err);
+  intptr_t value = cs_str_get_value(cs, name, &err);
+  if (mutt_strcmp(VarJackfruit, (char *) value) != 0)
+  {
+    printf("Get failed: %s\n", err.data);
+    goto btbng_out;
+  }
+  printf("%s = '%s', '%s'\n", name, VarJackfruit, (char *) value);
+
+  result = true;
+btbng_out:
+  FREE(&err.data);
+  return result;
+}
+
+bool string_test_reset(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  bool result = false;
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  char *name = "Kumquat";
+  mutt_buffer_reset(&err);
+
+  printf("Initial: %s = '%s'\n", name, VarKumquat);
+  if (!cs_set_variable(cs, name, "hello", &err))
+    return false;
+  printf("Set: %s = '%s'\n", name, VarKumquat);
+
+  if (!cs_reset_variable(cs, name, &err))
+  {
+    printf("%s\n", err.data);
+    goto btr_out;
+  }
+
+  if (mutt_strcmp(VarKumquat, "kumquat") != 0)
+  {
+    printf("Value of %s wasn't changed\n", name);
+    goto btr_out;
+  }
+
+  printf("Reset: %s = '%s'\n", name, VarKumquat);
+
+  result = true;
+btr_out:
+  FREE(&err.data);
+  return result;
+}
+
+bool string_test_validator(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  bool result = false;
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  char *name = "Lemon";
+  mutt_buffer_reset(&err);
+  if (cs_set_variable(cs, name, "hello", &err))
+  {
+    printf("%s\n", err.data);
+  }
+  else
+  {
+    printf("%s\n", err.data);
+    goto btv_out;
+  }
+  printf("String: %s = %s\n", name, VarLemon);
+
+  mutt_buffer_reset(&err);
+  if (cs_str_set_value(cs, name, IP "world", &err))
+  {
+    printf("%s\n", err.data);
+  }
+  else
+  {
+    printf("%s\n", err.data);
+    goto btv_out;
+  }
+  printf("Native: %s = %s\n", name, VarLemon);
+
+  name = "Mango";
+  mutt_buffer_reset(&err);
+  if (!cs_set_variable(cs, name, "hello", &err))
+  {
+    printf("Expected error: %s\n", err.data);
+  }
+  else
+  {
+    printf("%s\n", err.data);
+    goto btv_out;
+  }
+  printf("String: %s = %s\n", name, VarMango);
+
+  mutt_buffer_reset(&err);
+  if (!cs_str_set_value(cs, name, IP "world", &err))
+  {
+    printf("Expected error: %s\n", err.data);
+  }
+  else
+  {
+    printf("%s\n", err.data);
+    goto btv_out;
+  }
+  printf("Native: %s = %s\n", name, VarMango);
+
+  result = true;
+btv_out:
+  FREE(&err.data);
+  return result;
+}
+
+static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
+{
+  intptr_t pval = cs_str_get_value(cs, parent, NULL);
+  intptr_t cval = cs_str_get_value(cs, child,  NULL);
+
+  printf("%15s = %s\n", parent, (char *) pval);
+  printf("%15s = %s\n", child,  (char *) cval);
+}
+
+bool string_test_inherit(struct ConfigSet *cs)
+{
+  log_line(__func__);
+  bool result = false;
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
+
+  const char *account = "fruit";
+  const char *parent = "Nectarine";
+  char child[128];
+  snprintf(child, sizeof(child), "%s:%s", account, parent);
+
+  const char *AccountVarStr[] = { parent, NULL, };
+
+  struct Account *ac = ac_create(cs, account,  AccountVarStr);
+
+  // set parent
+  mutt_buffer_reset(&err);
+  if (!cs_set_variable(cs, parent, "hello", &err))
+  {
+    printf("Error: %s\n", err.data);
+    goto bti_out;
+  }
+  dump_native(cs, parent, child);
+
+  // set child
+  mutt_buffer_reset(&err);
+  if (!cs_set_variable(cs, child, "world", &err))
+  {
+    printf("Error: %s\n", err.data);
+    goto bti_out;
+  }
+  dump_native(cs, parent, child);
+
+  // reset child
+  mutt_buffer_reset(&err);
+  if (!cs_reset_variable(cs, child, &err))
+  {
+    printf("Error: %s\n", err.data);
+    goto bti_out;
+  }
+  dump_native(cs, parent, child);
+
+  // reset parent
+  mutt_buffer_reset(&err);
+  if (!cs_reset_variable(cs, parent, &err))
+  {
+    printf("Error: %s\n", err.data);
+    goto bti_out;
+  }
+  dump_native(cs, parent, child);
+
+  result = true;
+bti_out:
+  ac_free(cs, &ac);
+  FREE(&err.data);
+  return result;
+}
+
+bool string_test(void)
+{
+  printf("%s\n", line);
+
+  // struct Buffer err;
+  // mutt_buffer_init(&err);
+  // err.data = safe_calloc(1, STRING);
+  // err.dsize = STRING;
+  // mutt_buffer_reset(&err);
+
+  struct ConfigSet *cs = cs_new_set(30);
+
+  init_string(cs);
+  if (!cs_register_variables(cs, StringVars))
+    return false;
+
+  cs_add_listener(cs, log_listener);
+
+  set_list(cs);
+
+  if (!string_test_initial_values(cs))   return false;
+  if (!string_test_basic_string_set(cs)) return false;
+  if (!string_test_basic_string_get(cs)) return false;
+  if (!string_test_basic_native_set(cs)) return false;
+  if (!string_test_basic_native_get(cs)) return false;
+  if (!string_test_reset(cs))            return false;
+  if (!string_test_validator(cs))        return false;
+  if (!string_test_inherit(cs))          return false;
+
+  // hash_dump(cs->hash);
+
+  // test_set_reset(cs);
+  // test_validators(cs);
+  // test_native(cs);
+
+  cs_free(&cs);
+  // FREE(&err.data);
+
+  return true;
+}
+

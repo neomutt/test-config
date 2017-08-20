@@ -28,6 +28,7 @@
 #include "type/string3.h"
 #include "test/bool.h"
 #include "test/number.h"
+#include "test/string.h"
 
 const char *AccountVarStr[] = {
   "alias_file",           /* DT_PATH */
@@ -344,9 +345,11 @@ int main(int argc, char *argv[])
 #if 0
   if (!bool_test())
     printf("bool_test() failed\n");
-#else
   if (!number_test())
     printf("number_test() failed\n");
+#else
+  if (!string_test())
+    printf("string_test() failed\n");
 #endif
 
 
