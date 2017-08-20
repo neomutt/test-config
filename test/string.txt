@@ -59,14 +59,14 @@ Event: Kumquat has been reset
 Reset: Kumquat = 'kumquat'
 ---- string_test_validator() -------------------------------
 Event: Lemon has been set
-validator_succeed: Lemon, 4346417
+validator_succeed: Lemon, (ptr)
 String: Lemon = hello
 Event: Lemon has been set
-validator_succeed: Lemon, 4346423
+validator_succeed: Lemon, (ptr)
 Native: Lemon = world
-Expected error: validator_fail: Mango, 4346417
+Expected error: validator_fail: Mango, (ptr)
 String: Mango = mango
-Expected error: validator_fail: Mango, 4346423
+Expected error: validator_fail: Mango, (ptr)
 Native: Mango = mango
 ---- string_test_inherit() ---------------------------------
 Event: Nectarine has been set

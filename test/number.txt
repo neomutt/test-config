@@ -53,13 +53,13 @@ Native: Ilama = 456
 ---- number_test_inherit() ---------------------------------
 Event: Jackfruit has been set
       Jackfruit = 456
-apple:Jackfruit = 456
-Event: apple:Jackfruit has been set
+fruit:Jackfruit = 456
+Event: fruit:Jackfruit has been set
       Jackfruit = 456
-apple:Jackfruit = -99
-Event: apple:Jackfruit has been reset
+fruit:Jackfruit = -99
+Event: fruit:Jackfruit has been reset
       Jackfruit = 456
-apple:Jackfruit = 456
+fruit:Jackfruit = 456
 Event: Jackfruit has been reset
       Jackfruit = 0
-apple:Jackfruit = 0
+fruit:Jackfruit = 0

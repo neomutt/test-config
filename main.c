@@ -342,16 +342,14 @@ void old_tests(void)
 
 int main(int argc, char *argv[])
 {
-#if 0
-  if (!bool_test())
-    printf("bool_test() failed\n");
-  if (!number_test())
-    printf("number_test() failed\n");
-#else
-  if (!string_test())
-    printf("string_test() failed\n");
-#endif
+  int which = -1;
 
+  if (argc == 2)
+    which = argv[1][0] - '0';
+
+  if ((which < 0) || (which == 1)) if (!bool_test())   printf("bool_test() failed\n");
+  if ((which < 0) || (which == 2)) if (!number_test()) printf("number_test() failed\n");
+  if ((which < 0) || (which == 3)) if (!string_test()) printf("string_test() failed\n");
 
   return 0;
 }

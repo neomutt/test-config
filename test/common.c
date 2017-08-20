@@ -8,13 +8,19 @@ const char *line = "------------------------------------------------------------
 
 bool validator_fail(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result)
 {
-  mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
+  if (value > 1000000)
+    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
+  else
+    mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
   return false;
 }
 
 bool validator_succeed(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result)
 {
-  mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
+  if (value > 1000000)
+    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
+  else
+    mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
   return true;
 }
 

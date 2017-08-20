@@ -65,13 +65,13 @@ Native: Ilama = 0
 ---- bool_test_inherit() -----------------------------------
 Event: Jackfruit has been set
       Jackfruit = 1
-apple:Jackfruit = 1
-Event: apple:Jackfruit has been set
+fruit:Jackfruit = 1
+Event: fruit:Jackfruit has been set
       Jackfruit = 1
-apple:Jackfruit = 0
-Event: apple:Jackfruit has been reset
+fruit:Jackfruit = 0
+Event: fruit:Jackfruit has been reset
       Jackfruit = 1
-apple:Jackfruit = 1
+fruit:Jackfruit = 1
 Event: Jackfruit has been reset
       Jackfruit = 0
-apple:Jackfruit = 0
+fruit:Jackfruit = 0
