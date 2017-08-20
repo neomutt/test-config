@@ -27,6 +27,7 @@
 #include "type/sort.h"
 #include "type/string3.h"
 #include "test/bool.h"
+#include "test/number.h"
 
 const char *AccountVarStr[] = {
   "alias_file",           /* DT_PATH */
@@ -340,8 +341,14 @@ void old_tests(void)
 
 int main(int argc, char *argv[])
 {
+#if 0
   if (!bool_test())
     printf("bool_test() failed\n");
+#else
+  if (!number_test())
+    printf("number_test() failed\n");
+#endif
+
 
   return 0;
 }

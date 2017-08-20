@@ -66,7 +66,7 @@ void cs_dump_set(struct ConfigSet *cs)
     }
 
     mutt_buffer_reset(&result);
-    printf("%-7s %s", cst->name, name);
+    printf("%s %s", cst->name, name);
 
     struct VariableDef *vdef = he->data;
 

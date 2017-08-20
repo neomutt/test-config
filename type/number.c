@@ -18,9 +18,9 @@ static bool set_num(struct ConfigSet *cs, void *var, const struct VariableDef *v
     return false;
   }
 
-  if (num > SHRT_MAX)
+  if ((num < SHRT_MIN) || (num > SHRT_MAX))
   {
-    //XXX too big
+    mutt_buffer_printf(err, "Number is too big: %s", value);
     return false;
   }
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "type/bool.h"
+#include "type/number.h"
 #include "config_set.h"
 #include "debug.h"
 #include "mutt_options.h"
@@ -8,40 +8,40 @@
 #include "lib/lib.h"
 #include "test/common.h"
 
-bool VarApple;
-bool VarBanana;
-bool VarCherry;
-bool VarDamson;
-bool VarElderberry;
-bool VarFig;
-bool VarGuava;
-bool VarHawthorn;
-bool VarIlama;
-bool VarJackfruit;
+short VarApple;
+short VarBanana;
+short VarCherry;
+short VarDamson;
+short VarElderberry;
+short VarFig;
+short VarGuava;
+short VarHawthorn;
+short VarIlama;
+short VarJackfruit;
 
-const struct VariableDef BoolVars[] = {
-  { "Apple",      DT_BOOL, &VarApple,      0, NULL              }, /* bool_test_initial() */
-  { "Banana",     DT_BOOL, &VarBanana,     1, NULL              },
-  { "Cherry",     DT_BOOL, &VarCherry,     0, NULL              }, /* bool_test_basic_string_set */
-  { "Damson",     DT_BOOL, &VarDamson,     0, NULL              }, /* bool_test_basic_string_get */
-  { "Elderberry", DT_BOOL, &VarElderberry, 0, NULL              }, /* bool_test_basic_native_set */
-  { "Fig",        DT_BOOL, &VarFig,        0, NULL              }, /* bool_test_basic_native_get */
-  { "Guava",      DT_BOOL, &VarGuava,      0, NULL              }, /* bool_test_reset */
-  { "Hawthorn",   DT_BOOL, &VarHawthorn,   0, validator_succeed }, /* bool_test_validator */
-  { "Ilama",      DT_BOOL, &VarIlama,      0, validator_fail    },
-  { "Jackfruit",  DT_BOOL, &VarJackfruit,  0                    }, /* bool_test_inherit */
+const struct VariableDef NumberVars[] = {
+  { "Apple",      DT_NUM, &VarApple,      -42, NULL              }, /* number_test_initial() */
+  { "Banana",     DT_NUM, &VarBanana,      99, NULL              },
+  { "Cherry",     DT_NUM, &VarCherry,       0, NULL              }, /* number_test_basic_string_set */
+  { "Damson",     DT_NUM, &VarDamson,       0, NULL              }, /* number_test_basic_string_get */
+  { "Elderberry", DT_NUM, &VarElderberry,   0, NULL              }, /* number_test_basic_native_set */
+  { "Fig",        DT_NUM, &VarFig,          0, NULL              }, /* number_test_basic_native_get */
+  { "Guava",      DT_NUM, &VarGuava,       99, NULL              }, /* number_test_reset */
+  { "Hawthorn",   DT_NUM, &VarHawthorn,     0, validator_succeed }, /* number_test_validator */
+  { "Ilama",      DT_NUM, &VarIlama,        0, validator_fail    },
+  { "Jackfruit",  DT_NUM, &VarJackfruit,    0                    }, /* number_test_inherit */
   { NULL },
 };
 
-bool bool_test_initial_values(struct ConfigSet *cs)
+bool number_test_initial_values(struct ConfigSet *cs)
 {
   log_line(__func__);
   printf("Apple = %d\n", VarApple);
   printf("Banana = %d\n", VarBanana);
-  return ((VarApple == false) && (VarBanana == true));
+  return ((VarApple == -42) && (VarBanana == 99));
 }
 
-bool bool_test_basic_string_set(struct ConfigSet *cs)
+bool number_test_basic_string_set(struct ConfigSet *cs)
 {
   log_line(__func__);
   bool result = false;
@@ -51,13 +51,14 @@ bool bool_test_basic_string_set(struct ConfigSet *cs)
   err.data = safe_calloc(1, STRING);
   err.dsize = STRING;
 
-  const char *valid[] = { "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on", };
-  const char *invalid[] = { "nope", "ye", "", NULL, };
+  const char *valid[] = { "-123", "0", "456" };
+  int numbers[] = { -123, 0, 456 };
+  const char *invalid[] = { "-32769", "32768", "junk", NULL, };
   char *name = "Cherry";
 
   for (int i = 0; i < mutt_array_size(valid); i++)
   {
-    VarCherry = ((i + 1) % 2);
+    VarCherry = -42;
 
     mutt_buffer_reset(&err);
     if (!cs_set_variable(cs, name, valid[i], &err))
@@ -66,7 +67,7 @@ bool bool_test_basic_string_set(struct ConfigSet *cs)
       goto btbss_out;
     }
 
-    if (VarCherry != (i % 2))
+    if (VarCherry != numbers[i])
     {
       printf("Value of %s wasn't changed\n", name);
       goto btbss_out;
@@ -74,6 +75,7 @@ bool bool_test_basic_string_set(struct ConfigSet *cs)
     printf("%s = %d, set by '%s'\n", name, VarCherry, valid[i]);
   }
 
+  printf("\n");
   for (int i = 0; i < mutt_array_size(invalid); i++)
   {
     mutt_buffer_reset(&err);
@@ -88,6 +90,7 @@ bool bool_test_basic_string_set(struct ConfigSet *cs)
       goto btbss_out;
     }
   }
+  printf("\n");
 
   result = true;
 btbss_out:
@@ -95,7 +98,7 @@ btbss_out:
   return result;
 }
 
-bool bool_test_basic_string_get(struct ConfigSet *cs)
+bool number_test_basic_string_get(struct ConfigSet *cs)
 {
   log_line(__func__);
   bool result = false;
@@ -106,7 +109,7 @@ bool bool_test_basic_string_get(struct ConfigSet *cs)
   err.data = safe_calloc(1, STRING);
   err.dsize = STRING;
 
-  VarDamson = false;
+  VarDamson = 123;
   mutt_buffer_reset(&err);
   if (!cs_get_variable(cs, name, &err))
   {
@@ -115,7 +118,7 @@ bool bool_test_basic_string_get(struct ConfigSet *cs)
   }
   printf("%s = %d, %s\n", name, VarDamson, err.data);
 
-  VarDamson = true;
+  VarDamson = -789;
   mutt_buffer_reset(&err);
   if (!cs_get_variable(cs, name, &err))
   {
@@ -130,19 +133,19 @@ btbsg_out:
   return result;
 }
 
-bool bool_test_basic_native_set(struct ConfigSet *cs)
+bool number_test_basic_native_set(struct ConfigSet *cs)
 {
   log_line(__func__);
   bool result = false;
   char *name = "Elderberry";
-  bool value = true;
+  short value = 12345;
 
   struct Buffer err;
   mutt_buffer_init(&err);
   err.data = safe_calloc(1, STRING);
   err.dsize = STRING;
 
-  VarElderberry = false;
+  VarElderberry = 0;
   mutt_buffer_reset(&err);
   if (!cs_str_set_value(cs, name, value, &err))
   {
@@ -158,10 +161,10 @@ bool bool_test_basic_native_set(struct ConfigSet *cs)
 
   printf("%s = %d, set to '%d'\n", name, VarElderberry, value);
 
-  int invalid[] = { -1, 2 };
+  int invalid[] = { -32769, 32768 };
   for (int i = 0; i < mutt_array_size(invalid); i++)
   {
-    VarElderberry = false;
+    VarElderberry = 123;
     mutt_buffer_reset(&err);
     if (!cs_str_set_value(cs, name, invalid[i], &err))
     {
@@ -181,7 +184,7 @@ btbns_out:
   return result;
 }
 
-bool bool_test_basic_native_get(struct ConfigSet *cs)
+bool number_test_basic_native_get(struct ConfigSet *cs)
 {
   log_line(__func__);
   bool result = false;
@@ -192,10 +195,10 @@ bool bool_test_basic_native_get(struct ConfigSet *cs)
   err.data = safe_calloc(1, STRING);
   err.dsize = STRING;
 
-  VarFig = true;
+  VarFig = 3456;
   mutt_buffer_reset(&err);
   intptr_t value = cs_str_get_value(cs, name, &err);
-  if (value != true)
+  if (value != 3456)
   {
     printf("Get failed: %s\n", err.data);
     goto btbng_out;
@@ -208,7 +211,7 @@ btbng_out:
   return result;
 }
 
-bool bool_test_reset(struct ConfigSet *cs)
+bool number_test_reset(struct ConfigSet *cs)
 {
   log_line(__func__);
   bool result = false;
@@ -219,7 +222,7 @@ bool bool_test_reset(struct ConfigSet *cs)
   err.dsize = STRING;
 
   char *name = "Guava";
-  VarGuava = true;
+  VarGuava = 345;
   mutt_buffer_reset(&err);
 
   if (!cs_reset_variable(cs, name, &err))
@@ -228,7 +231,7 @@ bool bool_test_reset(struct ConfigSet *cs)
     goto btr_out;
   }
 
-  if (VarGuava == true)
+  if (VarGuava == 345)
   {
     printf("Value of %s wasn't changed\n", name);
     goto btr_out;
@@ -242,7 +245,7 @@ btr_out:
   return result;
 }
 
-bool bool_test_validator(struct ConfigSet *cs)
+bool number_test_validator(struct ConfigSet *cs)
 {
   log_line(__func__);
   bool result = false;
@@ -253,9 +256,9 @@ bool bool_test_validator(struct ConfigSet *cs)
   err.dsize = STRING;
 
   char *name = "Hawthorn";
-  VarHawthorn = false;
+  VarHawthorn = 123;
   mutt_buffer_reset(&err);
-  if (cs_set_variable(cs, name, "yes", &err))
+  if (cs_set_variable(cs, name, "456", &err))
   {
     printf("%s\n", err.data);
   }
@@ -266,9 +269,9 @@ bool bool_test_validator(struct ConfigSet *cs)
   }
   printf("String: %s = %d\n", name, VarHawthorn);
 
-  VarHawthorn = false;
+  VarHawthorn = 456;
   mutt_buffer_reset(&err);
-  if (cs_str_set_value(cs, name, 1, &err))
+  if (cs_str_set_value(cs, name, 123, &err))
   {
     printf("%s\n", err.data);
   }
@@ -280,9 +283,9 @@ bool bool_test_validator(struct ConfigSet *cs)
   printf("Native: %s = %d\n", name, VarHawthorn);
 
   name = "Ilama";
-  VarIlama = false;
+  VarIlama = 123;
   mutt_buffer_reset(&err);
-  if (!cs_set_variable(cs, name, "yes", &err))
+  if (!cs_set_variable(cs, name, "456", &err))
   {
     printf("Expected error: %s\n", err.data);
   }
@@ -293,9 +296,9 @@ bool bool_test_validator(struct ConfigSet *cs)
   }
   printf("String: %s = %d\n", name, VarIlama);
 
-  VarIlama = false;
+  VarIlama = 456;
   mutt_buffer_reset(&err);
-  if (!cs_str_set_value(cs, name, 1, &err))
+  if (!cs_str_set_value(cs, name, 123, &err))
   {
     printf("Expected error: %s\n", err.data);
   }
@@ -321,7 +324,7 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   printf("%15s = %ld\n", child,  cval);
 }
 
-bool bool_test_inherit(struct ConfigSet *cs)
+bool number_test_inherit(struct ConfigSet *cs)
 {
   log_line(__func__);
   bool result = false;
@@ -341,9 +344,9 @@ bool bool_test_inherit(struct ConfigSet *cs)
   struct Account *ac = ac_create(cs, account,  AccountVarStr);
 
   // set parent
-  VarJackfruit = false;
+  VarJackfruit = 123;
   mutt_buffer_reset(&err);
-  if (!cs_set_variable(cs, parent, "1", &err))
+  if (!cs_set_variable(cs, parent, "456", &err))
   {
     printf("Error: %s\n", err.data);
     goto bti_out;
@@ -352,7 +355,7 @@ bool bool_test_inherit(struct ConfigSet *cs)
 
   // set child
   mutt_buffer_reset(&err);
-  if (!cs_set_variable(cs, child, "0", &err))
+  if (!cs_set_variable(cs, child, "-99", &err))
   {
     printf("Error: %s\n", err.data);
     goto bti_out;
@@ -384,7 +387,7 @@ bti_out:
   return result;
 }
 
-bool bool_test(void)
+bool number_test(void)
 {
   printf("%s\n", line);
 
@@ -396,22 +399,22 @@ bool bool_test(void)
 
   struct ConfigSet *cs = cs_new_set(30);
 
-  init_bool(cs);
-  if (!cs_register_variables(cs, BoolVars))
+  init_num(cs);
+  if (!cs_register_variables(cs, NumberVars))
     return false;
 
   cs_add_listener(cs, log_listener);
 
   set_list(cs);
 
-  if (!bool_test_initial_values(cs))   return false;
-  if (!bool_test_basic_string_set(cs)) return false;
-  if (!bool_test_basic_string_get(cs)) return false;
-  if (!bool_test_basic_native_set(cs)) return false;
-  if (!bool_test_basic_native_get(cs)) return false;
-  if (!bool_test_reset(cs))            return false;
-  if (!bool_test_validator(cs))        return false;
-  if (!bool_test_inherit(cs))          return false;
+  if (!number_test_initial_values(cs))   return false;
+  if (!number_test_basic_string_set(cs)) return false;
+  if (!number_test_basic_string_get(cs)) return false;
+  if (!number_test_basic_native_set(cs)) return false;
+  if (!number_test_basic_native_get(cs)) return false;
+  if (!number_test_reset(cs))            return false;
+  if (!number_test_validator(cs))        return false;
+  if (!number_test_inherit(cs))          return false;
 
   // hash_dump(cs->hash);
 
