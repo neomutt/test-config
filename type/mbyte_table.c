@@ -63,20 +63,17 @@ static bool set_mbchartbl(struct ConfigSet *cs, void *var,
                           const struct VariableDef *vdef, const char *value,
                           struct Buffer *err)
 {
-  if (!cs || !var || !vdef || !value)
+  if (!cs || !var || !vdef)
     return false;
 
   struct MbCharTable *table = parse_mbchar_table(value);
-  if (!table)
+  if (table)
   {
-    //XXX error message
-    return false;
-  }
-
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
-  {
-    free_mbchartbl(&table);
-    return false;
+    if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
+    {
+      free_mbchartbl(&table);
+      return false;
+    }
   }
 
   destroy_mbchartbl(var, vdef);
@@ -103,6 +100,9 @@ static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buff
 
 static struct MbCharTable *dup_mbchartbl(struct MbCharTable *table)
 {
+  if (!table)
+    return NULL;
+
   struct MbCharTable *m = safe_calloc(1, sizeof(*m));
   m->orig_str = safe_strdup(table->orig_str);
   return m;
@@ -113,8 +113,11 @@ static bool set_native_mbchartbl(struct ConfigSet *cs, void *var, const struct V
   if (!cs || !var || !vdef)
     return false;
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  if (value)
+  {
+    if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+      return false;
+  }
 
   free_mbchartbl(var);
 
