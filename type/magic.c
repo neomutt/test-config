@@ -23,7 +23,7 @@ static bool set_magic(struct ConfigSet *cs, void *var, const struct VariableDef 
     }
   }
 
-  if (num < 0)
+  if (num < 1)
   {
     mutt_buffer_printf(err, "Invalid magic value: %s", value);
     return false;

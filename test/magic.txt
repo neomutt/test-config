@@ -1,0 +1,67 @@
+---- magic_test --------------------------------------------
+---- set_list ----------------------------------------------
+magic Damson = mbox
+magic Cherry = mbox
+magic Fig = mbox
+magic Elderberry = mbox
+magic Ilama = mbox
+magic Banana = MH
+magic Apple = mbox
+magic Guava = mbox
+magic Hawthorn = mbox
+magic Jackfruit = mbox
+---- test_initial_values -----------------------------------
+Apple = 1
+Banana = 3
+---- test_basic_string_set ---------------------------------
+Event: Cherry has been set
+Cherry = 1, set by 'mbox'
+Event: Cherry has been set
+Cherry = 2, set by 'mmdf'
+Event: Cherry has been set
+Cherry = 3, set by 'mh'
+Event: Cherry has been set
+Cherry = 4, set by 'maildir'
+Expected error: Invalid magic value: mbox2
+Expected error: Invalid magic value: mm
+Expected error: Invalid magic value: 
+Expected error: 
+---- test_basic_string_get ---------------------------------
+Damson = 1, mbox
+Damson = 2, MMDF
+Damson = 3, MH
+Damson = 4, Maildir
+---- test_basic_native_set ---------------------------------
+Event: Elderberry has been set
+Elderberry = 4, set to '4'
+Expected error: Invalid magic value: 0
+Expected error: Invalid magic value: 5
+---- test_basic_native_get ---------------------------------
+Fig = 4
+---- test_reset --------------------------------------------
+Event: Guava has been reset
+Reset: Guava = 1
+---- test_validator ----------------------------------------
+Event: Hawthorn has been set
+validator_succeed: Hawthorn, 4
+String: Hawthorn = 4
+Event: Hawthorn has been set
+validator_succeed: Hawthorn, 4
+Native: Hawthorn = 4
+Expected error: validator_fail: Ilama, 4
+String: Ilama = 1
+Expected error: validator_fail: Ilama, 4
+Native: Ilama = 1
+---- test_inherit ------------------------------------------
+Event: Jackfruit has been set
+      Jackfruit = 4
+fruit:Jackfruit = 4
+Event: fruit:Jackfruit has been set
+      Jackfruit = 4
+fruit:Jackfruit = 3
+Event: fruit:Jackfruit has been reset
+      Jackfruit = 4
+fruit:Jackfruit = 4
+Event: Jackfruit has been reset
+      Jackfruit = 1
+fruit:Jackfruit = 1
