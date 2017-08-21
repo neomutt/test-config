@@ -16,6 +16,13 @@
 #include "options.h"
 #include "pop.h"
 #include "sidebar.h"
+#include "test/address.h"
+#include "test/bool.h"
+#include "test/magic.h"
+#include "test/number.h"
+#include "test/path.h"
+#include "test/quad.h"
+#include "test/string.h"
 #include "type/address.h"
 #include "type/bool.h"
 #include "type/magic.h"
@@ -26,12 +33,6 @@
 #include "type/regex.h"
 #include "type/sort.h"
 #include "type/string3.h"
-#include "test/bool.h"
-#include "test/magic.h"
-#include "test/number.h"
-#include "test/path.h"
-#include "test/quad.h"
-#include "test/string.h"
 
 const char *AccountVarStr[] = {
   "alias_file",           /* DT_PATH */
@@ -350,12 +351,13 @@ int main(int argc, char *argv[])
   if (argc == 2)
     which = argv[1][0] - '0';
 
-  if ((which < 0) || (which == 1)) if (!bool_test())   printf("bool_test() failed\n");
-  if ((which < 0) || (which == 2)) if (!number_test()) printf("number_test() failed\n");
-  if ((which < 0) || (which == 3)) if (!string_test()) printf("string_test() failed\n");
-  if ((which < 0) || (which == 4)) if (!path_test())   printf("path_test() failed\n");
-  if ((which < 0) || (which == 5)) if (!quad_test())   printf("quad_test() failed\n");
-  if ((which < 0) || (which == 6)) if (!magic_test())  printf("magic_test() failed\n");
+  if ((which < 0) || (which == 1)) if (!bool_test())    printf("bool_test() failed\n");
+  if ((which < 0) || (which == 2)) if (!number_test())  printf("number_test() failed\n");
+  if ((which < 0) || (which == 3)) if (!string_test())  printf("string_test() failed\n");
+  if ((which < 0) || (which == 4)) if (!path_test())    printf("path_test() failed\n");
+  if ((which < 0) || (which == 5)) if (!quad_test())    printf("quad_test() failed\n");
+  if ((which < 0) || (which == 6)) if (!magic_test())   printf("magic_test() failed\n");
+  if ((which < 0) || (which == 7)) if (!address_test()) printf("address_test() failed\n");
 
   return 0;
 }

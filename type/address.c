@@ -20,7 +20,7 @@ static void destroy_addr(void *var, const struct VariableDef *vdef)
 static bool set_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !vdef || !value)
+  if (!cs || !var || !vdef)
     return false;
 
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
@@ -28,6 +28,7 @@ static bool set_addr(struct ConfigSet *cs, void *var, const struct VariableDef *
 
   destroy_addr(var, vdef);
 
+  //XXX should an address of "" be stored as NULL?
   struct Address *a = safe_calloc(1, sizeof(*a));
   a->personal = safe_strdup((const char *) value);
   a->mailbox = safe_strdup("dummy1");
@@ -51,6 +52,9 @@ static bool get_addr(void *var, const struct VariableDef *vdef, struct Buffer *r
 
 static struct Address *dup_address(struct Address *addr)
 {
+  if (!addr)
+    return NULL;
+
   struct Address *a = safe_calloc(1, sizeof(*a));
   a->personal = safe_strdup(addr->personal);
   return a;

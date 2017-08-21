@@ -30,6 +30,7 @@ static bool set_str(struct ConfigSet *cs, void *var, const struct VariableDef *v
 
   destroy_str(var, vdef);
 
+  //XXX a string of "" should be stored as NULL
   *(const char **) var = safe_strdup(value);
   return true;
 }
@@ -59,6 +60,7 @@ static bool set_native_str(struct ConfigSet *cs, void *var, const struct Variabl
   if (*(char **) var != (char *) vdef->initial)
     FREE(var);
 
+  //XXX a string of "" should be stored as NULL
   const char *str = safe_strdup((const char *) value);
 
   *(const char **) var = str;

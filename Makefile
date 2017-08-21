@@ -14,7 +14,7 @@ SRC	+= type/address.c type/bool.c type/magic.c type/mbyte_table.c type/regex.c t
 SRC	+= hcache/hcache.c
 SRC	+= imap/imap.c
 SRC	+= ncrypt/ncrypt.c
-SRC	+= test/common.c test/bool.c test/magic.c test/number.c test/path.c test/quad.c test/string.c
+SRC	+= test/common.c test/address.c test/bool.c test/magic.c test/number.c test/path.c test/quad.c test/string.c
 SRC	+= lib/base64.c lib/buffer.c lib/date.c lib/debug.c lib/exit.c lib/hash.c lib/memory.c lib/message.c lib/sha1.c lib/string.c
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
@@ -65,6 +65,7 @@ test:	$(OBJALL) $(DEPALL) $(OUT) force
 	./$(OUT) 4 > test/path.txt
 	./$(OUT) 5 > test/quad.txt
 	./$(OUT) 6 > test/magic.txt
+	./$(OUT) 7 > test/address.txt
 
 tags:	$(SRC) $(HDR)
 	ctags -R .
