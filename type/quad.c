@@ -59,7 +59,7 @@ static bool set_native_quad(struct ConfigSet *cs, void *var, const struct Variab
 
   if ((value < 0) || (value >= mutt_array_size(quad_values)))
   {
-    mutt_buffer_printf(err, "Invalid quad value: %s", value);
+    mutt_buffer_printf(err, "Invalid quad value: %ld", value);
     return false;
   }
 
