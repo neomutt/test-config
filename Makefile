@@ -3,7 +3,9 @@ RM	= rm -fr
 MKDIR	= mkdir -p
 
 DEPDIR	= .dep
+DEPALL	= $(DEPDIR)/type $(DEPDIR)/ncrypt $(DEPDIR)/imap $(DEPDIR)/hcache $(DEPDIR)/lib $(DEPDIR)/test
 OBJDIR	= .obj
+OBJALL	= $(OBJDIR)/type $(OBJDIR)/ncrypt $(OBJDIR)/imap $(OBJDIR)/hcache $(OBJDIR)/lib $(OBJDIR)/test
 
 OUT	= demo
 
@@ -35,7 +37,7 @@ LDFLAGS	+= -fprofile-arcs -ftest-coverage
 
 CFLAGS	+= -fno-omit-frame-pointer
 
-all:	$(OBJDIR) $(DEPDIR) $(OBJ) $(OUT) tags
+all:	$(OBJALL) $(DEPALL) $(OBJ) $(OUT) tags
 
 # ----------------------------------------------------------------------------
 
@@ -51,10 +53,15 @@ $(OBJDIR)/%.o: %.c
 $(OUT):	$(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
-$(DEPDIR) $(OBJDIR):
-	$(MKDIR) $@/type $@/ncrypt $@/imap $@/hcache $@/lib $@/test
+$(DEPALL) $(OBJALL):
+	$(MKDIR) $@
 
 # ----------------------------------------------------------------------------
+
+test:	$(OUT) force
+	./$(OUT) 1 > test/bool.txt
+	./$(OUT) 2 > test/number.txt
+	./$(OUT) 3 > test/string.txt
 
 tags:	$(SRC) $(HDR)
 	ctags -R .
