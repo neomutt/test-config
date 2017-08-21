@@ -28,6 +28,7 @@
 #include "type/string3.h"
 #include "test/bool.h"
 #include "test/number.h"
+#include "test/path.h"
 #include "test/string.h"
 
 const char *AccountVarStr[] = {
@@ -350,6 +351,7 @@ int main(int argc, char *argv[])
   if ((which < 0) || (which == 1)) if (!bool_test())   printf("bool_test() failed\n");
   if ((which < 0) || (which == 2)) if (!number_test()) printf("number_test() failed\n");
   if ((which < 0) || (which == 3)) if (!string_test()) printf("string_test() failed\n");
+  if ((which < 0) || (which == 4)) if (!path_test())   printf("path_test() failed\n");
 
   return 0;
 }
