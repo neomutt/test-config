@@ -22,6 +22,7 @@
 #include "test/number.h"
 #include "test/path.h"
 #include "test/quad.h"
+#include "test/regex.h"
 #include "test/string.h"
 #include "type/address.h"
 #include "type/bool.h"
@@ -358,6 +359,7 @@ int main(int argc, char *argv[])
   if ((which < 0) || (which == 5)) if (!quad_test())    printf("quad_test() failed\n");
   if ((which < 0) || (which == 6)) if (!magic_test())   printf("magic_test() failed\n");
   if ((which < 0) || (which == 7)) if (!address_test()) printf("address_test() failed\n");
+  if ((which < 0) || (which == 8)) if (!regex_test())   printf("regex_test() failed\n");
 
   return 0;
 }

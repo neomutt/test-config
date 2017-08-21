@@ -1,75 +1,75 @@
----- regex_test --------------------------------------------
+---- address_test ------------------------------------------
 ---- set_list ----------------------------------------------
-regex Damson = damson.*
-regex Lemon = lemon.*
-regex Cherry = 
-regex Fig = fig.*
-regex Elderberry = 
-regex Ilama = ilama.*
-regex Kumquat = kumquat.*
-regex Banana = banana.*
-regex Apple = apple.*
-regex Guava = 
-regex Mango = mango.*
-regex Hawthorn = 
-regex Jackfruit = 
-regex Nectarine = 
+address Damson = damson@example.com
+address Lemon = lemon@example.com
+address Cherry = 
+address Fig = fig@example.com
+address Elderberry = 
+address Ilama = ilama@example.com
+address Kumquat = kumquat@example.com
+address Banana = banana@example.com
+address Apple = apple@example.com
+address Guava = 
+address Mango = mango@example.com
+address Hawthorn = 
+address Jackfruit = 
+address Nectarine = 
 ---- test_initial_values -----------------------------------
-Apple = apple.*
-Banana = banana.*
+Apple = apple@example.com
+Banana = banana@example.com
 ---- test_basic_string_set ---------------------------------
 Event: Cherry has been set
-Cherry = 'hello.*', set by 'hello.*'
+Cherry = 'hello@example.com', set by 'hello@example.com'
 Event: Cherry has been set
-Cherry = 'world.*', set by 'world.*'
+Cherry = 'world@example.com', set by 'world@example.com'
 Event: Cherry has been set
 Cherry = '', set by ''
 Event: Damson has been set
-Damson = 'hello.*', set by 'hello.*'
+Damson = 'hello@example.com', set by 'hello@example.com'
 Event: Damson has been set
-Damson = 'world.*', set by 'world.*'
+Damson = 'world@example.com', set by 'world@example.com'
 Event: Damson has been set
 Damson = '', set by ''
 ---- test_basic_string_get ---------------------------------
 Elderberry = '', ''
-Fig = 'fig.*', 'fig.*'
+Fig = 'fig@example.com', 'fig@example.com'
 Event: Guava has been set
 Guava = 'guava', 'guava'
 ---- test_basic_native_set ---------------------------------
 Event: Hawthorn has been set
-Hawthorn = 'hello.*', set by 'hello.*'
+Hawthorn = 'hello@example.com', set by 'hello@example.com'
 Event: Ilama has been set
 Ilama = '', set by NULL
 ---- test_basic_native_get ---------------------------------
 Event: Jackfruit has been set
-Jackfruit = 'jackfruit.*', 'jackfruit.*'
+Jackfruit = 'jackfruit@example.com', 'jackfruit@example.com'
 ---- test_reset --------------------------------------------
-Initial: Kumquat = 'kumquat.*'
+Initial: Kumquat = 'kumquat@example.com'
 Event: Kumquat has been set
-Set: Kumquat = 'hello.*'
+Set: Kumquat = 'hello@example.com'
 Event: Kumquat has been reset
-Reset: Kumquat = 'kumquat.*'
+Reset: Kumquat = 'kumquat@example.com'
 ---- test_validator ----------------------------------------
 Event: Lemon has been set
 validator_succeed: Lemon, (ptr)
-Regex: Lemon = hello.*
+Address: Lemon = hello@example.com
 Event: Lemon has been set
 validator_succeed: Lemon, (ptr)
-Native: Lemon = world.*
+Native: Lemon = world@example.com
 Expected error: validator_fail: Mango, (ptr)
-Regex: Mango = mango.*
+Address: Mango = mango@example.com
 Expected error: validator_fail: Mango, (ptr)
-Native: Mango = mango.*
+Native: Mango = mango@example.com
 ---- test_inherit ------------------------------------------
 Event: Nectarine has been set
-      Nectarine = hello.*
-fruit:Nectarine = hello.*
+      Nectarine = hello@example.com
+fruit:Nectarine = hello@example.com
 Event: fruit:Nectarine has been set
-      Nectarine = hello.*
-fruit:Nectarine = world.*
+      Nectarine = hello@example.com
+fruit:Nectarine = world@example.com
 Event: fruit:Nectarine has been reset
-      Nectarine = hello.*
-fruit:Nectarine = hello.*
+      Nectarine = hello@example.com
+fruit:Nectarine = hello@example.com
 Event: Nectarine has been reset
       Nectarine = 
 fruit:Nectarine = 

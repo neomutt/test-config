@@ -31,18 +31,21 @@ static void destroy_rx(void *var, const struct VariableDef *vdef)
 static bool set_rx(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                    const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !vdef || !value)
+  if (!cs || !var || !vdef)
     return false;
 
-  struct Regex *r = safe_calloc(1, sizeof(*r));
-
-  r->pattern = safe_strdup(value);
-  r->rx = NULL; //XXX regenerate r->rx
-
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) r, err))
+  struct Regex *r = NULL;
+  if (value)
   {
-    free_rx(&r);
-    return false;
+    r = safe_calloc(1, sizeof(*r));
+    r->pattern = safe_strdup(value);
+    r->rx = NULL; //XXX regenerate r->rx
+
+    if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) r, err))
+    {
+      free_rx(&r);
+      return false;
+    }
   }
 
   destroy_rx(var, vdef);
@@ -64,10 +67,13 @@ static bool get_rx(void *var, const struct VariableDef *vdef, struct Buffer *res
   return true;
 }
 
-static struct Regex *dup_regex(struct Regex *addr)
+static struct Regex *dup_regex(struct Regex *regex)
 {
+  if (!regex)
+    return NULL;
+
   struct Regex *rx = safe_calloc(1, sizeof(*rx));
-  rx->pattern = safe_strdup(addr->pattern);
+  rx->pattern = safe_strdup(regex->pattern);
   return rx;
 }
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "type/address.h"
+#include "type/regex.h"
 #include "config_set.h"
 #include "debug.h"
 #include "mutt_options.h"
@@ -8,56 +8,56 @@
 #include "lib/lib.h"
 #include "test/common.h"
 
-static struct Address *VarApple;
-static struct Address *VarBanana;
-static struct Address *VarCherry;
-static struct Address *VarDamson;
-static struct Address *VarElderberry;
-static struct Address *VarFig;
-static struct Address *VarGuava;
-static struct Address *VarHawthorn;
-static struct Address *VarIlama;
-static struct Address *VarJackfruit;
-static struct Address *VarKumquat;
-static struct Address *VarLemon;
-static struct Address *VarMango;
-static struct Address *VarNectarine;
+static struct Regex *VarApple;
+static struct Regex *VarBanana;
+static struct Regex *VarCherry;
+static struct Regex *VarDamson;
+static struct Regex *VarElderberry;
+static struct Regex *VarFig;
+static struct Regex *VarGuava;
+static struct Regex *VarHawthorn;
+static struct Regex *VarIlama;
+static struct Regex *VarJackfruit;
+static struct Regex *VarKumquat;
+static struct Regex *VarLemon;
+static struct Regex *VarMango;
+static struct Regex *VarNectarine;
 
-const struct VariableDef AddressVars[] = {
-  { "Apple",      DT_ADDR, &VarApple,      IP "apple@example.com",   NULL              }, /* test_initial() */
-  { "Banana",     DT_ADDR, &VarBanana,     IP "banana@example.com",  NULL              },
-  { "Cherry",     DT_ADDR, &VarCherry,     0,                        NULL              }, /* test_basic_address_set */
-  { "Damson",     DT_ADDR, &VarDamson,     IP "damson@example.com",  NULL              },
-  { "Elderberry", DT_ADDR, &VarElderberry, 0,                        NULL              }, /* test_basic_address_get */
-  { "Fig",        DT_ADDR, &VarFig,        IP "fig@example.com",     NULL              },
-  { "Guava",      DT_ADDR, &VarGuava,      0,                        NULL              },
-  { "Hawthorn",   DT_ADDR, &VarHawthorn,   0,                        NULL              }, /* test_basic_native_set */
-  { "Ilama",      DT_ADDR, &VarIlama,      IP "ilama@example.com",   NULL              },
-  { "Jackfruit",  DT_ADDR, &VarJackfruit,  0,                        NULL              }, /* test_basic_native_get */
-  { "Kumquat",    DT_ADDR, &VarKumquat,    IP "kumquat@example.com", NULL              }, /* test_reset */
-  { "Lemon",      DT_ADDR, &VarLemon,      IP "lemon@example.com",   validator_succeed }, /* test_validator */
-  { "Mango",      DT_ADDR, &VarMango,      IP "mango@example.com",   validator_fail    },
-  { "Nectarine",  DT_ADDR, &VarNectarine,  0,                        NULL              }, /* test_inherit */
+const struct VariableDef RegexVars[] = {
+  { "Apple",      DT_RX, &VarApple,      IP "apple.*",   NULL              }, /* test_initial() */
+  { "Banana",     DT_RX, &VarBanana,     IP "banana.*",  NULL              },
+  { "Cherry",     DT_RX, &VarCherry,     0,              NULL              }, /* test_basic_regex_set */
+  { "Damson",     DT_RX, &VarDamson,     IP "damson.*",  NULL              },
+  { "Elderberry", DT_RX, &VarElderberry, 0,              NULL              }, /* test_basic_regex_get */
+  { "Fig",        DT_RX, &VarFig,        IP "fig.*",     NULL              },
+  { "Guava",      DT_RX, &VarGuava,      0,              NULL              },
+  { "Hawthorn",   DT_RX, &VarHawthorn,   0,              NULL              }, /* test_basic_native_set */
+  { "Ilama",      DT_RX, &VarIlama,      IP "ilama.*",   NULL              },
+  { "Jackfruit",  DT_RX, &VarJackfruit,  0,              NULL              }, /* test_basic_native_get */
+  { "Kumquat",    DT_RX, &VarKumquat,    IP "kumquat.*", NULL              }, /* test_reset */
+  { "Lemon",      DT_RX, &VarLemon,      IP "lemon.*",   validator_succeed }, /* test_validator */
+  { "Mango",      DT_RX, &VarMango,      IP "mango.*",   validator_fail    },
+  { "Nectarine",  DT_RX, &VarNectarine,  0,              NULL              }, /* test_inherit */
   { NULL },
 };
 
 static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  printf("Apple = %s\n", VarApple->personal);
-  printf("Banana = %s\n", VarBanana->personal);
+  printf("Apple = %s\n", VarApple->pattern);
+  printf("Banana = %s\n", VarBanana->pattern);
 
-  return ((mutt_strcmp(VarApple->personal, "apple@example.com") == 0) &&
-          (mutt_strcmp(VarBanana->personal, "banana@example.com") == 0));
+  return ((mutt_strcmp(VarApple->pattern, "apple.*") == 0) &&
+          (mutt_strcmp(VarBanana->pattern, "banana.*") == 0));
 }
 
 static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello@example.com", "world@example.com", NULL };
+  const char *valid[] = { "hello.*", "world.*", NULL };
   char *name = "Cherry";
-  char *addr = NULL;
+  char *rx = NULL;
 
   for (int i = 0; i < mutt_array_size(valid); i++)
   {
@@ -68,13 +68,13 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    addr = VarCherry ? VarCherry->personal : NULL;
-    if (mutt_strcmp(addr, valid[i]) != 0)
+    rx = VarCherry ? VarCherry->pattern : NULL;
+    if (mutt_strcmp(rx, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = '%s', set by '%s'\n", name, NONULL(addr), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(rx), NONULL(valid[i]));
   }
 
   name = "Damson";
@@ -87,12 +87,13 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (mutt_strcmp(VarDamson->personal, valid[i]) != 0)
+    rx = VarDamson ? VarDamson->pattern : NULL;
+    if (mutt_strcmp(rx, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = '%s', set by '%s'\n", name, NONULL(VarDamson->personal), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(rx), NONULL(valid[i]));
   }
 
   return true;
@@ -102,7 +103,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Elderberry";
-  char *addr = NULL;
+  char *rx = NULL;
 
   mutt_buffer_reset(err);
   if (!cs_get_variable(cs, name, err))
@@ -110,8 +111,8 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  addr = VarElderberry ? VarElderberry->personal : NULL;
-  printf("%s = '%s', '%s'\n", name, NONULL(addr), err->data);
+  rx = VarElderberry ? VarElderberry->pattern : NULL;
+  printf("%s = '%s', '%s'\n", name, NONULL(rx), err->data);
 
   name = "Fig";
   mutt_buffer_reset(err);
@@ -120,8 +121,8 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  addr = VarFig ? VarFig->personal : NULL;
-  printf("%s = '%s', '%s'\n", name, NONULL(addr), err->data);
+  rx = VarFig ? VarFig->pattern : NULL;
+  printf("%s = '%s', '%s'\n", name, NONULL(rx), err->data);
 
   name = "Guava";
   if (!cs_set_variable(cs, name, "guava", err))
@@ -133,8 +134,8 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  addr = VarGuava ? VarGuava->personal : NULL;
-  printf("%s = '%s', '%s'\n", name, NONULL(addr), err->data);
+  rx = VarGuava ? VarGuava->pattern : NULL;
+  printf("%s = '%s', '%s'\n", name, NONULL(rx), err->data);
 
   return true;
 }
@@ -143,24 +144,24 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct Address a = { "hello@example.com" };
+  struct Regex r = { "hello.*" };
   char *name = "Hawthorn";
-  char *addr = NULL;
+  char *rx = NULL;
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, (intptr_t) &a, err))
+  if (!cs_str_set_value(cs, name, (intptr_t) &r, err))
   {
     printf("%s\n", err->data);
     return false;
   }
 
-  addr = VarHawthorn ? VarHawthorn->personal : NULL;
-  if (mutt_strcmp(addr, a.personal) != 0)
+  rx = VarHawthorn ? VarHawthorn->pattern : NULL;
+  if (mutt_strcmp(rx, r.pattern) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
-  printf("%s = '%s', set by '%s'\n", name, NONULL(addr), a.personal);
+  printf("%s = '%s', set by '%s'\n", name, NONULL(rx), r.pattern);
 
   name = "Ilama";
   mutt_buffer_reset(err);
@@ -175,8 +176,8 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
-  addr = VarIlama ? VarIlama->personal : NULL;
-  printf("%s = '%s', set by NULL\n", name, NONULL(addr));
+  rx = VarIlama ? VarIlama->pattern : NULL;
+  printf("%s = '%s', set by NULL\n", name, NONULL(rx));
 
   return true;
 }
@@ -186,21 +187,21 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   char *name = "Jackfruit";
 
-  if (!cs_set_variable(cs, name, "jackfruit@example.com", err))
+  if (!cs_set_variable(cs, name, "jackfruit.*", err))
     return false;
 
   mutt_buffer_reset(err);
   intptr_t value = cs_str_get_value(cs, name, err);
-  struct Address *a = (struct Address *) value;
+  struct Regex *r = (struct Regex *) value;
 
-  if (VarJackfruit != a)
+  if (VarJackfruit != r)
   {
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  char *addr1 = VarJackfruit ? VarJackfruit->personal : NULL;
-  char *addr2 = a ? a->personal : NULL;
-  printf("%s = '%s', '%s'\n", name, NONULL(addr1), NONULL(addr2));
+  char *rx1 = VarJackfruit ? VarJackfruit->pattern : NULL;
+  char *rx2 = r ? r->pattern : NULL;
+  printf("%s = '%s', '%s'\n", name, NONULL(rx1), NONULL(rx2));
 
   return true;
 }
@@ -210,16 +211,16 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   char *name = "Kumquat";
-  char *addr = NULL;
+  char *rx = NULL;
 
   mutt_buffer_reset(err);
 
-  addr = VarKumquat ? VarKumquat->personal : NULL;
-  printf("Initial: %s = '%s'\n", name, NONULL(addr));
-  if (!cs_set_variable(cs, name, "hello@example.com", err))
+  rx = VarKumquat ? VarKumquat->pattern : NULL;
+  printf("Initial: %s = '%s'\n", name, NONULL(rx));
+  if (!cs_set_variable(cs, name, "hello.*", err))
     return false;
-  addr = VarKumquat ? VarKumquat->personal : NULL;
-  printf("Set: %s = '%s'\n", name, NONULL(addr));
+  rx = VarKumquat ? VarKumquat->pattern : NULL;
+  printf("Set: %s = '%s'\n", name, NONULL(rx));
 
   if (!cs_reset_variable(cs, name, err))
   {
@@ -227,14 +228,14 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  addr = VarKumquat ? VarKumquat->personal : NULL;
-  if (mutt_strcmp(addr, "kumquat@example.com") != 0)
+  rx = VarKumquat ? VarKumquat->pattern : NULL;
+  if (mutt_strcmp(rx, "kumquat.*") != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
 
-  printf("Reset: %s = '%s'\n", name, NONULL(addr));
+  printf("Reset: %s = '%s'\n", name, NONULL(rx));
 
   return true;
 }
@@ -244,11 +245,11 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   char *name = "Lemon";
-  char *addr = NULL;
-  struct Address a = { "world@example.com" };
+  char *rx = NULL;
+  struct Regex r = { "world.*" };
 
   mutt_buffer_reset(err);
-  if (cs_set_variable(cs, name, "hello@example.com", err))
+  if (cs_set_variable(cs, name, "hello.*", err))
   {
     printf("%s\n", err->data);
   }
@@ -257,11 +258,11 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  addr = VarLemon ? VarLemon->personal : NULL;
-  printf("Address: %s = %s\n", name, NONULL(addr));
+  rx = VarLemon ? VarLemon->pattern : NULL;
+  printf("Regex: %s = %s\n", name, NONULL(rx));
 
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, IP &a, err))
+  if (cs_str_set_value(cs, name, IP &r, err))
   {
     printf("%s\n", err->data);
   }
@@ -270,12 +271,12 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  addr = VarLemon ? VarLemon->personal : NULL;
-  printf("Native: %s = %s\n", name, NONULL(addr));
+  rx = VarLemon ? VarLemon->pattern : NULL;
+  printf("Native: %s = %s\n", name, NONULL(rx));
 
   name = "Mango";
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, name, "hello@example.com", err))
+  if (!cs_set_variable(cs, name, "hello.*", err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -284,11 +285,11 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  addr = VarMango ? VarMango->personal : NULL;
-  printf("Address: %s = %s\n", name, NONULL(addr));
+  rx = VarMango ? VarMango->pattern : NULL;
+  printf("Regex: %s = %s\n", name, NONULL(rx));
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, IP &a, err))
+  if (!cs_str_set_value(cs, name, IP &r, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -297,8 +298,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  addr = VarMango ? VarMango->personal : NULL;
-  printf("Native: %s = %s\n", name, NONULL(addr));
+  rx = VarMango ? VarMango->pattern : NULL;
+  printf("Native: %s = %s\n", name, NONULL(rx));
 
   return true;
 }
@@ -308,11 +309,11 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
   intptr_t cval = cs_str_get_value(cs, child,  NULL);
 
-  struct Address *pa = (struct Address *) pval;
-  struct Address *ca = (struct Address *) cval;
+  struct Regex *pa = (struct Regex *) pval;
+  struct Regex *ca = (struct Regex *) cval;
 
-  char *pstr = pa ? pa->personal : NULL;
-  char *cstr = ca ? ca->personal : NULL;
+  char *pstr = pa ? pa->pattern : NULL;
+  char *cstr = ca ? ca->pattern : NULL;
 
   printf("%15s = %s\n", parent, NONULL(pstr));
   printf("%15s = %s\n", child,  NONULL(cstr));
@@ -328,13 +329,13 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
-  const char *AccountVarAddr[] = { parent, NULL, };
+  const char *AccountVarRx[] = { parent, NULL, };
 
-  struct Account *ac = ac_create(cs, account,  AccountVarAddr);
+  struct Account *ac = ac_create(cs, account,  AccountVarRx);
 
   // set parent
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, parent, "hello@example.com", err))
+  if (!cs_set_variable(cs, parent, "hello.*", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -343,7 +344,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set child
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, child, "world@example.com", err))
+  if (!cs_set_variable(cs, child, "world.*", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -374,7 +375,7 @@ bti_out:
   return result;
 }
 
-bool address_test(void)
+bool regex_test(void)
 {
   log_line(__func__);
 
@@ -386,8 +387,8 @@ bool address_test(void)
 
   struct ConfigSet *cs = cs_new_set(30);
 
-  init_addr(cs);
-  if (!cs_register_variables(cs, AddressVars))
+  init_regex(cs);
+  if (!cs_register_variables(cs, RegexVars))
     return false;
 
   cs_add_listener(cs, log_listener);
