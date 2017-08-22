@@ -15,6 +15,7 @@ sort Mango = date
 sort Hawthorn = flagged
 sort Jackfruit = date
 sort Nectarine = date
+sort Papaya: ERROR: Invalid sort type: 144
 ---- test_initial_values -----------------------------------
 Apple = 1
 Banana = 2
@@ -176,3 +177,6 @@ Event: fruit:Olive has been reset
 Event: Olive has been reset
           Olive = 1
     fruit:Olive = 1
+---- test_sort_type ----------------------------------------
+Expected error: Invalid sort type: 144
+Expected error: Invalid sort type: 144

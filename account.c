@@ -61,7 +61,8 @@ void ac_free(struct ConfigSet *cs, struct Account **ac)
   for (int i = 0; i < (*ac)->num_vars; i++)
   {
     snprintf(child, sizeof(child), "%s:%s", (*ac)->name, (*ac)->var_names[i]);
-    cs_reset_variable(cs, child, NULL);
+    if (!cs_reset_variable(cs, child, NULL))
+      printf("reset failed\n");
   }
 
   FREE(&(*ac)->name);

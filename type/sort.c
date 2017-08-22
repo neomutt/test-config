@@ -116,6 +116,8 @@ static bool set_sort(struct ConfigSet *cs, void *var, const struct VariableDef *
       id = find_id(SortSidebarMethods, value);
       break;
     default:
+      mutt_buffer_printf(err, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
+      return false;
       break;
   }
 
@@ -162,6 +164,8 @@ static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *r
       str = find_string(SortSidebarMethods, sort);
       break;
     default:
+      mutt_buffer_printf(result, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
+      return false;
       break;
   }
 
@@ -203,6 +207,8 @@ static bool set_native_sort(struct ConfigSet *cs, void *var, const struct Variab
       str = find_string(SortSidebarMethods, value);
       break;
     default:
+      mutt_buffer_printf(err, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
+      return false;
       break;
   }
 
