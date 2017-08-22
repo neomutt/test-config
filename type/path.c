@@ -61,9 +61,7 @@ static bool set_native_path(struct ConfigSet *cs, void *var, const struct Variab
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
 
-  /* Don't free strings from the var definition */
-  if (*(char **) var != (char *) vdef->initial)
-    FREE(var);
+  destroy_path(var, vdef);
 
   *(const char **) var = safe_strdup((const char *) value);
   return true;

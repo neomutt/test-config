@@ -23,17 +23,25 @@ static bool set_addr(struct ConfigSet *cs, void *var, const struct VariableDef *
   if (!cs || !var || !vdef)
     return false;
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
+  struct Address *addr = NULL;
+
+  // An empty address "" will be stored as NULL
+  if (value && (value[0] != '\0'))
+  {
+    addr = safe_calloc(1, sizeof(*addr));
+    addr->personal = safe_strdup((const char *) value);
+    addr->mailbox = safe_strdup("dummy1");
+  }
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) addr, err))
+  {
+    destroy_addr(&addr, vdef);
     return false;
+  }
 
   destroy_addr(var, vdef);
 
-  //XXX should an address of "" be stored as NULL?
-  struct Address *a = safe_calloc(1, sizeof(*a));
-  a->personal = safe_strdup((const char *) value);
-  a->mailbox = safe_strdup("dummy1");
-
-  *(struct Address **) var = a;
+  *(struct Address **) var = addr;
   return true;
 }
 
@@ -57,6 +65,7 @@ static struct Address *dup_address(struct Address *addr)
 
   struct Address *a = safe_calloc(1, sizeof(*a));
   a->personal = safe_strdup(addr->personal);
+  a->mailbox = safe_strdup(addr->mailbox);
   return a;
 }
 
@@ -70,9 +79,7 @@ static bool set_native_addr(struct ConfigSet *cs, void *var, const struct Variab
 
   addr_free(var);
 
-  struct Address *addr = dup_address((struct Address *) value);
-
-  *(struct Address **) var = addr;
+  *(struct Address **) var = dup_address((struct Address *) value);
   return true;
 }
 
@@ -86,6 +93,14 @@ static intptr_t get_native_addr(struct ConfigSet *cs, void *var, const struct Va
   return (intptr_t) addr;
 }
 
+struct Address *addr_create(const char *addr)
+{
+  struct Address *a = safe_calloc(1, sizeof(*a));
+  a->personal = safe_strdup(addr);
+  a->mailbox = safe_strdup("dummy3");
+  return a;
+}
+
 static bool reset_addr(struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -94,10 +109,7 @@ static bool reset_addr(struct ConfigSet *cs, void *var,
 
   destroy_addr(var, vdef);
 
-  struct Address *a = safe_calloc(1, sizeof(*a));
-
-  a->personal = safe_strdup((char *) vdef->initial);
-  a->mailbox = safe_strdup("dummy2");
+  struct Address *a = addr_create((char *) vdef->initial);
 
   *(struct Address **) var = a;
   return true;
@@ -107,13 +119,6 @@ void init_addr(struct ConfigSet *cs)
 {
   struct ConfigSetType cst_addr = { "address", set_addr, get_addr, set_native_addr, get_native_addr, reset_addr, destroy_addr, };
   cs_register_type(cs, DT_ADDR, &cst_addr);
-}
-
-struct Address *addr_create(const char *addr)
-{
-  struct Address *a = safe_calloc(1, sizeof(*a));
-  a->personal = safe_strdup(addr);
-  return a;
 }
 
 void addr_free(struct Address **addr)

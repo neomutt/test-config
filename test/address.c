@@ -87,12 +87,13 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (mutt_strcmp(VarDamson->personal, valid[i]) != 0)
+    addr = VarDamson ? VarDamson->personal : NULL;
+    if (mutt_strcmp(addr, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = '%s', set by '%s'\n", name, NONULL(VarDamson->personal), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(addr), NONULL(valid[i]));
   }
 
   return true;

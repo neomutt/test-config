@@ -67,13 +67,11 @@ static bool set_mbchartbl(struct ConfigSet *cs, void *var,
     return false;
 
   struct MbCharTable *table = parse_mbchar_table(value);
-  if (table)
+
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
   {
-    if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
-    {
-      free_mbchartbl(&table);
-      return false;
-    }
+    free_mbchartbl(&table);
+    return false;
   }
 
   destroy_mbchartbl(var, vdef);
@@ -113,11 +111,8 @@ static bool set_native_mbchartbl(struct ConfigSet *cs, void *var, const struct V
   if (!cs || !var || !vdef)
     return false;
 
-  if (value)
-  {
-    if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-      return false;
-  }
+  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
+    return false;
 
   free_mbchartbl(var);
 

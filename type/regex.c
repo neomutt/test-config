@@ -40,12 +40,12 @@ static bool set_rx(struct ConfigSet *cs, void *var, const struct VariableDef *vd
     r = safe_calloc(1, sizeof(*r));
     r->pattern = safe_strdup(value);
     r->rx = NULL; //XXX regenerate r->rx
+  }
 
-    if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) r, err))
-    {
-      free_rx(&r);
-      return false;
-    }
+  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) r, err))
+  {
+    free_rx(&r);
+    return false;
   }
 
   destroy_rx(var, vdef);
