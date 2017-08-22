@@ -1,0 +1,178 @@
+---- sort_test ---------------------------------------------
+---- set_list ----------------------------------------------
+sort Damson = address
+sort Lemon = date
+sort Cherry = date
+sort Olive = date
+sort Fig = date
+sort Elderberry = date
+sort Ilama = date
+sort Kumquat = date
+sort Banana = size
+sort Apple = date
+sort Guava = date
+sort Mango = date
+sort Hawthorn = flagged
+sort Jackfruit = date
+sort Nectarine = date
+---- test_initial_values -----------------------------------
+Apple = 1
+Banana = 2
+---- test_basic_string_set ---------------------------------
+Event: Cherry has been set
+Cherry = 1, set by 'date'
+Event: Cherry has been set
+Cherry = 1, set by 'date-sent'
+Event: Cherry has been set
+Cherry = 7, set by 'date-received'
+Event: Cherry has been set
+Cherry = 5, set by 'mailbox-order'
+Event: Cherry has been set
+Cherry = 3, set by 'subject'
+Event: Cherry has been set
+Cherry = 4, set by 'from'
+Event: Cherry has been set
+Cherry = 2, set by 'size'
+Event: Cherry has been set
+Cherry = 6, set by 'threads'
+Event: Cherry has been set
+Cherry = 8, set by 'to'
+Event: Cherry has been set
+Cherry = 9, set by 'score'
+Event: Cherry has been set
+Cherry = 14, set by 'spam'
+Event: Cherry has been set
+Cherry = 19, set by 'label'
+Expected error: Invalid sort name: -1
+Expected error: Invalid sort name: 999
+Expected error: Invalid sort name: junk
+Expected error: 
+Event: Damson has been set
+Damson = 10, set by 'alias'
+Event: Damson has been set
+Damson = 11, set by 'address'
+Event: Damson has been set
+Damson = 5, set by 'unsorted'
+Expected error: Invalid sort name: -1
+Expected error: Invalid sort name: 999
+Expected error: Invalid sort name: junk
+Expected error: 
+Event: Elderberry has been set
+Elderberry = 3, set by 'alpha'
+Event: Elderberry has been set
+Elderberry = 15, set by 'count'
+Event: Elderberry has been set
+Elderberry = 1, set by 'date'
+Event: Elderberry has been set
+Elderberry = 20, set by 'desc'
+Event: Elderberry has been set
+Elderberry = 16, set by 'new'
+Event: Elderberry has been set
+Elderberry = 2, set by 'size'
+Event: Elderberry has been set
+Elderberry = 5, set by 'unsorted'
+Expected error: Invalid sort name: -1
+Expected error: Invalid sort name: 999
+Expected error: Invalid sort name: junk
+Expected error: 
+Event: Fig has been set
+Fig = 11, set by 'address'
+Event: Fig has been set
+Fig = 1, set by 'date'
+Event: Fig has been set
+Fig = 12, set by 'keyid'
+Event: Fig has been set
+Fig = 13, set by 'trust'
+Expected error: Invalid sort name: -1
+Expected error: Invalid sort name: 999
+Expected error: Invalid sort name: junk
+Expected error: 
+Event: Guava has been set
+Guava = 1, set by 'date'
+Event: Guava has been set
+Guava = 1, set by 'date-sent'
+Event: Guava has been set
+Guava = 7, set by 'date-received'
+Event: Guava has been set
+Guava = 5, set by 'mailbox-order'
+Event: Guava has been set
+Guava = 3, set by 'subject'
+Event: Guava has been set
+Guava = 4, set by 'from'
+Event: Guava has been set
+Guava = 2, set by 'size'
+Event: Guava has been set
+Guava = 1, set by 'threads'
+Event: Guava has been set
+Guava = 8, set by 'to'
+Event: Guava has been set
+Guava = 9, set by 'score'
+Event: Guava has been set
+Guava = 14, set by 'spam'
+Event: Guava has been set
+Guava = 19, set by 'label'
+Expected error: Invalid sort name: -1
+Expected error: Invalid sort name: 999
+Expected error: Invalid sort name: junk
+Expected error: 
+Event: Hawthorn has been set
+Hawthorn = 18, set by 'alpha'
+Event: Hawthorn has been set
+Hawthorn = 15, set by 'count'
+Event: Hawthorn has been set
+Hawthorn = 20, set by 'desc'
+Event: Hawthorn has been set
+Hawthorn = 17, set by 'flagged'
+Event: Hawthorn has been set
+Hawthorn = 5, set by 'mailbox-order'
+Event: Hawthorn has been set
+Hawthorn = 18, set by 'name'
+Event: Hawthorn has been set
+Hawthorn = 16, set by 'new'
+Event: Hawthorn has been set
+Hawthorn = 18, set by 'path'
+Event: Hawthorn has been set
+Hawthorn = 16, set by 'unread'
+Event: Hawthorn has been set
+Hawthorn = 5, set by 'unsorted'
+Expected error: Invalid sort name: -1
+Expected error: Invalid sort name: 999
+Expected error: Invalid sort name: junk
+Expected error: 
+---- test_basic_string_get ---------------------------------
+Ilama = 3, subject
+Ilama = 6, threads
+---- test_basic_native_set ---------------------------------
+Event: Jackfruit has been set
+Jackfruit = 6, set to '6'
+Expected error: Invalid sort type: -1
+Expected error: Invalid sort type: 999
+---- test_basic_native_get ---------------------------------
+Kumquat = 6
+---- test_reset --------------------------------------------
+Event: Lemon has been reset
+Reset: Lemon = 1
+---- test_validator ----------------------------------------
+Event: Mango has been set
+validator_succeed: Mango, 6
+String: Mango = 6
+Event: Mango has been set
+validator_succeed: Mango, 6
+Native: Mango = 6
+Expected error: validator_fail: Nectarine, 6
+String: Nectarine = 3
+Expected error: validator_fail: Nectarine, 6
+Native: Nectarine = 3
+---- test_inherit ------------------------------------------
+Event: Olive has been set
+          Olive = 6
+    fruit:Olive = 6
+Event: fruit:Olive has been set
+          Olive = 6
+    fruit:Olive = 9
+Event: fruit:Olive has been reset
+          Olive = 6
+    fruit:Olive = 6
+Event: Olive has been reset
+          Olive = 1
+    fruit:Olive = 1

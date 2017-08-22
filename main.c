@@ -24,6 +24,7 @@
 #include "test/path.h"
 #include "test/quad.h"
 #include "test/regex.h"
+#include "test/sort.h"
 #include "test/string.h"
 #include "type/address.h"
 #include "type/bool.h"
@@ -362,6 +363,7 @@ int main(int argc, char *argv[])
   if ((which < 0) || (which == 6)) if (!address_test())    printf("address_test() failed\n");
   if ((which < 0) || (which == 7)) if (!regex_test())      printf("regex_test() failed\n");
   if ((which < 0) || (which == 8)) if (!mbytetable_test()) printf("mbytetable_test() failed\n");
+  if ((which < 0) || (which == 9)) if (!sort_test())       printf("sort_test() failed\n");
 
   return 0;
 }
