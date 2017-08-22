@@ -25,12 +25,15 @@ static bool set_str(struct ConfigSet *cs, void *var, const struct VariableDef *v
   if (!cs || !var || !vdef)
     return false;
 
+  /* Store empty strings as NULL */
+  if (value && (value[0] == '\0'))
+    value = NULL;
+
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
     return false;
 
   destroy_str(var, vdef);
 
-  //XXX a string of "" should be stored as NULL
   *(const char **) var = safe_strdup(value);
   return true;
 }
@@ -53,6 +56,12 @@ static bool set_native_str(struct ConfigSet *cs, void *var, const struct Variabl
   if (!cs || !var || !vdef)
     return false;
 
+  const char *str = (const char *) value;
+
+  /* Store empty strings as NULL */
+  if (str && (str[0] == '\0'))
+    value = 0;
+
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
 
@@ -60,10 +69,7 @@ static bool set_native_str(struct ConfigSet *cs, void *var, const struct Variabl
   if (*(char **) var != (char *) vdef->initial)
     FREE(var);
 
-  //XXX a string of "" should be stored as NULL
-  const char *str = safe_strdup((const char *) value);
-
-  *(const char **) var = str;
+  *(const char **) var = safe_strdup(str);
   return true;
 }
 
