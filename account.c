@@ -5,7 +5,7 @@
 #include "mutt_options.h"
 #include "inheritance.h"
 
-struct Account *ac_create(struct ConfigSet *cs, const char *name, const char *var_names[])
+struct Account *ac_create(const struct ConfigSet *cs, const char *name, const char *var_names[])
 {
   if (!cs || !name || !var_names)
     return NULL;
@@ -51,7 +51,7 @@ struct Account *ac_create(struct ConfigSet *cs, const char *name, const char *va
   return NULL;
 }
 
-void ac_free(struct ConfigSet *cs, struct Account **ac)
+void ac_free(const struct ConfigSet *cs, struct Account **ac)
 {
   if (!ac)
     return;

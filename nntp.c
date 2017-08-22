@@ -34,7 +34,7 @@ const struct VariableDef NntpVars[] = {
   { NULL },
 };
 
-void init_nntp(struct ConfigSet *cs)
+void init_nntp(const struct ConfigSet *cs)
 {
   cs_register_variables(cs, NntpVars);
 }

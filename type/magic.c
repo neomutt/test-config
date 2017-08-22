@@ -7,7 +7,7 @@
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 
-static bool set_magic(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+static bool set_magic(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                       const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
@@ -52,7 +52,7 @@ static bool get_magic(void *var, const struct VariableDef *vdef, struct Buffer *
   return true;
 }
 
-static bool set_native_magic(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_magic(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -70,7 +70,7 @@ static bool set_native_magic(struct ConfigSet *cs, void *var, const struct Varia
   return true;
 }
 
-static intptr_t get_native_magic(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_magic(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -78,7 +78,7 @@ static intptr_t get_native_magic(struct ConfigSet *cs, void *var, const struct V
   return *(short *) var;
 }
 
-static bool reset_magic(struct ConfigSet *cs, void *var,
+static bool reset_magic(const struct ConfigSet *cs, void *var,
                         const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -90,6 +90,6 @@ static bool reset_magic(struct ConfigSet *cs, void *var,
 
 void init_magic(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, set_native_magic, get_native_magic, reset_magic, NULL, };
+  const struct ConfigSetType cst_magic = { "magic", set_magic, get_magic, set_native_magic, get_native_magic, reset_magic, NULL, };
   cs_register_type(cs, DT_MAGIC, &cst_magic);
 }

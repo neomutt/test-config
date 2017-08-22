@@ -5,7 +5,7 @@
 #include "lib/lib.h"
 #include "mutt_options.h"
 
-static bool set_num(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+static bool set_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                     const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
@@ -40,7 +40,7 @@ static bool get_num(void *var, const struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool set_native_num(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -58,7 +58,7 @@ static bool set_native_num(struct ConfigSet *cs, void *var, const struct Variabl
   return true;
 }
 
-static intptr_t get_native_num(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -66,7 +66,7 @@ static intptr_t get_native_num(struct ConfigSet *cs, void *var, const struct Var
   return *(short *) var;
 }
 
-static bool reset_num(struct ConfigSet *cs, void *var,
+static bool reset_num(const struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)

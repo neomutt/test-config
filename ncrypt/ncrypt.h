@@ -3,6 +3,6 @@
 
 struct ConfigSet;
 
-void init_ncrypt(struct ConfigSet *set);
+void init_ncrypt(const struct ConfigSet *set);
 
 #endif /* _MUTT_NCRYPT_H */

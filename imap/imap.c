@@ -36,7 +36,7 @@ const struct VariableDef ImapVars[] = {
   { NULL },
 };
 
-void init_imap(struct ConfigSet *cs)
+void init_imap(const struct ConfigSet *cs)
 {
   cs_register_variables(cs, ImapVars);
 }

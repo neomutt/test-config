@@ -59,7 +59,7 @@ static void destroy_mbchartbl(void *var, const struct VariableDef *vdef)
   free_mbchartbl(m);
 }
 
-static bool set_mbchartbl(struct ConfigSet *cs, void *var,
+static bool set_mbchartbl(const struct ConfigSet *cs, void *var,
                           const struct VariableDef *vdef, const char *value,
                           struct Buffer *err)
 {
@@ -106,7 +106,7 @@ static struct MbCharTable *dup_mbchartbl(struct MbCharTable *table)
   return m;
 }
 
-static bool set_native_mbchartbl(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_mbchartbl(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -122,7 +122,7 @@ static bool set_native_mbchartbl(struct ConfigSet *cs, void *var, const struct V
   return true;
 }
 
-static intptr_t get_native_mbchartbl(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_mbchartbl(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -132,7 +132,7 @@ static intptr_t get_native_mbchartbl(struct ConfigSet *cs, void *var, const stru
   return (intptr_t) table;
 }
 
-static bool reset_mbchartbl(struct ConfigSet *cs, void *var,
+static bool reset_mbchartbl(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -168,6 +168,6 @@ struct MbCharTable *mb_create(const char *str)
 
 void init_mbyte_table(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl, set_native_mbchartbl, get_native_mbchartbl, reset_mbchartbl, destroy_mbchartbl, };
+  const struct ConfigSetType cst_mbchartbl = { "mbtable", set_mbchartbl, get_mbchartbl, set_native_mbchartbl, get_native_mbchartbl, reset_mbchartbl, destroy_mbchartbl, };
   cs_register_type(cs, DT_MBCHARTBL, &cst_mbchartbl);
 }

@@ -19,7 +19,7 @@ static void destroy_str(void *var, const struct VariableDef *vdef)
   FREE(var);
 }
 
-static bool set_str(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+static bool set_str(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                     const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -51,7 +51,7 @@ static bool get_str(void *var, const struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool set_native_str(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_str(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -73,7 +73,7 @@ static bool set_native_str(struct ConfigSet *cs, void *var, const struct Variabl
   return true;
 }
 
-static intptr_t get_native_str(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_str(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -83,7 +83,7 @@ static intptr_t get_native_str(struct ConfigSet *cs, void *var, const struct Var
   return (intptr_t) str;
 }
 
-static bool reset_str(struct ConfigSet *cs, void *var,
+static bool reset_str(const struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)

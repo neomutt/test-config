@@ -3,6 +3,6 @@
 
 struct ConfigSet;
 
-void init_imap(struct ConfigSet *set);
+void init_imap(const struct ConfigSet *set);
 
 #endif /* _MUTT_IMAP_H */

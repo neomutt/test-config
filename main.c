@@ -94,7 +94,7 @@ void init_variables(struct ConfigSet *cs)
   init_sidebar(cs);
 }
 
-bool listener(struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
+bool listener(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
 {
   if (ev == CE_RESET)
     printf("\033[1;32m%s has been reset\033[m\n", name);
@@ -103,7 +103,7 @@ bool listener(struct ConfigSet *cs, struct HashElem *he, const char *name, enum 
   return false;
 }
 
-void dump(struct ConfigSet *cs, const char *parent, const char *child)
+void dump(const struct ConfigSet *cs, const char *parent, const char *child)
 {
   struct Buffer result;
   mutt_buffer_init(&result);
@@ -132,7 +132,7 @@ void dump(struct ConfigSet *cs, const char *parent, const char *child)
   FREE(&result.data);
 }
 
-static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
+static void dump_native(const struct ConfigSet *cs, const char *parent, const char *child)
 {
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
   intptr_t cval = cs_str_get_value(cs, child,  NULL);
@@ -158,7 +158,7 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   }
 }
 
-void reset(struct ConfigSet *cs, const char *name)
+void reset(const struct ConfigSet *cs, const char *name)
 {
   struct Buffer result;
   mutt_buffer_init(&result);
@@ -175,7 +175,7 @@ void reset(struct ConfigSet *cs, const char *name)
   FREE(&result.data);
 }
 
-void set(struct ConfigSet *cs, const char *name, const char *value)
+void set(const struct ConfigSet *cs, const char *name, const char *value)
 {
   struct Buffer result;
   mutt_buffer_init(&result);
@@ -189,7 +189,7 @@ void set(struct ConfigSet *cs, const char *name, const char *value)
   FREE(&result.data);
 }
 
-void test(struct ConfigSet *cs, const char *account, const char *parent, const char *pvalue, const char *cvalue)
+void test(const struct ConfigSet *cs, const char *account, const char *parent, const char *pvalue, const char *cvalue)
 {
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
@@ -206,7 +206,7 @@ void test(struct ConfigSet *cs, const char *account, const char *parent, const c
   printf("\n");
 }
 
-void test_set_reset(struct ConfigSet *cs)
+void test_set_reset(const struct ConfigSet *cs)
 {
   struct Account *ac1 = ac_create(cs, "apple",  AccountVarStr);
   struct Account *ac2 = ac_create(cs, "banana", AccountVarStr);
@@ -228,7 +228,7 @@ void test_set_reset(struct ConfigSet *cs)
   ac_free(cs, &ac1);
 }
 
-void test_validators(struct ConfigSet *cs)
+void test_validators(const struct ConfigSet *cs)
 {
   /* failing tests */
   set(cs, "certificate_file",      "file");               // DT_PATH
@@ -257,7 +257,7 @@ void test_validators(struct ConfigSet *cs)
 
 void test2(const struct Account *ac, const char *parent, int vid, intptr_t pvalue, intptr_t cvalue)
 {
-  struct ConfigSet *cs = ac->cs;
+  const struct ConfigSet *cs = ac->cs;
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", ac->name, parent);
 
@@ -275,7 +275,7 @@ void test2(const struct Account *ac, const char *parent, int vid, intptr_t pvalu
 
 }
 
-void test_native(struct ConfigSet *cs)
+void test_native(const struct ConfigSet *cs)
 {
   struct Account *ac = ac_create(cs, "cherry", AccountVarStr);
 

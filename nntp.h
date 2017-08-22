@@ -3,6 +3,6 @@
 
 struct ConfigSet;
 
-void init_nntp(struct ConfigSet *set);
+void init_nntp(const struct ConfigSet *set);
 
 #endif /* _MUTT_NNTP_H */

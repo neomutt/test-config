@@ -33,7 +33,7 @@ const struct VariableDef SidebarVars[] = {
   { NULL },
 };
 
-void init_sidebar(struct ConfigSet *cs)
+void init_sidebar(const struct ConfigSet *cs)
 {
   cs_register_variables(cs, SidebarVars);
 }

@@ -149,7 +149,7 @@ const struct VariableDef NcryptVars[] = {
   { NULL },
 };
 
-void init_ncrypt(struct ConfigSet *cs)
+void init_ncrypt(const struct ConfigSet *cs)
 {
   cs_register_variables(cs, NcryptVars);
 }

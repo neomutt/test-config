@@ -32,7 +32,7 @@ void hash_dump(struct Hash *table)
   }
 }
 
-void cs_dump_set(struct ConfigSet *cs)
+void cs_dump_set(const struct ConfigSet *cs)
 {
   struct HashElem *he = NULL;
   struct HashWalkState state;
@@ -58,7 +58,7 @@ void cs_dump_set(struct ConfigSet *cs)
       name = he->key.strkey;
     }
 
-    struct ConfigSetType *cst = cs_get_type_def(cs, he->type);
+    const struct ConfigSetType *cst = cs_get_type_def(cs, he->type);
     if (!cst)
     {
       printf("Unknown type: %d\n", he->type);
@@ -68,7 +68,7 @@ void cs_dump_set(struct ConfigSet *cs)
     mutt_buffer_reset(&result);
     printf("%s %s", cst->name, name);
 
-    struct VariableDef *vdef = he->data;
+    const struct VariableDef *vdef = he->data;
 
     if (cst->getter(vdef->var, vdef, &result))
       printf(" = %s\n", result.data);

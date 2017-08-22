@@ -26,7 +26,7 @@ const struct VariableDef PopVars[] = {
   { NULL },
 };
 
-void init_pop(struct ConfigSet *cs)
+void init_pop(const struct ConfigSet *cs)
 {
   cs_register_variables(cs, PopVars);
 }

@@ -87,7 +87,7 @@ static int find_id(const struct Mapping *map, const char *str)
   return -1;
 }
 
-static bool set_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+static bool set_sort(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
@@ -179,7 +179,7 @@ static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_sort(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -225,7 +225,7 @@ static bool set_native_sort(struct ConfigSet *cs, void *var, const struct Variab
   return true;
 }
 
-static intptr_t get_native_sort(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_sort(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -233,7 +233,7 @@ static intptr_t get_native_sort(struct ConfigSet *cs, void *var, const struct Va
   return *(short *) var;
 }
 
-static bool reset_sort(struct ConfigSet *cs, void *var,
+static bool reset_sort(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -245,6 +245,6 @@ static bool reset_sort(struct ConfigSet *cs, void *var,
 
 void init_sorts(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, set_native_sort, get_native_sort, reset_sort, NULL, };
+  const struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, set_native_sort, get_native_sort, reset_sort, NULL, };
   cs_register_type(cs, DT_SORT, &cst_sort);
 }

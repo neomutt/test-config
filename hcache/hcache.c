@@ -10,7 +10,7 @@ const char *hcache_backends[] = {
   "tokyocabinet", "kyotocabinet", "qdbm", "gdbm", "bdb", "lmdb",
 };
 
-static bool set_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err)
+static bool set_hcache(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
     return false;
@@ -52,7 +52,7 @@ static bool get_hcache(void *var, const struct VariableDef *vdef, struct Buffer 
   return true;
 }
 
-static bool set_native_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_hcache(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -70,7 +70,7 @@ static bool set_native_hcache(struct ConfigSet *cs, void *var, const struct Vari
   return true;
 }
 
-static intptr_t get_native_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_hcache(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -78,7 +78,7 @@ static intptr_t get_native_hcache(struct ConfigSet *cs, void *var, const struct 
   return *(short *) var;
 }
 
-static bool reset_hcache(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_hcache(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -88,7 +88,7 @@ static bool reset_hcache(struct ConfigSet *cs, void *var, const struct VariableD
 }
 
 // static
-bool hc_pagesize_validator(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+bool hc_pagesize_validator(const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !vdef || !value)
     return false;
@@ -130,7 +130,7 @@ const struct VariableDef HCVars[] = {
 
 void init_hcache(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, set_native_hcache, get_native_hcache, reset_hcache, NULL, };
+  const struct ConfigSetType cst = { "hcache", set_hcache, get_hcache, set_native_hcache, get_native_hcache, reset_hcache, NULL, };
 
   cs_register_type(cs, DT_HCACHE, &cst);
 

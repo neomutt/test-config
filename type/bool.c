@@ -10,7 +10,7 @@ const char *bool_values[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",
 };
 
-static bool set_bool(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+static bool set_bool(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
@@ -55,7 +55,7 @@ static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_bool(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_bool(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -73,7 +73,7 @@ static bool set_native_bool(struct ConfigSet *cs, void *var, const struct Variab
   return true;
 }
 
-static intptr_t get_native_bool(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_bool(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -81,7 +81,7 @@ static intptr_t get_native_bool(struct ConfigSet *cs, void *var, const struct Va
   return *(bool *) var;
 }
 
-static bool reset_bool(struct ConfigSet *cs, void *var,
+static bool reset_bool(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)

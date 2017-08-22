@@ -3,6 +3,6 @@
 
 struct ConfigSet;
 
-void init_pop(struct ConfigSet *set);
+void init_pop(const struct ConfigSet *set);
 
 #endif /* _MUTT_POP_H */

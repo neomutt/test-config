@@ -34,7 +34,7 @@ const struct VariableDef NotmuchVars[] = {
   { NULL },
 };
 
-void init_notmuch(struct ConfigSet *cs)
+void init_notmuch(const struct ConfigSet *cs)
 {
   cs_register_variables(cs, NotmuchVars);
 }

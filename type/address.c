@@ -17,7 +17,7 @@ static void destroy_addr(void *var, const struct VariableDef *vdef)
   FREE(a);
 }
 
-static bool set_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+static bool set_addr(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -69,7 +69,7 @@ static struct Address *dup_address(struct Address *addr)
   return a;
 }
 
-static bool set_native_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_addr(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -83,7 +83,7 @@ static bool set_native_addr(struct ConfigSet *cs, void *var, const struct Variab
   return true;
 }
 
-static intptr_t get_native_addr(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_addr(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -101,7 +101,7 @@ struct Address *addr_create(const char *addr)
   return a;
 }
 
-static bool reset_addr(struct ConfigSet *cs, void *var,
+static bool reset_addr(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)

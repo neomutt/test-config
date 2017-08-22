@@ -7,7 +7,7 @@
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
-static bool set_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+static bool set_quad(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
@@ -52,7 +52,7 @@ static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_quad(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -70,7 +70,7 @@ static bool set_native_quad(struct ConfigSet *cs, void *var, const struct Variab
   return true;
 }
 
-static intptr_t get_native_quad(struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_quad(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -78,7 +78,7 @@ static intptr_t get_native_quad(struct ConfigSet *cs, void *var, const struct Va
   return *(short *) var;
 }
 
-static bool reset_quad(struct ConfigSet *cs, void *var,
+static bool reset_quad(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)

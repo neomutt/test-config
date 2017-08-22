@@ -3,6 +3,6 @@
 
 struct ConfigSet;
 
-void init_notmuch(struct ConfigSet *set);
+void init_notmuch(const struct ConfigSet *set);
 
 #endif /* _MUTT_NOTMUCH_H */

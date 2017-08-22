@@ -6,7 +6,7 @@
 
 const char *line = "--------------------------------------------------------------------------------";
 
-bool validator_fail(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result)
+bool validator_fail(const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result)
 {
   if (value > 1000000)
     mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
@@ -15,7 +15,7 @@ bool validator_fail(struct ConfigSet *cs, const struct VariableDef *vdef, intptr
   return false;
 }
 
-bool validator_succeed(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result)
+bool validator_succeed(const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result)
 {
   if (value > 1000000)
     mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
@@ -30,14 +30,14 @@ void log_line(const char *fn)
   printf("---- %s %.*s\n", fn, len, line);
 }
 
-bool log_listener(struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
+bool log_listener(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
 {
   const char *events[] = { "set", "reset" };
   printf("Event: %s has been %s\n", name, events[ev]);
   return true;
 }
 
-void set_list(struct ConfigSet *cs)
+void set_list(const struct ConfigSet *cs)
 {
   log_line(__func__);
   cs_dump_set(cs);
