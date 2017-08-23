@@ -1,8 +1,10 @@
 #include <stddef.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "config_set.h"
-#include "lib/lib.h"
+#include "lib/buffer.h"
+#include "lib/string2.h"
 #include "mutt_options.h"
 
 static bool set_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,

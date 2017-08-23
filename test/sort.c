@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "type/sort.h"
+#include <stdint.h>
+#include "account.h"
 #include "config_set.h"
-#include "debug.h"
+#include "lib/buffer.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
 #include "mapping.h"
 #include "mutt_options.h"
-#include "account.h"
-#include "lib/lib.h"
 #include "test/common.h"
+#include "type/sort.h"
 
 static short VarApple;
 static short VarBanana;

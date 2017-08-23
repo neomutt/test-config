@@ -2,9 +2,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "config_set.h"
-#include "lib/lib.h"
+#include "lib/buffer.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
 #include "mutt_options.h"
-#include "account.h"
 
 const char *bool_values[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",

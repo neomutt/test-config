@@ -1,9 +1,12 @@
 #include <stddef.h>
 #include "account.h"
-#include "lib/lib.h"
+#include <stdio.h>
 #include "config_set.h"
-#include "mutt_options.h"
 #include "inheritance.h"
+#include "lib/hash.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
+#include "mutt_options.h"
 
 struct Account *ac_create(const struct ConfigSet *cs, const char *name, const char *var_names[])
 {

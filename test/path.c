@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "type/path.h"
-#include "config_set.h"
-#include "debug.h"
-#include "mutt_options.h"
+#include <stdint.h>
 #include "account.h"
-#include "lib/lib.h"
+#include "config_set.h"
+#include "lib/buffer.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
+#include "mutt_options.h"
 #include "test/common.h"
+#include "type/path.h"
 
 static char *VarApple;
 static char *VarBanana;

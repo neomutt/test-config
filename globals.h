@@ -1,7 +1,7 @@
 #ifndef _MUTT_GLOBAL_H
 #define _MUTT_GLOBAL_H
 
-#include "type/regex.h"
+#include "type/regex2.h"
 
 extern char               *AliasFile;
 extern char               *AliasFmt;

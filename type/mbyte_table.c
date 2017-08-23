@@ -1,9 +1,13 @@
 #include <stdbool.h>
+#include "mbyte_table.h"
+#include <stdint.h>
 #include <string.h>
 #include <wchar.h>
-#include "mbyte_table.h"
 #include "config_set.h"
-#include "lib/lib.h"
+#include "lib/buffer.h"
+#include "lib/debug.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
 #include "mutt_options.h"
 
 static struct MbCharTable *parse_mbchar_table(const char *s)

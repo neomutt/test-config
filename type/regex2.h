@@ -29,7 +29,6 @@
 
 #include <features.h>
 #include <regex.h>
-#include <stddef.h>
 
 struct ConfigSet;
 

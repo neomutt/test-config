@@ -1,9 +1,10 @@
 #include <stdbool.h>
+#include "sort.h"
 #include <stdint.h>
 #include <string.h>
-#include "sort.h"
 #include "config_set.h"
-#include "lib/lib.h"
+#include "lib/buffer.h"
+#include "lib/string2.h"
 #include "mapping.h"
 #include "mutt_options.h"
 

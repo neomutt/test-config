@@ -1,6 +1,10 @@
 #include "address.h"
+#include <stddef.h>
+#include <stdint.h>
 #include "config_set.h"
-#include "lib/lib.h"
+#include "lib/buffer.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
 #include "mutt_options.h"
 
 static void destroy_addr(void *var, const struct VariableDef *vdef)

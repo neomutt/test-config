@@ -1,4 +1,4 @@
-#include "type/regex.h"
+#include "type/regex2.h"
 
 char               *AliasFile;
 char               *AliasFmt;

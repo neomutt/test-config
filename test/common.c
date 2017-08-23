@@ -1,8 +1,12 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include "config_set.h"
-#include "lib/lib.h"
 #include "debug.h"
+#include "lib/buffer.h"
+#include "lib/string2.h"
+
+struct HashElem;
 
 const char *line = "--------------------------------------------------------------------------------";
 

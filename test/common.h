@@ -3,10 +3,10 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "config_set.h"
 
-struct ConfigSet;
-struct VariableDef;
 struct Buffer;
+struct HashElem;
 
 extern const char *line;
 

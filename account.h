@@ -6,7 +6,6 @@
 
 struct Buffer;
 struct ConfigSet;
-struct HashElem;
 
 struct Account
 {

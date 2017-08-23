@@ -1,10 +1,10 @@
 #include <string.h>
-#include <strings.h>
 #include "validate.h"
-#include "lib/lib.h"
-#include "type/sort.h"
-#include "type/regex.h"
+#include "lib/buffer.h"
+#include "lib/string2.h"
 #include "type/mbyte_table.h"
+#include "type/regex2.h"
+#include "type/sort.h"
 
 bool val_path(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {

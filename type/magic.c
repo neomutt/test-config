@@ -2,7 +2,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "config_set.h"
-#include "lib/lib.h"
+#include "lib/buffer.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
 #include "mutt_options.h"
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };

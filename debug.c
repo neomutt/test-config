@@ -1,8 +1,12 @@
 #include "config.h"
+#include <stdio.h>
 #include <string.h>
-#include "lib/lib.h"
 #include "config_set.h"
 #include "inheritance.h"
+#include "lib/buffer.h"
+#include "lib/hash.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
 #include "mutt_options.h"
 
 void hash_dump(struct Hash *table)

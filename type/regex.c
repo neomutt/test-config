@@ -1,10 +1,12 @@
 #include <stddef.h>
 #include <stdbool.h>
-#include <string.h>
-#include "regex.h"
+#include <stdint.h>
 #include "config_set.h"
-#include "lib/lib.h"
+#include "lib/buffer.h"
+#include "lib/memory.h"
+#include "lib/string2.h"
 #include "mutt_options.h"
+#include "regex2.h"
 
 static void free_rx(struct Regex **r)
 {
