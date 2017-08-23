@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include "type/address.h"
 #include "account.h"
 #include "config_set.h"
 #include "lib/buffer.h"
@@ -8,7 +9,6 @@
 #include "lib/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "type/address.h"
 
 
 static struct Address *VarApple;
@@ -265,7 +265,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Address: %s = %s\n", name, NONULL(addr));
 
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, IP &a, err))
+  if (cs_str_set_value(cs, name, IP & a, err))
   {
     printf("%s\n", err->data);
   }
@@ -292,7 +292,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Address: %s = %s\n", name, NONULL(addr));
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, IP &a, err))
+  if (!cs_str_set_value(cs, name, IP & a, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -310,7 +310,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child,  NULL);
+  intptr_t cval = cs_str_get_value(cs, child, NULL);
 
   struct Address *pa = (struct Address *) pval;
   struct Address *ca = (struct Address *) cval;
@@ -319,7 +319,7 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   char *cstr = ca ? ca->personal : NULL;
 
   printf("%15s = %s\n", parent, NONULL(pstr));
-  printf("%15s = %s\n", child,  NONULL(cstr));
+  printf("%15s = %s\n", child, NONULL(cstr));
 }
 
 static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
@@ -332,9 +332,11 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
-  const char *AccountVarAddr[] = { parent, NULL, };
+  const char *AccountVarAddr[] = {
+    parent, NULL,
+  };
 
-  struct Account *ac = ac_create(cs, account,  AccountVarAddr);
+  struct Account *ac = ac_create(cs, account, AccountVarAddr);
 
   // set parent
   mutt_buffer_reset(err);
@@ -398,18 +400,25 @@ bool address_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))   return false;
-  if (!test_basic_string_set(cs, &err)) return false;
-  if (!test_basic_string_get(cs, &err)) return false;
-  if (!test_basic_native_set(cs, &err)) return false;
-  if (!test_basic_native_get(cs, &err)) return false;
-  if (!test_reset(cs, &err))            return false;
-  if (!test_validator(cs, &err))        return false;
-  if (!test_inherit(cs, &err))          return false;
+  if (!test_initial_values(cs, &err))
+    return false;
+  if (!test_basic_string_set(cs, &err))
+    return false;
+  if (!test_basic_string_get(cs, &err))
+    return false;
+  if (!test_basic_native_set(cs, &err))
+    return false;
+  if (!test_basic_native_get(cs, &err))
+    return false;
+  if (!test_reset(cs, &err))
+    return false;
+  if (!test_validator(cs, &err))
+    return false;
+  if (!test_inherit(cs, &err))
+    return false;
 
   cs_free(&cs);
   FREE(&err.data);
 
   return true;
 }
-

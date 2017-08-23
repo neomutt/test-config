@@ -101,7 +101,7 @@ bool val_mbchartbl(struct ConfigSet *cs, const struct VariableDef *vdef, intptr_
 {
   struct MbCharTable *table = (struct MbCharTable *) value;
 
-  if (strcasecmp(table->orig_str, "pqrs") == 0)
+  if (mutt_strcasecmp(table->orig_str, "pqrs") == 0)
     return true;
 
   mutt_buffer_addstr(err, "val_mbchartbl failed");

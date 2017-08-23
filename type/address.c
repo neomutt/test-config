@@ -1,6 +1,6 @@
-#include "address.h"
 #include <stddef.h>
 #include <stdint.h>
+#include "address.h"
 #include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
@@ -73,7 +73,9 @@ static struct Address *dup_address(struct Address *addr)
   return a;
 }
 
-static bool set_native_addr(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_addr(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, intptr_t value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -87,7 +89,8 @@ static bool set_native_addr(const struct ConfigSet *cs, void *var, const struct 
   return true;
 }
 
-static intptr_t get_native_addr(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_addr(const struct ConfigSet *cs, void *var,
+                                const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -121,7 +124,10 @@ static bool reset_addr(const struct ConfigSet *cs, void *var,
 
 void init_addr(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_addr = { "address", set_addr, get_addr, set_native_addr, get_native_addr, reset_addr, destroy_addr, };
+  struct ConfigSetType cst_addr = {
+    "address",       set_addr,   get_addr,     set_native_addr,
+    get_native_addr, reset_addr, destroy_addr,
+  };
   cs_register_type(cs, DT_ADDR, &cst_addr);
 }
 

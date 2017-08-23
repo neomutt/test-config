@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include "type/sort.h"
 #include "account.h"
 #include "config_set.h"
 #include "lib/buffer.h"
@@ -9,7 +10,6 @@
 #include "mapping.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "type/sort.h"
 
 static short VarApple;
 static short VarBanana;
@@ -161,7 +161,9 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       printf("%s = %d, set by '%s'\n", name_list[i], *var, map[j].name);
     }
 
-    const char *invalid[] = { "-1", "999", "junk", NULL, };
+    const char *invalid[] = {
+      "-1", "999", "junk", NULL,
+    };
 
     for (int j = 0; j < mutt_array_size(invalid); j++)
     {
@@ -357,10 +359,10 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child,  NULL);
+  intptr_t cval = cs_str_get_value(cs, child, NULL);
 
   printf("%15s = %ld\n", parent, pval);
-  printf("%15s = %ld\n", child,  cval);
+  printf("%15s = %ld\n", child, cval);
 }
 
 static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
@@ -373,9 +375,11 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
-  const char *AccountVarStr[] = { parent, NULL, };
+  const char *AccountVarStr[] = {
+    parent, NULL,
+  };
 
-  struct Account *ac = ac_create(cs, account,  AccountVarStr);
+  struct Account *ac = ac_create(cs, account, AccountVarStr);
 
   // set parent
   VarOlive = SORT_SUBJECT;
@@ -474,19 +478,27 @@ bool sort_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))   return false;
-  if (!test_basic_string_set(cs, &err)) return false;
-  if (!test_basic_string_get(cs, &err)) return false;
-  if (!test_basic_native_set(cs, &err)) return false;
-  if (!test_basic_native_get(cs, &err)) return false;
-  if (!test_reset(cs, &err))            return false;
-  if (!test_validator(cs, &err))        return false;
-  if (!test_inherit(cs, &err))          return false;
-  if (!test_sort_type(cs, &err))        return false;
+  if (!test_initial_values(cs, &err))
+    return false;
+  if (!test_basic_string_set(cs, &err))
+    return false;
+  if (!test_basic_string_get(cs, &err))
+    return false;
+  if (!test_basic_native_set(cs, &err))
+    return false;
+  if (!test_basic_native_get(cs, &err))
+    return false;
+  if (!test_reset(cs, &err))
+    return false;
+  if (!test_validator(cs, &err))
+    return false;
+  if (!test_inherit(cs, &err))
+    return false;
+  if (!test_sort_type(cs, &err))
+    return false;
 
   cs_free(&cs);
   FREE(&err.data);
 
   return true;
 }
-

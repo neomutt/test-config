@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include "type/mbyte_table.h"
 #include "account.h"
 #include "config_set.h"
 #include "lib/buffer.h"
@@ -8,7 +9,6 @@
 #include "lib/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "type/mbyte_table.h"
 
 static struct MbCharTable *VarApple;
 static struct MbCharTable *VarBanana;
@@ -94,7 +94,8 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = '%s', set by '%s'\n", name, NONULL(VarDamson->orig_str), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(VarDamson->orig_str),
+           NONULL(valid[i]));
   }
 
   return true;
@@ -263,7 +264,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("MbCharTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, IP &a, err))
+  if (cs_str_set_value(cs, name, IP & a, err))
   {
     printf("%s\n", err->data);
   }
@@ -290,7 +291,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("MbCharTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, IP &a, err))
+  if (!cs_str_set_value(cs, name, IP & a, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -308,7 +309,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child,  NULL);
+  intptr_t cval = cs_str_get_value(cs, child, NULL);
 
   struct MbCharTable *pa = (struct MbCharTable *) pval;
   struct MbCharTable *ca = (struct MbCharTable *) cval;
@@ -317,7 +318,7 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   char *cstr = ca ? ca->orig_str : NULL;
 
   printf("%15s = %s\n", parent, NONULL(pstr));
-  printf("%15s = %s\n", child,  NONULL(cstr));
+  printf("%15s = %s\n", child, NONULL(cstr));
 }
 
 static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
@@ -330,9 +331,11 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
-  const char *AccountVarMb[] = { parent, NULL, };
+  const char *AccountVarMb[] = {
+    parent, NULL,
+  };
 
-  struct Account *ac = ac_create(cs, account,  AccountVarMb);
+  struct Account *ac = ac_create(cs, account, AccountVarMb);
 
   // set parent
   mutt_buffer_reset(err);
@@ -396,18 +399,25 @@ bool mbytetable_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))   return false;
-  if (!test_basic_string_set(cs, &err)) return false;
-  if (!test_basic_string_get(cs, &err)) return false;
-  if (!test_basic_native_set(cs, &err)) return false;
-  if (!test_basic_native_get(cs, &err)) return false;
-  if (!test_reset(cs, &err))            return false;
-  if (!test_validator(cs, &err))        return false;
-  if (!test_inherit(cs, &err))          return false;
+  if (!test_initial_values(cs, &err))
+    return false;
+  if (!test_basic_string_set(cs, &err))
+    return false;
+  if (!test_basic_string_get(cs, &err))
+    return false;
+  if (!test_basic_native_set(cs, &err))
+    return false;
+  if (!test_basic_native_get(cs, &err))
+    return false;
+  if (!test_reset(cs, &err))
+    return false;
+  if (!test_validator(cs, &err))
+    return false;
+  if (!test_inherit(cs, &err))
+    return false;
 
   cs_free(&cs);
   FREE(&err.data);
 
   return true;
 }
-

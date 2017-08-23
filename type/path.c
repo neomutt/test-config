@@ -1,5 +1,5 @@
-#include <stdbool.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include "config_set.h"
 #include "lib/buffer.h"
@@ -51,7 +51,9 @@ static bool get_path(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_path(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_path(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, intptr_t value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -71,7 +73,8 @@ static bool set_native_path(const struct ConfigSet *cs, void *var, const struct 
   return true;
 }
 
-static intptr_t get_native_path(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_path(const struct ConfigSet *cs, void *var,
+                                const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -95,6 +98,9 @@ static bool reset_path(const struct ConfigSet *cs, void *var,
 
 void init_path(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_path = { "path", set_path, get_path, set_native_path, get_native_path, reset_path, destroy_path, };
+  struct ConfigSetType cst_path = {
+    "path",          set_path,   get_path,     set_native_path,
+    get_native_path, reset_path, destroy_path,
+  };
   cs_register_type(cs, DT_PATH, &cst_path);
 }

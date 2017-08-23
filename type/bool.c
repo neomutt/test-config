@@ -56,7 +56,9 @@ static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_bool(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_bool(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, intptr_t value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -74,7 +76,8 @@ static bool set_native_bool(const struct ConfigSet *cs, void *var, const struct 
   return true;
 }
 
-static intptr_t get_native_bool(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_bool(const struct ConfigSet *cs, void *var,
+                                const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -94,7 +97,9 @@ static bool reset_bool(const struct ConfigSet *cs, void *var,
 
 void init_bool(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_bool = { "boolean", set_bool, get_bool, set_native_bool, get_native_bool, reset_bool, NULL, };
+  struct ConfigSetType cst_bool = {
+    "boolean",       set_bool,   get_bool, set_native_bool,
+    get_native_bool, reset_bool, NULL,
+  };
   cs_register_type(cs, DT_BOOL, &cst_bool);
 }
-

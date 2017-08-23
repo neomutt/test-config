@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include "type/magic.h"
 #include "account.h"
 #include "config_set.h"
 #include "lib/buffer.h"
@@ -8,7 +9,6 @@
 #include "lib/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "type/magic.h"
 
 static short VarApple;
 static short VarBanana;
@@ -48,7 +48,9 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   const char *valid[] = { "mbox", "mmdf", "mh", "maildir" };
-  const char *invalid[] = { "mbox2", "mm", "", NULL, };
+  const char *invalid[] = {
+    "mbox2", "mm", "", NULL,
+  };
   char *name = "Cherry";
 
   for (int i = 0; i < mutt_array_size(valid); i++)
@@ -259,10 +261,10 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child,  NULL);
+  intptr_t cval = cs_str_get_value(cs, child, NULL);
 
   printf("%15s = %ld\n", parent, pval);
-  printf("%15s = %ld\n", child,  cval);
+  printf("%15s = %ld\n", child, cval);
 }
 
 static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
@@ -275,9 +277,11 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
-  const char *AccountVarStr[] = { parent, NULL, };
+  const char *AccountVarStr[] = {
+    parent, NULL,
+  };
 
-  struct Account *ac = ac_create(cs, account,  AccountVarStr);
+  struct Account *ac = ac_create(cs, account, AccountVarStr);
 
   // set parent
   mutt_buffer_reset(err);
@@ -341,18 +345,25 @@ bool magic_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))   return false;
-  if (!test_basic_string_set(cs, &err)) return false;
-  if (!test_basic_string_get(cs, &err)) return false;
-  if (!test_basic_native_set(cs, &err)) return false;
-  if (!test_basic_native_get(cs, &err)) return false;
-  if (!test_reset(cs, &err))            return false;
-  if (!test_validator(cs, &err))        return false;
-  if (!test_inherit(cs, &err))          return false;
+  if (!test_initial_values(cs, &err))
+    return false;
+  if (!test_basic_string_set(cs, &err))
+    return false;
+  if (!test_basic_string_get(cs, &err))
+    return false;
+  if (!test_basic_native_set(cs, &err))
+    return false;
+  if (!test_basic_native_get(cs, &err))
+    return false;
+  if (!test_reset(cs, &err))
+    return false;
+  if (!test_validator(cs, &err))
+    return false;
+  if (!test_inherit(cs, &err))
+    return false;
 
   cs_free(&cs);
   FREE(&err.data);
 
   return true;
 }
-

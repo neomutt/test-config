@@ -1,7 +1,7 @@
 #include <stdbool.h>
-#include "sort.h"
 #include <stdint.h>
 #include <string.h>
+#include "sort.h"
 #include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/string2.h"
@@ -180,7 +180,9 @@ static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_sort(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_sort(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, intptr_t value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -226,7 +228,8 @@ static bool set_native_sort(const struct ConfigSet *cs, void *var, const struct 
   return true;
 }
 
-static intptr_t get_native_sort(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_sort(const struct ConfigSet *cs, void *var,
+                                const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -246,6 +249,9 @@ static bool reset_sort(const struct ConfigSet *cs, void *var,
 
 void init_sorts(struct ConfigSet *cs)
 {
-  const struct ConfigSetType cst_sort = { "sort", set_sort, get_sort, set_native_sort, get_native_sort, reset_sort, NULL, };
+  const struct ConfigSetType cst_sort = {
+    "sort",          set_sort,   get_sort, set_native_sort,
+    get_native_sort, reset_sort, NULL,
+  };
   cs_register_type(cs, DT_SORT, &cst_sort);
 }

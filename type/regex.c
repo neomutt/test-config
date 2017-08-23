@@ -79,7 +79,8 @@ static struct Regex *dup_regex(struct Regex *regex)
   return rx;
 }
 
-static bool set_native_rx(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_rx(const struct ConfigSet *cs, void *var,
+                          const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -95,7 +96,8 @@ static bool set_native_rx(const struct ConfigSet *cs, void *var, const struct Va
   return true;
 }
 
-static intptr_t get_native_rx(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_rx(const struct ConfigSet *cs, void *var,
+                              const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -124,7 +126,9 @@ static bool reset_rx(const struct ConfigSet *cs, void *var,
 
 void init_regex(struct ConfigSet *cs)
 {
-  const struct ConfigSetType cst_rx = { "regex", set_rx, get_rx, set_native_rx, get_native_rx, reset_rx, destroy_rx, };
+  const struct ConfigSetType cst_rx = {
+    "regex", set_rx, get_rx, set_native_rx, get_native_rx, reset_rx, destroy_rx,
+  };
   cs_register_type(cs, DT_RX, &cst_rx);
 }
 struct Regex *regex_create(const char *str)

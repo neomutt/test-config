@@ -1,5 +1,5 @@
-#include <stdbool.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include "config_set.h"
 #include "lib/buffer.h"
@@ -55,7 +55,9 @@ static bool get_str(void *var, const struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool set_native_str(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_str(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, intptr_t value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -77,7 +79,8 @@ static bool set_native_str(const struct ConfigSet *cs, void *var, const struct V
   return true;
 }
 
-static intptr_t get_native_str(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_str(const struct ConfigSet *cs, void *var,
+                               const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -101,6 +104,9 @@ static bool reset_str(const struct ConfigSet *cs, void *var,
 
 void init_string(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_str = { "string", set_str, get_str, set_native_str, get_native_str, reset_str, destroy_str, };
+  struct ConfigSetType cst_str = {
+    "string",       set_str,   get_str,     set_native_str,
+    get_native_str, reset_str, destroy_str,
+  };
   cs_register_type(cs, DT_STR, &cst_str);
 }

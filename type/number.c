@@ -42,7 +42,9 @@ static bool get_num(void *var, const struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool set_native_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
+static bool set_native_num(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, intptr_t value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -60,7 +62,8 @@ static bool set_native_num(const struct ConfigSet *cs, void *var, const struct V
   return true;
 }
 
-static intptr_t get_native_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_num(const struct ConfigSet *cs, void *var,
+                               const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false;
@@ -80,6 +83,8 @@ static bool reset_num(const struct ConfigSet *cs, void *var,
 
 void init_num(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_num = { "number", set_num, get_num, set_native_num, get_native_num, reset_num, NULL, };
+  struct ConfigSetType cst_num = {
+    "number", set_num, get_num, set_native_num, get_native_num, reset_num, NULL,
+  };
   cs_register_type(cs, DT_NUM, &cst_num);
 }
