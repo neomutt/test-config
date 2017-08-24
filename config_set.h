@@ -71,6 +71,7 @@ void cs_add_listener (struct ConfigSet *cs, cs_listener fn);
 bool cs_set_variable  (const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
 bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffer *err);
 bool cs_get_variable  (const struct ConfigSet *cs, const char *name, struct Buffer *result);
+bool cs_get_variable2 (const struct ConfigSet *cs, const struct HashElem *he, struct Buffer *result);
 
 void notify_listeners(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
 

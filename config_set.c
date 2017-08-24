@@ -300,6 +300,46 @@ bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer
   return cst->getter(var, vdef, result);
 }
 
+bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he, struct Buffer *result)
+{
+  if (!cs || !he)
+    return false;
+
+  struct Inheritance *i = NULL;
+  const struct VariableDef *vdef = NULL;
+  const struct ConfigSetType *cst = NULL;
+  void *var = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    i = he->data;
+    vdef = i->parent->data;
+    cst = cs_get_type_def(cs, i->parent->type);
+  }
+  else
+  {
+    vdef = he->data;
+    cst = cs_get_type_def(cs, he->type);
+  }
+
+  if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
+  {
+    var = &i->var;  // Local value
+  }
+  else
+  {
+    var = vdef->var; // Normal var
+  }
+
+  if (!cst)
+  {
+    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", vdef->name, DTYPE(he->type));
+    return false;
+  }
+
+  return cst->getter(var, vdef, result);
+}
+
 struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 {
   if (!cs || !name)
