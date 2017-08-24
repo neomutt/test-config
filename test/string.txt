@@ -18,50 +18,50 @@ string Nectarine =
 Apple = apple
 Banana = banana
 ---- test_basic_string_set ---------------------------------
-Event: Cherry has been set
+Event: Cherry has been set to 'hello'
 Cherry = hello, set by 'hello'
-Event: Cherry has been set
+Event: Cherry has been set to 'world'
 Cherry = world, set by 'world'
-Event: Cherry has been set
+Event: Cherry has been set to ''
 Cherry = , set by ''
-Event: Damson has been set
+Event: Damson has been set to 'hello'
 Damson = hello, set by 'hello'
-Event: Damson has been set
+Event: Damson has been set to 'world'
 Damson = world, set by 'world'
-Event: Damson has been set
+Event: Damson has been set to ''
 Damson = , set by ''
 ---- test_basic_string_get ---------------------------------
 Elderberry = '', ''
 Fig = 'fig', 'fig'
-Event: Guava has been set
+Event: Guava has been set to 'guava'
 Guava = 'guava', 'guava'
 ---- test_basic_native_set ---------------------------------
-Event: Hawthorn has been set
+Event: Hawthorn has been set to 'hello'
 Hawthorn = hello, set by 'hello'
-Event: Hawthorn has been set
+Event: Hawthorn has been set to 'world'
 Hawthorn = world, set by 'world'
-Event: Hawthorn has been set
+Event: Hawthorn has been set to ''
 Hawthorn = , set by ''
-Event: Ilama has been set
+Event: Ilama has been set to 'hello'
 Ilama = hello, set by 'hello'
-Event: Ilama has been set
+Event: Ilama has been set to 'world'
 Ilama = world, set by 'world'
-Event: Ilama has been set
+Event: Ilama has been set to ''
 Ilama = , set by ''
 ---- test_basic_native_get ---------------------------------
-Event: Jackfruit has been set
+Event: Jackfruit has been set to 'jackfruit'
 Jackfruit = 'jackfruit', 'jackfruit'
 ---- test_reset --------------------------------------------
 Initial: Kumquat = 'kumquat'
-Event: Kumquat has been set
+Event: Kumquat has been set to 'hello'
 Set: Kumquat = 'hello'
-Event: Kumquat has been reset
+Event: Kumquat has been reset to 'kumquat'
 Reset: Kumquat = 'kumquat'
 ---- test_validator ----------------------------------------
-Event: Lemon has been set
+Event: Lemon has been set to 'hello'
 validator_succeed: Lemon, (ptr)
 String: Lemon = hello
-Event: Lemon has been set
+Event: Lemon has been set to 'world'
 validator_succeed: Lemon, (ptr)
 Native: Lemon = world
 Expected error: validator_fail: Mango, (ptr)
@@ -69,15 +69,15 @@ String: Mango = mango
 Expected error: validator_fail: Mango, (ptr)
 Native: Mango = mango
 ---- test_inherit ------------------------------------------
-Event: Nectarine has been set
+Event: Nectarine has been set to 'hello'
       Nectarine = hello
 fruit:Nectarine = hello
-Event: fruit:Nectarine has been set
+Event: fruit:Nectarine has been set to 'world'
       Nectarine = hello
 fruit:Nectarine = world
-Event: fruit:Nectarine has been reset
+Event: fruit:Nectarine has been reset to 'hello'
       Nectarine = hello
 fruit:Nectarine = hello
-Event: Nectarine has been reset
+Event: Nectarine has been reset to ''
       Nectarine = (null)
 fruit:Nectarine = (null)

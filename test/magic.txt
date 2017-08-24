@@ -14,13 +14,13 @@ magic Jackfruit = mbox
 Apple = 1
 Banana = 3
 ---- test_basic_string_set ---------------------------------
-Event: Cherry has been set
+Event: Cherry has been set to 'mbox'
 Cherry = 1, set by 'mbox'
-Event: Cherry has been set
+Event: Cherry has been set to 'MMDF'
 Cherry = 2, set by 'mmdf'
-Event: Cherry has been set
+Event: Cherry has been set to 'MH'
 Cherry = 3, set by 'mh'
-Event: Cherry has been set
+Event: Cherry has been set to 'Maildir'
 Cherry = 4, set by 'maildir'
 Expected error: Invalid magic value: mbox2
 Expected error: Invalid magic value: mm
@@ -32,20 +32,20 @@ Damson = 2, MMDF
 Damson = 3, MH
 Damson = 4, Maildir
 ---- test_basic_native_set ---------------------------------
-Event: Elderberry has been set
+Event: Elderberry has been set to 'Maildir'
 Elderberry = 4, set to '4'
 Expected error: Invalid magic value: 0
 Expected error: Invalid magic value: 5
 ---- test_basic_native_get ---------------------------------
 Fig = 4
 ---- test_reset --------------------------------------------
-Event: Guava has been reset
+Event: Guava has been reset to 'mbox'
 Reset: Guava = 1
 ---- test_validator ----------------------------------------
-Event: Hawthorn has been set
+Event: Hawthorn has been set to 'Maildir'
 validator_succeed: Hawthorn, 4
 String: Hawthorn = 4
-Event: Hawthorn has been set
+Event: Hawthorn has been set to 'Maildir'
 validator_succeed: Hawthorn, 4
 Native: Hawthorn = 4
 Expected error: validator_fail: Ilama, 4
@@ -53,15 +53,15 @@ String: Ilama = 1
 Expected error: validator_fail: Ilama, 4
 Native: Ilama = 1
 ---- test_inherit ------------------------------------------
-Event: Jackfruit has been set
+Event: Jackfruit has been set to 'Maildir'
       Jackfruit = 4
 fruit:Jackfruit = 4
-Event: fruit:Jackfruit has been set
+Event: fruit:Jackfruit has been set to 'MH'
       Jackfruit = 4
 fruit:Jackfruit = 3
-Event: fruit:Jackfruit has been reset
+Event: fruit:Jackfruit has been reset to 'Maildir'
       Jackfruit = 4
 fruit:Jackfruit = 4
-Event: Jackfruit has been reset
+Event: Jackfruit has been reset to 'mbox'
       Jackfruit = 1
 fruit:Jackfruit = 1

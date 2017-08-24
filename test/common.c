@@ -4,6 +4,7 @@
 #include "config_set.h"
 #include "debug.h"
 #include "lib/buffer.h"
+#include "lib/memory.h"
 #include "lib/string2.h"
 
 struct HashElem;
@@ -39,8 +40,19 @@ void log_line(const char *fn)
 bool log_listener(const struct ConfigSet *cs, struct HashElem *he,
                   const char *name, enum ConfigEvent ev)
 {
+  struct Buffer result;
+  mutt_buffer_init(&result);
+  result.data = safe_calloc(1, STRING);
+  result.dsize = STRING;
+
   const char *events[] = { "set", "reset" };
-  printf("Event: %s has been %s\n", name, events[ev]);
+
+  mutt_buffer_reset(&result);
+  cs_get_variable2(cs, he, &result);
+
+  printf("Event: %s has been %s to '%s'\n", name, events[ev], result.data);
+
+  FREE(&result.data);
   return true;
 }
 
