@@ -124,7 +124,7 @@ static bool reset_addr(const struct ConfigSet *cs, void *var,
 
 void init_addr(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_addr = {
+  const struct ConfigSetType cst_addr = {
     "address",       set_addr,   get_addr,     set_native_addr,
     get_native_addr, reset_addr, destroy_addr,
   };

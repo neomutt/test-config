@@ -97,7 +97,7 @@ static bool reset_bool(const struct ConfigSet *cs, void *var,
 
 void init_bool(struct ConfigSet *cs)
 {
-  struct ConfigSetType cst_bool = {
+  const struct ConfigSetType cst_bool = {
     "boolean",       set_bool,   get_bool, set_native_bool,
     get_native_bool, reset_bool, NULL,
   };

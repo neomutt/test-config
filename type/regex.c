@@ -131,6 +131,7 @@ void init_regex(struct ConfigSet *cs)
   };
   cs_register_type(cs, DT_RX, &cst_rx);
 }
+
 struct Regex *regex_create(const char *str)
 {
   struct Regex *rx = safe_calloc(1, sizeof(*rx));
