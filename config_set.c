@@ -39,6 +39,10 @@ static void destroy(int type, void *obj, intptr_t data)
     cst = cs_get_type_def(cs, type);
     if (cst && cst->destructor)
       cst->destructor(vdef->var, vdef);
+
+    /* If we allocated the initial value, clean it up */
+    if (type & DT_INITIAL_SET)
+      FREE(&vdef->initial);
   }
 }
 
@@ -536,3 +540,27 @@ intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct B
   return cst->ngetter(cs, var, vdef, err);
 }
 
+bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err)
+{
+  if (!cs || !he)
+    return false;
+
+  if (he->type & DT_INHERITED)
+    return false;
+
+  /* We've been here before */
+  if (he->type & DT_INITIAL_SET)
+    return false;
+
+  struct VariableDef *vdef = he->data;
+  if (!vdef)
+    return false;
+
+  if (vdef->initial != 0)
+    return false;
+
+  vdef->initial = IP value;
+  he->type |= DT_INITIAL_SET;
+
+  return cs_reset_variable(cs, vdef->name, err);
+}

@@ -81,4 +81,6 @@ bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 bool     cs_str_set_value(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
 intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct Buffer *err);
 
+bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err);
+
 #endif /* _MUTT_CONFIG_SET_H */

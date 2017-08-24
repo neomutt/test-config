@@ -67,7 +67,7 @@ enum
 #define DT_SORT_SIDEBAR 0x100
 
 #define DT_INHERITED    0x200
-#define DT_FREE_STRING  0x400
+#define DT_INITIAL_SET  0x400
 
 /* possible arguments to set_quadoption() */
 enum

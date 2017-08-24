@@ -1,0 +1,17 @@
+---- initial_test ------------------------------------------
+---- set_list ----------------------------------------------
+string Cherry = 
+string Banana = 
+string Apple = apple
+---- test_set_initial --------------------------------------
+Expected error: 
+Event: Banana has been reset to 'split'
+Event: Cherry has been reset to 'blossom'
+Apple = apple
+Banana = split
+Cherry = blossom
+Event: Cherry has been set to 'picker'
+Apple = apple
+Banana = split
+Cherry = picker
+initial_test() failed
