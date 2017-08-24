@@ -1,5 +1,6 @@
-#include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include "test/address.h"
 #include "test/bool.h"
 #include "test/magic.h"
@@ -11,23 +12,59 @@
 #include "test/sort.h"
 #include "test/string.h"
 
+typedef bool (*test_fn)(void);
+
+struct Test
+{
+  const char *name;
+  test_fn function;
+} test[] = {
+  { "address",     address_test    },
+  { "bool",        bool_test       },
+  { "magic",       magic_test      },
+  { "mbyte_table", mbytetable_test },
+  { "number",      number_test     },
+  { "path",        path_test       },
+  { "quad",        quad_test       },
+  { "regex",       regex_test      },
+  { "sort",        sort_test       },
+  { "string",      string_test     },
+  { NULL },
+};
+
 int main(int argc, char *argv[])
 {
-  int which = -1;
+  if (argc < 2)
+  {
+    printf("Usage: %s TEST ...\n", argv[0]);
+    for (int i = 0; test[i].name; i++)
+      printf("    %s\n", test[i].name);
+    return 1;
+  }
 
-  if (argc == 2)
-    which = argv[1][0] - '0';
+  for (; --argc > 0; argv++)
+  {
+    struct Test *t = NULL;
 
-  if ((which < 0) || (which == 0)) if (!bool_test())       printf("bool_test() failed\n");
-  if ((which < 0) || (which == 1)) if (!number_test())     printf("number_test() failed\n");
-  if ((which < 0) || (which == 2)) if (!string_test())     printf("string_test() failed\n");
-  if ((which < 0) || (which == 3)) if (!path_test())       printf("path_test() failed\n");
-  if ((which < 0) || (which == 4)) if (!quad_test())       printf("quad_test() failed\n");
-  if ((which < 0) || (which == 5)) if (!magic_test())      printf("magic_test() failed\n");
-  if ((which < 0) || (which == 6)) if (!address_test())    printf("address_test() failed\n");
-  if ((which < 0) || (which == 7)) if (!regex_test())      printf("regex_test() failed\n");
-  if ((which < 0) || (which == 8)) if (!mbytetable_test()) printf("mbytetable_test() failed\n");
-  if ((which < 0) || (which == 9)) if (!sort_test())       printf("sort_test() failed\n");
+    for (int i = 0; test[i].name; i++)
+    {
+      if (strcmp(argv[1], test[i].name) == 0)
+      {
+        t = &test[i];
+        break;
+      }
+    }
+    if (!t)
+    {
+      printf("Unknown test '%s'\n", argv[1]);
+      continue;
+    }
+
+    if (!t->function())
+    {
+      printf("%s_test() failed\n", t->name);
+    }
+  }
 
   return 0;
 }

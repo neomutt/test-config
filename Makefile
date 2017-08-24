@@ -59,16 +59,16 @@ $(DEPALL) $(OBJALL):
 # ----------------------------------------------------------------------------
 
 test:	$(OBJALL) $(DEPALL) $(OUT) force
-	./$(OUT) 0 > test/bool.txt
-	./$(OUT) 1 > test/number.txt
-	./$(OUT) 2 > test/string.txt
-	./$(OUT) 3 > test/path.txt
-	./$(OUT) 4 > test/quad.txt
-	./$(OUT) 5 > test/magic.txt
-	./$(OUT) 6 > test/address.txt
-	./$(OUT) 7 > test/address.txt
-	./$(OUT) 8 > test/mbyte_table.txt
-	./$(OUT) 9 > test/sort.txt
+	./$(OUT) address     > test/address.txt
+	./$(OUT) bool        > test/bool.txt
+	./$(OUT) magic       > test/magic.txt
+	./$(OUT) mbyte_table > test/mbyte_table.txt
+	./$(OUT) number      > test/number.txt
+	./$(OUT) path        > test/path.txt
+	./$(OUT) quad        > test/quad.txt
+	./$(OUT) regex       > test/regex.txt
+	./$(OUT) sort        > test/sort.txt
+	./$(OUT) string      > test/string.txt
 
 tags:	$(SRC) $(HDR)
 	ctags -R .
