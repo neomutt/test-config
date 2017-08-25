@@ -3,19 +3,16 @@ RM	= rm -fr
 MKDIR	= mkdir -p
 
 DEPDIR	= .dep
-DEPALL	= $(DEPDIR)/type $(DEPDIR)/ncrypt $(DEPDIR)/imap $(DEPDIR)/hcache $(DEPDIR)/lib $(DEPDIR)/test
+DEPALL	= $(DEPDIR)/type $(DEPDIR)/lib $(DEPDIR)/test
 OBJDIR	= .obj
-OBJALL	= $(OBJDIR)/type $(OBJDIR)/ncrypt $(OBJDIR)/imap $(OBJDIR)/hcache $(OBJDIR)/lib $(OBJDIR)/test
+OBJALL	= $(OBJDIR)/type $(OBJDIR)/lib $(OBJDIR)/test
 
 OUT	= demo
 
-SRC	+= account.c config_set.c debug.c globals.c main.c nntp.c notmuch.c options.c pop.c sidebar.c validate.c
+SRC	+= account.c config_set.c debug.c main.c
 SRC	+= type/address.c type/bool.c type/magic.c type/mbyte_table.c type/regex.c type/number.c type/path.c type/quad.c type/sort.c type/string.c
-SRC	+= hcache/hcache.c
-SRC	+= imap/imap.c
-SRC	+= ncrypt/ncrypt.c
 SRC	+= test/common.c test/address.c test/bool.c test/initial.c test/magic.c test/mbyte_table.c test/number.c test/path.c test/quad.c test/regex.c test/sort.c test/string.c test/synonym.c
-SRC	+= lib/base64.c lib/buffer.c lib/date.c lib/debug.c lib/exit.c lib/hash.c lib/memory.c lib/message.c lib/sha1.c lib/string.c
+SRC	+= lib/buffer.c lib/debug.c lib/exit.c lib/hash.c lib/memory.c lib/message.c lib/string.c
 
 OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
 
