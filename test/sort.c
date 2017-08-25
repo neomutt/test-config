@@ -29,7 +29,7 @@ static short VarNectarine;
 static short VarOlive;
 static short VarPapaya;
 
-const struct VariableDef SortVars[] = {
+struct VariableDef SortVars[] = {
   { "Apple",      DT_SORT,                           &VarApple,       1,  NULL              }, /* test_initial() */
   { "Banana",     DT_SORT,                           &VarBanana,      2,  NULL              },
   { "Cherry",     DT_SORT|DT_SORT_INDEX,             &VarCherry,      1,  NULL              }, /* test_basic_string_set */

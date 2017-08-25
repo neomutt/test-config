@@ -18,7 +18,7 @@ bool   OPT_NEWS;
 bool   OPT_NEWS_SEND;
 bool   OPT_SHOW_NEW_NEWS;
 
-const struct VariableDef NntpVars[] = {
+struct VariableDef NntpVars[] = {
   { "newsgroups_charset",    DT_STR,  &NewsgroupsCharset,  IP "utf-8" },
   { "newsrc",                DT_PATH, &NewsRc,             IP "~/.newsrc" },
   { "news_cache_dir",        DT_PATH, &NewsCacheDir,       IP "~/.mutt" },

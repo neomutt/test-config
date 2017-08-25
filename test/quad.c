@@ -21,7 +21,7 @@ static short VarHawthorn;
 static short VarIlama;
 static short VarJackfruit;
 
-const struct VariableDef QuadVars[] = {
+struct VariableDef QuadVars[] = {
   { "Apple",      DT_QUAD, &VarApple,      0, NULL              }, /* test_initial() */
   { "Banana",     DT_QUAD, &VarBanana,     3, NULL              },
   { "Cherry",     DT_QUAD, &VarCherry,     0, NULL              }, /* test_basic_string_set */

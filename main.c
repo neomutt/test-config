@@ -12,6 +12,7 @@
 #include "test/regex.h"
 #include "test/sort.h"
 #include "test/string.h"
+#include "test/synonym.h"
 
 typedef bool (*test_fn)(void);
 
@@ -22,6 +23,7 @@ struct Test
 } test[] = {
   { "address",     address_test    },
   { "bool",        bool_test       },
+  { "initial",     initial_test    },
   { "magic",       magic_test      },
   { "mbyte_table", mbytetable_test },
   { "number",      number_test     },
@@ -30,7 +32,7 @@ struct Test
   { "regex",       regex_test      },
   { "sort",        sort_test       },
   { "string",      string_test     },
-  { "initial",     initial_test    },
+  { "synonym",     synonym_test    },
   { NULL },
 };
 

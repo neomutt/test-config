@@ -25,7 +25,7 @@ static struct Regex *VarLemon;
 static struct Regex *VarMango;
 static struct Regex *VarNectarine;
 
-const struct VariableDef RegexVars[] = {
+struct VariableDef RegexVars[] = {
   { "Apple",      DT_RX, &VarApple,      IP "apple.*",   NULL              }, /* test_initial() */
   { "Banana",     DT_RX, &VarBanana,     IP "banana.*",  NULL              },
   { "Cherry",     DT_RX, &VarCherry,     0,              NULL              }, /* test_basic_regex_set */

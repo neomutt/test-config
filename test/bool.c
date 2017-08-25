@@ -21,7 +21,7 @@ static bool VarHawthorn;
 static bool VarIlama;
 static bool VarJackfruit;
 
-const struct VariableDef BoolVars[] = {
+struct VariableDef BoolVars[] = {
   { "Apple",      DT_BOOL, &VarApple,      0, NULL              }, /* test_initial() */
   { "Banana",     DT_BOOL, &VarBanana,     1, NULL              },
   { "Cherry",     DT_BOOL, &VarCherry,     0, NULL              }, /* test_basic_string_set */

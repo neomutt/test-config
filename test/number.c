@@ -21,7 +21,7 @@ static short VarHawthorn;
 static short VarIlama;
 static short VarJackfruit;
 
-const struct VariableDef NumberVars[] = {
+struct VariableDef NumberVars[] = {
   { "Apple",      DT_NUM, &VarApple,      -42, NULL              }, /* test_initial() */
   { "Banana",     DT_NUM, &VarBanana,      99, NULL              },
   { "Cherry",     DT_NUM, &VarCherry,       0, NULL              }, /* test_basic_string_set */

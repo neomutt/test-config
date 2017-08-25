@@ -122,7 +122,7 @@ short HeaderCacheBackend;
 char *HeaderCachePageSize;
 bool  OPT_HCACHE_COMPRESS;
 
-const struct VariableDef HCVars[] = {
+struct VariableDef HCVars[] = {
   // { "header_cache",          DT_PATH,   &HeaderCache,         0 },
   { "header_cache_backend",  DT_HCACHE, &HeaderCacheBackend,  0 },
   // { "header_cache_compress", DT_BOOL,   &OPT_HCACHE_COMPRESS, 1 },

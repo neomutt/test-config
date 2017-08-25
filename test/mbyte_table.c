@@ -25,7 +25,7 @@ static struct MbCharTable *VarLemon;
 static struct MbCharTable *VarMango;
 static struct MbCharTable *VarNectarine;
 
-const struct VariableDef MbCharTableVars[] = {
+struct VariableDef MbCharTableVars[] = {
   { "Apple",      DT_MBCHARTBL, &VarApple,      IP "apple",   NULL              }, /* test_initial() */
   { "Banana",     DT_MBCHARTBL, &VarBanana,     IP "banana",  NULL              },
   { "Cherry",     DT_MBCHARTBL, &VarCherry,     0,            NULL              }, /* test_basic_mbytetable_set */

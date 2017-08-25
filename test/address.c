@@ -26,7 +26,7 @@ static struct Address *VarLemon;
 static struct Address *VarMango;
 static struct Address *VarNectarine;
 
-const struct VariableDef AddressVars[] = {
+struct VariableDef AddressVars[] = {
   { "Apple",      DT_ADDR, &VarApple,      IP "apple@example.com",   NULL              }, /* test_initial() */
   { "Banana",     DT_ADDR, &VarBanana,     IP "banana@example.com",  NULL              },
   { "Cherry",     DT_ADDR, &VarCherry,     0,                        NULL              }, /* test_basic_address_set */

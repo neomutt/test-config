@@ -46,8 +46,35 @@ static void destroy(int type, void *obj, intptr_t data)
   }
 }
 
-static struct HashElem *reg_one_var(const struct ConfigSet *cs, const struct VariableDef *vdef, struct Buffer *err)
+static struct HashElem *create_synonym(const struct ConfigSet *cs, struct VariableDef *vdef, struct Buffer *err)
 {
+  if (!cs || !vdef)
+    return NULL;
+
+  const char *name = (const char *) vdef->initial;
+  struct HashElem *parent = cs_get_elem(cs, name);
+  if (!parent)
+  {
+    mutt_buffer_printf(err, "No such variable: %s", vdef->name);
+    return NULL;
+  }
+
+  struct HashElem *child = hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
+  if (!child)
+    return NULL;
+
+  vdef->var = parent;
+  return child;
+}
+
+static struct HashElem *reg_one_var(const struct ConfigSet *cs, struct VariableDef *vdef, struct Buffer *err)
+{
+  if (!cs || !vdef)
+    return NULL;
+
+  if (vdef->type == DT_SYN)
+    return create_synonym(cs, vdef, err);
+
   const struct ConfigSetType *cst = cs_get_type_def(cs, vdef->type);
   if (!cst)
   {
@@ -56,8 +83,10 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs, const struct Var
   }
 
   struct HashElem *he = hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
+  //XXX check
 
-  cst->resetter(cs, vdef->var, vdef, err);
+  if (cst && cst->resetter)
+    cst->resetter(cs, vdef->var, vdef, err);
 
   return he;
 }
@@ -66,6 +95,9 @@ const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned
 {
   type = DTYPE(type);
   if ((type < 1) || (type >= mutt_array_size(cs->types)))
+    return NULL;
+
+  if (!cs->types[type].name)
     return NULL;
 
   return &cs->types[type];
@@ -135,7 +167,7 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
   return true;
 }
 
-bool cs_register_variables(const struct ConfigSet *cs, const struct VariableDef vars[])
+bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[])
 {
   struct Buffer err;
   mutt_buffer_init(&err);
@@ -148,7 +180,7 @@ bool cs_register_variables(const struct ConfigSet *cs, const struct VariableDef 
   {
     if (!reg_one_var(cs, &vars[i], &err))
     {
-      // printf("register: %s\n", vars[i].name);
+      printf("%s\n", err.data);
       result = false;
     }
   }
@@ -159,7 +191,7 @@ bool cs_register_variables(const struct ConfigSet *cs, const struct VariableDef 
 
 bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err)
 {
-  struct HashElem *he = hash_find_elem(cs->hash, name);
+  struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
   {
     mutt_buffer_printf(err, "Unknown var '%s'", name);
@@ -167,6 +199,7 @@ bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *v
   }
 
   const struct ConfigSetType *cst = NULL;
+  const char *notify_name = NULL;
 
   if (he->type & DT_INHERITED)
   {
@@ -193,11 +226,13 @@ bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *v
     struct Inheritance *i = he->data;
     vdef = i->parent->data;
     var = &i->var;
+    notify_name = name;
   }
   else
   {
     vdef = he->data;
     var = vdef->var;
+    notify_name = vdef->name;
   }
 
   if (!var)
@@ -211,13 +246,13 @@ bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *v
     struct Inheritance *i = he->data;
     he->type = i->parent->type | DT_INHERITED;
   }
-  notify_listeners(cs, he, name, CE_SET);
+  notify_listeners(cs, he, notify_name, CE_SET);
   return true;
 }
 
 bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
-  struct HashElem *he = hash_find_elem(cs->hash, name);
+  struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
   {
     mutt_buffer_printf(err, "Unknown var '%s'", name);
@@ -230,13 +265,15 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
     return true;
 
   const struct ConfigSetType *cst = NULL;
+  const struct VariableDef *vdef = NULL;
+  const char *notify_name = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
     cst = cs_get_type_def(cs, i->parent->type);
-
-    struct VariableDef *vdef = i->parent->data;
+    vdef = i->parent->data;
+    notify_name = name;
 
     if (cst && cst->destructor)
       cst->destructor((void**) &i->var, vdef);
@@ -246,14 +283,14 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
   else
   {
     cst = cs_get_type_def(cs, he->type);
-
-    const struct VariableDef *vdef = he->data;
+    vdef = he->data;
+    notify_name = vdef->name;
 
     if (cst)
       cst->resetter(cs, vdef->var, vdef, err);
   }
 
-  notify_listeners(cs, he, name, CE_RESET);
+  notify_listeners(cs, he, notify_name, CE_RESET);
   return true;
 }
 
@@ -262,7 +299,7 @@ bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer
   if (!cs || !name)
     return false;
 
-  struct HashElem *he = hash_find_elem(cs->hash, name);
+  struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
   {
     mutt_buffer_printf(result, "Unknown var '%s'", name);
@@ -349,7 +386,16 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
   if (!cs || !name)
     return NULL;
 
-  return hash_find_elem(cs->hash, name);
+  struct HashElem *he = hash_find_elem(cs->hash, name);
+  if (!he)
+    return NULL;
+
+  if (he->type != DT_SYN)
+    return he;
+
+  const struct VariableDef *vdef = he->data;
+
+  return vdef->var;
 }
 
 struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem *parent, const char *name)

@@ -25,7 +25,7 @@ static char *VarLemon;
 static char *VarMango;
 static char *VarNectarine;
 
-const struct VariableDef PathVars[] = {
+struct VariableDef PathVars[] = {
   { "Apple",      DT_PATH, &VarApple,      IP "/apple",   NULL              }, /* test_initial() */
   { "Banana",     DT_PATH, &VarBanana,     IP "/banana",  NULL              },
   { "Cherry",     DT_PATH, &VarCherry,     0,             NULL              }, /* test_basic_string_set */

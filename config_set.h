@@ -62,7 +62,7 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name);
 const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type);
 
 bool cs_register_type     (struct ConfigSet *cs, unsigned int type, const struct ConfigSetType *cst);
-bool cs_register_variables(const struct ConfigSet *cs, const struct VariableDef vars[]);
+bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]);
 struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem *parent, const char *name);
 
 void cs_add_listener (struct ConfigSet *cs, cs_listener fn);

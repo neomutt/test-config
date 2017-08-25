@@ -18,7 +18,7 @@ bool   OPT_IMAP_PASSIVE;
 bool   OPT_IMAP_PEEK;
 bool   OPT_IMAP_SERVER_NOISE;
 
-const struct VariableDef ImapVars[] = {
+struct VariableDef ImapVars[] = {
   { "imap_authenticators",   DT_STR,  &ImapAuthenticators,        0 },
   { "imap_check_subscribed", DT_BOOL, &OPT_IMAP_CHECK_SUBSCRIBED, 0 },
   { "imap_delim_chars",      DT_STR,  &ImapDelimChars,            IP "/." },

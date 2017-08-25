@@ -17,7 +17,7 @@ char *NotmuchRecordTags;
 char *NotmuchUnreadTag;
 bool  OPT_NOTMUCH_RECORD;
 
-const struct VariableDef NotmuchVars[] = {
+struct VariableDef NotmuchVars[] = {
   { "nm_db_limit",                      DT_NUM,  &NotmuchDBLimit,                    0 },
   { "nm_default_uri",                   DT_STR,  &NotmuchDefaultUri,                 0 },
   { "nm_exclude_tags",                  DT_STR,  &NotmuchExcludeTags,                0 },

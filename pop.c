@@ -13,7 +13,7 @@ char  *PopHost;
 char  *PopPass;
 char  *PopUser;
 
-const struct VariableDef PopVars[] = {
+struct VariableDef PopVars[] = {
   { "pop_authenticators", DT_STR,  &PopAuthenticators,    0           },
   { "pop_auth_try_all",   DT_BOOL, &OPT_POP_AUTH_TRY_ALL, 1           },
   { "pop_checkinterval",  DT_NUM,  &PopCheckTimeout,      60          },

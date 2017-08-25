@@ -19,6 +19,9 @@ void hash_dump(struct Hash *table)
     if (!he)
       continue;
 
+    if (he->type == DT_SYN)
+      continue;
+
     printf("%03d ", i);
     for (; he; he = he->next)
     {
@@ -49,6 +52,9 @@ void cs_dump_set(const struct ConfigSet *cs)
 
   while ((he = hash_walk(cs->hash, &state)))
   {
+    if (he->type == DT_SYN)
+      continue;
+
     const char *name = NULL;
 
     if (he->type & DT_INHERITED)
