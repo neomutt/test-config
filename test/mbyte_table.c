@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "type/mbyte_table.h"
+#include "config/mbyte_table.h"
 #include "account.h"
 #include "config_set.h"
 #include "lib/buffer.h"

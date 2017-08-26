@@ -8,7 +8,7 @@
 #include "lib/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "type/string3.h"
+#include "config/string3.h"
 
 static char *VarApple;
 static char *VarCherry;

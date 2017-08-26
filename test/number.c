@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "type/number.h"
+#include "config/number.h"
 #include "account.h"
 #include "config_set.h"
 #include "lib/buffer.h"

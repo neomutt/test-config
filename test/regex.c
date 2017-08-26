@@ -8,7 +8,7 @@
 #include "lib/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "type/regex2.h"
+#include "config/regex2.h"
 
 static struct Regex *VarApple;
 static struct Regex *VarBanana;
