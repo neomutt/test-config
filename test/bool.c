@@ -115,6 +115,18 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   }
   printf("%s = %d, %s\n", name, VarDamson, err->data);
 
+  *((unsigned char*) &VarDamson) = 3;
+  mutt_buffer_reset(err);
+  if (!cs_get_variable(cs, name, err))
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
   return true;
 }
 

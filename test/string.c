@@ -57,7 +57,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", NULL };
+  const char *valid[] = { "hello", "world", "", NULL };
   char *name = "Cherry";
 
   for (int i = 0; i < mutt_array_size(valid); i++)
@@ -74,7 +74,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = %s, set by '%s'\n", name, NONULL(VarCherry), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(VarCherry), NONULL(valid[i]));
   }
 
   name = "Damson";
@@ -92,7 +92,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = %s, set by '%s'\n", name, NONULL(VarDamson), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(VarDamson), NONULL(valid[i]));
   }
 
   return true;
@@ -139,7 +139,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", NULL };
+  const char *valid[] = { "hello", "world", "", NULL };
   char *name = "Hawthorn";
 
   for (int i = 0; i < mutt_array_size(valid); i++)
@@ -156,7 +156,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = %s, set by '%s'\n", name, NONULL(VarHawthorn), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(VarHawthorn), NONULL(valid[i]));
   }
 
   name = "Ilama";
@@ -174,7 +174,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = %s, set by '%s'\n", name, NONULL(VarIlama), NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(VarIlama), NONULL(valid[i]));
   }
 
   return true;
