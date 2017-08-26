@@ -31,6 +31,7 @@ Damson = 1, mbox
 Damson = 2, MMDF
 Damson = 3, MH
 Damson = 4, Maildir
+Expected error: Variable has an invalid value
 ---- test_basic_native_set ---------------------------------
 Event: Elderberry has been set to 'Maildir'
 Elderberry = 4, set to '4'

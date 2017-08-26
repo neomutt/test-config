@@ -146,24 +146,24 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct Regex r = { "hello.*" };
+  struct Regex *r = regex_create("hello.*");
   char *name = "Hawthorn";
   char *rx = NULL;
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, (intptr_t) &r, err))
+  if (!cs_str_set_value(cs, name, (intptr_t) r, err))
   {
     printf("%s\n", err->data);
     return false;
   }
 
   rx = VarHawthorn ? VarHawthorn->pattern : NULL;
-  if (mutt_strcmp(rx, r.pattern) != 0)
+  if (mutt_strcmp(rx, r->pattern) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
-  printf("%s = '%s', set by '%s'\n", name, NONULL(rx), r.pattern);
+  printf("%s = '%s', set by '%s'\n", name, NONULL(rx), r->pattern);
 
   name = "Ilama";
   mutt_buffer_reset(err);
@@ -181,6 +181,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   rx = VarIlama ? VarIlama->pattern : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(rx));
 
+  regex_free(&r);
   return true;
 }
 
@@ -248,7 +249,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   char *name = "Lemon";
   char *rx = NULL;
-  struct Regex r = { "world.*" };
+  struct Regex *r = regex_create("world.*");
 
   mutt_buffer_reset(err);
   if (cs_set_variable(cs, name, "hello.*", err))
@@ -264,7 +265,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Regex: %s = %s\n", name, NONULL(rx));
 
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, IP & r, err))
+  if (cs_str_set_value(cs, name, IP r, err))
   {
     printf("%s\n", err->data);
   }
@@ -291,7 +292,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Regex: %s = %s\n", name, NONULL(rx));
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, IP & r, err))
+  if (!cs_str_set_value(cs, name, IP r, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -303,6 +304,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   rx = VarMango ? VarMango->pattern : NULL;
   printf("Native: %s = %s\n", name, NONULL(rx));
 
+  regex_free(&r);
   return true;
 }
 

@@ -31,6 +31,7 @@ Damson = 0, no
 Damson = 1, yes
 Damson = 2, ask-no
 Damson = 3, ask-yes
+Expected error: Variable has an invalid value
 ---- test_basic_native_set ---------------------------------
 Event: Elderberry has been set to 'yes'
 Elderberry = 1, set to '1'

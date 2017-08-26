@@ -57,7 +57,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", NULL };
+  const char *valid[] = { "hello", "world", "", NULL };
   char *name = "Cherry";
 
   for (int i = 0; i < mutt_array_size(valid); i++)
@@ -139,7 +139,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", NULL };
+  const char *valid[] = { "hello", "world", "", NULL };
   char *name = "Hawthorn";
 
   for (int i = 0; i < mutt_array_size(valid); i++)

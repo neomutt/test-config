@@ -146,24 +146,24 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct MbCharTable a = { "hello" };
+  struct MbCharTable *t = mb_create("hello");
   char *name = "Hawthorn";
   char *mb = NULL;
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, (intptr_t) &a, err))
+  if (!cs_str_set_value(cs, name, (intptr_t) t, err))
   {
     printf("%s\n", err->data);
     return false;
   }
 
   mb = VarHawthorn ? VarHawthorn->orig_str : NULL;
-  if (mutt_strcmp(mb, a.orig_str) != 0)
+  if (mutt_strcmp(mb, t->orig_str) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
-  printf("%s = '%s', set by '%s'\n", name, NONULL(mb), a.orig_str);
+  printf("%s = '%s', set by '%s'\n", name, NONULL(mb), t->orig_str);
 
   name = "Ilama";
   mutt_buffer_reset(err);
@@ -181,6 +181,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   mb = VarIlama ? VarIlama->orig_str : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(mb));
 
+  free_mbchartbl(&t);
   return true;
 }
 
@@ -194,15 +195,15 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   intptr_t value = cs_str_get_value(cs, name, err);
-  struct MbCharTable *a = (struct MbCharTable *) value;
+  struct MbCharTable *t = (struct MbCharTable *) value;
 
-  if (VarJackfruit != a)
+  if (VarJackfruit != t)
   {
     printf("Get failed: %s\n", err->data);
     return false;
   }
   char *mb1 = VarJackfruit ? VarJackfruit->orig_str : NULL;
-  char *mb2 = a ? a->orig_str : NULL;
+  char *mb2 = t ? t->orig_str : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(mb1), NONULL(mb2));
 
   return true;
@@ -248,7 +249,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   char *name = "Lemon";
   char *mb = NULL;
-  struct MbCharTable a = { "world" };
+  struct MbCharTable *t = mb_create("world");
 
   mutt_buffer_reset(err);
   if (cs_set_variable(cs, name, "hello", err))
@@ -264,7 +265,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("MbCharTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, IP & a, err))
+  if (cs_str_set_value(cs, name, IP t, err))
   {
     printf("%s\n", err->data);
   }
@@ -291,7 +292,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("MbCharTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, IP & a, err))
+  if (!cs_str_set_value(cs, name, IP t, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -303,6 +304,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   mb = VarMango ? VarMango->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
 
+  free_mbchartbl(&t);
   return true;
 }
 
