@@ -11,7 +11,7 @@
 static void free_rx(struct Regex **r)
 {
   if (!r || !*r)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   FREE(&(*r)->pattern);
   //regfree(r->rx)
@@ -21,7 +21,7 @@ static void free_rx(struct Regex **r)
 static void destroy_rx(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   struct Regex **r = (struct Regex **) var;
   if (!*r)
@@ -34,7 +34,7 @@ static bool set_rx(const struct ConfigSet *cs, void *var, const struct VariableD
                    const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Regex *r = NULL;
   if (value)
@@ -59,7 +59,7 @@ static bool set_rx(const struct ConfigSet *cs, void *var, const struct VariableD
 static bool get_rx(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Regex *r = *(struct Regex **) var;
   if (!r)
@@ -72,7 +72,7 @@ static bool get_rx(void *var, const struct VariableDef *vdef, struct Buffer *res
 static struct Regex *dup_regex(struct Regex *regex)
 {
   if (!regex)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   struct Regex *rx = safe_calloc(1, sizeof(*rx));
   rx->pattern = safe_strdup(regex->pattern);
@@ -83,7 +83,7 @@ static bool set_native_rx(const struct ConfigSet *cs, void *var,
                           const struct VariableDef *vdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
@@ -100,7 +100,7 @@ static intptr_t get_native_rx(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Regex *rx = *(struct Regex **) var;
 
@@ -111,7 +111,7 @@ static bool reset_rx(const struct ConfigSet *cs, void *var,
                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   destroy_rx(var, vdef);
 

@@ -10,7 +10,7 @@
 static void destroy_path(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   /* Don't free strings from the var definition */
   if (*(char **) var == (char *) vdef->initial)
@@ -23,7 +23,7 @@ static bool set_path(const struct ConfigSet *cs, void *var, const struct Variabl
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   /* Store empty strings as NULL */
   if (value && (value[0] == '\0'))
@@ -41,7 +41,7 @@ static bool set_path(const struct ConfigSet *cs, void *var, const struct Variabl
 static bool get_path(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   const char *str = *(const char **) var;
   if (!str)
@@ -56,7 +56,7 @@ static bool set_native_path(const struct ConfigSet *cs, void *var,
                             struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   const char *str = (const char *) value;
 
@@ -77,7 +77,7 @@ static intptr_t get_native_path(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   const char *str = *(const char **) var;
 
@@ -88,7 +88,7 @@ static bool reset_path(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   destroy_path(var, vdef);
 

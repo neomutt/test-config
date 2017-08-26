@@ -17,7 +17,7 @@ struct ConfigSetType RegisteredTypes[16] =
 static void destroy(int type, void *obj, intptr_t data)
 {
   if (!obj)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   struct ConfigSet *cs = (struct ConfigSet *) data;
   if (!cs)
@@ -54,7 +54,7 @@ static void destroy(int type, void *obj, intptr_t data)
 static struct HashElem *create_synonym(const struct ConfigSet *cs, struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !vdef)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   const char *name = (const char *) vdef->initial;
   struct HashElem *parent = cs_get_elem(cs, name);
@@ -75,7 +75,7 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs, struct Variab
 static struct HashElem *reg_one_var(const struct ConfigSet *cs, struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !vdef)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   if (vdef->type == DT_SYN)
     return create_synonym(cs, vdef, err);
@@ -99,7 +99,7 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs, struct VariableD
 const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type)
 {
   if (!cs)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   type = DTYPE(type);
   if ((type < 1) || (type >= mutt_array_size(cs->types)))
@@ -114,7 +114,7 @@ const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned
 void cs_init(struct ConfigSet *cs, int size)
 {
   if (!cs)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   memset(cs, 0, sizeof(*cs));
   cs->hash = hash_create(size, 0);
@@ -143,7 +143,7 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 void cs_free(struct ConfigSet **cs)
 {
   if (!cs || !*cs)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   hash_destroy(&(*cs)->hash);
   FREE(cs);
@@ -152,7 +152,7 @@ void cs_free(struct ConfigSet **cs)
 void notify_listeners(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
 {
   if (!cs || !he || !name)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
   {
@@ -166,7 +166,7 @@ void notify_listeners(const struct ConfigSet *cs, struct HashElem *he, const cha
 bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct ConfigSetType *cst)
 {
   if (!cs || !cst)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if (!cst->name || !cst->setter || !cst->getter || !cst->resetter || !cst->nsetter || !cst->ngetter)
     return false;
@@ -184,7 +184,7 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
 bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[])
 {
   if (!cs || !vars)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Buffer err;
   mutt_buffer_init(&err);
@@ -209,7 +209,7 @@ bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]
 bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err)
 {
   if (!cs || !name)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -273,7 +273,7 @@ bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *v
 bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -320,7 +320,7 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
 bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer *result)
 {
   if (!cs || !name)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -367,7 +367,7 @@ bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer
 bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he, struct Buffer *result)
 {
   if (!cs || !he)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Inheritance *i = NULL;
   const struct VariableDef *vdef = NULL;
@@ -407,7 +407,7 @@ bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he, str
 struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 {
   if (!cs || !name)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   struct HashElem *he = hash_find_elem(cs->hash, name);
   if (!he)
@@ -424,7 +424,7 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem *parent, const char *name)
 {
   if (!cs || !parent)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   struct Buffer err;
   mutt_buffer_init(&err);
@@ -445,7 +445,7 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem
 bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err)
 {
   if (!cs || !he)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   const struct VariableDef *vdef = NULL;
   const struct ConfigSetType *cst = NULL;
@@ -485,7 +485,7 @@ bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he, intptr_t v
 bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   const struct VariableDef *vdef = NULL;
   const struct ConfigSetType *cst = NULL;
@@ -518,7 +518,7 @@ bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 bool cs_str_set_value(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err)
 {
   if (!cs || !name)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -565,7 +565,7 @@ bool cs_str_set_value(const struct ConfigSet *cs, const char *name, intptr_t val
 intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
-    return -1;
+    return -1; /* LCOV_EXCL_LINE */
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -612,7 +612,7 @@ intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct B
 bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err)
 {
   if (!cs || !he)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if (he->type & DT_INHERITED)
     return false;

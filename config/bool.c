@@ -15,7 +15,7 @@ static bool set_bool(const struct ConfigSet *cs, void *var, const struct Variabl
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
@@ -43,7 +43,7 @@ static bool set_bool(const struct ConfigSet *cs, void *var, const struct Variabl
 static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   unsigned int index = *(bool *) var;
   if (index > 1)
@@ -61,7 +61,7 @@ static bool set_native_bool(const struct ConfigSet *cs, void *var,
                             struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if ((value < 0) || (value > 1))
   {
@@ -80,7 +80,7 @@ static intptr_t get_native_bool(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   return *(bool *) var;
 }
@@ -89,7 +89,7 @@ static bool reset_bool(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   *(bool *) var = vdef->initial;
   return true;

@@ -73,7 +73,7 @@ const struct Mapping SortSidebarMethods[] = {
 static const char *find_string(const struct Mapping *map, int type)
 {
   if (!map)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   for (int i = 0; map[i].name; i++)
     if (map[i].value == type)
@@ -85,7 +85,7 @@ static const char *find_string(const struct Mapping *map, int type)
 static int find_id(const struct Mapping *map, const char *str)
 {
   if (!map || !str)
-    return -1;
+    return -1; /* LCOV_EXCL_LINE */
 
   for (int i = 0; map[i].name; i++)
     if (mutt_strcasecmp(map[i].name, str) == 0)
@@ -98,7 +98,7 @@ static bool set_sort(const struct ConfigSet *cs, void *var, const struct Variabl
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   intptr_t id = -1;
 
@@ -144,7 +144,7 @@ static bool set_sort(const struct ConfigSet *cs, void *var, const struct Variabl
 static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   int sort = *(short *) var;
 
@@ -191,7 +191,7 @@ static bool set_native_sort(const struct ConfigSet *cs, void *var,
                             struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   const char *str = NULL;
 
@@ -238,7 +238,7 @@ static intptr_t get_native_sort(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
 }
@@ -247,7 +247,7 @@ static bool reset_sort(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   *(short *) var = vdef->initial;
   return true;

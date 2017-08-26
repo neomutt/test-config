@@ -54,7 +54,7 @@ static struct MbCharTable *parse_mbchar_table(const char *s)
 static void destroy_mbchartbl(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   struct MbCharTable **m = (struct MbCharTable **) var;
   if (!*m)
@@ -68,7 +68,7 @@ static bool set_mbchartbl(const struct ConfigSet *cs, void *var,
                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct MbCharTable *table = parse_mbchar_table(value);
 
@@ -87,7 +87,7 @@ static bool set_mbchartbl(const struct ConfigSet *cs, void *var,
 static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct MbCharTable *table = *(struct MbCharTable **) var;
   if (!table)
@@ -103,7 +103,7 @@ static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buff
 static struct MbCharTable *dup_mbchartbl(struct MbCharTable *table)
 {
   if (!table)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   struct MbCharTable *m = safe_calloc(1, sizeof(*m));
   m->orig_str = safe_strdup(table->orig_str);
@@ -115,7 +115,7 @@ static bool set_native_mbchartbl(const struct ConfigSet *cs, void *var,
                                  struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
@@ -132,7 +132,7 @@ static intptr_t get_native_mbchartbl(const struct ConfigSet *cs, void *var,
                                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct MbCharTable *table = *(struct MbCharTable **) var;
 
@@ -143,7 +143,7 @@ static bool reset_mbchartbl(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   destroy_mbchartbl(var, vdef);
 
@@ -158,7 +158,7 @@ static bool reset_mbchartbl(const struct ConfigSet *cs, void *var,
 void free_mbchartbl(struct MbCharTable **table)
 {
   if (!table || !*table)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   FREE(&(*table)->orig_str);
   FREE(&(*table)->chars);

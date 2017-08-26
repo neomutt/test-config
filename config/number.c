@@ -11,7 +11,7 @@ static bool set_num(const struct ConfigSet *cs, void *var, const struct Variable
                     const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   int num = 0;
   if (mutt_atoi(value, &num) < 0)
@@ -36,7 +36,7 @@ static bool set_num(const struct ConfigSet *cs, void *var, const struct Variable
 static bool get_num(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   mutt_buffer_printf(result, "%d", *(short *) var);
   return true;
@@ -47,7 +47,7 @@ static bool set_native_num(const struct ConfigSet *cs, void *var,
                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if ((value < SHRT_MIN) || (value > SHRT_MAX))
   {
@@ -66,7 +66,7 @@ static intptr_t get_native_num(const struct ConfigSet *cs, void *var,
                                const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
 }
@@ -75,7 +75,7 @@ static bool reset_num(const struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   *(short *) var = vdef->initial;
   return true;

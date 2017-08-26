@@ -13,7 +13,7 @@ static bool set_magic(const struct ConfigSet *cs, void *var, const struct Variab
                       const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
@@ -41,7 +41,7 @@ static bool set_magic(const struct ConfigSet *cs, void *var, const struct Variab
 static bool get_magic(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   unsigned int index = *(short *) var;
   if ((index < 1) || (index >= mutt_array_size(magic_values)))
@@ -59,7 +59,7 @@ static bool set_native_magic(const struct ConfigSet *cs, void *var,
                              struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if ((value < 1) || (value >= mutt_array_size(magic_values)))
   {
@@ -78,7 +78,7 @@ static intptr_t get_native_magic(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
 }
@@ -87,7 +87,7 @@ static bool reset_magic(const struct ConfigSet *cs, void *var,
                         const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   *(short *) var = vdef->initial;
   return true;

@@ -11,7 +11,7 @@
 struct Account *ac_create(const struct ConfigSet *cs, const char *name, const char *var_names[])
 {
   if (!cs || !name || !var_names)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   int count = 0;
   for (; var_names[count]; count++)
@@ -57,7 +57,7 @@ struct Account *ac_create(const struct ConfigSet *cs, const char *name, const ch
 void ac_free(const struct ConfigSet *cs, struct Account **ac)
 {
   if (!cs || !ac)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   char child[128];
 
@@ -76,7 +76,7 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
 bool ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err)
 {
   if (!ac)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
   if ((vid < 0) || (vid >= ac->num_vars))
     return false;
 
@@ -87,7 +87,7 @@ bool ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buff
 bool ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
 {
   if (!ac)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
   if ((vid < 0) || (vid >= ac->num_vars))
     return false;
 

@@ -10,7 +10,7 @@
 static void destroy_addr(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   struct Address **a = (struct Address **) var;
   if (!*a)
@@ -25,7 +25,7 @@ static bool set_addr(const struct ConfigSet *cs, void *var, const struct Variabl
                      const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Address *addr = NULL;
 
@@ -52,7 +52,7 @@ static bool set_addr(const struct ConfigSet *cs, void *var, const struct Variabl
 static bool get_addr(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Address *a = *(struct Address **) var;
   if (!a)
@@ -65,7 +65,7 @@ static bool get_addr(void *var, const struct VariableDef *vdef, struct Buffer *r
 static struct Address *dup_address(struct Address *addr)
 {
   if (!addr)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   struct Address *a = safe_calloc(1, sizeof(*a));
   a->personal = safe_strdup(addr->personal);
@@ -78,7 +78,7 @@ static bool set_native_addr(const struct ConfigSet *cs, void *var,
                             struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
@@ -93,7 +93,7 @@ static intptr_t get_native_addr(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   struct Address *addr = *(struct Address **) var;
 
@@ -112,7 +112,7 @@ static bool reset_addr(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false;
+    return false; /* LCOV_EXCL_LINE */
 
   destroy_addr(var, vdef);
 
@@ -134,7 +134,7 @@ void init_addr(struct ConfigSet *cs)
 void addr_free(struct Address **addr)
 {
   if (!addr || !*addr)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   FREE(&(*addr)->personal);
   FREE(&(*addr)->mailbox);
