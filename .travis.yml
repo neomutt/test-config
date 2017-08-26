@@ -10,20 +10,16 @@ compiler: gcc
 addons:
   apt:
     packages:
-      - ca-certificates
-  coverity_scan:
-    project:
-      name: "flatcap/neomutt"
-      description: "testing"
-    notification_email: rich@flatcap.org
-    build_command: "make"
-    branch_pattern: master
+      - python-software-properties
+      - python-pip
 
-env:
-  global:
-    # encrypted COVERITY_SCAN_TOKEN for flatcap/neomutt
-    - secure: "kzOFlu6xqmLEEzwt9sHBBNqs9oQ9k+jiLzmiZk90guU/x9gP7SW6PWsHkyFdtXOsJEMxC90jgkvm35MLxCRo+2oH8fl14HZbMtkGliYI08K1wUVNKFhWk3SCHmdI8+fQr7K85qwD5mH+UL4cCGYSGwP4sxWH5HDGBhcn1+nAzEznY6WR6PPn4K4NbAzzmi3D/kl8gBaHb2he/I7mMw0SmlioY2UN/3V85n3af2sKhtGiMARxf56gO1I8oC0ojJfSEkUrONZ6eA1FknX1PjE9EnwSn3kvb3xyL2L/2iqw9/EvdcrIi2TcwovGsN5wxEoCCEqOLw42SMLRfzldJ05VT9zsEabDFHQpCOr5Ml8YM8IHEruTalfV9cMau2bdNIPj04sAR2RrFR6AnKPHaZ/KQGI38OvumI0GRqg++mk+YrZYDfeZyNBjZb5lFc6kv039tlDPSQD9e2zWDtgfGiXZFJl0hl2Bjf3Lesl7SLtXNKv5OyqVGYjil3hmkkIFTnwqULq5N4rZCtkj1jQHZYC8zsbgeRz58CxfftNZvn1cU3Pqw0vtN37CnP/46nFamlDdi++tyBhNidjylOukbyV3wibdN3tpzl/WT/NEBrylRPimcL74i9QJNEOu1oqVDyGAqp2Amt3pfBhcRVon82GCle9NWSkXXw/YI2AcFhugkAE="
+before_install:
+  - pip install --user cpp-coveralls
 
 script:
-  - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then make ; fi
+  - make
+  - make test
+
+after_success:
+  - coveralls -e lib -e test -e debug.c -e debug.h -e main.c --gcov-options '\-lp'
 

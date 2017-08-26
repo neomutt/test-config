@@ -1,4 +1,7 @@
-.dep/
-.obj/
 demo
 tags
+*.o
+*.gc??
+config/config
+lib/lib
+test/test

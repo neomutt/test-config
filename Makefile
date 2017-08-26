@@ -2,11 +2,6 @@ CC	= gcc
 RM	= rm -fr
 MKDIR	= mkdir -p
 
-DEPDIR	= .dep
-DEPALL	= $(DEPDIR)/config $(DEPDIR)/lib $(DEPDIR)/test
-OBJDIR	= .obj
-OBJALL	= $(OBJDIR)/config $(OBJDIR)/lib $(OBJDIR)/test
-
 OUT	= demo
 
 SRC	+= account.c config_set.c debug.c main.c
@@ -14,7 +9,7 @@ SRC	+= config/address.c config/bool.c config/magic.c config/mbyte_table.c config
 SRC	+= test/common.c test/address.c test/bool.c test/initial.c test/magic.c test/mbyte_table.c test/number.c test/path.c test/quad.c test/regex.c test/sort.c test/string.c test/synonym.c
 SRC	+= lib/buffer.c lib/debug.c lib/exit.c lib/hash.c lib/memory.c lib/message.c lib/string.c
 
-OBJ	+= $(SRC:%.c=$(OBJDIR)/%.o)
+OBJ	+= $(SRC:%.c=%.o)
 
 CFLAGS	+= -Wall
 # CFLAGS	+= -Wextra
@@ -34,28 +29,15 @@ LDFLAGS	+= -fprofile-arcs -ftest-coverage
 
 CFLAGS	+= -fno-omit-frame-pointer
 
-all:	$(OBJALL) $(DEPALL) $(OBJ) $(OUT) tags
+all:	$(OBJ) $(OUT) tags
 
-# ----------------------------------------------------------------------------
-
-$(OBJDIR)/%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@ && ( \
-	$(CC) -MM $(CFLAGS) -c $< | sed 's/.*:/'$(OBJDIR)'\/\0/' > $(DEPDIR)/$*.d; \
-	cp -f $(DEPDIR)/$*.d $(DEPDIR)/$*.d.tmp; \
-	sed -e 's/.*://' -e 's/\\$$//' < $(DEPDIR)/$*.d.tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(DEPDIR)/$*.d; \
-	rm -f $(DEPDIR)/$*.d.tmp)
-
-# ----------------------------------------------------------------------------
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OUT):	$(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
-$(DEPALL) $(OBJALL):
-	$(MKDIR) $@
-
-# ----------------------------------------------------------------------------
-
-test:	$(OBJALL) $(DEPALL) $(OUT) force
+test:	$(OUT) force
 	./$(OUT) address     > test/address.txt
 	./$(OUT) bool        > test/bool.txt
 	./$(OUT) initial     > test/initial.txt
@@ -72,13 +54,22 @@ test:	$(OBJALL) $(DEPALL) $(OUT) force
 tags:	$(SRC) $(HDR)
 	ctags -R .
 
-clean:
+covclean:
+	$(RM) *.gc?? */*.gc??
+
+clean: covclean
 	$(RM) $(OUT) $(OBJ)
 
 distclean: clean
-	$(RM) $(DEPDIR) $(OBJDIR) tags
+	$(RM) tags
 
 force:
 
--include $(SRC:%.c=$(DEPDIR)/%.d)
+dummy_dirs:
+	(cd config && rm -f config && ln -s . config)
+	(cd lib    && rm -f lib    && ln -s . lib)
+	(cd test   && rm -f test   && ln -s . test)
+
+coveralls: dummy_dirs
+	coveralls -e lib -e test -e debug.c -e debug.h -e main.c
 
