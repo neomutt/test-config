@@ -11,6 +11,9 @@
 
 void hash_dump(struct Hash *table)
 {
+  if (!table)
+    return;
+
   struct HashElem *he = NULL;
 
   for (int i = 0; i < table->nelem; i++)
@@ -41,6 +44,9 @@ void hash_dump(struct Hash *table)
 
 void cs_dump_set(const struct ConfigSet *cs)
 {
+  if (!cs)
+    return;
+
   struct HashElem *he = NULL;
   struct HashWalkState state;
   memset(&state, 0, sizeof(state));

@@ -16,7 +16,12 @@ struct ConfigSetType RegisteredTypes[16] =
 
 static void destroy(int type, void *obj, intptr_t data)
 {
+  if (!obj)
+    return;
+
   struct ConfigSet *cs = (struct ConfigSet *) data;
+  if (!cs)
+    return;
 
   const struct ConfigSetType *cst = NULL;
 
@@ -93,6 +98,9 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs, struct VariableD
 
 const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type)
 {
+  if (!cs)
+    return NULL;
+
   type = DTYPE(type);
   if ((type < 1) || (type >= mutt_array_size(cs->types)))
     return NULL;
@@ -105,6 +113,9 @@ const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned
 
 void cs_init(struct ConfigSet *cs, int size)
 {
+  if (!cs)
+    return;
+
   memset(cs, 0, sizeof(*cs));
   cs->hash = hash_create(size, 0);
   hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
@@ -140,6 +151,9 @@ void cs_free(struct ConfigSet **cs)
 
 void notify_listeners(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
 {
+  if (!cs || !he || !name)
+    return;
+
   for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (!cs->listeners[i])
@@ -169,6 +183,9 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
 
 bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[])
 {
+  if (!cs || !vars)
+    return false;
+
   struct Buffer err;
   mutt_buffer_init(&err);
   err.data = calloc(1, STRING);
@@ -191,6 +208,9 @@ bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]
 
 bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err)
 {
+  if (!cs || !name)
+    return false;
+
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
   {
@@ -252,6 +272,9 @@ bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *v
 
 bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
+  if (!cs || !name)
+    return false;
+
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
   {

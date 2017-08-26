@@ -72,6 +72,9 @@ const struct Mapping SortSidebarMethods[] = {
 
 static const char *find_string(const struct Mapping *map, int type)
 {
+  if (!map)
+    return NULL;
+
   for (int i = 0; map[i].name; i++)
     if (map[i].value == type)
       return map[i].name;
@@ -81,6 +84,9 @@ static const char *find_string(const struct Mapping *map, int type)
 
 static int find_id(const struct Mapping *map, const char *str)
 {
+  if (!map || !str)
+    return -1;
+
   for (int i = 0; map[i].name; i++)
     if (mutt_strcasecmp(map[i].name, str) == 0)
       return map[i].value;
