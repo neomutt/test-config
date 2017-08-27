@@ -207,15 +207,53 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   }
   printf("%s = %d, %s\n", name, VarIlama, err->data);
 
+  VarIlama = -1;
+  mutt_buffer_reset(err);
+  if (!cs_get_variable(cs, name, err))
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
   return true;
 }
 
 static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
+
+  for (int i = 0; i < mutt_array_size(var_list); i++)
+  {
+    short *var = var_list[i];
+
+    *var = -1;
+
+    const struct Mapping *map = sort_maps[i];
+
+    for (int j = 0; map[j].name; j++)
+    {
+      mutt_buffer_reset(err);
+      if (!cs_str_set_value(cs, name_list[i], map[j].value, err))
+      {
+        printf("%s\n", err->data);
+        return false;
+      }
+
+      if (*var != map[j].value)
+      {
+        printf("Value of %s wasn't changed\n", map[j].name);
+        return false;
+      }
+      printf("%s = %d, set by '%s'\n", name_list[i], *var, map[j].name);
+    }
+  }
+
   char *name = "Jackfruit";
   short value = SORT_THREADS;
-
   VarJackfruit = -1;
   mutt_buffer_reset(err);
   if (!cs_str_set_value(cs, name, value, err))
