@@ -35,6 +35,11 @@ struct VariableDef SynonymVars[] = {
   { NULL },
 };
 
+struct VariableDef SynonymVars2[] = {
+  { "Jackfruit",  DT_SYN, NULL,           IP "Broken",     NULL  },
+  { NULL },
+};
+
 static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
@@ -164,6 +169,16 @@ bool synonym_test(void)
   init_string(cs);
   if (!cs_register_variables(cs, SynonymVars))
     return false;
+
+  if (!cs_register_variables(cs, SynonymVars2))
+  {
+    printf("Expected error\n");
+  }
+  else
+  {
+    printf("Test should have failed\n");
+    return false;
+  }
 
   cs_add_listener(cs, log_listener);
 

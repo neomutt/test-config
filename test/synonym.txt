@@ -1,4 +1,6 @@
 ---- synonym_test ------------------------------------------
+No such variable: Broken
+Expected error
 ---- set_list ----------------------------------------------
 string Cherry = 
 string Elderberry = 

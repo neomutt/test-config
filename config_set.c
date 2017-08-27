@@ -60,7 +60,7 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs, struct Variab
   struct HashElem *parent = cs_get_elem(cs, name);
   if (!parent)
   {
-    mutt_buffer_printf(err, "No such variable: %s", vdef->name);
+    mutt_buffer_printf(err, "No such variable: %s", name);
     return NULL;
   }
 

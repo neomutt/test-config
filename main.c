@@ -3,6 +3,7 @@
 #include <string.h>
 #include "test/address.h"
 #include "test/bool.h"
+#include "test/configset.h"
 #include "test/initial.h"
 #include "test/magic.h"
 #include "test/mbyte_table.h"
@@ -21,6 +22,7 @@ struct Test
   const char *name;
   test_fn function;
 } test[] = {
+  { "configset",   configset_test  },
   { "address",     address_test    },
   { "bool",        bool_test       },
   { "initial",     initial_test    },
