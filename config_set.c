@@ -1,7 +1,7 @@
-#include "config_set.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "config_set.h"
 #include "inheritance.h"
 #include "lib/buffer.h"
 #include "lib/hash.h"
@@ -9,8 +9,7 @@
 #include "lib/string2.h"
 #include "mutt_options.h"
 
-struct ConfigSetType RegisteredTypes[16] =
-{
+struct ConfigSetType RegisteredTypes[16] = {
   { NULL, NULL, NULL },
 };
 
@@ -51,7 +50,8 @@ static void destroy(int type, void *obj, intptr_t data)
   }
 }
 
-static struct HashElem *create_synonym(const struct ConfigSet *cs, struct VariableDef *vdef, struct Buffer *err)
+static struct HashElem *create_synonym(const struct ConfigSet *cs,
+                                       struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !vdef)
     return NULL; /* LCOV_EXCL_LINE */
@@ -64,7 +64,8 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs, struct Variab
     return NULL;
   }
 
-  struct HashElem *child = hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
+  struct HashElem *child =
+      hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
   if (!child)
     return NULL;
 
@@ -72,7 +73,8 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs, struct Variab
   return child;
 }
 
-static struct HashElem *reg_one_var(const struct ConfigSet *cs, struct VariableDef *vdef, struct Buffer *err)
+static struct HashElem *reg_one_var(const struct ConfigSet *cs,
+                                    struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !vdef)
     return NULL; /* LCOV_EXCL_LINE */
@@ -87,7 +89,8 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs, struct VariableD
     return NULL;
   }
 
-  struct HashElem *he = hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
+  struct HashElem *he =
+      hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
   //XXX check
 
   if (cst && cst->resetter)
@@ -149,7 +152,8 @@ void cs_free(struct ConfigSet **cs)
   FREE(cs);
 }
 
-void notify_listeners(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev)
+void notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
+                      const char *name, enum ConfigEvent ev)
 {
   if (!cs || !he || !name)
     return; /* LCOV_EXCL_LINE */
@@ -168,7 +172,8 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
   if (!cs || !cst)
     return false; /* LCOV_EXCL_LINE */
 
-  if (!cst->name || !cst->setter || !cst->getter || !cst->resetter || !cst->nsetter || !cst->ngetter)
+  if (!cst->name || !cst->setter || !cst->getter || !cst->resetter ||
+      !cst->nsetter || !cst->ngetter)
     return false;
 
   if (type >= mutt_array_size(cs->types))
@@ -206,7 +211,8 @@ bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]
   return result;
 }
 
-bool cs_set_variable(const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err)
+bool cs_set_variable(const struct ConfigSet *cs, const char *name,
+                     const char *value, struct Buffer *err)
 {
   if (!cs || !name)
     return false; /* LCOV_EXCL_LINE */
@@ -299,7 +305,7 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
     notify_name = name;
 
     if (cst && cst->destructor)
-      cst->destructor((void**) &i->var, vdef);
+      cst->destructor((void **) &i->var, vdef);
 
     he->type = DT_INHERITED;
   }
@@ -348,7 +354,7 @@ bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer
 
   if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
   {
-    var = &i->var;  // Local value
+    var = &i->var; // Local value
   }
   else
   {
@@ -357,14 +363,16 @@ bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer
 
   if (!cst)
   {
-    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", name, DTYPE(he->type));
+    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", name,
+                       DTYPE(he->type));
     return false;
   }
 
   return cst->getter(var, vdef, result);
 }
 
-bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he, struct Buffer *result)
+bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he,
+                      struct Buffer *result)
 {
   if (!cs || !he)
     return false; /* LCOV_EXCL_LINE */
@@ -388,7 +396,7 @@ bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he, str
 
   if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
   {
-    var = &i->var;  // Local value
+    var = &i->var; // Local value
   }
   else
   {
@@ -397,7 +405,8 @@ bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he, str
 
   if (!cst)
   {
-    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d", vdef->name, DTYPE(he->type));
+    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d",
+                       vdef->name, DTYPE(he->type));
     return false;
   }
 
@@ -421,7 +430,8 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
   return vdef->var;
 }
 
-struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem *parent, const char *name)
+struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
+                                     struct HashElem *parent, const char *name)
 {
   if (!cs || !parent)
     return NULL; /* LCOV_EXCL_LINE */
@@ -442,7 +452,8 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem
 }
 
 
-bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err)
+bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he,
+                     intptr_t value, struct Buffer *err)
 {
   if (!cs || !he)
     return false; /* LCOV_EXCL_LINE */
@@ -515,7 +526,8 @@ bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 }
 
 
-bool cs_str_set_value(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err)
+bool cs_str_set_value(const struct ConfigSet *cs, const char *name,
+                      intptr_t value, struct Buffer *err)
 {
   if (!cs || !name)
     return false; /* LCOV_EXCL_LINE */
@@ -609,7 +621,8 @@ intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct B
   return cst->ngetter(cs, var, vdef, err);
 }
 
-bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err)
+bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he,
+                          const char *value, struct Buffer *err)
 {
   if (!cs || !he)
     return false; /* LCOV_EXCL_LINE */

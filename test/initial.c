@@ -2,13 +2,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "account.h"
+#include "config/string3.h"
 #include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "config/string3.h"
 
 static char *VarApple;
 static char *VarBanana;
@@ -57,8 +57,7 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple = %s\n", VarApple);
   printf("Banana = %s\n", VarBanana);
 
-  return ((mutt_strcmp(VarApple, aval) != 0) &&
-          (mutt_strcmp(VarBanana, bval) == 0));
+  return ((mutt_strcmp(VarApple, aval) != 0) && (mutt_strcmp(VarBanana, bval) == 0));
 }
 
 bool initial_test(void)

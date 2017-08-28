@@ -9,7 +9,8 @@
 
 struct HashElem;
 
-const char *line = "--------------------------------------------------------------------------------";
+const char *line = "----------------------------------------"
+                   "----------------------------------------";
 
 bool validator_fail(const struct ConfigSet *cs, const struct VariableDef *vdef,
                     intptr_t value, struct Buffer *result)

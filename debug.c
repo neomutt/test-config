@@ -35,7 +35,7 @@ void hash_dump(struct Hash *table)
       }
       else
       {
-        printf("%s ", *(char**) he->data);
+        printf("%s ", *(char **) he->data);
       }
     }
     printf("\n");
@@ -94,4 +94,3 @@ void cs_dump_set(const struct ConfigSet *cs)
 
   FREE(&result.data);
 }
-

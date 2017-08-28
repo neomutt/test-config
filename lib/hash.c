@@ -215,7 +215,8 @@ void hash_set_destructor(struct Hash *hash, hash_destructor fn, intptr_t fn_data
  * @retval -1 on error
  * @retval >=0 on success, index into the hash table
  */
-static struct HashElem *union_hash_insert(struct Hash *table, union HashKey key, int type, void *data)
+static struct HashElem *union_hash_insert(struct Hash *table, union HashKey key,
+                                          int type, void *data)
 {
   struct HashElem *ptr = NULL;
   unsigned int h;
@@ -256,7 +257,8 @@ static struct HashElem *union_hash_insert(struct Hash *table, union HashKey key,
   return ptr;
 }
 
-struct HashElem *hash_typed_insert(struct Hash *table, const char *strkey, int type, void *data)
+struct HashElem *hash_typed_insert(struct Hash *table, const char *strkey,
+                                   int type, void *data)
 {
   union HashKey key;
   key.strkey = table->strdup_keys ? safe_strdup(strkey) : strkey;
@@ -505,4 +507,3 @@ struct HashElem *hash_walk(const struct Hash *table, struct HashWalkState *state
   state->last = NULL;
   return NULL;
 }
-

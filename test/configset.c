@@ -1,10 +1,10 @@
 #include <stdbool.h>
+#include "config/bool.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "test/common.h"
 #include "mutt_options.h"
-#include "config/bool.h"
+#include "test/common.h"
 
 static short VarApple;
 static bool VarBanana;
@@ -72,4 +72,3 @@ bool configset_test(void)
 
   return true;
 }
-

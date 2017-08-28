@@ -1,6 +1,6 @@
 #include <stddef.h>
-#include "account.h"
 #include <stdio.h>
+#include "account.h"
 #include "config_set.h"
 #include "inheritance.h"
 #include "lib/hash.h"
@@ -8,7 +8,8 @@
 #include "lib/string2.h"
 #include "mutt_options.h"
 
-struct Account *ac_create(const struct ConfigSet *cs, const char *name, const char *var_names[])
+struct Account *ac_create(const struct ConfigSet *cs, const char *name,
+                          const char *var_names[])
 {
   if (!cs || !name || !var_names)
     return NULL; /* LCOV_EXCL_LINE */
@@ -101,4 +102,3 @@ bool ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
 
   return cs_he_get_value(ac->cs, he, err);
 }
-

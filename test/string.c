@@ -2,13 +2,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "account.h"
+#include "config/string3.h"
 #include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
-#include "config/string3.h"
 
 static char *VarApple;
 static char *VarBanana;

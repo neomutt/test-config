@@ -18,6 +18,7 @@
 
 typedef bool (*test_fn)(void);
 
+// clang-format off
 struct Test
 {
   const char *name;
@@ -39,6 +40,7 @@ struct Test
   { "synonym",     synonym_test    },
   { NULL },
 };
+// clang-format on
 
 int main(int argc, char *argv[])
 {
@@ -80,4 +82,3 @@ int main(int argc, char *argv[])
 
   return result;
 }
-
