@@ -39,12 +39,31 @@ bool account_test(void)
   if (!cs_register_variables(cs, Vars))
     return false;
 
+  set_list(cs);
+
+  cs_add_listener(cs, log_listener);
+
   const char *account = "fruit";
+  const char *BrokenVarStr[] = {
+    "Pineapple", NULL,
+  };
+
+  struct Account *ac = ac_create(cs, account, BrokenVarStr);
+  if (!ac)
+  {
+    printf("Expected error:\n");
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
+
   const char *AccountVarStr[] = {
     "Apple", "Cherry", NULL,
   };
 
-  struct Account *ac = ac_create(cs, account, AccountVarStr);
+  ac = ac_create(cs, account, AccountVarStr);
   if (!ac)
     return false;
 
@@ -56,9 +75,24 @@ bool account_test(void)
   }
 
   mutt_buffer_reset(&err);
+  if (!ac_set_value(ac, 99, 42, &err))
+  {
+    printf("Expected error: %s\n", err.data);
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
+
+  mutt_buffer_reset(&err);
   if (!ac_get_value(ac, index, &err))
   {
     printf("%s\n", err.data);
+  }
+  else
+  {
+    printf("%s = %s\n", AccountVarStr[index], err.data);
   }
 
   ac_free(cs, &ac);
