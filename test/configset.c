@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdbool.h>
 #include "config/bool.h"
 #include "config/types.h"
