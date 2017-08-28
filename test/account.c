@@ -14,7 +14,7 @@ static short VarApple;
 static short VarBanana;
 static short VarCherry;
 
-struct VariableDef AccountVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",  DT_NUM, &VarApple,  0, NULL },
   { "Banana", DT_NUM, &VarBanana, 0, NULL },
   { "Cherry", DT_NUM, &VarCherry, 0, NULL },
@@ -34,7 +34,7 @@ bool account_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_num(cs);
-  if (!cs_register_variables(cs, AccountVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   const char *account = "fruit";

@@ -21,7 +21,7 @@ static short VarHawthorn;
 static short VarIlama;
 static short VarJackfruit;
 
-struct VariableDef QuadVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_QUAD, &VarApple,      0, NULL              }, /* test_initial() */
   { "Banana",     DT_QUAD, &VarBanana,     3, NULL              },
   { "Cherry",     DT_QUAD, &VarCherry,     0, NULL              }, /* test_basic_string_set */
@@ -350,7 +350,7 @@ bool quad_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_quad(cs);
-  if (!cs_register_variables(cs, QuadVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

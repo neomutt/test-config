@@ -25,7 +25,7 @@ static char *VarLemon;
 static char *VarMango;
 static char *VarNectarine;
 
-struct VariableDef PathVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_PATH, &VarApple,      IP "/apple",   NULL              }, /* test_initial() */
   { "Banana",     DT_PATH, &VarBanana,     IP "/banana",  NULL              },
   { "Cherry",     DT_PATH, &VarCherry,     0,             NULL              }, /* test_basic_string_set */
@@ -366,7 +366,7 @@ bool path_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_path(cs);
-  if (!cs_register_variables(cs, PathVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

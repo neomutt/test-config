@@ -29,7 +29,7 @@ static short VarNectarine;
 static short VarOlive;
 static short VarPapaya;
 
-struct VariableDef SortVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_SORT,                           &VarApple,       1,  NULL              }, /* test_initial() */
   { "Banana",     DT_SORT,                           &VarBanana,      2,  NULL              },
   { "Cherry",     DT_SORT|DT_SORT_INDEX,             &VarCherry,      1,  NULL              }, /* test_basic_string_set */
@@ -509,7 +509,7 @@ bool sort_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_sorts(cs);
-  if (!cs_register_variables(cs, SortVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

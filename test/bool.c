@@ -21,7 +21,7 @@ static bool VarHawthorn;
 static bool VarIlama;
 static bool VarJackfruit;
 
-struct VariableDef BoolVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_BOOL, &VarApple,      0, NULL              }, /* test_initial() */
   { "Banana",     DT_BOOL, &VarBanana,     1, NULL              },
   { "Cherry",     DT_BOOL, &VarCherry,     0, NULL              }, /* test_basic_string_set */
@@ -357,7 +357,7 @@ bool bool_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_bool(cs);
-  if (!cs_register_variables(cs, BoolVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

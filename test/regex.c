@@ -25,7 +25,7 @@ static struct Regex *VarLemon;
 static struct Regex *VarMango;
 static struct Regex *VarNectarine;
 
-struct VariableDef RegexVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_RX, &VarApple,      IP "apple.*",   NULL              }, /* test_initial() */
   { "Banana",     DT_RX, &VarBanana,     IP "banana.*",  NULL              },
   { "Cherry",     DT_RX, &VarCherry,     0,              NULL              }, /* test_basic_regex_set */
@@ -394,7 +394,7 @@ bool regex_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_regex(cs);
-  if (!cs_register_variables(cs, RegexVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

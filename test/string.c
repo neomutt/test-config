@@ -25,7 +25,7 @@ static char *VarLemon;
 static char *VarMango;
 static char *VarNectarine;
 
-struct VariableDef StringVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_STR, &VarApple,      IP "apple",   NULL              }, /* test_initial() */
   { "Banana",     DT_STR, &VarBanana,     IP "banana",  NULL              },
   { "Cherry",     DT_STR, &VarCherry,     0,            NULL              }, /* test_basic_string_set */
@@ -366,7 +366,7 @@ bool string_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_string(cs);
-  if (!cs_register_variables(cs, StringVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

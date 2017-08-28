@@ -21,7 +21,7 @@ static short VarHawthorn;
 static short VarIlama;
 static short VarJackfruit;
 
-struct VariableDef MagicVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_MAGIC, &VarApple,      1, NULL              }, /* test_initial() */
   { "Banana",     DT_MAGIC, &VarBanana,     3, NULL              },
   { "Cherry",     DT_MAGIC, &VarCherry,     1, NULL              }, /* test_basic_string_set */
@@ -350,7 +350,7 @@ bool magic_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_magic(cs);
-  if (!cs_register_variables(cs, MagicVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

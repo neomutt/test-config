@@ -9,7 +9,7 @@
 static short VarApple;
 static bool VarBanana;
 
-struct VariableDef CSVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",  DT_NUM,  &VarApple,  0, NULL },
   { "Banana", DT_BOOL, &VarBanana, 1, NULL },
   { NULL },
@@ -43,7 +43,7 @@ bool configset_test(void)
   init_bool(cs);
   init_bool(cs);
 
-  if (!cs_register_variables(cs, CSVars))
+  if (!cs_register_variables(cs, Vars))
   {
     printf("Expected error\n");
   }

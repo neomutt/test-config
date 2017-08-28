@@ -25,7 +25,7 @@ static struct MbCharTable *VarLemon;
 static struct MbCharTable *VarMango;
 static struct MbCharTable *VarNectarine;
 
-struct VariableDef MbCharTableVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_MBCHARTBL, &VarApple,      IP "apple",   NULL              }, /* test_initial() */
   { "Banana",     DT_MBCHARTBL, &VarBanana,     IP "banana",  NULL              },
   { "Cherry",     DT_MBCHARTBL, &VarCherry,     0,            NULL              }, /* test_basic_mbytetable_set */
@@ -394,7 +394,7 @@ bool mbytetable_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_mbyte_table(cs);
-  if (!cs_register_variables(cs, MbCharTableVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);

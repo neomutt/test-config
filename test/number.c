@@ -21,7 +21,7 @@ static short VarHawthorn;
 static short VarIlama;
 static short VarJackfruit;
 
-struct VariableDef NumberVars[] = {
+static struct VariableDef Vars[] = {
   { "Apple",      DT_NUM, &VarApple,      -42, NULL              }, /* test_initial() */
   { "Banana",     DT_NUM, &VarBanana,      99, NULL              },
   { "Cherry",     DT_NUM, &VarCherry,       0, NULL              }, /* test_basic_string_set */
@@ -346,7 +346,7 @@ bool number_test(void)
   struct ConfigSet *cs = cs_new_set(30);
 
   init_num(cs);
-  if (!cs_register_variables(cs, NumberVars))
+  if (!cs_register_variables(cs, Vars))
     return false;
 
   cs_add_listener(cs, log_listener);
