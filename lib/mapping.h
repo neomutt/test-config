@@ -35,8 +35,6 @@ struct Mapping
 };
 
 const char *mutt_getnamebyvalue(int val, const struct Mapping *map);
-char *mutt_compile_help(char *buf, size_t buflen, int menu, const struct Mapping *items);
-
 int mutt_getvaluebyname(const char *name, const struct Mapping *map);
 
 #endif /* _MUTT_MAPPING_H */

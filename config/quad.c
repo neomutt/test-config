@@ -5,7 +5,7 @@
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
+#include "types.h"
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 

@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include "config/bool.h"
+#include "config/types.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"

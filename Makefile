@@ -80,5 +80,5 @@ lcov: force
 	$(RM) debug.gc?? main.gc?? test/*.gc?? lib/*.gc??
 	lcov -t "result" -o lcov.info -c -d config
 	genhtml -o lcov lcov.info
-	realpath lcov/index.html
+	realpath lcov/config/index-sort-l.html
 

@@ -5,7 +5,7 @@
 #include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
+#include "types.h"
 
 static bool set_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
                     const char *value, struct Buffer *err)

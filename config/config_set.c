@@ -7,7 +7,7 @@
 #include "lib/hash.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
+#include "types.h"
 
 struct ConfigSetType RegisteredTypes[16] = {
   { NULL, NULL, NULL },

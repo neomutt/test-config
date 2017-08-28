@@ -5,8 +5,8 @@
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
 #include "regex2.h"
+#include "types.h"
 
 static void free_rx(struct Regex **r)
 {

@@ -4,9 +4,9 @@
 #include "sort.h"
 #include "config_set.h"
 #include "lib/buffer.h"
+#include "lib/mapping.h"
 #include "lib/string2.h"
-#include "mapping.h"
-#include "mutt_options.h"
+#include "types.h"
 
 const struct Mapping SortAliasMethods[] = {
   { "alias", SORT_ALIAS }, { "address", SORT_ADDRESS }, { "unsorted", SORT_ORDER }, { NULL, 0 },

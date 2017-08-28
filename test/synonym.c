@@ -4,10 +4,10 @@
 #include "config/account.h"
 #include "config/config_set.h"
 #include "config/string3.h"
+#include "config/types.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
 #include "test/common.h"
 
 static char *VarCherry;

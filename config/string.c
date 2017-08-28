@@ -5,7 +5,7 @@
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
+#include "types.h"
 
 static void destroy_str(void *var, const struct VariableDef *vdef)
 {

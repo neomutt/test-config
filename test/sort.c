@@ -4,10 +4,11 @@
 #include "config/sort.h"
 #include "config/account.h"
 #include "config/config_set.h"
+#include "config/types.h"
 #include "lib/buffer.h"
+#include "lib/mapping.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mapping.h"
 #include "mutt_options.h"
 #include "test/common.h"
 

@@ -8,7 +8,7 @@
 #include "lib/debug.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
+#include "types.h"
 
 static struct MbCharTable *parse_mbchar_table(const char *s)
 {

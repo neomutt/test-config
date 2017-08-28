@@ -6,7 +6,7 @@
 #include "lib/hash.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
-#include "mutt_options.h"
+#include "types.h"
 
 struct Account *ac_create(const struct ConfigSet *cs, const char *name,
                           const char *var_names[])
