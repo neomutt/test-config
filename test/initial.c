@@ -25,13 +25,11 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  bool result = false;
-
   struct HashElem *he_a = cs_get_elem(cs, "Apple");
   if (!he_a)
     return false;
 
-  const char *aval = safe_strdup("pie");
+  const char *aval = "pie";
   if (!cs_set_initial_value(cs, he_a, aval, err))
     printf("Expected error: %s\n", err->data);
 
@@ -39,54 +37,26 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
   if (!he_b)
     return false;
 
-  const char *bval = safe_strdup("split");
+  const char *bval = "split";
   if (!cs_set_initial_value(cs, he_b, bval, err))
-    goto tsi_out;
-  bval = NULL;
+    return false;
 
   struct HashElem *he_c = cs_get_elem(cs, "Cherry");
   if (!he_c)
     return false;
 
-  const char *cval = safe_strdup("blossom");
+  const char *cval = "blossom";
   if (!cs_set_initial_value(cs, he_c, cval, err))
-    goto tsi_out;
-  cval = NULL;
+    return false;
 
-  result = ((mutt_strcmp(VarApple, aval) != 0) &&
-            (mutt_strcmp(VarBanana, bval) == 0));
-
-  printf("Apple = %s\n", VarApple);
-  printf("Banana = %s\n", VarBanana);
-  printf("Cherry = %s\n", VarCherry);
-
-  // if (!cs_reset_variable(cs, "Apple", err))
-  // {
-  //   printf("%s\n", err->data);
-  //   goto tsi_out;
-  // }
-
-  // if (!cs_reset_variable(cs, "Banana", err))
-  // {
-  //   printf("%s\n", err->data);
-  //   goto tsi_out;
-  // }
-
-  if (!cs_set_variable(cs, "Cherry", "picker", err))
-  {
-    printf("%s\n", err->data);
-    goto tsi_out;
-  }
+  if (!cs_set_initial_value(cs, he_c, cval, err))
+    printf("Expected error: %s\n", err->data);
 
   printf("Apple = %s\n", VarApple);
   printf("Banana = %s\n", VarBanana);
-  printf("Cherry = %s\n", VarCherry);
 
-tsi_out:
-  FREE(&aval);
-  FREE(&bval);
-  FREE(&cval);
-  return result;
+  return ((mutt_strcmp(VarApple, aval) != 0) &&
+          (mutt_strcmp(VarBanana, bval) == 0));
 }
 
 bool initial_test(void)

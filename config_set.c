@@ -628,7 +628,7 @@ bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const
   if (vdef->initial != 0)
     return false;
 
-  vdef->initial = IP value;
+  vdef->initial = IP safe_strdup(value);
   he->type |= DT_INITIAL_SET;
 
   return cs_reset_variable(cs, vdef->name, err);

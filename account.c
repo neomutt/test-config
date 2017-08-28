@@ -56,7 +56,7 @@ struct Account *ac_create(const struct ConfigSet *cs, const char *name, const ch
 
 void ac_free(const struct ConfigSet *cs, struct Account **ac)
 {
-  if (!cs || !ac)
+  if (!cs || !ac || !*ac)
     return; /* LCOV_EXCL_LINE */
 
   char child[128];

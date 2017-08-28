@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
 #include "test/configset.h"
@@ -23,6 +24,7 @@ struct Test
   test_fn function;
 } test[] = {
   { "configset",   configset_test  },
+  { "account",     account_test    },
   { "address",     address_test    },
   { "bool",        bool_test       },
   { "initial",     initial_test    },
@@ -40,6 +42,8 @@ struct Test
 
 int main(int argc, char *argv[])
 {
+  int result = 0;
+
   if (argc < 2)
   {
     printf("Usage: %s TEST ...\n", argv[0]);
@@ -63,15 +67,17 @@ int main(int argc, char *argv[])
     if (!t)
     {
       printf("Unknown test '%s'\n", argv[1]);
+      result = 1;
       continue;
     }
 
     if (!t->function())
     {
       printf("%s_test() failed\n", t->name);
+      result = 1;
     }
   }
 
-  return 0;
+  return result;
 }
 

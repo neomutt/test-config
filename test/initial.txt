@@ -7,11 +7,6 @@ string Apple = apple
 Expected error: 
 Event: Banana has been reset to 'split'
 Event: Cherry has been reset to 'blossom'
+Expected error: 
 Apple = apple
 Banana = split
-Cherry = blossom
-Event: Cherry has been set to 'picker'
-Apple = apple
-Banana = split
-Cherry = picker
-initial_test() failed
