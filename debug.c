@@ -1,7 +1,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
-#include "config_set.h"
+#include "config/config_set.h"
 #include "inheritance.h"
 #include "lib/buffer.h"
 #include "lib/hash.h"

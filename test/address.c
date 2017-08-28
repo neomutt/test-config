@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "config/address.h"
-#include "account.h"
-#include "config_set.h"
+#include "config/account.h"
+#include "config/config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"

@@ -4,8 +4,8 @@ MKDIR	= mkdir -p
 
 OUT	= demo
 
-SRC	+= account.c config_set.c debug.c main.c
-SRC	+= config/address.c config/bool.c config/magic.c config/mbyte_table.c config/regex.c config/number.c config/path.c config/quad.c config/sort.c config/string.c
+SRC	+= debug.c main.c
+SRC	+= config/account.c config/config_set.c config/address.c config/bool.c config/magic.c config/mbyte_table.c config/regex.c config/number.c config/path.c config/quad.c config/sort.c config/string.c
 SRC	+= test/common.c test/account.c test/address.c test/bool.c test/configset.c test/initial.c test/magic.c test/mbyte_table.c test/number.c test/path.c test/quad.c test/regex.c test/sort.c test/string.c test/synonym.c
 SRC	+= lib/buffer.c lib/debug.c lib/exit.c lib/hash.c lib/memory.c lib/message.c lib/string.c
 
@@ -75,9 +75,10 @@ dummy_dirs:
 coveralls: dummy_dirs
 	coveralls -e lib -e test -e debug.c -e debug.h -e main.c
 
-lcov:
+lcov: force
+	$(RM) lcov
 	$(RM) debug.gc?? main.gc?? test/*.gc?? lib/*.gc??
-	lcov -t "result" -o ex_test.info -c -d .
-	genhtml -o res ex_test.info
-	realpath res/index.html
+	lcov -t "result" -o lcov.info -c -d config
+	genhtml -o lcov lcov.info
+	realpath lcov/index.html
 

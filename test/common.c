@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "config_set.h"
+#include "config/config_set.h"
 #include "debug.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"

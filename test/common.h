@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "config_set.h"
+#include "config/config_set.h"
 
 struct Buffer;
 struct HashElem;
