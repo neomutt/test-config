@@ -15,6 +15,7 @@ CFLAGS	+= -Wall
 # CFLAGS	+= -Wextra
 # CFLAGS	+= -Wno-missing-field-initializers
 # CFLAGS	+= -Wno-unused-parameter
+# CFLAGS	+= -Wno-sign-compare
 CFLAGS	+= -Wpedantic
 CFLAGS	+= -g
 CFLAGS	+= -O0

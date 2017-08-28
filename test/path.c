@@ -63,7 +63,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   const char *valid[] = { "hello", "world", "", NULL };
   char *name = "Cherry";
 
-  for (int i = 0; i < mutt_array_size(valid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
     if (!cs_set_variable(cs, name, valid[i], err))
@@ -81,7 +81,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   }
 
   name = "Damson";
-  for (int i = 0; i < mutt_array_size(valid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
     if (!cs_set_variable(cs, name, valid[i], err))
@@ -145,7 +145,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   const char *valid[] = { "hello", "world", "", NULL };
   char *name = "Hawthorn";
 
-  for (int i = 0; i < mutt_array_size(valid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
     if (!cs_str_set_value(cs, name, (intptr_t) valid[i], err))
@@ -163,7 +163,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   }
 
   name = "Ilama";
-  for (int i = 0; i < mutt_array_size(valid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
     if (!cs_str_set_value(cs, name, (intptr_t) valid[i], err))

@@ -139,7 +139,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  for (int i = 0; i < mutt_array_size(var_list); i++)
+  for (unsigned int i = 0; i < mutt_array_size(var_list); i++)
   {
     short *var = var_list[i];
 
@@ -168,7 +168,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
       "-1", "999", "junk", NULL,
     };
 
-    for (int j = 0; j < mutt_array_size(invalid); j++)
+    for (unsigned int j = 0; j < mutt_array_size(invalid); j++)
     {
       mutt_buffer_reset(err);
       if (!cs_set_variable(cs, name_list[i], invalid[j], err))
@@ -229,7 +229,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  for (int i = 0; i < mutt_array_size(var_list); i++)
+  for (unsigned int i = 0; i < mutt_array_size(var_list); i++)
   {
     short *var = var_list[i];
 
@@ -274,7 +274,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   printf("%s = %d, set to '%d'\n", name, VarJackfruit, value);
 
   int invalid[] = { -1, 999 };
-  for (int i = 0; i < mutt_array_size(invalid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
     VarJackfruit = -1;
     mutt_buffer_reset(err);

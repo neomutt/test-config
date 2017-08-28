@@ -56,7 +56,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   };
   char *name = "Cherry";
 
-  for (int i = 0; i < mutt_array_size(valid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     VarCherry = ((i + 1) % 4);
 
@@ -75,7 +75,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
     printf("%s = %d, set by '%s'\n", name, VarCherry, valid[i]);
   }
 
-  for (int i = 0; i < mutt_array_size(invalid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
     mutt_buffer_reset(err);
     if (!cs_set_variable(cs, name, invalid[i], err))
@@ -100,7 +100,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   int valid[] = { MUTT_NO, MUTT_YES, MUTT_ASKNO, MUTT_ASKYES };
 
-  for (int i = 0; i < mutt_array_size(valid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     VarDamson = i;
     mutt_buffer_reset(err);
@@ -150,7 +150,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   printf("%s = %d, set to '%d'\n", name, VarElderberry, value);
 
   int invalid[] = { -1, 4 };
-  for (int i = 0; i < mutt_array_size(invalid); i++)
+  for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
     VarElderberry = MUTT_NO;
     mutt_buffer_reset(err);
