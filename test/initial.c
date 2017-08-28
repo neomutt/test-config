@@ -14,12 +14,14 @@ static char *VarApple;
 static char *VarBanana;
 static char *VarCherry;
 
+// clang-format off
 static struct VariableDef Vars[] = {
   { "Apple",  DT_STR, &VarApple,  IP "apple", NULL },
   { "Banana", DT_STR, &VarBanana, 0,          NULL },
   { "Cherry", DT_STR, &VarCherry, 0,          NULL },
   { NULL },
 };
+// clang-format on
 
 static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
 {

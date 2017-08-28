@@ -29,8 +29,9 @@ static short VarNectarine;
 static short VarOlive;
 static short VarPapaya;
 
+// clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_SORT,                           &VarApple,       1,  NULL              }, /* test_initial() */
+  { "Apple",      DT_SORT,                           &VarApple,       1,  NULL              }, /* test_initial_values() */
   { "Banana",     DT_SORT,                           &VarBanana,      2,  NULL              },
   { "Cherry",     DT_SORT|DT_SORT_INDEX,             &VarCherry,      1,  NULL              }, /* test_basic_string_set */
   { "Damson",     DT_SORT|DT_SORT_ALIAS,             &VarDamson,      11, NULL              },
@@ -48,6 +49,7 @@ static struct VariableDef Vars[] = {
   { "Papaya",     DT_SORT|DT_SORT_AUX|DT_SORT_ALIAS, &VarPapaya,      0,  NULL              }, /* test_sort_type */
   { NULL },
 };
+// clang-format on
 
 static const struct Mapping SortAliasMethods[] = {
   { "alias", SORT_ALIAS }, { "address", SORT_ADDRESS }, { "unsorted", SORT_ORDER }, { NULL, 0 },
@@ -124,7 +126,7 @@ const struct Mapping *sort_maps[] = {
   SortKeyMethods, SortAuxMethods,   SortSidebarMethods,
 };
 
-static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
+static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   printf("Apple = %d\n", VarApple);
@@ -516,7 +518,7 @@ bool sort_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))
+  if (!test_initial_values_values(cs, &err))
     return false;
   if (!test_basic_string_set(cs, &err))
     return false;

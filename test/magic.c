@@ -21,8 +21,9 @@ static short VarHawthorn;
 static short VarIlama;
 static short VarJackfruit;
 
+// clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_MAGIC, &VarApple,      1, NULL              }, /* test_initial() */
+  { "Apple",      DT_MAGIC, &VarApple,      1, NULL              }, /* test_initial_values() */
   { "Banana",     DT_MAGIC, &VarBanana,     3, NULL              },
   { "Cherry",     DT_MAGIC, &VarCherry,     1, NULL              }, /* test_basic_string_set */
   { "Damson",     DT_MAGIC, &VarDamson,     1, NULL              }, /* test_basic_string_get */
@@ -34,8 +35,9 @@ static struct VariableDef Vars[] = {
   { "Jackfruit",  DT_MAGIC, &VarJackfruit,  1, NULL              }, /* test_inherit */
   { NULL },
 };
+// clang-format on
 
-static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
+static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   printf("Apple = %d\n", VarApple);
@@ -357,7 +359,7 @@ bool magic_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))
+  if (!test_initial_values_values(cs, &err))
     return false;
   if (!test_basic_string_set(cs, &err))
     return false;

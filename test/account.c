@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "account.h"
-#include "config_set.h"
 #include "config/number.h"
+#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
@@ -14,12 +14,14 @@ static short VarApple;
 static short VarBanana;
 static short VarCherry;
 
+// clang-format off
 static struct VariableDef Vars[] = {
   { "Apple",  DT_NUM, &VarApple,  0, NULL },
   { "Banana", DT_NUM, &VarBanana, 0, NULL },
   { "Cherry", DT_NUM, &VarCherry, 0, NULL },
   { NULL },
 };
+// clang-format on
 
 bool account_test(void)
 {

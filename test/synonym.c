@@ -10,36 +10,38 @@
 #include "test/common.h"
 #include "config/string3.h"
 
-static char *VarApple;
 static char *VarCherry;
+static char *VarApple;
 static char *VarElderberry;
 static char *VarGuava;
 static char *VarIlama;
 
+// clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_STR, &VarApple,      IP "apple",      NULL, },
-  { "Banana",     DT_SYN, NULL,           IP "Apple",      NULL, },
-  { "Cherry",     DT_STR, &VarCherry,     0,               NULL, },
-  { "Damson",     DT_SYN, NULL,           IP "Cherry",     NULL, },
-  { "Elderberry", DT_STR, &VarElderberry, 0,               NULL, },
-  { "Fig",        DT_SYN, NULL,           IP "Elderberry", NULL, },
-  { "Guava",      DT_STR, &VarGuava,      0,               NULL, },
-  { "Hawthorn",   DT_SYN, NULL,           IP "Guava",      NULL, },
-  { "Ilama",      DT_STR, &VarIlama,      IP "iguana",     NULL  },
-  { "Jackfruit",  DT_SYN, NULL,           IP "Ilama",      NULL  },
+  { "Apple",      DT_STR, &VarApple,      0,               NULL },
+  { "Banana",     DT_SYN, NULL,           IP "Apple",      NULL },
+  { "Cherry",     DT_STR, &VarCherry,     IP "cherry",     NULL },
+  { "Damson",     DT_SYN, NULL,           IP "Cherry",     NULL },
+  { "Elderberry", DT_STR, &VarElderberry, 0,               NULL },
+  { "Fig",        DT_SYN, NULL,           IP "Elderberry", NULL },
+  { "Guava",      DT_STR, &VarGuava,      0,               NULL },
+  { "Hawthorn",   DT_SYN, NULL,           IP "Guava",      NULL },
+  { "Ilama",      DT_STR, &VarIlama,      IP "iguana",     NULL },
+  { "Jackfruit",  DT_SYN, NULL,           IP "Ilama",      NULL },
   { NULL },
 };
 
 static struct VariableDef Vars2[] = {
-  { "Jackfruit",  DT_SYN, NULL,           IP "Broken",     NULL  },
+  { "Jackfruit",  DT_SYN, NULL,           IP "Broken",     NULL },
   { NULL },
 };
+// clang-format on
 
 static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *name = "Damson";
+  const char *name = "Banana";
   const char *value = "pudding";
 
   mutt_buffer_reset(err);
@@ -49,12 +51,12 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (mutt_strcmp(VarCherry, value) != 0)
+  if (mutt_strcmp(VarApple, value) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
-  printf("%s = %s, set by '%s'\n", name, NONULL(VarCherry), value);
+  printf("%s = %s, set by '%s'\n", name, NONULL(VarApple), value);
 
   return true;
 }
@@ -62,7 +64,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  const char *name = "Banana";
+  const char *name = "Damson";
 
   mutt_buffer_reset(err);
   if (!cs_get_variable(cs, name, err))
@@ -70,7 +72,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  printf("%s = '%s', '%s'\n", name, NONULL(VarApple), err->data);
+  printf("%s = '%s', '%s'\n", name, NONULL(VarCherry), err->data);
 
   return true;
 }

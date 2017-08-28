@@ -10,7 +10,7 @@ magic Apple = mbox
 magic Guava = mbox
 magic Hawthorn = mbox
 magic Jackfruit = mbox
----- test_initial_values -----------------------------------
+---- test_initial_values_values ----------------------------
 Apple = 1
 Banana = 3
 ---- test_basic_string_set ---------------------------------

@@ -14,7 +14,7 @@ regex Mango = mango.*
 regex Hawthorn = 
 regex Jackfruit = 
 regex Nectarine = 
----- test_initial_values -----------------------------------
+---- test_initial_values_values ----------------------------
 Apple = apple.*
 Banana = banana.*
 ---- test_basic_string_set ---------------------------------

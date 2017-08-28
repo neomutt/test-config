@@ -25,8 +25,9 @@ static char *VarLemon;
 static char *VarMango;
 static char *VarNectarine;
 
+// clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_PATH, &VarApple,      IP "/apple",   NULL              }, /* test_initial() */
+  { "Apple",      DT_PATH, &VarApple,      IP "/apple",   NULL              }, /* test_initial_values() */
   { "Banana",     DT_PATH, &VarBanana,     IP "/banana",  NULL              },
   { "Cherry",     DT_PATH, &VarCherry,     0,             NULL              }, /* test_basic_string_set */
   { "Damson",     DT_PATH, &VarDamson,     IP "/damson",  NULL              },
@@ -42,8 +43,9 @@ static struct VariableDef Vars[] = {
   { "Nectarine",  DT_PATH, &VarNectarine,  0,             NULL              }, /* test_inherit */
   { NULL },
 };
+// clang-format on
 
-static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
+static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   printf("Apple = %s\n", VarApple);
@@ -373,7 +375,7 @@ bool path_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))
+  if (!test_initial_values_values(cs, &err))
     return false;
   if (!test_basic_string_set(cs, &err))
     return false;

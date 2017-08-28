@@ -2,16 +2,16 @@
 No such variable: Broken
 Expected error
 ---- set_list ----------------------------------------------
-string Cherry = 
+string Cherry = cherry
 string Elderberry = 
 string Ilama = iguana
-string Apple = apple
+string Apple = 
 string Guava = 
 ---- test_basic_string_set ---------------------------------
-Event: Cherry has been set to 'pudding'
-Damson = pudding, set by 'pudding'
+Event: Apple has been set to 'pudding'
+Banana = pudding, set by 'pudding'
 ---- test_basic_string_get ---------------------------------
-Banana = 'apple', 'apple'
+Damson = 'cherry', 'cherry'
 ---- test_basic_native_set ---------------------------------
 Event: Elderberry has been set to 'tree'
 Fig = tree, set by 'tree'

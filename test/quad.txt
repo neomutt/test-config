@@ -10,7 +10,7 @@ quad Apple = no
 quad Guava = no
 quad Hawthorn = no
 quad Jackfruit = no
----- test_initial_values -----------------------------------
+---- test_initial_values_values ----------------------------
 Apple = 0
 Banana = 3
 ---- test_basic_string_set ---------------------------------

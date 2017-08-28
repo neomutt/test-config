@@ -16,7 +16,7 @@ sort Hawthorn = flagged
 sort Jackfruit = date
 sort Nectarine = date
 sort Papaya: ERROR: Invalid sort type: 144
----- test_initial_values -----------------------------------
+---- test_initial_values_values ----------------------------
 Apple = 1
 Banana = 2
 ---- test_basic_string_set ---------------------------------

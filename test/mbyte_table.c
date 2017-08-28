@@ -25,8 +25,9 @@ static struct MbCharTable *VarLemon;
 static struct MbCharTable *VarMango;
 static struct MbCharTable *VarNectarine;
 
+// clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_MBCHARTBL, &VarApple,      IP "apple",   NULL              }, /* test_initial() */
+  { "Apple",      DT_MBCHARTBL, &VarApple,      IP "apple",   NULL              }, /* test_initial_values() */
   { "Banana",     DT_MBCHARTBL, &VarBanana,     IP "banana",  NULL              },
   { "Cherry",     DT_MBCHARTBL, &VarCherry,     0,            NULL              }, /* test_basic_mbytetable_set */
   { "Damson",     DT_MBCHARTBL, &VarDamson,     IP "damson",  NULL              },
@@ -42,8 +43,9 @@ static struct VariableDef Vars[] = {
   { "Nectarine",  DT_MBCHARTBL, &VarNectarine,  0,            NULL              }, /* test_inherit */
   { NULL },
 };
+// clang-format on
 
-static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
+static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   printf("Apple = %s\n", VarApple->orig_str);
@@ -401,7 +403,7 @@ bool mbytetable_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values(cs, &err))
+  if (!test_initial_values_values(cs, &err))
     return false;
   if (!test_basic_string_set(cs, &err))
     return false;

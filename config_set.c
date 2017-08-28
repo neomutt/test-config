@@ -11,7 +11,7 @@
 
 struct ConfigSetType RegisteredTypes[16] =
 {
-  { NULL, NULL, NULL, },
+  { NULL, NULL, NULL },
 };
 
 static void destroy(int type, void *obj, intptr_t data)

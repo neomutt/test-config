@@ -14,7 +14,7 @@ address Mango = mango@example.com
 address Hawthorn = 
 address Jackfruit = 
 address Nectarine = 
----- test_initial_values -----------------------------------
+---- test_initial_values_values ----------------------------
 Apple = apple@example.com
 Banana = banana@example.com
 ---- test_basic_string_set ---------------------------------

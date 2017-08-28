@@ -10,7 +10,7 @@ number Apple = -42
 number Guava = 99
 number Hawthorn = 0
 number Jackfruit = 0
----- test_initial_values -----------------------------------
+---- test_initial_values_values ----------------------------
 Apple = -42
 Banana = 99
 ---- test_basic_string_set ---------------------------------
