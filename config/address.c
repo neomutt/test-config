@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "address.h"
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 static void destroy_address(void *var, const struct VariableDef *vdef)
@@ -124,7 +124,7 @@ static bool reset_address(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_address(struct ConfigSet *cs)
+void address_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_address = {
     "address",          set_address,   get_address,     set_native_address,

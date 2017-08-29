@@ -1,5 +1,5 @@
-#ifndef _MUTT_SORTS_H
-#define _MUTT_SORTS_H
+#ifndef _CONFIG_SORTS_H
+#define _CONFIG_SORTS_H
 
 struct ConfigSet;
 
@@ -25,6 +25,6 @@ struct ConfigSet;
 #define SORT_LABEL    19
 #define SORT_DESC     20
 
-void init_sorts(struct ConfigSet *cs);
+void sorts_init(struct ConfigSet *cs);
 
-#endif /* _MUTT_SORTS_H */
+#endif /* _CONFIG_SORTS_H */

@@ -24,8 +24,8 @@
  * A (more) generic interface to regular expression matching
  */
 
-#ifndef _MUTT_REGEX_H
-#define _MUTT_REGEX_H
+#ifndef _CONFIG_REGEX_H
+#define _CONFIG_REGEX_H
 
 #include <features.h>
 #include <regex.h>
@@ -72,8 +72,8 @@ struct ReplaceList
   struct ReplaceList *next;
 };
 
-void init_regex(struct ConfigSet *cs);
+void regex_init(struct ConfigSet *cs);
 struct Regex *regex_create(const char *str);
 void regex_free(struct Regex **regex);
 
-#endif /* _MUTT_REGEX_H */
+#endif /* _CONFIG_REGEX_H */

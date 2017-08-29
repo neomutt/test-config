@@ -1,8 +1,8 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
-#include "config/config_set.h"
 #include "config/inheritance.h"
+#include "config/set.h"
 #include "config/types.h"
 #include "lib/buffer.h"
 #include "lib/hash.h"
@@ -86,7 +86,7 @@ void cs_dump_set(const struct ConfigSet *cs)
 
     const struct VariableDef *vdef = he->data;
 
-    if (cst->getter(vdef->var, vdef, &result))
+    if (cst->string_get(vdef->var, vdef, &result))
       printf(" = %s\n", result.data);
     else
       printf(": ERROR: %s\n", result.data);

@@ -1,8 +1,8 @@
-#ifndef _MUTT_MAGIC_H
-#define _MUTT_MAGIC_H
+#ifndef _CONFIG_MAGIC_H
+#define _CONFIG_MAGIC_H
 
 struct ConfigSet;
 
-void init_magic(struct ConfigSet *cs);
+void magic_init(struct ConfigSet *cs);
 
-#endif /* _MUTT_MAGIC_H */
+#endif /* _CONFIG_MAGIC_H */

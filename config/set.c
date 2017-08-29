@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "config_set.h"
+#include "set.h"
 #include "inheritance.h"
 #include "lib/buffer.h"
 #include "lib/hash.h"
@@ -31,8 +31,8 @@ static void destroy(int type, void *obj, intptr_t data)
     // struct VariableDef *vdef = i->parent->data;
     // cst = cs_get_type_def(cs, i->parent->type);
 
-    // if (cst->destructor)
-    //   cst->destructor(&i->var, vdef);
+    // if (cst->destroy)
+    //   cst->destroy(&i->var, vdef);
 
     FREE(&i->name);
     FREE(&i);
@@ -42,8 +42,8 @@ static void destroy(int type, void *obj, intptr_t data)
     struct VariableDef *vdef = obj;
 
     cst = cs_get_type_def(cs, type);
-    if (cst && cst->destructor)
-      cst->destructor(vdef->var, vdef);
+    if (cst && cst->destroy)
+      cst->destroy(vdef->var, vdef);
 
     /* If we allocated the initial value, clean it up */
     if (type & DT_INITIAL_SET)
@@ -94,8 +94,8 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
       hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
   //XXX check
 
-  if (cst && cst->resetter)
-    cst->resetter(cs, vdef->var, vdef, err);
+  if (cst && cst->reset)
+    cst->reset(cs, vdef->var, vdef, err);
 
   return he;
 }
@@ -125,7 +125,7 @@ void cs_init(struct ConfigSet *cs, int size)
   hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
 }
 
-struct ConfigSet *cs_new_set(int size)
+struct ConfigSet *cs_create(int size)
 {
   struct ConfigSet *cs = safe_malloc(sizeof(*cs));
   cs_init(cs, size);
@@ -142,6 +142,11 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
       break;
     }
   }
+}
+
+void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
+{
+  //XXX
 }
 
 void cs_free(struct ConfigSet **cs)
@@ -173,8 +178,8 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
   if (!cs || !cst)
     return false; /* LCOV_EXCL_LINE */
 
-  if (!cst->name || !cst->setter || !cst->getter || !cst->resetter ||
-      !cst->nsetter || !cst->ngetter)
+  if (!cst->name || !cst->string_set || !cst->string_get || !cst->reset ||
+      !cst->native_set || !cst->native_get)
     return false;
 
   if (type >= mutt_array_size(cs->types))
@@ -265,7 +270,7 @@ bool cs_set_variable(const struct ConfigSet *cs, const char *name,
   if (!var)
     return false;
 
-  if (!cst->setter(cs, var, vdef, value, err))
+  if (!cst->string_set(cs, var, vdef, value, err))
     return false;
 
   if (he->type & DT_INHERITED)
@@ -305,8 +310,8 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
     vdef = i->parent->data;
     notify_name = name;
 
-    if (cst && cst->destructor)
-      cst->destructor((void **) &i->var, vdef);
+    if (cst && cst->destroy)
+      cst->destroy((void **) &i->var, vdef);
 
     he->type = DT_INHERITED;
   }
@@ -317,7 +322,7 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
     notify_name = vdef->name;
 
     if (cst)
-      cst->resetter(cs, vdef->var, vdef, err);
+      cst->reset(cs, vdef->var, vdef, err);
   }
 
   notify_listeners(cs, he, notify_name, CE_RESET);
@@ -369,7 +374,7 @@ bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer
     return false;
   }
 
-  return cst->getter(var, vdef, result);
+  return cst->string_get(var, vdef, result);
 }
 
 bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he,
@@ -411,7 +416,7 @@ bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he,
     return false;
   }
 
-  return cst->getter(var, vdef, result);
+  return cst->string_get(var, vdef, result);
 }
 
 struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
@@ -483,7 +488,7 @@ bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he,
     return false;
   }
 
-  bool result = cst->nsetter(cs, var, vdef, value, err);
+  bool result = cst->native_set(cs, var, vdef, value, err);
   if (result)
   {
     if (he->type & DT_INHERITED)
@@ -523,7 +528,7 @@ bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buf
     return false;
   }
 
-  return cst->ngetter(cs, var, vdef, err);
+  return cst->native_get(cs, var, vdef, err);
 }
 
 
@@ -564,7 +569,7 @@ bool cs_str_set_value(const struct ConfigSet *cs, const char *name,
     return false;
   }
 
-  bool result = cst->nsetter(cs, var, vdef, value, err);
+  bool result = cst->native_set(cs, var, vdef, value, err);
   if (result)
   {
     if (he->type & DT_INHERITED)
@@ -619,7 +624,7 @@ intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct B
     return -1;
   }
 
-  return cst->ngetter(cs, var, vdef, err);
+  return cst->native_get(cs, var, vdef, err);
 }
 
 bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he,

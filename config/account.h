@@ -1,5 +1,5 @@
-#ifndef _MUTT_ACCOUNT_H
-#define _MUTT_ACCOUNT_H
+#ifndef _CONFIG_ACCOUNT_H
+#define _CONFIG_ACCOUNT_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -22,4 +22,4 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac);
 bool ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err);
 bool ac_get_value(const struct Account *ac, int vid, struct Buffer *err);
 
-#endif /* _MUTT_ACCOUNT_H */
+#endif /* _CONFIG_ACCOUNT_H */

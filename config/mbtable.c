@@ -4,11 +4,11 @@
 #include <string.h>
 #include <wchar.h>
 #include "mbtable.h"
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/debug.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 static struct MbTable *parse_mbtable(const char *s)
@@ -60,7 +60,7 @@ static void destroy_mbtable(void *var, const struct VariableDef *vdef)
   if (!*m)
     return;
 
-  free_mbtable(m);
+  mbtable_free(m);
 }
 
 static bool set_mbtable(const struct ConfigSet *cs, void *var,
@@ -74,7 +74,7 @@ static bool set_mbtable(const struct ConfigSet *cs, void *var,
 
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
   {
-    free_mbtable(&table);
+    mbtable_free(&table);
     return false;
   }
 
@@ -120,7 +120,7 @@ static bool set_native_mbtable(const struct ConfigSet *cs, void *var,
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
 
-  free_mbtable(var);
+  mbtable_free(var);
 
   struct MbTable *table = dup_mbtable((struct MbTable *) value);
 
@@ -155,7 +155,7 @@ static bool reset_mbtable(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void free_mbtable(struct MbTable **table)
+void mbtable_free(struct MbTable **table)
 {
   if (!table || !*table)
     return; /* LCOV_EXCL_LINE */
@@ -173,7 +173,7 @@ struct MbTable *mbtable_create(const char *str)
   return m;
 }
 
-void init_mbtable(struct ConfigSet *cs)
+void mbtable_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_mbtable = {
     "mbtable",          set_mbtable,   get_mbtable,     set_native_mbtable,

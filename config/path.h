@@ -1,8 +1,8 @@
-#ifndef _MUTT_PATH_H
-#define _MUTT_PATH_H
+#ifndef _CONFIG_PATH_H
+#define _CONFIG_PATH_H
 
 struct ConfigSet;
 
-void init_path(struct ConfigSet *cs);
+void path_init(struct ConfigSet *cs);
 
-#endif /* _MUTT_PATH_H */
+#endif /* _CONFIG_PATH_H */

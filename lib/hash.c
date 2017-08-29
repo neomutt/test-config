@@ -203,7 +203,7 @@ struct Hash *int_hash_create(int nelem, int flags)
 
 void hash_set_destructor(struct Hash *hash, hash_destructor fn, intptr_t fn_data)
 {
-  hash->destructor = fn;
+  hash->destroy = fn;
   hash->dest_data = fn_data;
 }
 
@@ -400,8 +400,8 @@ static void union_hash_delete(struct Hash *table, union HashKey key, const void 
     if ((data == ptr->data || !data) && table->cmp_key(ptr->key, key) == 0)
     {
       *last = ptr->next;
-      if (table->destructor)
-        table->destructor(ptr->type, ptr->data, table->dest_data);
+      if (table->destroy)
+        table->destroy(ptr->type, ptr->data, table->dest_data);
       if (table->strdup_keys)
         FREE(&ptr->key.strkey);
       FREE(&ptr);
@@ -464,8 +464,8 @@ void hash_destroy(struct Hash **ptr)
     {
       tmp = elem;
       elem = elem->next;
-      if (pptr->destructor)
-        pptr->destructor(tmp->type, tmp->data, pptr->dest_data);
+      if (pptr->destroy)
+        pptr->destroy(tmp->type, tmp->data, pptr->dest_data);
       if (pptr->strdup_keys)
         FREE(&tmp->key.strkey);
       FREE(&tmp);

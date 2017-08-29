@@ -3,10 +3,10 @@
 #include <stdint.h>
 #include <string.h>
 #include "sort.h"
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/mapping.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 const struct Mapping SortAliasMethods[] = {
@@ -254,7 +254,7 @@ static bool reset_sort(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_sorts(struct ConfigSet *cs)
+void sorts_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_sort = {
     "sort",          set_sort,   get_sort, set_native_sort,

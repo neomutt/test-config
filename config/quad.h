@@ -1,8 +1,8 @@
-#ifndef _MUTT_QUAD_H
-#define _MUTT_QUAD_H
+#ifndef _CONFIG_QUAD_H
+#define _CONFIG_QUAD_H
 
 struct ConfigSet;
 
-void init_quad(struct ConfigSet *cs);
+void quad_init(struct ConfigSet *cs);
 
-#endif /* _MUTT_QUAD_H */
+#endif /* _CONFIG_QUAD_H */

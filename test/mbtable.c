@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "config/mbtable.h"
 #include "config/account.h"
-#include "config/config_set.h"
+#include "config/set.h"
 #include "config/types.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
@@ -185,7 +185,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   mb = VarIlama ? VarIlama->orig_str : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(mb));
 
-  free_mbtable(&t);
+  mbtable_free(&t);
   return true;
 }
 
@@ -308,7 +308,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   mb = VarMango ? VarMango->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
 
-  free_mbtable(&t);
+  mbtable_free(&t);
   return true;
 }
 
@@ -395,9 +395,9 @@ bool mbtable_test(void)
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 
-  struct ConfigSet *cs = cs_new_set(30);
+  struct ConfigSet *cs = cs_create(30);
 
-  init_mbtable(cs);
+  mbtable_init(cs);
   if (!cs_register_variables(cs, Vars))
     return false;
 

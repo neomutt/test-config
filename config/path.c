@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 static void destroy_path(void *var, const struct VariableDef *vdef)
@@ -97,7 +97,7 @@ static bool reset_path(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_path(struct ConfigSet *cs)
+void path_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_path = {
     "path",          set_path,   get_path,     set_native_path,

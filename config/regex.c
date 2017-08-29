@@ -2,11 +2,11 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
 #include "regex2.h"
+#include "set.h"
 #include "types.h"
 
 static void free_regex(struct Regex **r)
@@ -126,7 +126,7 @@ static bool reset_regex(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_regex(struct ConfigSet *cs)
+void regex_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_regex = {
     "regex",          set_regex,   get_regex,     set_native_regex,

@@ -1,8 +1,8 @@
-#ifndef _MUTT_STRING_H
-#define _MUTT_STRING_H
+#ifndef _CONFIG_STRING_H
+#define _CONFIG_STRING_H
 
 struct ConfigSet;
 
-void init_string(struct ConfigSet *cs);
+void string_init(struct ConfigSet *cs);
 
-#endif /* _MUTT_STRING_H */
+#endif /* _CONFIG_STRING_H */

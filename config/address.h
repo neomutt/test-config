@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_ADDRESS_H
-#define _MUTT_ADDRESS_H
+#ifndef _CONFIG_ADDRESS_H
+#define _CONFIG_ADDRESS_H
 
 #include <stdbool.h>
 
@@ -40,8 +40,8 @@ struct Address
   bool intl_checked : 1;
 };
 
-void init_address(struct ConfigSet *cs);
+void address_init(struct ConfigSet *cs);
 struct Address *address_create(const char *addr);
 void address_free(struct Address **addr);
 
-#endif /* _MUTT_ADDRESS_H */
+#endif /* _CONFIG_ADDRESS_H */

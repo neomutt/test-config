@@ -1,5 +1,5 @@
-#ifndef _MUTT_INHERITANCE_H
-#define _MUTT_INHERITANCE_H
+#ifndef _CONFIG_INHERITANCE_H
+#define _CONFIG_INHERITANCE_H
 
 #include <stdint.h>
 
@@ -11,4 +11,4 @@ struct Inheritance
   intptr_t var;
 };
 
-#endif /* _MUTT_INHERITANCE_H */
+#endif /* _CONFIG_INHERITANCE_H */

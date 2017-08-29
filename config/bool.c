@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 const char *bool_values[] = {
@@ -96,7 +96,7 @@ static bool reset_bool(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_bool(struct ConfigSet *cs)
+void bool_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_bool = {
     "boolean",       set_bool,   get_bool, set_native_bool,

@@ -59,7 +59,7 @@ struct Hash
   struct HashElem **table;
   unsigned int (*gen_hash)(union HashKey, unsigned int);
   int (*cmp_key)(union HashKey, union HashKey);
-  hash_destructor destructor;
+  hash_destructor destroy;
   intptr_t dest_data;
 };
 

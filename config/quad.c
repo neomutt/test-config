@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
@@ -94,7 +94,7 @@ static bool reset_quad(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_quad(struct ConfigSet *cs)
+void quad_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_quad = {
     "quad",          set_quad,   get_quad, set_native_quad,

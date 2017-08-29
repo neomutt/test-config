@@ -5,7 +5,7 @@ MKDIR	= mkdir -p
 OUT	= demo
 
 SRC	+= debug.c main.c
-SRC	+= config/account.c config/config_set.c config/address.c config/bool.c config/magic.c config/mbtable.c config/regex.c config/number.c config/path.c config/quad.c config/sort.c config/string.c
+SRC	+= config/account.c config/set.c config/address.c config/bool.c config/magic.c config/mbtable.c config/regex.c config/number.c config/path.c config/quad.c config/sort.c config/string.c
 SRC	+= test/common.c test/account.c test/address.c test/bool.c test/configset.c test/initial.c test/magic.c test/mbtable.c test/number.c test/path.c test/quad.c test/regex.c test/sort.c test/string.c test/synonym.c
 SRC	+= lib/buffer.c lib/debug.c lib/exit.c lib/hash.c lib/memory.c lib/message.c lib/string.c
 

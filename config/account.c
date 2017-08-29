@@ -2,11 +2,11 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "account.h"
-#include "config_set.h"
 #include "inheritance.h"
 #include "lib/hash.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 struct Account *ac_create(const struct ConfigSet *cs, const char *name,

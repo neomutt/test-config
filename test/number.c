@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "config/number.h"
 #include "config/account.h"
-#include "config/config_set.h"
+#include "config/set.h"
 #include "config/types.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
@@ -347,9 +347,9 @@ bool number_test(void)
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 
-  struct ConfigSet *cs = cs_new_set(30);
+  struct ConfigSet *cs = cs_create(30);
 
-  init_number(cs);
+  number_init(cs);
   if (!cs_register_variables(cs, Vars))
     return false;
 

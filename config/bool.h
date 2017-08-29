@@ -1,8 +1,8 @@
-#ifndef _MUTT_BOOL_H
-#define _MUTT_BOOL_H
+#ifndef _CONFIG_BOOL_H
+#define _CONFIG_BOOL_H
 
 struct ConfigSet;
 
-void init_bool(struct ConfigSet *cs);
+void bool_init(struct ConfigSet *cs);
 
-#endif /* _MUTT_BOOL_H */
+#endif /* _CONFIG_BOOL_H */

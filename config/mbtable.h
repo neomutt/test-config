@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_MBTABLE_H
-#define _MUTT_MBTABLE_H
+#ifndef _CONFIG_MBTABLE_H
+#define _CONFIG_MBTABLE_H
 
 struct ConfigSet;
 
@@ -40,9 +40,9 @@ struct MbTable
   char *segmented_str; /**< each chars entry points inside this string */
 };
 
-void init_mbtable(struct ConfigSet *cs);
+void mbtable_init(struct ConfigSet *cs);
 
 struct MbTable *mbtable_create(const char *str);
-void free_mbtable(struct MbTable **table);
+void mbtable_free(struct MbTable **table);
 
-#endif /* _MUTT_MBTABLE_H */
+#endif /* _CONFIG_MBTABLE_H */

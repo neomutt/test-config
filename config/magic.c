@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
+#include "set.h"
 #include "types.h"
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
@@ -94,7 +94,7 @@ static bool reset_magic(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_magic(struct ConfigSet *cs)
+void magic_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_magic = {
     "magic",          set_magic,   get_magic, set_native_magic,

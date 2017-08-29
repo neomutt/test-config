@@ -1,8 +1,8 @@
-#ifndef _MUTT_NUMBER_H
-#define _MUTT_NUMBER_H
+#ifndef _CONFIG_NUMBER_H
+#define _CONFIG_NUMBER_H
 
 struct ConfigSet;
 
-void init_number(struct ConfigSet *cs);
+void number_init(struct ConfigSet *cs);
 
-#endif /* _MUTT_NUMBER_H */
+#endif /* _CONFIG_NUMBER_H */

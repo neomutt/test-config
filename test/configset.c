@@ -29,7 +29,7 @@ bool configset_test(void)
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 
-  struct ConfigSet *cs = cs_new_set(30);
+  struct ConfigSet *cs = cs_create(30);
 
   const struct ConfigSetType cst_dummy = {
     "dummy", NULL, NULL, NULL, NULL, NULL, NULL,
@@ -44,8 +44,8 @@ bool configset_test(void)
     return false;
   }
 
-  init_bool(cs);
-  init_bool(cs);
+  bool_init(cs);
+  bool_init(cs);
 
   if (!cs_register_variables(cs, Vars))
   {
