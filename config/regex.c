@@ -9,17 +9,7 @@
 #include "set.h"
 #include "types.h"
 
-static void free_regex(struct Regex **r)
-{
-  if (!r || !*r)
-    return; /* LCOV_EXCL_LINE */
-
-  FREE(&(*r)->pattern);
-  //regfree(r->regex)
-  FREE(r);
-}
-
-static void destroy_regex(void *var, const struct VariableDef *vdef)
+static void regex_destroy(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
@@ -28,11 +18,12 @@ static void destroy_regex(void *var, const struct VariableDef *vdef)
   if (!*r)
     return;
 
-  free_regex(r);
+  regex_free(r);
 }
 
-static bool set_regex(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                      const char *value, struct Buffer *err)
+static bool regex_string_set(const struct ConfigSet *cs, void *var,
+                             const struct VariableDef *vdef, const char *value,
+                             struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -47,17 +38,17 @@ static bool set_regex(const struct ConfigSet *cs, void *var, const struct Variab
 
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) r, err))
   {
-    free_regex(&r);
+    regex_free(&r);
     return false;
   }
 
-  destroy_regex(var, vdef);
+  regex_destroy(var, vdef);
 
   *(struct Regex **) var = r;
   return true;
 }
 
-static bool get_regex(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool regex_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -70,7 +61,7 @@ static bool get_regex(void *var, const struct VariableDef *vdef, struct Buffer *
   return true;
 }
 
-static struct Regex *dup_regex(struct Regex *r)
+static struct Regex *regex_dup(struct Regex *r)
 {
   if (!r)
     return NULL; /* LCOV_EXCL_LINE */
@@ -80,7 +71,7 @@ static struct Regex *dup_regex(struct Regex *r)
   return copy;
 }
 
-static bool set_native_regex(const struct ConfigSet *cs, void *var,
+static bool regex_native_set(const struct ConfigSet *cs, void *var,
                              const struct VariableDef *vdef, intptr_t value,
                              struct Buffer *err)
 {
@@ -92,13 +83,13 @@ static bool set_native_regex(const struct ConfigSet *cs, void *var,
 
   regex_free(var);
 
-  struct Regex *r = dup_regex((struct Regex *) value);
+  struct Regex *r = regex_dup((struct Regex *) value);
 
   *(struct Regex **) var = r;
   return true;
 }
 
-static intptr_t get_native_regex(const struct ConfigSet *cs, void *var,
+static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -109,13 +100,13 @@ static intptr_t get_native_regex(const struct ConfigSet *cs, void *var,
   return (intptr_t) r;
 }
 
-static bool reset_regex(const struct ConfigSet *cs, void *var,
+static bool regex_reset(const struct ConfigSet *cs, void *var,
                         const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  destroy_regex(var, vdef);
+  regex_destroy(var, vdef);
 
   struct Regex *r = safe_calloc(1, sizeof(*r));
 
@@ -126,11 +117,21 @@ static bool reset_regex(const struct ConfigSet *cs, void *var,
   return true;
 }
 
+void regex_free(struct Regex **r)
+{
+  if (!r || !*r)
+    return; /* LCOV_EXCL_LINE */
+
+  FREE(&(*r)->pattern);
+  //regfree(r->regex)
+  FREE(r);
+}
+
 void regex_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_regex = {
-    "regex",          set_regex,   get_regex,     set_native_regex,
-    get_native_regex, reset_regex, destroy_regex,
+    "regex",          regex_string_set, regex_string_get, regex_native_set,
+    regex_native_get, regex_reset,      regex_destroy,
   };
   cs_register_type(cs, DT_REGEX, &cst_regex);
 }
@@ -140,10 +141,4 @@ struct Regex *regex_create(const char *str)
   struct Regex *r = safe_calloc(1, sizeof(*r));
   r->pattern = safe_strdup(str);
   return r;
-}
-
-void regex_free(struct Regex **r)
-{
-  FREE(&(*r)->pattern);
-  FREE(r);
 }

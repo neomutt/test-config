@@ -10,8 +10,9 @@
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
-static bool set_quad(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                     const char *value, struct Buffer *err)
+static bool quad_string_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, const char *value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
     return false; /* LCOV_EXCL_LINE */
@@ -39,7 +40,7 @@ static bool set_quad(const struct ConfigSet *cs, void *var, const struct Variabl
   return true;
 }
 
-static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool quad_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -55,7 +56,7 @@ static bool get_quad(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_quad(const struct ConfigSet *cs, void *var,
+static bool quad_native_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, intptr_t value,
                             struct Buffer *err)
 {
@@ -75,7 +76,7 @@ static bool set_native_quad(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-static intptr_t get_native_quad(const struct ConfigSet *cs, void *var,
+static intptr_t quad_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -84,7 +85,7 @@ static intptr_t get_native_quad(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
-static bool reset_quad(const struct ConfigSet *cs, void *var,
+static bool quad_reset(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -97,8 +98,7 @@ static bool reset_quad(const struct ConfigSet *cs, void *var,
 void quad_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_quad = {
-    "quad",          set_quad,   get_quad, set_native_quad,
-    get_native_quad, reset_quad, NULL,
+    "quad", quad_string_set, quad_string_get, quad_native_set, quad_native_get, quad_reset, NULL,
   };
   cs_register_type(cs, DT_QUAD, &cst_quad);
 }

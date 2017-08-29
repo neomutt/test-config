@@ -12,8 +12,9 @@ const char *bool_values[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",
 };
 
-static bool set_bool(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                     const char *value, struct Buffer *err)
+static bool bool_string_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, const char *value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
     return false; /* LCOV_EXCL_LINE */
@@ -41,7 +42,7 @@ static bool set_bool(const struct ConfigSet *cs, void *var, const struct Variabl
   return true;
 }
 
-static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool bool_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -57,7 +58,7 @@ static bool get_bool(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_bool(const struct ConfigSet *cs, void *var,
+static bool bool_native_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, intptr_t value,
                             struct Buffer *err)
 {
@@ -77,7 +78,7 @@ static bool set_native_bool(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-static intptr_t get_native_bool(const struct ConfigSet *cs, void *var,
+static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -86,7 +87,7 @@ static intptr_t get_native_bool(const struct ConfigSet *cs, void *var,
   return *(bool *) var;
 }
 
-static bool reset_bool(const struct ConfigSet *cs, void *var,
+static bool bool_reset(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -99,8 +100,7 @@ static bool reset_bool(const struct ConfigSet *cs, void *var,
 void bool_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_bool = {
-    "boolean",       set_bool,   get_bool, set_native_bool,
-    get_native_bool, reset_bool, NULL,
+    "boolean", bool_string_set, bool_string_get, bool_native_set, bool_native_get, bool_reset, NULL,
   };
   cs_register_type(cs, DT_BOOL, &cst_bool);
 }

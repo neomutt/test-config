@@ -172,8 +172,8 @@ void cs_free(struct ConfigSet **cs)
   FREE(cs);
 }
 
-void notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
-                      const char *name, enum ConfigEvent ev)
+void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
+                         const char *name, enum ConfigEvent ev)
 {
   if (!cs || !he || !name)
     return; /* LCOV_EXCL_LINE */
@@ -292,7 +292,7 @@ bool cs_str_string_set(const struct ConfigSet *cs, const char *name,
     struct Inheritance *i = he->data;
     he->type = i->parent->type | DT_INHERITED;
   }
-  notify_listeners(cs, he, notify_name, CE_SET);
+  cs_notify_listeners(cs, he, notify_name, CE_SET);
   return true;
 }
 
@@ -339,7 +339,7 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
       cst->reset(cs, vdef->var, vdef, err);
   }
 
-  notify_listeners(cs, he, notify_name, CE_RESET);
+  cs_notify_listeners(cs, he, notify_name, CE_RESET);
   return true;
 }
 
@@ -465,7 +465,7 @@ bool cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
   {
     if (he->type & DT_INHERITED)
       he->type = DT_INHERITED | vdef->type;
-    notify_listeners(cs, he, vdef->name, CE_SET);
+    cs_notify_listeners(cs, he, vdef->name, CE_SET);
   }
 
   return result;
@@ -555,7 +555,7 @@ bool cs_str_native_set(const struct ConfigSet *cs, const char *name,
   {
     if (he->type & DT_INHERITED)
       he->type = DT_INHERITED | vdef->type;
-    notify_listeners(cs, he, vdef->name, CE_SET);
+    cs_notify_listeners(cs, he, vdef->name, CE_SET);
   }
 
   return result;

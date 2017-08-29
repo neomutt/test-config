@@ -95,8 +95,9 @@ static int find_id(const struct Mapping *map, const char *str)
   return -1;
 }
 
-static bool set_sort(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                     const char *value, struct Buffer *err)
+static bool sort_string_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, const char *value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
     return false; /* LCOV_EXCL_LINE */
@@ -142,7 +143,7 @@ static bool set_sort(const struct ConfigSet *cs, void *var, const struct Variabl
   return true;
 }
 
-static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool sort_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -187,7 +188,7 @@ static bool get_sort(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_sort(const struct ConfigSet *cs, void *var,
+static bool sort_native_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, intptr_t value,
                             struct Buffer *err)
 {
@@ -235,7 +236,7 @@ static bool set_native_sort(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-static intptr_t get_native_sort(const struct ConfigSet *cs, void *var,
+static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -244,7 +245,7 @@ static intptr_t get_native_sort(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
-static bool reset_sort(const struct ConfigSet *cs, void *var,
+static bool sort_reset(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -254,11 +255,10 @@ static bool reset_sort(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void sorts_init(struct ConfigSet *cs)
+void sort_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_sort = {
-    "sort",          set_sort,   get_sort, set_native_sort,
-    get_native_sort, reset_sort, NULL,
+    "sort", sort_string_set, sort_string_get, sort_native_set, sort_native_get, sort_reset, NULL,
   };
   cs_register_type(cs, DT_SORT, &cst_sort);
 }

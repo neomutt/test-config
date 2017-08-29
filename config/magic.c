@@ -10,8 +10,9 @@
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 
-static bool set_magic(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                      const char *value, struct Buffer *err)
+static bool magic_string_set(const struct ConfigSet *cs, void *var,
+                             const struct VariableDef *vdef, const char *value,
+                             struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
     return false; /* LCOV_EXCL_LINE */
@@ -39,7 +40,7 @@ static bool set_magic(const struct ConfigSet *cs, void *var, const struct Variab
   return true;
 }
 
-static bool get_magic(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool magic_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -55,7 +56,7 @@ static bool get_magic(void *var, const struct VariableDef *vdef, struct Buffer *
   return true;
 }
 
-static bool set_native_magic(const struct ConfigSet *cs, void *var,
+static bool magic_native_set(const struct ConfigSet *cs, void *var,
                              const struct VariableDef *vdef, intptr_t value,
                              struct Buffer *err)
 {
@@ -75,7 +76,7 @@ static bool set_native_magic(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-static intptr_t get_native_magic(const struct ConfigSet *cs, void *var,
+static intptr_t magic_native_get(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -84,7 +85,7 @@ static intptr_t get_native_magic(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
-static bool reset_magic(const struct ConfigSet *cs, void *var,
+static bool magic_reset(const struct ConfigSet *cs, void *var,
                         const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -97,8 +98,7 @@ static bool reset_magic(const struct ConfigSet *cs, void *var,
 void magic_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_magic = {
-    "magic",          set_magic,   get_magic, set_native_magic,
-    get_native_magic, reset_magic, NULL,
+    "magic", magic_string_set, magic_string_get, magic_native_set, magic_native_get, magic_reset, NULL,
   };
   cs_register_type(cs, DT_MAGIC, &cst_magic);
 }

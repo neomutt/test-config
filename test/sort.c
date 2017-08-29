@@ -512,7 +512,7 @@ bool sort_test(void)
 
   struct ConfigSet *cs = cs_create(30);
 
-  sorts_init(cs);
+  sort_init(cs);
   if (!cs_register_variables(cs, Vars))
     return false;
 

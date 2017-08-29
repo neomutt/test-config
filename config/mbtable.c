@@ -11,7 +11,7 @@
 #include "set.h"
 #include "types.h"
 
-static struct MbTable *parse_mbtable(const char *s)
+static struct MbTable *mbtable_parse(const char *s)
 {
   struct MbTable *t = NULL;
   size_t slen, k;
@@ -34,7 +34,7 @@ static struct MbTable *parse_mbtable(const char *s)
   {
     if (k == (size_t)(-1) || k == (size_t)(-2))
     {
-      mutt_debug(1, "parse_mbtable: mbrtowc returned %d converting %s in %s\n",
+      mutt_debug(1, "mbtable_parse: mbrtowc returned %d converting %s in %s\n",
                  (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
       if (k == (size_t)(-1))
         memset(&mbstate, 0, sizeof(mbstate));
@@ -51,7 +51,7 @@ static struct MbTable *parse_mbtable(const char *s)
   return t;
 }
 
-static void destroy_mbtable(void *var, const struct VariableDef *vdef)
+static void mbtable_destroy(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
@@ -63,14 +63,14 @@ static void destroy_mbtable(void *var, const struct VariableDef *vdef)
   mbtable_free(m);
 }
 
-static bool set_mbtable(const struct ConfigSet *cs, void *var,
-                        const struct VariableDef *vdef, const char *value,
-                        struct Buffer *err)
+static bool mbtable_string_set(const struct ConfigSet *cs, void *var,
+                               const struct VariableDef *vdef,
+                               const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  struct MbTable *table = parse_mbtable(value);
+  struct MbTable *table = mbtable_parse(value);
 
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
   {
@@ -78,13 +78,13 @@ static bool set_mbtable(const struct ConfigSet *cs, void *var,
     return false;
   }
 
-  destroy_mbtable(var, vdef);
+  mbtable_destroy(var, vdef);
 
   *(struct MbTable **) var = table;
   return true;
 }
 
-static bool get_mbtable(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool mbtable_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -100,7 +100,7 @@ static bool get_mbtable(void *var, const struct VariableDef *vdef, struct Buffer
   return true;
 }
 
-static struct MbTable *dup_mbtable(struct MbTable *table)
+static struct MbTable *mbtable_dup(struct MbTable *table)
 {
   if (!table)
     return NULL; /* LCOV_EXCL_LINE */
@@ -110,7 +110,7 @@ static struct MbTable *dup_mbtable(struct MbTable *table)
   return m;
 }
 
-static bool set_native_mbtable(const struct ConfigSet *cs, void *var,
+static bool mbtable_native_set(const struct ConfigSet *cs, void *var,
                                const struct VariableDef *vdef, intptr_t value,
                                struct Buffer *err)
 {
@@ -122,13 +122,13 @@ static bool set_native_mbtable(const struct ConfigSet *cs, void *var,
 
   mbtable_free(var);
 
-  struct MbTable *table = dup_mbtable((struct MbTable *) value);
+  struct MbTable *table = mbtable_dup((struct MbTable *) value);
 
   *(struct MbTable **) var = table;
   return true;
 }
 
-static intptr_t get_native_mbtable(const struct ConfigSet *cs, void *var,
+static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
                                    const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -139,15 +139,15 @@ static intptr_t get_native_mbtable(const struct ConfigSet *cs, void *var,
   return (intptr_t) table;
 }
 
-static bool reset_mbtable(const struct ConfigSet *cs, void *var,
+static bool mbtable_reset(const struct ConfigSet *cs, void *var,
                           const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  destroy_mbtable(var, vdef);
+  mbtable_destroy(var, vdef);
 
-  struct MbTable *table = parse_mbtable((const char *) vdef->initial);
+  struct MbTable *table = mbtable_parse((const char *) vdef->initial);
   if (!table)
     return false;
 
@@ -176,8 +176,9 @@ struct MbTable *mbtable_create(const char *str)
 void mbtable_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_mbtable = {
-    "mbtable",          set_mbtable,   get_mbtable,     set_native_mbtable,
-    get_native_mbtable, reset_mbtable, destroy_mbtable,
+    "mbtable",          mbtable_string_set, mbtable_string_get,
+    mbtable_native_set, mbtable_native_get, mbtable_reset,
+    mbtable_destroy,
   };
   cs_register_type(cs, DT_MBTABLE, &cst_mbtable);
 }

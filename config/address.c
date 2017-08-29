@@ -8,7 +8,7 @@
 #include "set.h"
 #include "types.h"
 
-static void destroy_address(void *var, const struct VariableDef *vdef)
+static void address_destroy(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
@@ -22,9 +22,9 @@ static void destroy_address(void *var, const struct VariableDef *vdef)
   FREE(a);
 }
 
-static bool set_address(const struct ConfigSet *cs, void *var,
-                        const struct VariableDef *vdef, const char *value,
-                        struct Buffer *err)
+static bool address_string_set(const struct ConfigSet *cs, void *var,
+                               const struct VariableDef *vdef,
+                               const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -41,17 +41,17 @@ static bool set_address(const struct ConfigSet *cs, void *var,
 
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) addr, err))
   {
-    destroy_address(&addr, vdef);
+    address_destroy(&addr, vdef);
     return false;
   }
 
-  destroy_address(var, vdef);
+  address_destroy(var, vdef);
 
   *(struct Address **) var = addr;
   return true;
 }
 
-static bool get_address(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool address_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -64,7 +64,7 @@ static bool get_address(void *var, const struct VariableDef *vdef, struct Buffer
   return true;
 }
 
-static struct Address *dup_address(struct Address *addr)
+static struct Address *address_dup(struct Address *addr)
 {
   if (!addr)
     return NULL; /* LCOV_EXCL_LINE */
@@ -75,7 +75,7 @@ static struct Address *dup_address(struct Address *addr)
   return a;
 }
 
-static bool set_native_address(const struct ConfigSet *cs, void *var,
+static bool address_native_set(const struct ConfigSet *cs, void *var,
                                const struct VariableDef *vdef, intptr_t value,
                                struct Buffer *err)
 {
@@ -87,11 +87,11 @@ static bool set_native_address(const struct ConfigSet *cs, void *var,
 
   address_free(var);
 
-  *(struct Address **) var = dup_address((struct Address *) value);
+  *(struct Address **) var = address_dup((struct Address *) value);
   return true;
 }
 
-static intptr_t get_native_address(const struct ConfigSet *cs, void *var,
+static intptr_t address_native_get(const struct ConfigSet *cs, void *var,
                                    const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -110,13 +110,13 @@ struct Address *address_create(const char *addr)
   return a;
 }
 
-static bool reset_address(const struct ConfigSet *cs, void *var,
+static bool address_reset(const struct ConfigSet *cs, void *var,
                           const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  destroy_address(var, vdef);
+  address_destroy(var, vdef);
 
   struct Address *a = address_create((char *) vdef->initial);
 
@@ -127,8 +127,9 @@ static bool reset_address(const struct ConfigSet *cs, void *var,
 void address_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_address = {
-    "address",          set_address,   get_address,     set_native_address,
-    get_native_address, reset_address, destroy_address,
+    "address",          address_string_set, address_string_get,
+    address_native_set, address_native_get, address_reset,
+    address_destroy,
   };
   cs_register_type(cs, DT_ADDRESS, &cst_address);
 }

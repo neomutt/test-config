@@ -8,8 +8,9 @@
 #include "set.h"
 #include "types.h"
 
-static bool set_number(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                       const char *value, struct Buffer *err)
+static bool number_string_set(const struct ConfigSet *cs, void *var,
+                              const struct VariableDef *vdef, const char *value,
+                              struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
     return false; /* LCOV_EXCL_LINE */
@@ -34,7 +35,7 @@ static bool set_number(const struct ConfigSet *cs, void *var, const struct Varia
   return true;
 }
 
-static bool get_number(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool number_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -43,7 +44,7 @@ static bool get_number(void *var, const struct VariableDef *vdef, struct Buffer 
   return true;
 }
 
-static bool set_native_number(const struct ConfigSet *cs, void *var,
+static bool number_native_set(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, intptr_t value,
                               struct Buffer *err)
 {
@@ -63,7 +64,7 @@ static bool set_native_number(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-static intptr_t get_native_number(const struct ConfigSet *cs, void *var,
+static intptr_t number_native_get(const struct ConfigSet *cs, void *var,
                                   const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -72,7 +73,7 @@ static intptr_t get_native_number(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
-static bool reset_number(const struct ConfigSet *cs, void *var,
+static bool number_reset(const struct ConfigSet *cs, void *var,
                          const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -85,8 +86,7 @@ static bool reset_number(const struct ConfigSet *cs, void *var,
 void number_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_number = {
-    "number",          set_number,   get_number, set_native_number,
-    get_native_number, reset_number, NULL,
+    "number", number_string_set, number_string_get, number_native_set, number_native_get, number_reset, NULL,
   };
   cs_register_type(cs, DT_NUMBER, &cst_number);
 }

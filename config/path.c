@@ -8,7 +8,7 @@
 #include "set.h"
 #include "types.h"
 
-static void destroy_path(void *var, const struct VariableDef *vdef)
+static void path_destroy(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
@@ -20,8 +20,9 @@ static void destroy_path(void *var, const struct VariableDef *vdef)
   FREE(var);
 }
 
-static bool set_path(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                     const char *value, struct Buffer *err)
+static bool path_string_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, const char *value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -33,13 +34,13 @@ static bool set_path(const struct ConfigSet *cs, void *var, const struct Variabl
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
     return false;
 
-  destroy_path(var, vdef);
+  path_destroy(var, vdef);
 
   *(const char **) var = safe_strdup(value);
   return true;
 }
 
-static bool get_path(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool path_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -52,7 +53,7 @@ static bool get_path(void *var, const struct VariableDef *vdef, struct Buffer *r
   return true;
 }
 
-static bool set_native_path(const struct ConfigSet *cs, void *var,
+static bool path_native_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, intptr_t value,
                             struct Buffer *err)
 {
@@ -68,13 +69,13 @@ static bool set_native_path(const struct ConfigSet *cs, void *var,
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
 
-  destroy_path(var, vdef);
+  path_destroy(var, vdef);
 
   *(const char **) var = safe_strdup((const char *) value);
   return true;
 }
 
-static intptr_t get_native_path(const struct ConfigSet *cs, void *var,
+static intptr_t path_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
@@ -85,13 +86,13 @@ static intptr_t get_native_path(const struct ConfigSet *cs, void *var,
   return (intptr_t) str;
 }
 
-static bool reset_path(const struct ConfigSet *cs, void *var,
+static bool path_reset(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  destroy_path(var, vdef);
+  path_destroy(var, vdef);
 
   *(const char **) var = (const char *) vdef->initial;
   return true;
@@ -100,8 +101,8 @@ static bool reset_path(const struct ConfigSet *cs, void *var,
 void path_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_path = {
-    "path",          set_path,   get_path,     set_native_path,
-    get_native_path, reset_path, destroy_path,
+    "path",          path_string_set, path_string_get, path_native_set,
+    path_native_get, path_reset,      path_destroy,
   };
   cs_register_type(cs, DT_PATH, &cst_path);
 }

@@ -25,6 +25,6 @@ struct ConfigSet;
 #define SORT_LABEL    19
 #define SORT_DESC     20
 
-void sorts_init(struct ConfigSet *cs);
+void sort_init(struct ConfigSet *cs);
 
 #endif /* _CONFIG_SORTS_H */
