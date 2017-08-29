@@ -31,6 +31,9 @@ bool configset_test(void)
 
   struct ConfigSet *cs = cs_create(30);
 
+  cs_add_listener(cs, log_listener);
+  cs_remove_listener(cs, log_listener);
+
   const struct ConfigSetType cst_dummy = {
     "dummy", NULL, NULL, NULL, NULL, NULL, NULL,
   };

@@ -92,7 +92,8 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
 
   struct HashElem *he =
       hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
-  //XXX check
+  if (!he)
+    return NULL;
 
   if (cst && cst->reset)
     cst->reset(cs, vdef->var, vdef, err);
@@ -134,6 +135,9 @@ struct ConfigSet *cs_create(int size)
 
 void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 {
+  if (!cs || !fn)
+    return;
+
   for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (!cs->listeners[i])
@@ -146,7 +150,17 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 
 void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
 {
-  //XXX
+  if (!cs || !fn)
+    return;
+
+  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  {
+    if (cs->listeners[i] == fn)
+    {
+      cs->listeners[i] = NULL;
+      break;
+    }
+  }
 }
 
 void cs_free(struct ConfigSet **cs)
