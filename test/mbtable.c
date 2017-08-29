@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "config/mbyte_table.h"
+#include "config/mbtable.h"
 #include "config/account.h"
 #include "config/config_set.h"
 #include "config/types.h"
@@ -12,37 +12,37 @@
 #include "mutt_options.h"
 #include "test/common.h"
 
-static struct MbCharTable *VarApple;
-static struct MbCharTable *VarBanana;
-static struct MbCharTable *VarCherry;
-static struct MbCharTable *VarDamson;
-static struct MbCharTable *VarElderberry;
-static struct MbCharTable *VarFig;
-static struct MbCharTable *VarGuava;
-static struct MbCharTable *VarHawthorn;
-static struct MbCharTable *VarIlama;
-static struct MbCharTable *VarJackfruit;
-static struct MbCharTable *VarKumquat;
-static struct MbCharTable *VarLemon;
-static struct MbCharTable *VarMango;
-static struct MbCharTable *VarNectarine;
+static struct MbTable *VarApple;
+static struct MbTable *VarBanana;
+static struct MbTable *VarCherry;
+static struct MbTable *VarDamson;
+static struct MbTable *VarElderberry;
+static struct MbTable *VarFig;
+static struct MbTable *VarGuava;
+static struct MbTable *VarHawthorn;
+static struct MbTable *VarIlama;
+static struct MbTable *VarJackfruit;
+static struct MbTable *VarKumquat;
+static struct MbTable *VarLemon;
+static struct MbTable *VarMango;
+static struct MbTable *VarNectarine;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_MBCHARTBL, &VarApple,      IP "apple",   NULL              }, /* test_initial_values() */
-  { "Banana",     DT_MBCHARTBL, &VarBanana,     IP "banana",  NULL              },
-  { "Cherry",     DT_MBCHARTBL, &VarCherry,     0,            NULL              }, /* test_basic_mbytetable_set */
-  { "Damson",     DT_MBCHARTBL, &VarDamson,     IP "damson",  NULL              },
-  { "Elderberry", DT_MBCHARTBL, &VarElderberry, 0,            NULL              }, /* test_basic_mbytetable_get */
-  { "Fig",        DT_MBCHARTBL, &VarFig,        IP "fig",     NULL              },
-  { "Guava",      DT_MBCHARTBL, &VarGuava,      0,            NULL              },
-  { "Hawthorn",   DT_MBCHARTBL, &VarHawthorn,   0,            NULL              }, /* test_basic_native_set */
-  { "Ilama",      DT_MBCHARTBL, &VarIlama,      IP "ilama",   NULL              },
-  { "Jackfruit",  DT_MBCHARTBL, &VarJackfruit,  0,            NULL              }, /* test_basic_native_get */
-  { "Kumquat",    DT_MBCHARTBL, &VarKumquat,    IP "kumquat", NULL              }, /* test_reset */
-  { "Lemon",      DT_MBCHARTBL, &VarLemon,      IP "lemon",   validator_succeed }, /* test_validator */
-  { "Mango",      DT_MBCHARTBL, &VarMango,      IP "mango",   validator_fail    },
-  { "Nectarine",  DT_MBCHARTBL, &VarNectarine,  0,            NULL              }, /* test_inherit */
+  { "Apple",      DT_MBTABLE, &VarApple,      IP "apple",   NULL              }, /* test_initial_values() */
+  { "Banana",     DT_MBTABLE, &VarBanana,     IP "banana",  NULL              },
+  { "Cherry",     DT_MBTABLE, &VarCherry,     0,            NULL              }, /* test_basic_mbtable_set */
+  { "Damson",     DT_MBTABLE, &VarDamson,     IP "damson",  NULL              },
+  { "Elderberry", DT_MBTABLE, &VarElderberry, 0,            NULL              }, /* test_basic_mbtable_get */
+  { "Fig",        DT_MBTABLE, &VarFig,        IP "fig",     NULL              },
+  { "Guava",      DT_MBTABLE, &VarGuava,      0,            NULL              },
+  { "Hawthorn",   DT_MBTABLE, &VarHawthorn,   0,            NULL              }, /* test_basic_native_set */
+  { "Ilama",      DT_MBTABLE, &VarIlama,      IP "ilama",   NULL              },
+  { "Jackfruit",  DT_MBTABLE, &VarJackfruit,  0,            NULL              }, /* test_basic_native_get */
+  { "Kumquat",    DT_MBTABLE, &VarKumquat,    IP "kumquat", NULL              }, /* test_reset */
+  { "Lemon",      DT_MBTABLE, &VarLemon,      IP "lemon",   validator_succeed }, /* test_validator */
+  { "Mango",      DT_MBTABLE, &VarMango,      IP "mango",   validator_fail    },
+  { "Nectarine",  DT_MBTABLE, &VarNectarine,  0,            NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -150,7 +150,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct MbCharTable *t = mb_create("hello");
+  struct MbTable *t = mbtable_create("hello");
   char *name = "Hawthorn";
   char *mb = NULL;
 
@@ -185,7 +185,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   mb = VarIlama ? VarIlama->orig_str : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(mb));
 
-  free_mbchartbl(&t);
+  free_mbtable(&t);
   return true;
 }
 
@@ -199,7 +199,7 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   intptr_t value = cs_str_get_value(cs, name, err);
-  struct MbCharTable *t = (struct MbCharTable *) value;
+  struct MbTable *t = (struct MbTable *) value;
 
   if (VarJackfruit != t)
   {
@@ -253,7 +253,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   char *name = "Lemon";
   char *mb = NULL;
-  struct MbCharTable *t = mb_create("world");
+  struct MbTable *t = mbtable_create("world");
 
   mutt_buffer_reset(err);
   if (cs_set_variable(cs, name, "hello", err))
@@ -266,7 +266,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
   mb = VarLemon ? VarLemon->orig_str : NULL;
-  printf("MbCharTable: %s = %s\n", name, NONULL(mb));
+  printf("MbTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
   if (cs_str_set_value(cs, name, IP t, err))
@@ -293,7 +293,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
   mb = VarMango ? VarMango->orig_str : NULL;
-  printf("MbCharTable: %s = %s\n", name, NONULL(mb));
+  printf("MbTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
   if (!cs_str_set_value(cs, name, IP t, err))
@@ -308,7 +308,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   mb = VarMango ? VarMango->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
 
-  free_mbchartbl(&t);
+  free_mbtable(&t);
   return true;
 }
 
@@ -317,8 +317,8 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   intptr_t pval = cs_str_get_value(cs, parent, NULL);
   intptr_t cval = cs_str_get_value(cs, child, NULL);
 
-  struct MbCharTable *pa = (struct MbCharTable *) pval;
-  struct MbCharTable *ca = (struct MbCharTable *) cval;
+  struct MbTable *pa = (struct MbTable *) pval;
+  struct MbTable *ca = (struct MbTable *) cval;
 
   char *pstr = pa ? pa->orig_str : NULL;
   char *cstr = ca ? ca->orig_str : NULL;
@@ -385,7 +385,7 @@ bti_out:
   return result;
 }
 
-bool mbytetable_test(void)
+bool mbtable_test(void)
 {
   log_line(__func__);
 
@@ -397,7 +397,7 @@ bool mbytetable_test(void)
 
   struct ConfigSet *cs = cs_new_set(30);
 
-  init_mbyte_table(cs);
+  init_mbtable(cs);
   if (!cs_register_variables(cs, Vars))
     return false;
 

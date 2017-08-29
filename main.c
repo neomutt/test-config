@@ -8,7 +8,7 @@
 #include "test/configset.h"
 #include "test/initial.h"
 #include "test/magic.h"
-#include "test/mbyte_table.h"
+#include "test/mbtable.h"
 #include "test/number.h"
 #include "test/path.h"
 #include "test/quad.h"
@@ -25,20 +25,20 @@ struct Test
   const char *name;
   test_fn function;
 } test[] = {
-  { "configset",   configset_test  },
-  { "account",     account_test    },
-  { "address",     address_test    },
-  { "bool",        bool_test       },
-  { "initial",     initial_test    },
-  { "magic",       magic_test      },
-  { "mbyte_table", mbytetable_test },
-  { "number",      number_test     },
-  { "path",        path_test       },
-  { "quad",        quad_test       },
-  { "regex",       regex_test      },
-  { "sort",        sort_test       },
-  { "string",      string_test     },
-  { "synonym",     synonym_test    },
+  { "configset", configset_test },
+  { "account",   account_test   },
+  { "address",   address_test   },
+  { "bool",      bool_test      },
+  { "initial",   initial_test   },
+  { "magic",     magic_test     },
+  { "mbtable",   mbtable_test   },
+  { "number",    number_test    },
+  { "path",      path_test      },
+  { "quad",      quad_test      },
+  { "regex",     regex_test     },
+  { "sort",      sort_test      },
+  { "string",    string_test    },
+  { "synonym",   synonym_test   },
   { NULL },
 };
 // clang-format on

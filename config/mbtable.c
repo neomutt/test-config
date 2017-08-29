@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <wchar.h>
-#include "mbyte_table.h"
+#include "mbtable.h"
 #include "config_set.h"
 #include "lib/buffer.h"
 #include "lib/debug.h"
@@ -11,14 +11,14 @@
 #include "lib/string2.h"
 #include "types.h"
 
-static struct MbCharTable *parse_mbchar_table(const char *s)
+static struct MbTable *parse_mbtable(const char *s)
 {
-  struct MbCharTable *t = NULL;
+  struct MbTable *t = NULL;
   size_t slen, k;
   mbstate_t mbstate;
   char *d = NULL;
 
-  t = safe_calloc(1, sizeof(struct MbCharTable));
+  t = safe_calloc(1, sizeof(struct MbTable));
   slen = mutt_strlen(s);
   if (!slen)
     return t;
@@ -35,7 +35,7 @@ static struct MbCharTable *parse_mbchar_table(const char *s)
     if (k == (size_t)(-1) || k == (size_t)(-2))
     {
       mutt_debug(
-          1, "parse_mbchar_table: mbrtowc returned %d converting %s in %s\n",
+          1, "parse_mbtable: mbrtowc returned %d converting %s in %s\n",
           (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
       if (k == (size_t)(-1))
         memset(&mbstate, 0, sizeof(mbstate));
@@ -52,45 +52,45 @@ static struct MbCharTable *parse_mbchar_table(const char *s)
   return t;
 }
 
-static void destroy_mbchartbl(void *var, const struct VariableDef *vdef)
+static void destroy_mbtable(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
 
-  struct MbCharTable **m = (struct MbCharTable **) var;
+  struct MbTable **m = (struct MbTable **) var;
   if (!*m)
     return;
 
-  free_mbchartbl(m);
+  free_mbtable(m);
 }
 
-static bool set_mbchartbl(const struct ConfigSet *cs, void *var,
+static bool set_mbtable(const struct ConfigSet *cs, void *var,
                           const struct VariableDef *vdef, const char *value,
                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  struct MbCharTable *table = parse_mbchar_table(value);
+  struct MbTable *table = parse_mbtable(value);
 
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) table, err))
   {
-    free_mbchartbl(&table);
+    free_mbtable(&table);
     return false;
   }
 
-  destroy_mbchartbl(var, vdef);
+  destroy_mbtable(var, vdef);
 
-  *(struct MbCharTable **) var = table;
+  *(struct MbTable **) var = table;
   return true;
 }
 
-static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_mbtable(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  struct MbCharTable *table = *(struct MbCharTable **) var;
+  struct MbTable *table = *(struct MbTable **) var;
   if (!table)
     return true; /* empty string */
 
@@ -101,17 +101,17 @@ static bool get_mbchartbl(void *var, const struct VariableDef *vdef, struct Buff
   return true;
 }
 
-static struct MbCharTable *dup_mbchartbl(struct MbCharTable *table)
+static struct MbTable *dup_mbtable(struct MbTable *table)
 {
   if (!table)
     return NULL; /* LCOV_EXCL_LINE */
 
-  struct MbCharTable *m = safe_calloc(1, sizeof(*m));
+  struct MbTable *m = safe_calloc(1, sizeof(*m));
   m->orig_str = safe_strdup(table->orig_str);
   return m;
 }
 
-static bool set_native_mbchartbl(const struct ConfigSet *cs, void *var,
+static bool set_native_mbtable(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, intptr_t value,
                                  struct Buffer *err)
 {
@@ -121,42 +121,42 @@ static bool set_native_mbchartbl(const struct ConfigSet *cs, void *var,
   if (vdef->validator && !vdef->validator(cs, vdef, value, err))
     return false;
 
-  free_mbchartbl(var);
+  free_mbtable(var);
 
-  struct MbCharTable *table = dup_mbchartbl((struct MbCharTable *) value);
+  struct MbTable *table = dup_mbtable((struct MbTable *) value);
 
-  *(struct MbCharTable **) var = table;
+  *(struct MbTable **) var = table;
   return true;
 }
 
-static intptr_t get_native_mbchartbl(const struct ConfigSet *cs, void *var,
+static intptr_t get_native_mbtable(const struct ConfigSet *cs, void *var,
                                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  struct MbCharTable *table = *(struct MbCharTable **) var;
+  struct MbTable *table = *(struct MbTable **) var;
 
   return (intptr_t) table;
 }
 
-static bool reset_mbchartbl(const struct ConfigSet *cs, void *var,
+static bool reset_mbtable(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  destroy_mbchartbl(var, vdef);
+  destroy_mbtable(var, vdef);
 
-  struct MbCharTable *table = parse_mbchar_table((const char *) vdef->initial);
+  struct MbTable *table = parse_mbtable((const char *) vdef->initial);
   if (!table)
     return false;
 
-  *(struct MbCharTable **) var = table;
+  *(struct MbTable **) var = table;
   return true;
 }
 
-void free_mbchartbl(struct MbCharTable **table)
+void free_mbtable(struct MbTable **table)
 {
   if (!table || !*table)
     return; /* LCOV_EXCL_LINE */
@@ -167,17 +167,17 @@ void free_mbchartbl(struct MbCharTable **table)
   FREE(table);
 }
 
-struct MbCharTable *mb_create(const char *str)
+struct MbTable *mbtable_create(const char *str)
 {
-  struct MbCharTable *m = safe_calloc(1, sizeof(*m));
+  struct MbTable *m = safe_calloc(1, sizeof(*m));
   m->orig_str = safe_strdup(str);
   return m;
 }
 
-void init_mbyte_table(struct ConfigSet *cs)
+void init_mbtable(struct ConfigSet *cs)
 {
-  const struct ConfigSetType cst_mbchartbl = {
-    "mbtable", set_mbchartbl, get_mbchartbl, set_native_mbchartbl, get_native_mbchartbl, reset_mbchartbl, destroy_mbchartbl,
+  const struct ConfigSetType cst_mbtable = {
+    "mbtable", set_mbtable, get_mbtable, set_native_mbtable, get_native_mbtable, reset_mbtable, destroy_mbtable,
   };
-  cs_register_type(cs, DT_MBCHARTBL, &cst_mbchartbl);
+  cs_register_type(cs, DT_MBTABLE, &cst_mbtable);
 }

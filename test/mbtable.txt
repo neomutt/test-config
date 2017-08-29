@@ -1,4 +1,4 @@
----- mbytetable_test ---------------------------------------
+---- mbtable_test ------------------------------------------
 ---- set_list ----------------------------------------------
 mbtable Damson = damson
 mbtable Lemon = lemon
@@ -52,12 +52,12 @@ Reset: Kumquat = 'kumquat'
 ---- test_validator ----------------------------------------
 Event: Lemon has been set to 'hello'
 validator_succeed: Lemon, (ptr)
-MbCharTable: Lemon = hello
+MbTable: Lemon = hello
 Event: Lemon has been set to 'world'
 validator_succeed: Lemon, (ptr)
 Native: Lemon = world
 Expected error: validator_fail: Mango, (ptr)
-MbCharTable: Mango = mango
+MbTable: Mango = mango
 Expected error: validator_fail: Mango, (ptr)
 Native: Mango = mango
 ---- test_inherit ------------------------------------------

@@ -20,19 +20,19 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_MBYTE_TABLE_H
-#define _MUTT_MBYTE_TABLE_H
+#ifndef _MUTT_MBTABLE_H
+#define _MUTT_MBTABLE_H
 
 struct ConfigSet;
 
 /**
- * struct MbCharTable - multibyte character table
+ * struct MbTable - multibyte character table
  *
  * Allows for direct access to the individual multibyte characters in a
  * string.  This is used for the Flagchars, Fromchars, StChars and Tochars
  * option types.
  */
-struct MbCharTable
+struct MbTable
 {
   char *orig_str;
   int len;             /**< number of characters */
@@ -40,9 +40,9 @@ struct MbCharTable
   char *segmented_str; /**< each chars entry points inside this string */
 };
 
-void init_mbyte_table(struct ConfigSet *cs);
+void init_mbtable(struct ConfigSet *cs);
 
-struct MbCharTable *mb_create(const char *str);
-void free_mbchartbl(struct MbCharTable **table);
+struct MbTable *mbtable_create(const char *str);
+void free_mbtable(struct MbTable **table);
 
-#endif /* _MUTT_MBYTE_TABLE_H */
+#endif /* _MUTT_MBTABLE_H */
