@@ -40,8 +40,8 @@ struct Address
   bool intl_checked : 1;
 };
 
-void init_addr(struct ConfigSet *cs);
-struct Address *addr_create(const char *addr);
-void addr_free(struct Address **addr);
+void init_address(struct ConfigSet *cs);
+struct Address *address_create(const char *addr);
+void address_free(struct Address **addr);
 
 #endif /* _MUTT_ADDRESS_H */

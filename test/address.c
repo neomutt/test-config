@@ -30,20 +30,20 @@ static struct Address *VarNectarine;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_ADDR, &VarApple,      IP "apple@example.com",   NULL              }, /* test_initial_values() */
-  { "Banana",     DT_ADDR, &VarBanana,     IP "banana@example.com",  NULL              },
-  { "Cherry",     DT_ADDR, &VarCherry,     0,                        NULL              }, /* test_basic_address_set */
-  { "Damson",     DT_ADDR, &VarDamson,     IP "damson@example.com",  NULL              },
-  { "Elderberry", DT_ADDR, &VarElderberry, 0,                        NULL              }, /* test_basic_address_get */
-  { "Fig",        DT_ADDR, &VarFig,        IP "fig@example.com",     NULL              },
-  { "Guava",      DT_ADDR, &VarGuava,      0,                        NULL              },
-  { "Hawthorn",   DT_ADDR, &VarHawthorn,   0,                        NULL              }, /* test_basic_native_set */
-  { "Ilama",      DT_ADDR, &VarIlama,      IP "ilama@example.com",   NULL              },
-  { "Jackfruit",  DT_ADDR, &VarJackfruit,  0,                        NULL              }, /* test_basic_native_get */
-  { "Kumquat",    DT_ADDR, &VarKumquat,    IP "kumquat@example.com", NULL              }, /* test_reset */
-  { "Lemon",      DT_ADDR, &VarLemon,      IP "lemon@example.com",   validator_succeed }, /* test_validator */
-  { "Mango",      DT_ADDR, &VarMango,      IP "mango@example.com",   validator_fail    },
-  { "Nectarine",  DT_ADDR, &VarNectarine,  0,                        NULL              }, /* test_inherit */
+  { "Apple",      DT_ADDRESS, &VarApple,      IP "apple@example.com",   NULL              }, /* test_initial_values() */
+  { "Banana",     DT_ADDRESS, &VarBanana,     IP "banana@example.com",  NULL              },
+  { "Cherry",     DT_ADDRESS, &VarCherry,     0,                        NULL              }, /* test_basic_address_set */
+  { "Damson",     DT_ADDRESS, &VarDamson,     IP "damson@example.com",  NULL              },
+  { "Elderberry", DT_ADDRESS, &VarElderberry, 0,                        NULL              }, /* test_basic_address_get */
+  { "Fig",        DT_ADDRESS, &VarFig,        IP "fig@example.com",     NULL              },
+  { "Guava",      DT_ADDRESS, &VarGuava,      0,                        NULL              },
+  { "Hawthorn",   DT_ADDRESS, &VarHawthorn,   0,                        NULL              }, /* test_basic_native_set */
+  { "Ilama",      DT_ADDRESS, &VarIlama,      IP "ilama@example.com",   NULL              },
+  { "Jackfruit",  DT_ADDRESS, &VarJackfruit,  0,                        NULL              }, /* test_basic_native_get */
+  { "Kumquat",    DT_ADDRESS, &VarKumquat,    IP "kumquat@example.com", NULL              }, /* test_reset */
+  { "Lemon",      DT_ADDRESS, &VarLemon,      IP "lemon@example.com",   validator_succeed }, /* test_validator */
+  { "Mango",      DT_ADDRESS, &VarMango,      IP "mango@example.com",   validator_fail    },
+  { "Nectarine",  DT_ADDRESS, &VarNectarine,  0,                        NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -151,7 +151,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct Address *a = addr_create("hello@example.com");
+  struct Address *a = address_create("hello@example.com");
   char *name = "Hawthorn";
   char *addr = NULL;
   bool result = false;
@@ -189,7 +189,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 
   result = true;
 tbns_out:
-  addr_free(&a);
+  address_free(&a);
   return result;
 }
 
@@ -257,7 +257,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   char *name = "Lemon";
   char *addr = NULL;
-  struct Address *a = addr_create("world@example.com");
+  struct Address *a = address_create("world@example.com");
   bool result = false;
 
   mutt_buffer_reset(err);
@@ -315,7 +315,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   result = true;
 tv_out:
-  addr_free(&a);
+  address_free(&a);
   return result;
 }
 
@@ -404,7 +404,7 @@ bool address_test(void)
 
   struct ConfigSet *cs = cs_new_set(30);
 
-  init_addr(cs);
+  init_address(cs);
   if (!cs_register_variables(cs, Vars))
     return false;
 
