@@ -34,9 +34,8 @@ static struct MbTable *parse_mbtable(const char *s)
   {
     if (k == (size_t)(-1) || k == (size_t)(-2))
     {
-      mutt_debug(
-          1, "parse_mbtable: mbrtowc returned %d converting %s in %s\n",
-          (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
+      mutt_debug(1, "parse_mbtable: mbrtowc returned %d converting %s in %s\n",
+                 (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
       if (k == (size_t)(-1))
         memset(&mbstate, 0, sizeof(mbstate));
       k = (k == (size_t)(-1)) ? 1 : slen;
@@ -65,8 +64,8 @@ static void destroy_mbtable(void *var, const struct VariableDef *vdef)
 }
 
 static bool set_mbtable(const struct ConfigSet *cs, void *var,
-                          const struct VariableDef *vdef, const char *value,
-                          struct Buffer *err)
+                        const struct VariableDef *vdef, const char *value,
+                        struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -112,8 +111,8 @@ static struct MbTable *dup_mbtable(struct MbTable *table)
 }
 
 static bool set_native_mbtable(const struct ConfigSet *cs, void *var,
-                                 const struct VariableDef *vdef, intptr_t value,
-                                 struct Buffer *err)
+                               const struct VariableDef *vdef, intptr_t value,
+                               struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -130,7 +129,7 @@ static bool set_native_mbtable(const struct ConfigSet *cs, void *var,
 }
 
 static intptr_t get_native_mbtable(const struct ConfigSet *cs, void *var,
-                                     const struct VariableDef *vdef, struct Buffer *err)
+                                   const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -141,7 +140,7 @@ static intptr_t get_native_mbtable(const struct ConfigSet *cs, void *var,
 }
 
 static bool reset_mbtable(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, struct Buffer *err)
+                          const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -177,7 +176,8 @@ struct MbTable *mbtable_create(const char *str)
 void init_mbtable(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_mbtable = {
-    "mbtable", set_mbtable, get_mbtable, set_native_mbtable, get_native_mbtable, reset_mbtable, destroy_mbtable,
+    "mbtable",          set_mbtable,   get_mbtable,     set_native_mbtable,
+    get_native_mbtable, reset_mbtable, destroy_mbtable,
   };
   cs_register_type(cs, DT_MBTABLE, &cst_mbtable);
 }

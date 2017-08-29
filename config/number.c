@@ -8,8 +8,8 @@
 #include "lib/string2.h"
 #include "types.h"
 
-static bool set_num(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                    const char *value, struct Buffer *err)
+static bool set_number(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+                       const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
     return false; /* LCOV_EXCL_LINE */
@@ -34,7 +34,7 @@ static bool set_num(const struct ConfigSet *cs, void *var, const struct Variable
   return true;
 }
 
-static bool get_num(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_number(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -43,9 +43,9 @@ static bool get_num(void *var, const struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool set_native_num(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, intptr_t value,
-                           struct Buffer *err)
+static bool set_native_number(const struct ConfigSet *cs, void *var,
+                              const struct VariableDef *vdef, intptr_t value,
+                              struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -63,8 +63,8 @@ static bool set_native_num(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-static intptr_t get_native_num(const struct ConfigSet *cs, void *var,
-                               const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_number(const struct ConfigSet *cs, void *var,
+                                  const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -72,8 +72,8 @@ static intptr_t get_native_num(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
-static bool reset_num(const struct ConfigSet *cs, void *var,
-                      const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_number(const struct ConfigSet *cs, void *var,
+                         const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -82,10 +82,11 @@ static bool reset_num(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-void init_num(struct ConfigSet *cs)
+void init_number(struct ConfigSet *cs)
 {
-  const struct ConfigSetType cst_num = {
-    "number", set_num, get_num, set_native_num, get_native_num, reset_num, NULL,
+  const struct ConfigSetType cst_number = {
+    "number",          set_number,   get_number, set_native_number,
+    get_native_number, reset_number, NULL,
   };
-  cs_register_type(cs, DT_NUM, &cst_num);
+  cs_register_type(cs, DT_NUMBER, &cst_number);
 }

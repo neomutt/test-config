@@ -3,6 +3,6 @@
 
 struct ConfigSet;
 
-void init_num(struct ConfigSet *cs);
+void init_number(struct ConfigSet *cs);
 
 #endif /* _MUTT_NUMBER_H */

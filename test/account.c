@@ -18,9 +18,9 @@ static short VarCherry;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",  DT_NUM, &VarApple,  0, NULL },
-  { "Banana", DT_NUM, &VarBanana, 0, NULL },
-  { "Cherry", DT_NUM, &VarCherry, 0, NULL },
+  { "Apple",  DT_NUMBER, &VarApple,  0, NULL },
+  { "Banana", DT_NUMBER, &VarBanana, 0, NULL },
+  { "Cherry", DT_NUMBER, &VarCherry, 0, NULL },
   { NULL },
 };
 // clang-format on
@@ -37,7 +37,7 @@ bool account_test(void)
 
   struct ConfigSet *cs = cs_new_set(30);
 
-  init_num(cs);
+  init_number(cs);
   if (!cs_register_variables(cs, Vars))
     return false;
 

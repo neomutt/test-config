@@ -13,8 +13,8 @@ static bool VarBanana;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",  DT_NUM,  &VarApple,  0, NULL },
-  { "Banana", DT_BOOL, &VarBanana, 1, NULL },
+  { "Apple",  DT_NUMBER,  &VarApple,  0, NULL },
+  { "Banana", DT_BOOL,    &VarBanana, 1, NULL },
   { NULL },
 };
 // clang-format on

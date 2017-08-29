@@ -25,16 +25,16 @@ static short VarJackfruit;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_NUM, &VarApple,      -42, NULL              }, /* test_initial_values() */
-  { "Banana",     DT_NUM, &VarBanana,      99, NULL              },
-  { "Cherry",     DT_NUM, &VarCherry,       0, NULL              }, /* test_basic_string_set */
-  { "Damson",     DT_NUM, &VarDamson,       0, NULL              }, /* test_basic_string_get */
-  { "Elderberry", DT_NUM, &VarElderberry,   0, NULL              }, /* test_basic_native_set */
-  { "Fig",        DT_NUM, &VarFig,          0, NULL              }, /* test_basic_native_get */
-  { "Guava",      DT_NUM, &VarGuava,       99, NULL              }, /* test_reset */
-  { "Hawthorn",   DT_NUM, &VarHawthorn,     0, validator_succeed }, /* test_validator */
-  { "Ilama",      DT_NUM, &VarIlama,        0, validator_fail    },
-  { "Jackfruit",  DT_NUM, &VarJackfruit,    0, NULL              }, /* test_inherit */
+  { "Apple",      DT_NUMBER, &VarApple,      -42, NULL              }, /* test_initial_values() */
+  { "Banana",     DT_NUMBER, &VarBanana,      99, NULL              },
+  { "Cherry",     DT_NUMBER, &VarCherry,       0, NULL              }, /* test_basic_string_set */
+  { "Damson",     DT_NUMBER, &VarDamson,       0, NULL              }, /* test_basic_string_get */
+  { "Elderberry", DT_NUMBER, &VarElderberry,   0, NULL              }, /* test_basic_native_set */
+  { "Fig",        DT_NUMBER, &VarFig,          0, NULL              }, /* test_basic_native_get */
+  { "Guava",      DT_NUMBER, &VarGuava,       99, NULL              }, /* test_reset */
+  { "Hawthorn",   DT_NUMBER, &VarHawthorn,     0, validator_succeed }, /* test_validator */
+  { "Ilama",      DT_NUMBER, &VarIlama,        0, validator_fail    },
+  { "Jackfruit",  DT_NUMBER, &VarJackfruit,    0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -349,7 +349,7 @@ bool number_test(void)
 
   struct ConfigSet *cs = cs_new_set(30);
 
-  init_num(cs);
+  init_number(cs);
   if (!cs_register_variables(cs, Vars))
     return false;
 
