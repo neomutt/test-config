@@ -391,48 +391,6 @@ bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer
   return cst->string_get(var, vdef, result);
 }
 
-bool cs_get_variable2(const struct ConfigSet *cs, const struct HashElem *he,
-                      struct Buffer *result)
-{
-  if (!cs || !he)
-    return false; /* LCOV_EXCL_LINE */
-
-  struct Inheritance *i = NULL;
-  const struct VariableDef *vdef = NULL;
-  const struct ConfigSetType *cst = NULL;
-  void *var = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    i = he->data;
-    vdef = i->parent->data;
-    cst = cs_get_type_def(cs, i->parent->type);
-  }
-  else
-  {
-    vdef = he->data;
-    cst = cs_get_type_def(cs, he->type);
-  }
-
-  if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
-  {
-    var = &i->var; // Local value
-  }
-  else
-  {
-    var = vdef->var; // Normal var
-  }
-
-  if (!cst)
-  {
-    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d",
-                       vdef->name, DTYPE(he->type));
-    return false;
-  }
-
-  return cst->string_get(var, vdef, result);
-}
-
 struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 {
   if (!cs || !name)
@@ -513,36 +471,45 @@ bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he,
   return result;
 }
 
-bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
+bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
 {
   if (!cs || !he)
     return false; /* LCOV_EXCL_LINE */
 
+  struct Inheritance *i = NULL;
   const struct VariableDef *vdef = NULL;
   const struct ConfigSetType *cst = NULL;
   void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
-    struct Inheritance *i = he->data;
+    i = he->data;
     vdef = i->parent->data;
-    var = &i->var;
     cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
     vdef = he->data;
-    var = vdef->var;
     cst = cs_get_type_def(cs, he->type);
+  }
+
+  if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
+  {
+    var = &i->var; // Local value
+  }
+  else
+  {
+    var = vdef->var; // Normal var
   }
 
   if (!cst)
   {
-    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
+    mutt_buffer_printf(result, "Variable '%s' has an invalid type %d",
+                       vdef->name, DTYPE(he->type));
     return false;
   }
 
-  return cst->native_get(cs, var, vdef, err);
+  return cst->string_get(var, vdef, result);
 }
 
 

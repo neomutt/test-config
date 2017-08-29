@@ -50,7 +50,7 @@ bool log_listener(const struct ConfigSet *cs, struct HashElem *he,
   const char *events[] = { "set", "reset" };
 
   mutt_buffer_reset(&result);
-  cs_get_variable2(cs, he, &result);
+  cs_he_get_value(cs, he, &result);
 
   printf("Event: %s has been %s to '%s'\n", name, events[ev], result.data);
 

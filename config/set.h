@@ -75,10 +75,8 @@ bool cs_reset_variable   (const struct ConfigSet *cs, const char *name, struct B
 bool cs_set_variable     (const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
 bool cs_get_variable     (const struct ConfigSet *cs, const char *name, struct Buffer *result);
 
-bool cs_get_variable2    (const struct ConfigSet *cs, const struct HashElem *he, struct Buffer *result);
-
 bool cs_he_set_value     (const struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err);
-bool cs_he_get_value     (const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
+bool cs_he_get_value     (const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result);
 
 bool     cs_str_set_value(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
 intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct Buffer *err);

@@ -8,5 +8,5 @@ reset failed
 Expected error:
 Event: Apple has been set to '42'
 Expected error: 
-Apple = 
+Apple = 42
 Event: fruit:Apple has been reset to '0'
