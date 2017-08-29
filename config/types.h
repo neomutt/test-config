@@ -10,7 +10,7 @@
 #define DT_SORT       6   /**< sorting methods */
 #define DT_REGEX      7   /**< regular expressions */
 #define DT_MAGIC      8   /**< mailbox type */
-#define DT_SYN        9   /**< synonym for another variable */
+#define DT_SYNONYM    9   /**< synonym for another variable */
 #define DT_ADDRESS   10   /**< e-mail address */
 #define DT_MBTABLE   11   /**< multibyte char table */
 #define DT_HCACHE    12   /**< header cache backend */

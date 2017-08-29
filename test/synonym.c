@@ -19,21 +19,21 @@ static char *VarIlama;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_STRING, &VarApple,      0,               NULL },
-  { "Banana",     DT_SYN,    NULL,           IP "Apple",      NULL },
-  { "Cherry",     DT_STRING, &VarCherry,     IP "cherry",     NULL },
-  { "Damson",     DT_SYN,    NULL,           IP "Cherry",     NULL },
-  { "Elderberry", DT_STRING, &VarElderberry, 0,               NULL },
-  { "Fig",        DT_SYN,    NULL,           IP "Elderberry", NULL },
-  { "Guava",      DT_STRING, &VarGuava,      0,               NULL },
-  { "Hawthorn",   DT_SYN,    NULL,           IP "Guava",      NULL },
-  { "Ilama",      DT_STRING, &VarIlama,      IP "iguana",     NULL },
-  { "Jackfruit",  DT_SYN,    NULL,           IP "Ilama",      NULL },
+  { "Apple",      DT_STRING,  &VarApple,      0,               NULL },
+  { "Banana",     DT_SYNONYM, NULL,           IP "Apple",      NULL },
+  { "Cherry",     DT_STRING,  &VarCherry,     IP "cherry",     NULL },
+  { "Damson",     DT_SYNONYM, NULL,           IP "Cherry",     NULL },
+  { "Elderberry", DT_STRING,  &VarElderberry, 0,               NULL },
+  { "Fig",        DT_SYNONYM, NULL,           IP "Elderberry", NULL },
+  { "Guava",      DT_STRING,  &VarGuava,      0,               NULL },
+  { "Hawthorn",   DT_SYNONYM, NULL,           IP "Guava",      NULL },
+  { "Ilama",      DT_STRING,  &VarIlama,      IP "iguana",     NULL },
+  { "Jackfruit",  DT_SYNONYM, NULL,           IP "Ilama",      NULL },
   { NULL },
 };
 
 static struct VariableDef Vars2[] = {
-  { "Jackfruit",  DT_SYN, NULL,           IP "Broken",     NULL },
+  { "Jackfruit",  DT_SYNONYM, NULL,           IP "Broken",     NULL },
   { NULL },
 };
 // clang-format on

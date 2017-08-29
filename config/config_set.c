@@ -80,7 +80,7 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
   if (!cs || !vdef)
     return NULL; /* LCOV_EXCL_LINE */
 
-  if (vdef->type == DT_SYN)
+  if (vdef->type == DT_SYNONYM)
     return create_synonym(cs, vdef, err);
 
   const struct ConfigSetType *cst = cs_get_type_def(cs, vdef->type);
@@ -423,7 +423,7 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
   if (!he)
     return NULL;
 
-  if (he->type != DT_SYN)
+  if (he->type != DT_SYNONYM)
     return he;
 
   const struct VariableDef *vdef = he->data;

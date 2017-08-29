@@ -22,7 +22,7 @@ void hash_dump(struct Hash *table)
     if (!he)
       continue;
 
-    if (he->type == DT_SYN)
+    if (he->type == DT_SYNONYM)
       continue;
 
     printf("%03d ", i);
@@ -58,7 +58,7 @@ void cs_dump_set(const struct ConfigSet *cs)
 
   while ((he = hash_walk(cs->hash, &state)))
   {
-    if (he->type == DT_SYN)
+    if (he->type == DT_SYNONYM)
       continue;
 
     const char *name = NULL;
