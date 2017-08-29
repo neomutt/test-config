@@ -8,7 +8,7 @@
 #define DT_PATH       4   /**< a pathname */
 #define DT_QUAD       5   /**< quad-option (yes/no/ask-yes/ask-no) */
 #define DT_SORT       6   /**< sorting methods */
-#define DT_RX         7   /**< regular expressions */
+#define DT_REGEX      7   /**< regular expressions */
 #define DT_MAGIC      8   /**< mailbox type */
 #define DT_SYN        9   /**< synonym for another variable */
 #define DT_ADDR      10   /**< e-mail address */
