@@ -72,13 +72,13 @@ void notify_listeners   (const struct ConfigSet *cs, struct HashElem *he, const 
 
 bool cs_reset_variable   (const struct ConfigSet *cs, const char *name, struct Buffer *err);
 
-bool cs_set_variable     (const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
-bool cs_get_variable     (const struct ConfigSet *cs, const char *name, struct Buffer *result);
+bool cs_str_string_set     (const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
+bool cs_str_string_get     (const struct ConfigSet *cs, const char *name, struct Buffer *result);
 
-bool cs_he_set_value     (const struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err);
-bool cs_he_get_value     (const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result);
+bool cs_he_native_set     (const struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err);
+bool cs_he_native_get     (const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result);
 
-bool     cs_str_set_value(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
-intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct Buffer *err);
+bool     cs_str_native_set(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
+intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct Buffer *err);
 
 #endif /* _CONFIG_SET_H */

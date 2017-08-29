@@ -67,7 +67,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
-    if (!cs_set_variable(cs, name, valid[i], err))
+    if (!cs_str_string_set(cs, name, valid[i], err))
     {
       printf("%s\n", err->data);
       return false;
@@ -85,7 +85,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
-    if (!cs_set_variable(cs, name, valid[i], err))
+    if (!cs_str_string_set(cs, name, valid[i], err))
     {
       printf("%s\n", err->data);
       return false;
@@ -108,7 +108,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   const char *name = "Elderberry";
 
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -117,7 +117,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   name = "Fig";
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -125,11 +125,11 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   printf("%s = '%s', '%s'\n", name, NONULL(VarFig), err->data);
 
   name = "Guava";
-  if (!cs_set_variable(cs, name, "guava", err))
+  if (!cs_str_string_set(cs, name, "guava", err))
     return false;
 
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -149,7 +149,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
-    if (!cs_str_set_value(cs, name, (intptr_t) valid[i], err))
+    if (!cs_str_native_set(cs, name, (intptr_t) valid[i], err))
     {
       printf("%s\n", err->data);
       return false;
@@ -167,7 +167,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
-    if (!cs_str_set_value(cs, name, (intptr_t) valid[i], err))
+    if (!cs_str_native_set(cs, name, (intptr_t) valid[i], err))
     {
       printf("%s\n", err->data);
       return false;
@@ -189,11 +189,11 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   char *name = "Jackfruit";
 
-  if (!cs_set_variable(cs, name, "jackfruit", err))
+  if (!cs_str_string_set(cs, name, "jackfruit", err))
     return false;
 
   mutt_buffer_reset(err);
-  intptr_t value = cs_str_get_value(cs, name, err);
+  intptr_t value = cs_str_native_get(cs, name, err);
   if (mutt_strcmp(VarJackfruit, (char *) value) != 0)
   {
     printf("Get failed: %s\n", err->data);
@@ -212,7 +212,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   mutt_buffer_reset(err);
 
   printf("Initial: %s = '%s'\n", name, VarKumquat);
-  if (!cs_set_variable(cs, name, "hello", err))
+  if (!cs_str_string_set(cs, name, "hello", err))
     return false;
   printf("Set: %s = '%s'\n", name, VarKumquat);
 
@@ -239,7 +239,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   char *name = "Lemon";
   mutt_buffer_reset(err);
-  if (cs_set_variable(cs, name, "hello", err))
+  if (cs_str_string_set(cs, name, "hello", err))
   {
     printf("%s\n", err->data);
   }
@@ -251,7 +251,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Path: %s = %s\n", name, VarLemon);
 
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, IP "world", err))
+  if (cs_str_native_set(cs, name, IP "world", err))
   {
     printf("%s\n", err->data);
   }
@@ -264,7 +264,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   name = "Mango";
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, name, "hello", err))
+  if (!cs_str_string_set(cs, name, "hello", err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -276,7 +276,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Path: %s = %s\n", name, VarMango);
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, IP "world", err))
+  if (!cs_str_native_set(cs, name, IP "world", err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -292,8 +292,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
-  intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child, NULL);
+  intptr_t pval = cs_str_native_get(cs, parent, NULL);
+  intptr_t cval = cs_str_native_get(cs, child, NULL);
 
   printf("%15s = %s\n", parent, (char *) pval);
   printf("%15s = %s\n", child, (char *) cval);
@@ -317,7 +317,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set parent
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, parent, "hello", err))
+  if (!cs_str_string_set(cs, parent, "hello", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -326,7 +326,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set child
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, child, "world", err))
+  if (!cs_str_string_set(cs, child, "world", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;

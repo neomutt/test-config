@@ -60,7 +60,7 @@ bool configset_test(void)
     return false;
   }
 
-  if (!cs_set_variable(cs, "Unknown", "hello", &err))
+  if (!cs_str_string_set(cs, "Unknown", "hello", &err))
   {
     printf("Expected error: %s\n", err.data);
   }

@@ -83,7 +83,7 @@ bool ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buff
     return false;
 
   struct HashElem *he = ac->vars[vid];
-  return cs_he_set_value(ac->cs, he, value, err);
+  return cs_he_native_set(ac->cs, he, value, err);
 }
 
 bool ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
@@ -101,5 +101,5 @@ bool ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
     he = i->parent;
   }
 
-  return cs_he_get_value(ac->cs, he, err);
+  return cs_he_native_get(ac->cs, he, err);
 }

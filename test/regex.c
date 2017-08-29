@@ -68,7 +68,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
-    if (!cs_set_variable(cs, name, valid[i], err))
+    if (!cs_str_string_set(cs, name, valid[i], err))
     {
       printf("%s\n", err->data);
       return false;
@@ -87,7 +87,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
-    if (!cs_set_variable(cs, name, valid[i], err))
+    if (!cs_str_string_set(cs, name, valid[i], err))
     {
       printf("%s\n", err->data);
       return false;
@@ -112,7 +112,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   char *regex = NULL;
 
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -122,7 +122,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   name = "Fig";
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -131,11 +131,11 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   printf("%s = '%s', '%s'\n", name, NONULL(regex), err->data);
 
   name = "Guava";
-  if (!cs_set_variable(cs, name, "guava", err))
+  if (!cs_str_string_set(cs, name, "guava", err))
     return false;
 
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -155,7 +155,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   char *regex = NULL;
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, (intptr_t) r, err))
+  if (!cs_str_native_set(cs, name, (intptr_t) r, err))
   {
     printf("%s\n", err->data);
     return false;
@@ -171,7 +171,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 
   name = "Ilama";
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, 0, err))
+  if (!cs_str_native_set(cs, name, 0, err))
   {
     printf("%s\n", err->data);
     return false;
@@ -194,11 +194,11 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   char *name = "Jackfruit";
 
-  if (!cs_set_variable(cs, name, "jackfruit.*", err))
+  if (!cs_str_string_set(cs, name, "jackfruit.*", err))
     return false;
 
   mutt_buffer_reset(err);
-  intptr_t value = cs_str_get_value(cs, name, err);
+  intptr_t value = cs_str_native_get(cs, name, err);
   struct Regex *r = (struct Regex *) value;
 
   if (VarJackfruit != r)
@@ -224,7 +224,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   regex = VarKumquat ? VarKumquat->pattern : NULL;
   printf("Initial: %s = '%s'\n", name, NONULL(regex));
-  if (!cs_set_variable(cs, name, "hello.*", err))
+  if (!cs_str_string_set(cs, name, "hello.*", err))
     return false;
   regex = VarKumquat ? VarKumquat->pattern : NULL;
   printf("Set: %s = '%s'\n", name, NONULL(regex));
@@ -256,7 +256,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   struct Regex *r = regex_create("world.*");
 
   mutt_buffer_reset(err);
-  if (cs_set_variable(cs, name, "hello.*", err))
+  if (cs_str_string_set(cs, name, "hello.*", err))
   {
     printf("%s\n", err->data);
   }
@@ -269,7 +269,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Regex: %s = %s\n", name, NONULL(regex));
 
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, IP r, err))
+  if (cs_str_native_set(cs, name, IP r, err))
   {
     printf("%s\n", err->data);
   }
@@ -283,7 +283,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   name = "Mango";
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, name, "hello.*", err))
+  if (!cs_str_string_set(cs, name, "hello.*", err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -296,7 +296,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   printf("Regex: %s = %s\n", name, NONULL(regex));
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, IP r, err))
+  if (!cs_str_native_set(cs, name, IP r, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -314,8 +314,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
-  intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child, NULL);
+  intptr_t pval = cs_str_native_get(cs, parent, NULL);
+  intptr_t cval = cs_str_native_get(cs, child, NULL);
 
   struct Regex *pa = (struct Regex *) pval;
   struct Regex *ca = (struct Regex *) cval;
@@ -345,7 +345,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set parent
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, parent, "hello.*", err))
+  if (!cs_str_string_set(cs, parent, "hello.*", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -354,7 +354,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set child
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, child, "world.*", err))
+  if (!cs_str_string_set(cs, child, "world.*", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;

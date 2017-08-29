@@ -63,7 +63,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
     VarCherry = -42;
 
     mutt_buffer_reset(err);
-    if (!cs_set_variable(cs, name, valid[i], err))
+    if (!cs_str_string_set(cs, name, valid[i], err))
     {
       printf("%s\n", err->data);
       return false;
@@ -81,7 +81,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
     mutt_buffer_reset(err);
-    if (!cs_set_variable(cs, name, invalid[i], err))
+    if (!cs_str_string_set(cs, name, invalid[i], err))
     {
       printf("Expected error: %s\n", err->data);
     }
@@ -104,7 +104,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarDamson = 123;
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -113,7 +113,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarDamson = -789;
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -131,7 +131,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 
   VarElderberry = 0;
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, value, err))
+  if (!cs_str_native_set(cs, name, value, err))
   {
     printf("%s\n", err->data);
     return false;
@@ -150,7 +150,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   {
     VarElderberry = 123;
     mutt_buffer_reset(err);
-    if (!cs_str_set_value(cs, name, invalid[i], err))
+    if (!cs_str_native_set(cs, name, invalid[i], err))
     {
       printf("Expected error: %s\n", err->data);
     }
@@ -172,7 +172,7 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarFig = 3456;
   mutt_buffer_reset(err);
-  intptr_t value = cs_str_get_value(cs, name, err);
+  intptr_t value = cs_str_native_get(cs, name, err);
   if (value != 3456)
   {
     printf("Get failed: %s\n", err->data);
@@ -215,7 +215,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   char *name = "Hawthorn";
   VarHawthorn = 123;
   mutt_buffer_reset(err);
-  if (cs_set_variable(cs, name, "456", err))
+  if (cs_str_string_set(cs, name, "456", err))
   {
     printf("%s\n", err->data);
   }
@@ -228,7 +228,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   VarHawthorn = 456;
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, 123, err))
+  if (cs_str_native_set(cs, name, 123, err))
   {
     printf("%s\n", err->data);
   }
@@ -242,7 +242,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Ilama";
   VarIlama = 123;
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, name, "456", err))
+  if (!cs_str_string_set(cs, name, "456", err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -255,7 +255,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   VarIlama = 456;
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, 123, err))
+  if (!cs_str_native_set(cs, name, 123, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -271,8 +271,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
-  intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child, NULL);
+  intptr_t pval = cs_str_native_get(cs, parent, NULL);
+  intptr_t cval = cs_str_native_get(cs, child, NULL);
 
   printf("%15s = %ld\n", parent, pval);
   printf("%15s = %ld\n", child, cval);
@@ -297,7 +297,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   // set parent
   VarJackfruit = 123;
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, parent, "456", err))
+  if (!cs_str_string_set(cs, parent, "456", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -306,7 +306,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set child
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, child, "-99", err))
+  if (!cs_str_string_set(cs, child, "-99", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;

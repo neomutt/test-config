@@ -151,7 +151,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
     for (int j = 0; map[j].name; j++)
     {
       mutt_buffer_reset(err);
-      if (!cs_set_variable(cs, name_list[i], map[j].name, err))
+      if (!cs_str_string_set(cs, name_list[i], map[j].name, err))
       {
         printf("%s\n", err->data);
         return false;
@@ -172,7 +172,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
     for (unsigned int j = 0; j < mutt_array_size(invalid); j++)
     {
       mutt_buffer_reset(err);
-      if (!cs_set_variable(cs, name_list[i], invalid[j], err))
+      if (!cs_str_string_set(cs, name_list[i], invalid[j], err))
       {
         printf("Expected error: %s\n", err->data);
       }
@@ -195,7 +195,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarIlama = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -204,7 +204,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarIlama = SORT_THREADS;
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -213,7 +213,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarIlama = -1;
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -241,7 +241,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
     for (int j = 0; map[j].name; j++)
     {
       mutt_buffer_reset(err);
-      if (!cs_str_set_value(cs, name_list[i], map[j].value, err))
+      if (!cs_str_native_set(cs, name_list[i], map[j].value, err))
       {
         printf("%s\n", err->data);
         return false;
@@ -260,7 +260,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   short value = SORT_THREADS;
   VarJackfruit = -1;
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, value, err))
+  if (!cs_str_native_set(cs, name, value, err))
   {
     printf("%s\n", err->data);
     return false;
@@ -279,7 +279,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   {
     VarJackfruit = -1;
     mutt_buffer_reset(err);
-    if (!cs_str_set_value(cs, name, invalid[i], err))
+    if (!cs_str_native_set(cs, name, invalid[i], err))
     {
       printf("Expected error: %s\n", err->data);
     }
@@ -301,7 +301,7 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarKumquat = SORT_THREADS;
   mutt_buffer_reset(err);
-  intptr_t value = cs_str_get_value(cs, name, err);
+  intptr_t value = cs_str_native_get(cs, name, err);
   if (value != SORT_THREADS)
   {
     printf("Get failed: %s\n", err->data);
@@ -344,7 +344,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   char *name = "Mango";
   VarMango = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (cs_set_variable(cs, name, "threads", err))
+  if (cs_str_string_set(cs, name, "threads", err))
   {
     printf("%s\n", err->data);
   }
@@ -357,7 +357,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   VarMango = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (cs_str_set_value(cs, name, SORT_THREADS, err))
+  if (cs_str_native_set(cs, name, SORT_THREADS, err))
   {
     printf("%s\n", err->data);
   }
@@ -371,7 +371,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Nectarine";
   VarNectarine = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, name, "threads", err))
+  if (!cs_str_string_set(cs, name, "threads", err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -384,7 +384,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   VarNectarine = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, SORT_THREADS, err))
+  if (!cs_str_native_set(cs, name, SORT_THREADS, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -400,8 +400,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
 {
-  intptr_t pval = cs_str_get_value(cs, parent, NULL);
-  intptr_t cval = cs_str_get_value(cs, child, NULL);
+  intptr_t pval = cs_str_native_get(cs, parent, NULL);
+  intptr_t cval = cs_str_native_get(cs, child, NULL);
 
   printf("%15s = %ld\n", parent, pval);
   printf("%15s = %ld\n", child, cval);
@@ -426,7 +426,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   // set parent
   VarOlive = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, parent, "threads", err))
+  if (!cs_str_string_set(cs, parent, "threads", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -435,7 +435,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set child
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, child, "score", err))
+  if (!cs_str_string_set(cs, child, "score", err))
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -474,7 +474,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   char *value = "alpha";
 
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, name, value, err))
+  if (!cs_str_string_set(cs, name, value, err))
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -486,7 +486,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   }
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, SORT_THREADS, err))
+  if (!cs_str_native_set(cs, name, SORT_THREADS, err))
   {
     printf("Expected error: %s\n", err->data);
   }

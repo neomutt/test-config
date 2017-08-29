@@ -46,7 +46,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   const char *value = "pudding";
 
   mutt_buffer_reset(err);
-  if (!cs_set_variable(cs, name, value, err))
+  if (!cs_str_string_set(cs, name, value, err))
   {
     printf("%s\n", err->data);
     return false;
@@ -68,7 +68,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   const char *name = "Damson";
 
   mutt_buffer_reset(err);
-  if (!cs_get_variable(cs, name, err))
+  if (!cs_str_string_get(cs, name, err))
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -86,7 +86,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   char *value = "tree";
 
   mutt_buffer_reset(err);
-  if (!cs_str_set_value(cs, name, (intptr_t) value, err))
+  if (!cs_str_native_set(cs, name, (intptr_t) value, err))
   {
     printf("%s\n", err->data);
     return false;
@@ -107,11 +107,11 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   const char *name = "Hawthorn";
 
-  if (!cs_set_variable(cs, name, "tree", err))
+  if (!cs_str_string_set(cs, name, "tree", err))
     return false;
 
   mutt_buffer_reset(err);
-  intptr_t value = cs_str_get_value(cs, name, err);
+  intptr_t value = cs_str_native_get(cs, name, err);
   if (mutt_strcmp(VarGuava, (const char *) value) != 0)
   {
     printf("Get failed: %s\n", err->data);
@@ -130,7 +130,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   mutt_buffer_reset(err);
 
   printf("Initial: %s = '%s'\n", name, NONULL(VarIlama));
-  if (!cs_set_variable(cs, name, "hello", err))
+  if (!cs_str_string_set(cs, name, "hello", err))
     return false;
   printf("Set: %s = '%s'\n", name, VarIlama);
 

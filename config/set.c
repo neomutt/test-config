@@ -231,8 +231,8 @@ bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]
   return result;
 }
 
-bool cs_set_variable(const struct ConfigSet *cs, const char *name,
-                     const char *value, struct Buffer *err)
+bool cs_str_string_set(const struct ConfigSet *cs, const char *name,
+                       const char *value, struct Buffer *err)
 {
   if (!cs || !name)
     return false; /* LCOV_EXCL_LINE */
@@ -343,7 +343,7 @@ bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buff
   return true;
 }
 
-bool cs_get_variable(const struct ConfigSet *cs, const char *name, struct Buffer *result)
+bool cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
 {
   if (!cs || !name)
     return false; /* LCOV_EXCL_LINE */
@@ -430,8 +430,8 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
 }
 
 
-bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he,
-                     intptr_t value, struct Buffer *err)
+bool cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
+                      intptr_t value, struct Buffer *err)
 {
   if (!cs || !he)
     return false; /* LCOV_EXCL_LINE */
@@ -471,7 +471,7 @@ bool cs_he_set_value(const struct ConfigSet *cs, struct HashElem *he,
   return result;
 }
 
-bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
+bool cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
 {
   if (!cs || !he)
     return false; /* LCOV_EXCL_LINE */
@@ -513,8 +513,8 @@ bool cs_he_get_value(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 }
 
 
-bool cs_str_set_value(const struct ConfigSet *cs, const char *name,
-                      intptr_t value, struct Buffer *err)
+bool cs_str_native_set(const struct ConfigSet *cs, const char *name,
+                       intptr_t value, struct Buffer *err)
 {
   if (!cs || !name)
     return false; /* LCOV_EXCL_LINE */
@@ -561,7 +561,7 @@ bool cs_str_set_value(const struct ConfigSet *cs, const char *name,
   return result;
 }
 
-intptr_t cs_str_get_value(const struct ConfigSet *cs, const char *name, struct Buffer *err)
+intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
     return -1; /* LCOV_EXCL_LINE */
