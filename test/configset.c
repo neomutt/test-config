@@ -34,7 +34,7 @@ bool configset_test(void)
   const struct ConfigSetType cst_dummy = {
     "dummy", NULL, NULL, NULL, NULL, NULL, NULL,
   };
-  if (!cs_register_type(cs, DT_STR, &cst_dummy))
+  if (!cs_register_type(cs, DT_STRING, &cst_dummy))
   {
     printf("Expected error\n");
   }

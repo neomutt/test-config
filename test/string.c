@@ -29,20 +29,20 @@ static char *VarNectarine;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_STR, &VarApple,      IP "apple",   NULL              }, /* test_initial_values() */
-  { "Banana",     DT_STR, &VarBanana,     IP "banana",  NULL              },
-  { "Cherry",     DT_STR, &VarCherry,     0,            NULL              }, /* test_basic_string_set */
-  { "Damson",     DT_STR, &VarDamson,     IP "damson",  NULL              },
-  { "Elderberry", DT_STR, &VarElderberry, 0,            NULL              }, /* test_basic_string_get */
-  { "Fig",        DT_STR, &VarFig,        IP "fig",     NULL              },
-  { "Guava",      DT_STR, &VarGuava,      0,            NULL              },
-  { "Hawthorn",   DT_STR, &VarHawthorn,   0,            NULL              }, /* test_basic_native_set */
-  { "Ilama",      DT_STR, &VarIlama,      IP "ilama",   NULL              },
-  { "Jackfruit",  DT_STR, &VarJackfruit,  0,            NULL              }, /* test_basic_native_get */
-  { "Kumquat",    DT_STR, &VarKumquat,    IP "kumquat", NULL              }, /* test_reset */
-  { "Lemon",      DT_STR, &VarLemon,      IP "lemon",   validator_succeed }, /* test_validator */
-  { "Mango",      DT_STR, &VarMango,      IP "mango",   validator_fail    },
-  { "Nectarine",  DT_STR, &VarNectarine,  0,            NULL              }, /* test_inherit */
+  { "Apple",      DT_STRING, &VarApple,      IP "apple",   NULL              }, /* test_initial_values() */
+  { "Banana",     DT_STRING, &VarBanana,     IP "banana",  NULL              },
+  { "Cherry",     DT_STRING, &VarCherry,     0,            NULL              }, /* test_basic_string_set */
+  { "Damson",     DT_STRING, &VarDamson,     IP "damson",  NULL              },
+  { "Elderberry", DT_STRING, &VarElderberry, 0,            NULL              }, /* test_basic_string_get */
+  { "Fig",        DT_STRING, &VarFig,        IP "fig",     NULL              },
+  { "Guava",      DT_STRING, &VarGuava,      0,            NULL              },
+  { "Hawthorn",   DT_STRING, &VarHawthorn,   0,            NULL              }, /* test_basic_native_set */
+  { "Ilama",      DT_STRING, &VarIlama,      IP "ilama",   NULL              },
+  { "Jackfruit",  DT_STRING, &VarJackfruit,  0,            NULL              }, /* test_basic_native_get */
+  { "Kumquat",    DT_STRING, &VarKumquat,    IP "kumquat", NULL              }, /* test_reset */
+  { "Lemon",      DT_STRING, &VarLemon,      IP "lemon",   validator_succeed }, /* test_validator */
+  { "Mango",      DT_STRING, &VarMango,      IP "mango",   validator_fail    },
+  { "Nectarine",  DT_STRING, &VarNectarine,  0,            NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on

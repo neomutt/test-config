@@ -8,7 +8,7 @@
 #include "lib/string2.h"
 #include "types.h"
 
-static void destroy_str(void *var, const struct VariableDef *vdef)
+static void destroy_string(void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
@@ -24,8 +24,8 @@ static void destroy_str(void *var, const struct VariableDef *vdef)
   FREE(var);
 }
 
-static bool set_str(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
-                    const char *value, struct Buffer *err)
+static bool set_string(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef,
+                       const char *value, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -37,13 +37,13 @@ static bool set_str(const struct ConfigSet *cs, void *var, const struct Variable
   if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
     return false;
 
-  destroy_str(var, vdef);
+  destroy_string(var, vdef);
 
   *(const char **) var = safe_strdup(value);
   return true;
 }
 
-static bool get_str(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static bool get_string(void *var, const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -56,9 +56,9 @@ static bool get_str(void *var, const struct VariableDef *vdef, struct Buffer *re
   return true;
 }
 
-static bool set_native_str(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, intptr_t value,
-                           struct Buffer *err)
+static bool set_native_string(const struct ConfigSet *cs, void *var,
+                              const struct VariableDef *vdef, intptr_t value,
+                              struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -80,8 +80,8 @@ static bool set_native_str(const struct ConfigSet *cs, void *var,
   return true;
 }
 
-static intptr_t get_native_str(const struct ConfigSet *cs, void *var,
-                               const struct VariableDef *vdef, struct Buffer *err)
+static intptr_t get_native_string(const struct ConfigSet *cs, void *var,
+                                  const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
@@ -91,13 +91,13 @@ static intptr_t get_native_str(const struct ConfigSet *cs, void *var,
   return (intptr_t) str;
 }
 
-static bool reset_str(const struct ConfigSet *cs, void *var,
-                      const struct VariableDef *vdef, struct Buffer *err)
+static bool reset_string(const struct ConfigSet *cs, void *var,
+                         const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
     return false; /* LCOV_EXCL_LINE */
 
-  destroy_str(var, vdef);
+  destroy_string(var, vdef);
 
   *(const char **) var = (const char *) vdef->initial;
   return true;
@@ -105,9 +105,9 @@ static bool reset_str(const struct ConfigSet *cs, void *var,
 
 void init_string(struct ConfigSet *cs)
 {
-  const struct ConfigSetType cst_str = {
-    "string",       set_str,   get_str,     set_native_str,
-    get_native_str, reset_str, destroy_str,
+  const struct ConfigSetType cst_string = {
+    "string",          set_string,   get_string,     set_native_string,
+    get_native_string, reset_string, destroy_string,
   };
-  cs_register_type(cs, DT_STR, &cst_str);
+  cs_register_type(cs, DT_STRING, &cst_string);
 }

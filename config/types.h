@@ -4,7 +4,7 @@
 #define DT_MASK      0x0f
 #define DT_BOOL       1   /**< boolean option */
 #define DT_NUMBER     2   /**< a number */
-#define DT_STR        3   /**< a string */
+#define DT_STRING     3   /**< a string */
 #define DT_PATH       4   /**< a pathname */
 #define DT_QUAD       5   /**< quad-option (yes/no/ask-yes/ask-no) */
 #define DT_SORT       6   /**< sorting methods */

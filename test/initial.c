@@ -18,9 +18,9 @@ static char *VarCherry;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",  DT_STR, &VarApple,  IP "apple", NULL },
-  { "Banana", DT_STR, &VarBanana, 0,          NULL },
-  { "Cherry", DT_STR, &VarCherry, 0,          NULL },
+  { "Apple",  DT_STRING, &VarApple,  IP "apple", NULL },
+  { "Banana", DT_STRING, &VarBanana, 0,          NULL },
+  { "Cherry", DT_STRING, &VarCherry, 0,          NULL },
   { NULL },
 };
 // clang-format on
