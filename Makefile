@@ -57,10 +57,7 @@ test:	$(OUT) force
 tags:	$(SRC) $(HDR)
 	ctags -R .
 
-covclean:
-	$(RM) *.gc?? */*.gc??
-
-clean: covclean
+clean:
 	$(RM) $(OUT) $(OBJ)
 
 distclean: clean
@@ -73,10 +70,10 @@ dummy_dirs:
 	(cd lib    && rm -f lib    && ln -s . lib)
 	(cd test   && rm -f test   && ln -s . test)
 
-coveralls: dummy_dirs
+coveralls: dummy_dirs all test force
 	coveralls -e lib -e test -e debug.c -e debug.h -e main.c
 
-lcov: force
+lcov: all test force
 	$(RM) lcov
 	$(RM) debug.gc?? main.gc?? test/*.gc?? lib/*.gc??
 	lcov -t "result" -o lcov.info -c -d config
