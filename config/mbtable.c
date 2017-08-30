@@ -79,7 +79,10 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
     result = vdef->validator(cs, vdef, (intptr_t) table, err);
 
   if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+  {
+    mbtable_free(&table);
     return result | CSR_INV_VALIDATOR;
+  }
 
   mbtable_destroy(cs, var, vdef);
 
@@ -163,15 +166,14 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
-void mbtable_free(struct MbTable **table)
+void mbtable_init(struct ConfigSet *cs)
 {
-  if (!table || !*table)
-    return; /* LCOV_EXCL_LINE */
-
-  FREE(&(*table)->orig_str);
-  FREE(&(*table)->chars);
-  FREE(&(*table)->segmented_str);
-  FREE(table);
+  const struct ConfigSetType cst_mbtable = {
+    "mbtable",          mbtable_string_set, mbtable_string_get,
+    mbtable_native_set, mbtable_native_get, mbtable_reset,
+    mbtable_destroy,
+  };
+  cs_register_type(cs, DT_MBTABLE, &cst_mbtable);
 }
 
 struct MbTable *mbtable_create(const char *str)
@@ -181,12 +183,13 @@ struct MbTable *mbtable_create(const char *str)
   return m;
 }
 
-void mbtable_init(struct ConfigSet *cs)
+void mbtable_free(struct MbTable **table)
 {
-  const struct ConfigSetType cst_mbtable = {
-    "mbtable",          mbtable_string_set, mbtable_string_get,
-    mbtable_native_set, mbtable_native_get, mbtable_reset,
-    mbtable_destroy,
-  };
-  cs_register_type(cs, DT_MBTABLE, &cst_mbtable);
+  if (!table || !*table)
+    return; /* LCOV_EXCL_LINE */
+
+  FREE(&(*table)->orig_str);
+  FREE(&(*table)->chars);
+  FREE(&(*table)->segmented_str);
+  FREE(table);
 }

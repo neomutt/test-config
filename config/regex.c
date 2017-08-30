@@ -127,16 +127,6 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
-void regex_free(struct Regex **r)
-{
-  if (!r || !*r)
-    return; /* LCOV_EXCL_LINE */
-
-  FREE(&(*r)->pattern);
-  //regfree(r->regex)
-  FREE(r);
-}
-
 void regex_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_regex = {
@@ -151,4 +141,14 @@ struct Regex *regex_create(const char *str)
   struct Regex *r = safe_calloc(1, sizeof(*r));
   r->pattern = safe_strdup(str);
   return r;
+}
+
+void regex_free(struct Regex **r)
+{
+  if (!r || !*r)
+    return; /* LCOV_EXCL_LINE */
+
+  FREE(&(*r)->pattern);
+  //regfree(r->regex)
+  FREE(r);
 }

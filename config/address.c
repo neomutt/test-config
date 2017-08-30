@@ -20,9 +20,7 @@ static void address_destroy(const struct ConfigSet *cs, void *var,
   if (!*a)
     return;
 
-  FREE(&(*a)->personal);
-  FREE(&(*a)->mailbox);
-  FREE(a);
+  address_free(a);
 }
 
 static int address_string_set(const struct ConfigSet *cs, void *var,
@@ -128,14 +126,6 @@ static int address_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
-struct Address *address_create(const char *addr)
-{
-  struct Address *a = safe_calloc(1, sizeof(*a));
-  a->personal = safe_strdup(addr);
-  a->mailbox = safe_strdup("dummy3");
-  return a;
-}
-
 void address_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_address = {
@@ -144,6 +134,14 @@ void address_init(struct ConfigSet *cs)
     address_destroy,
   };
   cs_register_type(cs, DT_ADDRESS, &cst_address);
+}
+
+struct Address *address_create(const char *addr)
+{
+  struct Address *a = safe_calloc(1, sizeof(*a));
+  a->personal = safe_strdup(addr);
+  a->mailbox = safe_strdup("dummy3");
+  return a;
 }
 
 void address_free(struct Address **addr)
