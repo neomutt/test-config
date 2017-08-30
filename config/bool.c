@@ -1,5 +1,6 @@
 #include "config.h"
 #include <stddef.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "lib/buffer.h"
@@ -12,12 +13,12 @@ const char *bool_values[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",
 };
 
-static bool bool_string_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, const char *value,
-                            struct Buffer *err)
+static int bool_string_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, const char *value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(bool_values); i++)
@@ -32,69 +33,78 @@ static bool bool_string_set(const struct ConfigSet *cs, void *var,
   if (num < 0)
   {
     mutt_buffer_printf(err, "Invalid boolean value: %s", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, (intptr_t) num, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(bool *) var = num;
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool bool_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static int bool_string_get(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+  if (!cs || !var || !vdef)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   unsigned int index = *(bool *) var;
   if (index > 1)
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
   mutt_buffer_addstr(result, bool_values[index]);
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool bool_native_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, intptr_t value,
-                            struct Buffer *err)
+static int bool_native_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, intptr_t value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if ((value < 0) || (value > 1))
   {
     mutt_buffer_printf(err, "Invalid boolean value: %ld", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, value, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(bool *) var = value;
-  return true;
+  return CSR_SUCCESS;
 }
 
 static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(bool *) var;
 }
 
-static bool bool_reset(const struct ConfigSet *cs, void *var,
-                       const struct VariableDef *vdef, struct Buffer *err)
+static int bool_reset(const struct ConfigSet *cs, void *var,
+                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   *(bool *) var = vdef->initial;
-  return true;
+  return CSR_SUCCESS;
 }
 
 void bool_init(struct ConfigSet *cs)

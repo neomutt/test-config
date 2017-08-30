@@ -1,5 +1,6 @@
 #include "config.h"
 #include <stddef.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "lib/buffer.h"
@@ -10,12 +11,12 @@
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
-static bool quad_string_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, const char *value,
-                            struct Buffer *err)
+static int quad_string_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, const char *value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(quad_values); i++)
@@ -30,69 +31,78 @@ static bool quad_string_set(const struct ConfigSet *cs, void *var,
   if (num < 0)
   {
     mutt_buffer_printf(err, "Invalid quad value: %s", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, (intptr_t) num, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = num;
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool quad_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static int quad_string_get(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+  if (!cs || !var || !vdef)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   unsigned int index = *(short *) var;
   if (index >= mutt_array_size(quad_values))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
   mutt_buffer_addstr(result, quad_values[index]);
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool quad_native_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, intptr_t value,
-                            struct Buffer *err)
+static int quad_native_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, intptr_t value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if ((value < 0) || (value >= mutt_array_size(quad_values)))
   {
     mutt_buffer_printf(err, "Invalid quad value: %ld", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, value, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = value;
-  return true;
+  return CSR_SUCCESS;
 }
 
 static intptr_t quad_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
 }
 
-static bool quad_reset(const struct ConfigSet *cs, void *var,
-                       const struct VariableDef *vdef, struct Buffer *err)
+static int quad_reset(const struct ConfigSet *cs, void *var,
+                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   *(short *) var = vdef->initial;
-  return true;
+  return CSR_SUCCESS;
 }
 
 void quad_init(struct ConfigSet *cs)

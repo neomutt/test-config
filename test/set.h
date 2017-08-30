@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool configset_test(void);
+bool set_test(void);
 
 #endif /* _TEST_CONFIGSET_H */

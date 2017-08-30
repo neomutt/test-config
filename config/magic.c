@@ -1,5 +1,6 @@
 #include "config.h"
 #include <stddef.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "lib/buffer.h"
@@ -10,12 +11,12 @@
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 
-static bool magic_string_set(const struct ConfigSet *cs, void *var,
-                             const struct VariableDef *vdef, const char *value,
-                             struct Buffer *err)
+static int magic_string_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, const char *value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
@@ -30,69 +31,78 @@ static bool magic_string_set(const struct ConfigSet *cs, void *var,
   if (num < 1)
   {
     mutt_buffer_printf(err, "Invalid magic value: %s", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, (intptr_t) num, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = num;
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool magic_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static int magic_string_get(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+  if (!cs || !var || !vdef)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   unsigned int index = *(short *) var;
   if ((index < 1) || (index >= mutt_array_size(magic_values)))
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
   mutt_buffer_addstr(result, magic_values[index]);
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool magic_native_set(const struct ConfigSet *cs, void *var,
-                             const struct VariableDef *vdef, intptr_t value,
-                             struct Buffer *err)
+static int magic_native_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, intptr_t value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if ((value < 1) || (value >= mutt_array_size(magic_values)))
   {
     mutt_buffer_printf(err, "Invalid magic value: %ld", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, value, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = value;
-  return true;
+  return CSR_SUCCESS;
 }
 
 static intptr_t magic_native_get(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
 }
 
-static bool magic_reset(const struct ConfigSet *cs, void *var,
-                        const struct VariableDef *vdef, struct Buffer *err)
+static int magic_reset(const struct ConfigSet *cs, void *var,
+                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   *(short *) var = vdef->initial;
-  return true;
+  return CSR_SUCCESS;
 }
 
 void magic_init(struct ConfigSet *cs)

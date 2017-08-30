@@ -1,4 +1,5 @@
 #include "config.h"
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -95,12 +96,12 @@ static int find_id(const struct Mapping *map, const char *str)
   return -1;
 }
 
-static bool sort_string_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, const char *value,
-                            struct Buffer *err)
+static int sort_string_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, const char *value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   intptr_t id = -1;
 
@@ -126,27 +127,32 @@ static bool sort_string_set(const struct ConfigSet *cs, void *var,
       break;
     default:
       mutt_buffer_printf(err, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
-      return false;
+      return CSR_ERR_INVALID | CSR_INV_TYPE;
       break;
   }
 
   if (id < 0)
   {
     mutt_buffer_printf(err, "Invalid sort name: %s", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) id, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, (intptr_t) id, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = id;
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool sort_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static int sort_string_get(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+  if (!cs || !var || !vdef)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int sort = *(short *) var;
 
@@ -174,26 +180,26 @@ static bool sort_string_get(void *var, const struct VariableDef *vdef, struct Bu
       break;
     default:
       mutt_buffer_printf(result, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
-      return false;
+      return CSR_ERR_INVALID | CSR_INV_TYPE;
       break;
   }
 
   if (!str)
   {
     mutt_buffer_printf(result, "Variable has an invalid value");
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
   mutt_buffer_addstr(result, str);
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool sort_native_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, intptr_t value,
-                            struct Buffer *err)
+static int sort_native_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, intptr_t value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   const char *str = NULL;
 
@@ -219,40 +225,44 @@ static bool sort_native_set(const struct ConfigSet *cs, void *var,
       break;
     default:
       mutt_buffer_printf(err, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
-      return false;
+      return CSR_ERR_INVALID | CSR_INV_TYPE;
       break;
   }
 
   if (!str)
   {
     mutt_buffer_printf(err, "Invalid sort type: %ld", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, value, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = value;
-  return true;
+  return CSR_SUCCESS;
 }
 
 static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
 }
 
-static bool sort_reset(const struct ConfigSet *cs, void *var,
-                       const struct VariableDef *vdef, struct Buffer *err)
+static int sort_reset(const struct ConfigSet *cs, void *var,
+                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   *(short *) var = vdef->initial;
-  return true;
+  return CSR_SUCCESS;
 }
 
 void sort_init(struct ConfigSet *cs)

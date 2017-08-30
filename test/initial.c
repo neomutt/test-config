@@ -1,4 +1,5 @@
 #include "config.h"
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -34,7 +35,8 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
     return false;
 
   const char *aval = "pie";
-  if (!cs_set_initial_value(cs, he_a, aval, err))
+  int rc = cs_set_initial_value(cs, he_a, aval, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
     printf("Expected error: %s\n", err->data);
 
   struct HashElem *he_b = cs_get_elem(cs, "Banana");
@@ -42,7 +44,8 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
     return false;
 
   const char *bval = "split";
-  if (!cs_set_initial_value(cs, he_b, bval, err))
+  rc = cs_set_initial_value(cs, he_b, bval, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
     return false;
 
   struct HashElem *he_c = cs_get_elem(cs, "Cherry");
@@ -50,10 +53,12 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
     return false;
 
   const char *cval = "blossom";
-  if (!cs_set_initial_value(cs, he_c, cval, err))
+  rc = cs_set_initial_value(cs, he_c, cval, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
     return false;
 
-  if (!cs_set_initial_value(cs, he_c, cval, err))
+  rc = cs_set_initial_value(cs, he_c, cval, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
     printf("Expected error: %s\n", err->data);
 
   printf("Apple = %s\n", VarApple);

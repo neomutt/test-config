@@ -1,5 +1,6 @@
 #include "config.h"
 #include <stddef.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "lib/buffer.h"
@@ -9,7 +10,7 @@
 #include "set.h"
 #include "types.h"
 
-static void regex_destroy(void *var, const struct VariableDef *vdef)
+static void regex_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
@@ -21,12 +22,12 @@ static void regex_destroy(void *var, const struct VariableDef *vdef)
   regex_free(r);
 }
 
-static bool regex_string_set(const struct ConfigSet *cs, void *var,
-                             const struct VariableDef *vdef, const char *value,
-                             struct Buffer *err)
+static int regex_string_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, const char *value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct Regex *r = NULL;
   if (value)
@@ -36,29 +37,34 @@ static bool regex_string_set(const struct ConfigSet *cs, void *var,
     r->regex = NULL; //XXX regenerate r->regex
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) r, err))
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, (intptr_t) r, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     regex_free(&r);
-    return false;
+    return result | CSR_INV_VALIDATOR;
   }
 
-  regex_destroy(var, vdef);
+  regex_destroy(cs, var, vdef);
 
   *(struct Regex **) var = r;
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool regex_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static int regex_string_get(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+  if (!cs || !var || !vdef)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct Regex *r = *(struct Regex **) var;
   if (!r)
-    return false;
+    return CSR_ERR_CODE;
 
   mutt_buffer_addstr(result, r->pattern);
-  return true;
+  return CSR_SUCCESS;
 }
 
 static struct Regex *regex_dup(struct Regex *r)
@@ -71,42 +77,46 @@ static struct Regex *regex_dup(struct Regex *r)
   return copy;
 }
 
-static bool regex_native_set(const struct ConfigSet *cs, void *var,
-                             const struct VariableDef *vdef, intptr_t value,
-                             struct Buffer *err)
+static int regex_native_set(const struct ConfigSet *cs, void *var,
+                            const struct VariableDef *vdef, intptr_t value,
+                            struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, value, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   regex_free(var);
 
   struct Regex *r = regex_dup((struct Regex *) value);
 
   *(struct Regex **) var = r;
-  return true;
+  return CSR_SUCCESS;
 }
 
 static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   struct Regex *r = *(struct Regex **) var;
 
   return (intptr_t) r;
 }
 
-static bool regex_reset(const struct ConfigSet *cs, void *var,
-                        const struct VariableDef *vdef, struct Buffer *err)
+static int regex_reset(const struct ConfigSet *cs, void *var,
+                       const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  regex_destroy(var, vdef);
+  regex_destroy(cs, var, vdef);
 
   struct Regex *r = safe_calloc(1, sizeof(*r));
 
@@ -114,7 +124,7 @@ static bool regex_reset(const struct ConfigSet *cs, void *var,
   r->regex = NULL; //XXX regenerate r->regex
 
   *(struct Regex **) var = r;
-  return true;
+  return CSR_SUCCESS;
 }
 
 void regex_free(struct Regex **r)

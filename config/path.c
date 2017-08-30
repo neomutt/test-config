@@ -1,5 +1,6 @@
 #include "config.h"
 #include <stddef.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "lib/buffer.h"
@@ -8,7 +9,7 @@
 #include "set.h"
 #include "types.h"
 
-static void path_destroy(void *var, const struct VariableDef *vdef)
+static void path_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
 {
   if (!var || !vdef)
     return; /* LCOV_EXCL_LINE */
@@ -20,45 +21,50 @@ static void path_destroy(void *var, const struct VariableDef *vdef)
   FREE(var);
 }
 
-static bool path_string_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, const char *value,
-                            struct Buffer *err)
+static int path_string_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, const char *value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   /* Store empty strings as NULL */
   if (value && (value[0] == '\0'))
     value = NULL;
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, (intptr_t) value, err);
 
-  path_destroy(var, vdef);
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
+
+  path_destroy(cs, var, vdef);
 
   *(const char **) var = safe_strdup(value);
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool path_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
+static int path_string_get(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, struct Buffer *result)
 {
-  if (!var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+  if (!cs || !var || !vdef)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   const char *str = *(const char **) var;
   if (!str)
-    return true; /* empty string */
+    return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
 
   mutt_buffer_addstr(result, str);
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool path_native_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, intptr_t value,
-                            struct Buffer *err)
+static int path_native_set(const struct ConfigSet *cs, void *var,
+                           const struct VariableDef *vdef, intptr_t value,
+                           struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   const char *str = (const char *) value;
 
@@ -66,36 +72,40 @@ static bool path_native_set(const struct ConfigSet *cs, void *var,
   if (str && (str[0] == '\0'))
     value = 0;
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, value, err);
 
-  path_destroy(var, vdef);
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
+
+  path_destroy(cs, var, vdef);
 
   *(const char **) var = safe_strdup((const char *) value);
-  return true;
+  return CSR_SUCCESS;
 }
 
 static intptr_t path_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   const char *str = *(const char **) var;
 
   return (intptr_t) str;
 }
 
-static bool path_reset(const struct ConfigSet *cs, void *var,
-                       const struct VariableDef *vdef, struct Buffer *err)
+static int path_reset(const struct ConfigSet *cs, void *var,
+                      const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  path_destroy(var, vdef);
+  path_destroy(cs, var, vdef);
 
   *(const char **) var = (const char *) vdef->initial;
-  return true;
+  return CSR_SUCCESS;
 }
 
 void path_init(struct ConfigSet *cs)

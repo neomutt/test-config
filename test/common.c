@@ -13,24 +13,24 @@ struct HashElem;
 const char *line = "----------------------------------------"
                    "----------------------------------------";
 
-bool validator_fail(const struct ConfigSet *cs, const struct VariableDef *vdef,
-                    intptr_t value, struct Buffer *result)
+int validator_fail(const struct ConfigSet *cs, const struct VariableDef *vdef,
+                   intptr_t value, struct Buffer *result)
 {
   if (value > 1000000)
     mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
   else
     mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
-  return false;
+  return CSR_ERR_INVALID;
 }
 
-bool validator_succeed(const struct ConfigSet *cs, const struct VariableDef *vdef,
-                       intptr_t value, struct Buffer *result)
+int validator_succeed(const struct ConfigSet *cs, const struct VariableDef *vdef,
+                      intptr_t value, struct Buffer *result)
 {
   if (value > 1000000)
     mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
   else
     mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
-  return true;
+  return CSR_SUCCESS;
 }
 
 void log_line(const char *fn)

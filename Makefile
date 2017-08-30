@@ -5,8 +5,8 @@ MKDIR	= mkdir -p
 OUT	= demo
 
 SRC	+= debug.c main.c
-SRC	+= config/account.c config/set.c config/address.c config/bool.c config/magic.c config/mbtable.c config/regex.c config/number.c config/path.c config/quad.c config/sort.c config/string.c
-SRC	+= test/common.c test/account.c test/address.c test/bool.c test/configset.c test/initial.c test/magic.c test/mbtable.c test/number.c test/path.c test/quad.c test/regex.c test/sort.c test/string.c test/synonym.c
+SRC	+= config/account.c config/address.c config/bool.c config/magic.c config/mbtable.c config/regex.c config/number.c config/path.c config/quad.c config/set.c config/sort.c config/string.c
+SRC	+= test/common.c test/account.c test/address.c test/bool.c test/initial.c test/magic.c test/mbtable.c test/number.c test/path.c test/quad.c test/regex.c test/set.c test/sort.c test/string.c test/synonym.c
 SRC	+= lib/buffer.c lib/debug.c lib/exit.c lib/hash.c lib/memory.c lib/message.c lib/string.c
 
 OBJ	+= $(SRC:%.c=%.o)
@@ -39,20 +39,20 @@ $(OUT):	$(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
 test:	$(OUT) force
-	./$(OUT) configset > test/configset.txt
-	./$(OUT) account   > test/account.txt
-	./$(OUT) address   > test/address.txt
-	./$(OUT) bool      > test/bool.txt
-	./$(OUT) initial   > test/initial.txt
-	./$(OUT) magic     > test/magic.txt
-	./$(OUT) mbtable   > test/mbtable.txt
-	./$(OUT) number    > test/number.txt
-	./$(OUT) path      > test/path.txt
-	./$(OUT) quad      > test/quad.txt
-	./$(OUT) regex     > test/regex.txt
-	./$(OUT) sort      > test/sort.txt
-	./$(OUT) string    > test/string.txt
-	./$(OUT) synonym   > test/synonym.txt
+	-./$(OUT) set     > test/set.txt
+	-./$(OUT) account > test/account.txt
+	-./$(OUT) initial > test/initial.txt
+	-./$(OUT) synonym > test/synonym.txt
+	-./$(OUT) address > test/address.txt
+	-./$(OUT) bool    > test/bool.txt
+	-./$(OUT) magic   > test/magic.txt
+	-./$(OUT) mbtable > test/mbtable.txt
+	-./$(OUT) number  > test/number.txt
+	-./$(OUT) path    > test/path.txt
+	-./$(OUT) quad    > test/quad.txt
+	-./$(OUT) regex   > test/regex.txt
+	-./$(OUT) sort    > test/sort.txt
+	-./$(OUT) string  > test/string.txt
 
 tags:	$(SRC) $(HDR)
 	ctags -R .
@@ -62,6 +62,7 @@ clean:
 
 distclean: clean
 	$(RM) tags
+	$(RM) *.gc?? */*.gc??
 
 force:
 

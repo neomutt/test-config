@@ -15,15 +15,35 @@ enum ConfigEvent
   CE_RESET,
 };
 
-typedef bool    (*cs_listener)  (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
-typedef bool    (*cs_validator) (const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result);
+/* Config Set Results */
+#define CSR_SUCCESS       0 /**< Action completed successfully */
+#define CSR_ERR_CODE      1 /**< Problem with the code */
+#define CSR_ERR_UNKNOWN   2 /**< Unrecognised config item */
+#define CSR_ERR_INVALID   3 /**< Value hasn't been set */
+/* Flags for CSR_SUCCESS */
+#define CSR_SUC_INHERITED (1 << 4) /**< Value is inherited */
+#define CSR_SUC_EMPTY     (1 << 5) /**< Value is empty/unset */
+#define CSR_SUC_WARNING   (1 << 6) /**< Notify the user of a warning */
+/* Flags for CSR_INVALID */
+#define CSR_INV_TYPE      (1 << 4) /**< Value is not valid for the type */
+#define CSR_INV_VALIDATOR (1 << 5) /**< Value was rejected by the validator */
+#define CSR_RESULT_MASK 0x0F
 
-typedef bool    (*cst_string_set)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err);
-typedef bool    (*cst_string_get)(void *var, const struct VariableDef *vdef, struct Buffer *result);
-typedef bool    (*cst_native_set)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err);
+enum CsListenerAction
+{
+  CSLA_CONTINUE,
+  CSLA_STOP,
+};
+
+typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
+typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result);
+
+typedef int     (*cst_string_set)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err);
+typedef int     (*cst_string_get)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *result);
+typedef int     (*cst_native_set)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err);
 typedef intptr_t(*cst_native_get)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
-typedef bool    (*cst_reset)     (const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
-typedef void    (*cst_destroy)   (void *var, const struct VariableDef *vdef);
+typedef int     (*cst_reset)     (const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
+typedef void    (*cst_destroy)   (const struct ConfigSet *cs, void *var, const struct VariableDef *vdef);
 
 #define IP (intptr_t)
 
@@ -64,21 +84,21 @@ const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned
 bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct ConfigSetType *cst);
 bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]);
 struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem *parent, const char *name);
-bool cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err);
+int cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err);
 
 void cs_add_listener    (struct ConfigSet *cs, cs_listener fn);
 void cs_remove_listener (struct ConfigSet *cs, cs_listener fn);
 void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
 
-bool cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffer *err);
+int cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffer *err);
 
-bool cs_str_string_set(const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
-bool cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffer *result);
+int cs_str_string_set(const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
+int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffer *result);
 
-bool cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err);
-bool cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result);
+int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he, intptr_t value, struct Buffer *err);
+int cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result);
 
-bool     cs_str_native_set(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
+int      cs_str_native_set(const struct ConfigSet *cs, const char *name, intptr_t value, struct Buffer *err);
 intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct Buffer *err);
 
 #endif /* _CONFIG_SET_H */

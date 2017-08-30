@@ -86,7 +86,8 @@ void cs_dump_set(const struct ConfigSet *cs)
 
     const struct VariableDef *vdef = he->data;
 
-    if (cst->string_get(vdef->var, vdef, &result))
+    int rc = cst->string_get(cs, vdef->var, vdef, &result);
+    if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
       printf(" = %s\n", result.data);
     else
       printf(": ERROR: %s\n", result.data);

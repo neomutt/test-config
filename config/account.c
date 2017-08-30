@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "account.h"
 #include "inheritance.h"
+#include "lib/debug.h"
 #include "lib/hash.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
@@ -66,8 +67,8 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   for (int i = 0; i < (*ac)->num_vars; i++)
   {
     snprintf(child, sizeof(child), "%s:%s", (*ac)->name, (*ac)->var_names[i]);
-    if (!cs_reset_variable(cs, child, NULL))
-      printf("reset failed\n");
+    if (cs_reset_variable(cs, child, NULL) != CSR_SUCCESS) //XXX replace NULL with a Buffer
+      mutt_debug(1, "reset failed for %s\n", child);
   }
 
   FREE(&(*ac)->name);
@@ -75,23 +76,23 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   FREE(ac);
 }
 
-bool ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err)
+int ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err)
 {
   if (!ac)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
   if ((vid < 0) || (vid >= ac->num_vars))
-    return false;
+    return CSR_ERR_UNKNOWN;
 
   struct HashElem *he = ac->vars[vid];
   return cs_he_native_set(ac->cs, he, value, err);
 }
 
-bool ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
+int ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
 {
   if (!ac)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
   if ((vid < 0) || (vid >= ac->num_vars))
-    return false;
+    return CSR_ERR_UNKNOWN;
 
   struct HashElem *he = ac->vars[vid];
 

@@ -1,4 +1,5 @@
 #include "config.h"
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -148,10 +149,12 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
 
     const struct Mapping *map = sort_maps[i];
 
+    int rc;
     for (int j = 0; map[j].name; j++)
     {
       mutt_buffer_reset(err);
-      if (!cs_str_string_set(cs, name_list[i], map[j].name, err))
+      rc = cs_str_string_set(cs, name_list[i], map[j].name, err);
+      if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
       {
         printf("%s\n", err->data);
         return false;
@@ -172,7 +175,8 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
     for (unsigned int j = 0; j < mutt_array_size(invalid); j++)
     {
       mutt_buffer_reset(err);
-      if (!cs_str_string_set(cs, name_list[i], invalid[j], err))
+      rc = cs_str_string_set(cs, name_list[i], invalid[j], err);
+      if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
       {
         printf("Expected error: %s\n", err->data);
       }
@@ -195,7 +199,8 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarIlama = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_str_string_get(cs, name, err))
+  int rc = cs_str_string_get(cs, name, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -204,7 +209,8 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarIlama = SORT_THREADS;
   mutt_buffer_reset(err);
-  if (!cs_str_string_get(cs, name, err))
+  rc = cs_str_string_get(cs, name, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -213,7 +219,8 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarIlama = -1;
   mutt_buffer_reset(err);
-  if (!cs_str_string_get(cs, name, err))
+  rc = cs_str_string_get(cs, name, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -230,6 +237,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
+  int rc;
   for (unsigned int i = 0; i < mutt_array_size(var_list); i++)
   {
     short *var = var_list[i];
@@ -241,7 +249,8 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
     for (int j = 0; map[j].name; j++)
     {
       mutt_buffer_reset(err);
-      if (!cs_str_native_set(cs, name_list[i], map[j].value, err))
+      rc = cs_str_native_set(cs, name_list[i], map[j].value, err);
+      if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
       {
         printf("%s\n", err->data);
         return false;
@@ -260,7 +269,8 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   short value = SORT_THREADS;
   VarJackfruit = -1;
   mutt_buffer_reset(err);
-  if (!cs_str_native_set(cs, name, value, err))
+  rc = cs_str_native_set(cs, name, value, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;
@@ -279,7 +289,8 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   {
     VarJackfruit = -1;
     mutt_buffer_reset(err);
-    if (!cs_str_native_set(cs, name, invalid[i], err))
+    rc = cs_str_native_set(cs, name, invalid[i], err);
+    if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
     {
       printf("Expected error: %s\n", err->data);
     }
@@ -320,7 +331,8 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   VarLemon = SORT_SUBJECT;
   mutt_buffer_reset(err);
 
-  if (!cs_reset_variable(cs, name, err))
+  int rc = cs_reset_variable(cs, name, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;
@@ -344,7 +356,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   char *name = "Mango";
   VarMango = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (cs_str_string_set(cs, name, "threads", err))
+  int rc = cs_str_string_set(cs, name, "threads", err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
   }
@@ -357,7 +370,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   VarMango = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (cs_str_native_set(cs, name, SORT_THREADS, err))
+  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
   }
@@ -371,7 +385,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Nectarine";
   VarNectarine = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_str_string_set(cs, name, "threads", err))
+  rc = cs_str_string_set(cs, name, "threads", err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -384,7 +399,8 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   VarNectarine = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_str_native_set(cs, name, SORT_THREADS, err))
+  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -426,7 +442,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   // set parent
   VarOlive = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  if (!cs_str_string_set(cs, parent, "threads", err))
+  int rc = cs_str_string_set(cs, parent, "threads", err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -435,7 +452,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // set child
   mutt_buffer_reset(err);
-  if (!cs_str_string_set(cs, child, "score", err))
+  rc = cs_str_string_set(cs, child, "score", err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -444,7 +462,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset child
   mutt_buffer_reset(err);
-  if (!cs_reset_variable(cs, child, err))
+  rc = cs_reset_variable(cs, child, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -453,7 +472,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset parent
   mutt_buffer_reset(err);
-  if (!cs_reset_variable(cs, parent, err))
+  rc = cs_reset_variable(cs, parent, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -474,7 +494,8 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   char *value = "alpha";
 
   mutt_buffer_reset(err);
-  if (!cs_str_string_set(cs, name, value, err))
+  int rc = cs_str_string_set(cs, name, value, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -486,7 +507,8 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   }
 
   mutt_buffer_reset(err);
-  if (!cs_str_native_set(cs, name, SORT_THREADS, err))
+  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
   }

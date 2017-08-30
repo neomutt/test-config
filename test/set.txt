@@ -1,4 +1,4 @@
----- configset_test ----------------------------------------
+---- set_test ----------------------------------------------
 Expected error
 Variable 'Apple' has an invalid type 2
 Expected error

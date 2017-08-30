@@ -5,7 +5,6 @@
 #include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
-#include "test/configset.h"
 #include "test/initial.h"
 #include "test/magic.h"
 #include "test/mbtable.h"
@@ -13,6 +12,7 @@
 #include "test/path.h"
 #include "test/quad.h"
 #include "test/regex.h"
+#include "test/set.h"
 #include "test/sort.h"
 #include "test/string.h"
 #include "test/synonym.h"
@@ -25,11 +25,12 @@ struct Test
   const char *name;
   test_fn function;
 } test[] = {
-  { "configset", configset_test },
+  { "set",       set_test       },
   { "account",   account_test   },
+  { "initial",   initial_test   },
+  { "synonym",   synonym_test   },
   { "address",   address_test   },
   { "bool",      bool_test      },
-  { "initial",   initial_test   },
   { "magic",     magic_test     },
   { "mbtable",   mbtable_test   },
   { "number",    number_test    },
@@ -38,7 +39,6 @@ struct Test
   { "regex",     regex_test     },
   { "sort",      sort_test      },
   { "string",    string_test    },
-  { "synonym",   synonym_test   },
   { NULL },
 };
 // clang-format on

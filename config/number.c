@@ -8,79 +8,88 @@
 #include "set.h"
 #include "types.h"
 
-static bool number_string_set(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, const char *value,
-                              struct Buffer *err)
+static int number_string_set(const struct ConfigSet *cs, void *var,
+                             const struct VariableDef *vdef, const char *value,
+                             struct Buffer *err)
 {
   if (!cs || !var || !vdef || !value)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = 0;
   if (mutt_atoi(value, &num) < 0)
   {
     mutt_buffer_printf(err, "Invalid number: %s", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
   if ((num < SHRT_MIN) || (num > SHRT_MAX))
   {
     mutt_buffer_printf(err, "Number is too big: %s", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, (intptr_t) num, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, (intptr_t) num, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = num;
-  return true;
+  return CSR_SUCCESS;
 }
 
-static bool number_string_get(void *var, const struct VariableDef *vdef, struct Buffer *result)
-{
-  if (!var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
-
-  mutt_buffer_printf(result, "%d", *(short *) var);
-  return true;
-}
-
-static bool number_native_set(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, intptr_t value,
-                              struct Buffer *err)
+static int number_string_get(const struct ConfigSet *cs, void *var,
+                             const struct VariableDef *vdef, struct Buffer *result)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  mutt_buffer_printf(result, "%d", *(short *) var);
+  return CSR_SUCCESS;
+}
+
+static int number_native_set(const struct ConfigSet *cs, void *var,
+                             const struct VariableDef *vdef, intptr_t value,
+                             struct Buffer *err)
+{
+  if (!cs || !var || !vdef)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if ((value < SHRT_MIN) || (value > SHRT_MAX))
   {
     mutt_buffer_printf(err, "Invalid number: %ld", value);
-    return false;
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator && !vdef->validator(cs, vdef, value, err))
-    return false;
+  int result = CSR_SUCCESS;
+  if (vdef->validator)
+    result = vdef->validator(cs, vdef, value, err);
+
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+    return result | CSR_INV_VALIDATOR;
 
   *(short *) var = value;
-  return true;
+  return CSR_SUCCESS;
 }
 
 static intptr_t number_native_get(const struct ConfigSet *cs, void *var,
                                   const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
 }
 
-static bool number_reset(const struct ConfigSet *cs, void *var,
-                         const struct VariableDef *vdef, struct Buffer *err)
+static int number_reset(const struct ConfigSet *cs, void *var,
+                        const struct VariableDef *vdef, struct Buffer *err)
 {
   if (!cs || !var || !vdef)
-    return false; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   *(short *) var = vdef->initial;
-  return true;
+  return CSR_SUCCESS;
 }
 
 void number_init(struct ConfigSet *cs)

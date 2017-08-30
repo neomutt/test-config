@@ -1,4 +1,5 @@
 #include "config.h"
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -46,7 +47,8 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   const char *value = "pudding";
 
   mutt_buffer_reset(err);
-  if (!cs_str_string_set(cs, name, value, err))
+  int rc = cs_str_string_set(cs, name, value, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;
@@ -68,7 +70,8 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   const char *name = "Damson";
 
   mutt_buffer_reset(err);
-  if (!cs_str_string_get(cs, name, err))
+  int rc = cs_str_string_get(cs, name, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -86,7 +89,8 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   char *value = "tree";
 
   mutt_buffer_reset(err);
-  if (!cs_str_native_set(cs, name, (intptr_t) value, err))
+  int rc = cs_str_native_set(cs, name, (intptr_t) value, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;
@@ -107,7 +111,8 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   const char *name = "Hawthorn";
 
-  if (!cs_str_string_set(cs, name, "tree", err))
+  int rc = cs_str_string_set(cs, name, "tree", err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
     return false;
 
   mutt_buffer_reset(err);
@@ -130,12 +135,14 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   mutt_buffer_reset(err);
 
   printf("Initial: %s = '%s'\n", name, NONULL(VarIlama));
-  if (!cs_str_string_set(cs, name, "hello", err))
+  int rc = cs_str_string_set(cs, name, "hello", err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
     return false;
   printf("Set: %s = '%s'\n", name, VarIlama);
 
   mutt_buffer_reset(err);
-  if (!cs_reset_variable(cs, name, err))
+  rc = cs_reset_variable(cs, name, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;

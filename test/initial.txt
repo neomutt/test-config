@@ -4,9 +4,11 @@ string Cherry =
 string Banana = 
 string Apple = apple
 ---- test_set_initial --------------------------------------
+Config item was defined with an initial value
 Expected error: 
 Event: Banana has been reset to 'split'
 Event: Cherry has been reset to 'blossom'
+Config item has already had its initial value set
 Expected error: 
 Apple = apple
 Banana = split

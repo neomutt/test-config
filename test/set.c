@@ -19,7 +19,7 @@ static struct VariableDef Vars[] = {
 };
 // clang-format on
 
-bool configset_test(void)
+bool set_test(void)
 {
   log_line(__func__);
 
@@ -30,6 +30,8 @@ bool configset_test(void)
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_create(30);
+  if (!cs)
+    return false;
 
   cs_add_listener(cs, log_listener);
   cs_remove_listener(cs, log_listener);
@@ -37,6 +39,7 @@ bool configset_test(void)
   const struct ConfigSetType cst_dummy = {
     "dummy", NULL, NULL, NULL, NULL, NULL, NULL,
   };
+
   if (!cs_register_type(cs, DT_STRING, &cst_dummy))
   {
     printf("Expected error\n");
@@ -48,7 +51,7 @@ bool configset_test(void)
   }
 
   bool_init(cs);
-  bool_init(cs);
+  bool_init(cs); /* second one should fail */
 
   if (!cs_register_variables(cs, Vars))
   {
@@ -60,9 +63,11 @@ bool configset_test(void)
     return false;
   }
 
-  if (!cs_str_string_set(cs, "Unknown", "hello", &err))
+  const char *name = "Unknown";
+  int result = cs_str_string_set(cs, name, "hello", &err);
+  if ((result & CSR_RESULT_MASK) == CSR_ERR_UNKNOWN)
   {
-    printf("Expected error: %s\n", err.data);
+    printf("Expected error: Unknown var '%s'\n", name);
   }
   else
   {

@@ -41,12 +41,12 @@
  * @param ...   Arguments to be formatted
  *
  * This stub function ignores the logging level and outputs all information to
- * stderr.
+ * stdout.
  */
 void mutt_debug(int level, const char *fmt, ...)
 {
   va_list ap;
   va_start(ap, fmt);
-  vfprintf(stderr, fmt, ap);
+  vfprintf(stdout, fmt, ap);
   va_end(ap);
 }
