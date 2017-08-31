@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "account.h"
 #include "inheritance.h"
+#include "lib/buffer.h"
 #include "lib/debug.h"
 #include "lib/hash.h"
 #include "lib/memory.h"
@@ -63,14 +64,21 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
     return; /* LCOV_EXCL_LINE */
 
   char child[128];
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = safe_calloc(1, STRING);
+  err.dsize = STRING;
 
   for (int i = 0; i < (*ac)->num_vars; i++)
   {
     snprintf(child, sizeof(child), "%s:%s", (*ac)->name, (*ac)->var_names[i]);
-    if (cs_reset_variable(cs, child, NULL) != CSR_SUCCESS) //XXX replace NULL with a Buffer
-      mutt_debug(1, "reset failed for %s\n", child);
+    mutt_buffer_reset(&err);
+    int result = cs_reset_variable(cs, child, &err);
+    if (CSR_RESULT(result) != CSR_SUCCESS)
+      mutt_debug(1, "reset failed for %s: %s\n", child, err.data);
   }
 
+  FREE(&err.data);
   FREE(&(*ac)->name);
   FREE(&(*ac)->vars);
   FREE(ac);

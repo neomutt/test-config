@@ -4,7 +4,7 @@ magic Damson = mbox
 magic Cherry = mbox
 magic Fig = mbox
 magic Elderberry = mbox
-magic Ilama: ERROR: Variable has an invalid value
+magic Ilama = mbox
 magic Kumquat = mbox
 magic Banana = MH
 magic Apple = mbox
@@ -32,7 +32,8 @@ Damson = 1, mbox
 Damson = 2, MMDF
 Damson = 3, MH
 Damson = 4, Maildir
-Expected error: Variable has an invalid value
+Expect error for next test
+Variable has an invalid value: 5
 ---- test_basic_native_set ---------------------------------
 Event: Elderberry has been set to 'Maildir'
 Elderberry = 4, set to '4'

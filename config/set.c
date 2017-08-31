@@ -140,13 +140,22 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
   if (!cs || !fn)
     return;
 
-  //XXX check for dupes
+  // check for dupes
+  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  {
+    if (cs->listeners[i] == fn)
+    {
+      mutt_debug(1, "Listener was already registered\n");
+      return;
+    }
+  }
+
   for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (!cs->listeners[i])
     {
       cs->listeners[i] = fn;
-      break;
+      return;
     }
   }
 }
@@ -164,7 +173,7 @@ void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
       return;
     }
   }
-  //XXX mutt_debug
+  mutt_debug(1, "Listener wasn't registered\n");
 }
 
 void cs_free(struct ConfigSet **cs)

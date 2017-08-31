@@ -63,6 +63,7 @@ clean:
 distclean: clean
 	$(RM) tags
 	$(RM) *.gc?? */*.gc??
+	$(RM) lcov.info lcov
 
 force:
 

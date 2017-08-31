@@ -130,12 +130,9 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   *((unsigned char *) &VarDamson) = 3;
   mutt_buffer_reset(err);
+  printf("Expect error for next test\n");
   rc = cs_str_string_get(cs, name, err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
-  {
-    printf("Expected error: %s\n", err->data);
-  }
-  else
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;

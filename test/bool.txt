@@ -42,7 +42,8 @@ Expected error:
 ---- test_basic_string_get ---------------------------------
 Damson = 0, no
 Damson = 1, yes
-Expected error: Variable has an invalid value
+Expect error for next test
+Variable has an invalid value: 3
 ---- test_basic_native_set ---------------------------------
 Event: Elderberry has been set to 'yes'
 Elderberry = 1, set to '1'

@@ -35,7 +35,7 @@ static struct VariableDef Vars[] = {
   { "Fig",        DT_MAGIC, &VarFig,        1, NULL              }, /* test_basic_native_get */
   { "Guava",      DT_MAGIC, &VarGuava,      1, NULL              }, /* test_reset */
   { "Hawthorn",   DT_MAGIC, &VarHawthorn,   1, validator_succeed }, /* test_validator */
-  { "Ilama",      DT_MAGIC, &VarIlama,      0, validator_warn    },
+  { "Ilama",      DT_MAGIC, &VarIlama,      1, validator_warn    },
   { "Jackfruit",  DT_MAGIC, &VarJackfruit,  1, validator_fail    },
   { "Kumquat",    DT_MAGIC, &VarKumquat,    1, NULL              }, /* test_inherit */
   { NULL },
@@ -123,12 +123,9 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   VarDamson = 5;
   mutt_buffer_reset(err);
+  printf("Expect error for next test\n");
   rc = cs_str_string_get(cs, name, err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
-  {
-    printf("Expected error: %s\n", err->data);
-  }
-  else
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;

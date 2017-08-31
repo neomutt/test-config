@@ -34,7 +34,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var,
   {
     r = safe_calloc(1, sizeof(*r));
     r->pattern = safe_strdup(value);
-    r->regex = NULL; //XXX regenerate r->regex
+    r->regex = NULL; // regenerate r->regex
   }
 
   if (vdef->validator)
@@ -131,7 +131,7 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   struct Regex *r = safe_calloc(1, sizeof(*r));
 
   r->pattern = safe_strdup((char *) vdef->initial);
-  r->regex = NULL; //XXX regenerate r->regex
+  r->regex = NULL; // regenerate r->regex
 
   *(struct Regex **) var = r;
 

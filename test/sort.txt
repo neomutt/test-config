@@ -12,11 +12,11 @@ sort Banana = size
 sort Apple = date
 sort Guava = date
 sort Mango = date
-sort Quince: ERROR: Invalid sort type: 144
 sort Hawthorn = flagged
 sort Jackfruit = date
 sort Nectarine = date
 sort Papaya = date
+Expect error for next test
 ---- test_initial_values_values ----------------------------
 Apple = 1
 Banana = 2
@@ -144,7 +144,8 @@ Expected error:
 ---- test_basic_string_get ---------------------------------
 Ilama = 3, subject
 Ilama = 6, threads
-Expected error: Variable has an invalid value
+Expect error for next test
+Variable has an invalid value: 0/-1
 ---- test_basic_native_set ---------------------------------
 Event: Cherry has been set to 'date'
 Cherry = 1, set by 'date'
@@ -282,5 +283,7 @@ Event: Papaya has been reset to 'date'
          Papaya = 1
    fruit:Papaya = 1
 ---- test_sort_type ----------------------------------------
-Expected error: Invalid sort type: 144
-Expected error: Invalid sort type: 144
+Expect error for next test
+Invalid sort type: 144
+Expect error for next test
+Invalid sort type: 144

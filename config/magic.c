@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "lib/buffer.h"
+#include "lib/debug.h"
 #include "lib/memory.h"
 #include "lib/string2.h"
 #include "set.h"
@@ -55,7 +56,7 @@ static int magic_string_get(const struct ConfigSet *cs, void *var,
   unsigned int index = *(short *) var;
   if ((index < 1) || (index >= mutt_array_size(magic_values)))
   {
-    mutt_buffer_printf(result, "Variable has an invalid value");
+    mutt_debug(1, "Variable has an invalid value: %d\n", index);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 

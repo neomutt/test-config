@@ -5,6 +5,7 @@
 #include <string.h>
 #include "sort.h"
 #include "lib/buffer.h"
+#include "lib/debug.h"
 #include "lib/mapping.h"
 #include "lib/string2.h"
 #include "set.h"
@@ -126,9 +127,8 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
       id = find_id(SortSidebarMethods, value);
       break;
     default:
-      //XXX CODE error
-      mutt_buffer_printf(err, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
-      return CSR_ERR_INVALID | CSR_INV_TYPE;
+      mutt_debug(1, "Invalid sort type: %ld\n", vdef->type & DT_SUBTYPE_MASK);
+      return CSR_ERR_CODE;
       break;
   }
 
@@ -181,15 +181,14 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
       str = find_string(SortSidebarMethods, sort);
       break;
     default:
-      //XXX CODE error
-      mutt_buffer_printf(result, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
-      return CSR_ERR_INVALID | CSR_INV_TYPE;
+      mutt_debug(1, "Invalid sort type: %ld\n", vdef->type & DT_SUBTYPE_MASK);
+      return CSR_ERR_CODE;
       break;
   }
 
   if (!str)
   {
-    mutt_buffer_printf(result, "Variable has an invalid value");
+    mutt_debug(1, "Variable has an invalid value: %d/%d\n", vdef->type & DT_SUBTYPE_MASK, sort);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
@@ -227,9 +226,8 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
       str = find_string(SortSidebarMethods, value);
       break;
     default:
-      //XXX CODE error
-      mutt_buffer_printf(err, "Invalid sort type: %ld", vdef->type & DT_SUBTYPE_MASK);
-      return CSR_ERR_INVALID | CSR_INV_TYPE;
+      mutt_debug(1, "Invalid sort type: %ld\n", vdef->type & DT_SUBTYPE_MASK);
+      return CSR_ERR_CODE;
       break;
   }
 
