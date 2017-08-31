@@ -1,6 +1,6 @@
 /**
  * @file
- * Structure for managing a table of multibyte characters
+ * Type representing a multibyte character table
  *
  * @authors
  * Copyright (C) 2017 Richard Russon <rich@flatcap.org>

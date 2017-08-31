@@ -1,6 +1,6 @@
 /**
  * @file
- * Representation of an email address
+ * Type representing an email address
  *
  * @authors
  * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
