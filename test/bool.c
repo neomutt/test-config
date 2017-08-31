@@ -23,6 +23,7 @@ static bool VarGuava;
 static bool VarHawthorn;
 static bool VarIlama;
 static bool VarJackfruit;
+static bool VarKumquat;
 
 // clang-format off
 static struct VariableDef Vars[] = {
@@ -34,8 +35,9 @@ static struct VariableDef Vars[] = {
   { "Fig",        DT_BOOL, &VarFig,        0, NULL              }, /* test_basic_native_get */
   { "Guava",      DT_BOOL, &VarGuava,      0, NULL              }, /* test_reset */
   { "Hawthorn",   DT_BOOL, &VarHawthorn,   0, validator_succeed }, /* test_validator */
-  { "Ilama",      DT_BOOL, &VarIlama,      0, validator_fail    },
-  { "Jackfruit",  DT_BOOL, &VarJackfruit,  0, NULL              }, /* test_inherit */
+  { "Ilama",      DT_BOOL, &VarIlama,      0, validator_warn    },
+  { "Jackfruit",  DT_BOOL, &VarJackfruit,  0, validator_fail    },
+  { "Kumquat",    DT_BOOL, &VarKumquat,    0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -268,9 +270,9 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarIlama = false;
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "yes", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
   {
-    printf("Expected error: %s\n", err->data);
+    printf("%s\n", err->data);
   }
   else
   {
@@ -282,6 +284,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarIlama = false;
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, 1, err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarIlama);
+
+  name = "Jackfruit";
+  VarJackfruit = false;
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "yes", err);
   if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -291,7 +308,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarIlama);
+  printf("String: %s = %d\n", name, VarJackfruit);
+
+  VarJackfruit = false;
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, 1, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarJackfruit);
 
   return true;
 }
@@ -311,7 +342,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Jackfruit";
+  const char *parent = "Kumquat";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
@@ -322,7 +353,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   struct Account *ac = ac_create(cs, account, AccountVarStr);
 
   // set parent
-  VarJackfruit = false;
+  VarKumquat = false;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, parent, "1", err);
   if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)

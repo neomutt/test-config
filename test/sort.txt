@@ -12,10 +12,11 @@ sort Banana = size
 sort Apple = date
 sort Guava = date
 sort Mango = date
+sort Quince: ERROR: Invalid sort type: 144
 sort Hawthorn = flagged
 sort Jackfruit = date
 sort Nectarine = date
-sort Papaya: ERROR: Invalid sort type: 144
+sort Papaya = date
 ---- test_initial_values_values ----------------------------
 Apple = 1
 Banana = 2
@@ -257,23 +258,29 @@ String: Mango = 6
 Event: Mango has been set to 'threads'
 validator_succeed: Mango, 6
 Native: Mango = 6
-Expected error: validator_fail: Nectarine, 6
-String: Nectarine = 3
-Expected error: validator_fail: Nectarine, 6
-Native: Nectarine = 3
+Event: Nectarine has been set to 'threads'
+validator_warn: Nectarine, 6
+String: Nectarine = 6
+Event: Nectarine has been set to 'threads'
+validator_warn: Nectarine, 6
+Native: Nectarine = 6
+Expected error: validator_fail: Olive, 6
+String: Olive = 3
+Expected error: validator_fail: Olive, 6
+Native: Olive = 3
 ---- test_inherit ------------------------------------------
-Event: Olive has been set to 'threads'
-          Olive = 6
-    fruit:Olive = 6
-Event: fruit:Olive has been set to 'score'
-          Olive = 6
-    fruit:Olive = 9
-Event: fruit:Olive has been reset to 'threads'
-          Olive = 6
-    fruit:Olive = 6
-Event: Olive has been reset to 'date'
-          Olive = 1
-    fruit:Olive = 1
+Event: Papaya has been set to 'threads'
+         Papaya = 6
+   fruit:Papaya = 6
+Event: fruit:Papaya has been set to 'score'
+         Papaya = 6
+   fruit:Papaya = 9
+Event: fruit:Papaya has been reset to 'threads'
+         Papaya = 6
+   fruit:Papaya = 6
+Event: Papaya has been reset to 'date'
+         Papaya = 1
+   fruit:Papaya = 1
 ---- test_sort_type ----------------------------------------
 Expected error: Invalid sort type: 144
 Expected error: Invalid sort type: 144

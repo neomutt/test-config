@@ -27,23 +27,25 @@ static struct MbTable *VarKumquat;
 static struct MbTable *VarLemon;
 static struct MbTable *VarMango;
 static struct MbTable *VarNectarine;
+static struct MbTable *VarOlive;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_MBTABLE, &VarApple,      IP "apple",   NULL              }, /* test_initial_values() */
-  { "Banana",     DT_MBTABLE, &VarBanana,     IP "banana",  NULL              },
-  { "Cherry",     DT_MBTABLE, &VarCherry,     0,            NULL              }, /* test_basic_mbtable_set */
-  { "Damson",     DT_MBTABLE, &VarDamson,     IP "damson",  NULL              },
-  { "Elderberry", DT_MBTABLE, &VarElderberry, 0,            NULL              }, /* test_basic_mbtable_get */
-  { "Fig",        DT_MBTABLE, &VarFig,        IP "fig",     NULL              },
-  { "Guava",      DT_MBTABLE, &VarGuava,      0,            NULL              },
-  { "Hawthorn",   DT_MBTABLE, &VarHawthorn,   0,            NULL              }, /* test_basic_native_set */
-  { "Ilama",      DT_MBTABLE, &VarIlama,      IP "ilama",   NULL              },
-  { "Jackfruit",  DT_MBTABLE, &VarJackfruit,  0,            NULL              }, /* test_basic_native_get */
-  { "Kumquat",    DT_MBTABLE, &VarKumquat,    IP "kumquat", NULL              }, /* test_reset */
-  { "Lemon",      DT_MBTABLE, &VarLemon,      IP "lemon",   validator_succeed }, /* test_validator */
-  { "Mango",      DT_MBTABLE, &VarMango,      IP "mango",   validator_fail    },
-  { "Nectarine",  DT_MBTABLE, &VarNectarine,  0,            NULL              }, /* test_inherit */
+  { "Apple",      DT_MBTABLE, &VarApple,      IP "apple",     NULL              }, /* test_initial_values() */
+  { "Banana",     DT_MBTABLE, &VarBanana,     IP "banana",    NULL              },
+  { "Cherry",     DT_MBTABLE, &VarCherry,     0,              NULL              }, /* test_basic_mbtable_set */
+  { "Damson",     DT_MBTABLE, &VarDamson,     IP "damson",    NULL              },
+  { "Elderberry", DT_MBTABLE, &VarElderberry, 0,              NULL              }, /* test_basic_mbtable_get */
+  { "Fig",        DT_MBTABLE, &VarFig,        IP "fig",       NULL              },
+  { "Guava",      DT_MBTABLE, &VarGuava,      0,              NULL              },
+  { "Hawthorn",   DT_MBTABLE, &VarHawthorn,   0,              NULL              }, /* test_basic_native_set */
+  { "Ilama",      DT_MBTABLE, &VarIlama,      IP "ilama",     NULL              },
+  { "Jackfruit",  DT_MBTABLE, &VarJackfruit,  0,              NULL              }, /* test_basic_native_get */
+  { "Kumquat",    DT_MBTABLE, &VarKumquat,    IP "kumquat",   NULL              }, /* test_reset */
+  { "Lemon",      DT_MBTABLE, &VarLemon,      IP "lemon",     validator_succeed }, /* test_validator */
+  { "Mango",      DT_MBTABLE, &VarMango,      IP "mango",     validator_warn    },
+  { "Nectarine",  DT_MBTABLE, &VarNectarine,  IP "nectarine", validator_fail    },
+  { "Olive",      DT_MBTABLE, &VarOlive,      0,              NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -264,10 +266,10 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Lemon";
-  char *mb = NULL;
   struct MbTable *t = mbtable_create("world");
 
+  char *name = "Lemon";
+  char *mb = NULL;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello", err);
   if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
@@ -299,6 +301,35 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Mango";
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "hello", err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  mb = VarMango ? VarMango->orig_str : NULL;
+  printf("MbTable: %s = %s\n", name, NONULL(mb));
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, IP t, err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  mb = VarMango ? VarMango->orig_str : NULL;
+  printf("Native: %s = %s\n", name, NONULL(mb));
+
+  name = "Nectarine";
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "hello", err);
   if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -308,7 +339,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  mb = VarMango ? VarMango->orig_str : NULL;
+  mb = VarNectarine ? VarNectarine->orig_str : NULL;
   printf("MbTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
@@ -322,7 +353,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  mb = VarMango ? VarMango->orig_str : NULL;
+  mb = VarNectarine ? VarNectarine->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
 
   mbtable_free(&t);
@@ -350,7 +381,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Nectarine";
+  const char *parent = "Olive";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 

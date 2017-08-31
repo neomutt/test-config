@@ -4,7 +4,8 @@ magic Damson = mbox
 magic Cherry = mbox
 magic Fig = mbox
 magic Elderberry = mbox
-magic Ilama = mbox
+magic Ilama: ERROR: Variable has an invalid value
+magic Kumquat = mbox
 magic Banana = MH
 magic Apple = mbox
 magic Guava = mbox
@@ -49,20 +50,26 @@ String: Hawthorn = 4
 Event: Hawthorn has been set to 'Maildir'
 validator_succeed: Hawthorn, 4
 Native: Hawthorn = 4
-Expected error: validator_fail: Ilama, 4
-String: Ilama = 1
-Expected error: validator_fail: Ilama, 4
-Native: Ilama = 1
+Event: Ilama has been set to 'Maildir'
+validator_warn: Ilama, 4
+String: Ilama = 4
+Event: Ilama has been set to 'Maildir'
+validator_warn: Ilama, 4
+Native: Ilama = 4
+Expected error: validator_fail: Jackfruit, 4
+String: Jackfruit = 1
+Expected error: validator_fail: Jackfruit, 4
+Native: Jackfruit = 1
 ---- test_inherit ------------------------------------------
-Event: Jackfruit has been set to 'Maildir'
-      Jackfruit = 4
-fruit:Jackfruit = 4
-Event: fruit:Jackfruit has been set to 'MH'
-      Jackfruit = 4
-fruit:Jackfruit = 3
-Event: fruit:Jackfruit has been reset to 'Maildir'
-      Jackfruit = 4
-fruit:Jackfruit = 4
-Event: Jackfruit has been reset to 'mbox'
-      Jackfruit = 1
-fruit:Jackfruit = 1
+Event: Kumquat has been set to 'Maildir'
+        Kumquat = 4
+  fruit:Kumquat = 4
+Event: fruit:Kumquat has been set to 'MH'
+        Kumquat = 4
+  fruit:Kumquat = 3
+Event: fruit:Kumquat has been reset to 'Maildir'
+        Kumquat = 4
+  fruit:Kumquat = 4
+Event: Kumquat has been reset to 'mbox'
+        Kumquat = 1
+  fruit:Kumquat = 1

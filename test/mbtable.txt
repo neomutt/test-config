@@ -3,6 +3,7 @@
 mbtable Damson = damson
 mbtable Lemon = lemon
 mbtable Cherry = 
+mbtable Olive = 
 mbtable Fig = fig
 mbtable Elderberry = 
 mbtable Ilama = ilama
@@ -13,7 +14,7 @@ mbtable Guava =
 mbtable Mango = mango
 mbtable Hawthorn = 
 mbtable Jackfruit = 
-mbtable Nectarine = 
+mbtable Nectarine = nectarine
 ---- test_initial_values_values ----------------------------
 Apple = apple
 Banana = banana
@@ -56,20 +57,26 @@ MbTable: Lemon = hello
 Event: Lemon has been set to 'world'
 validator_succeed: Lemon, (ptr)
 Native: Lemon = world
-Expected error: validator_fail: Mango, (ptr)
-MbTable: Mango = mango
-Expected error: validator_fail: Mango, (ptr)
-Native: Mango = mango
+Event: Mango has been set to 'hello'
+validator_warn: Mango, (ptr)
+MbTable: Mango = hello
+Event: Mango has been set to 'world'
+validator_warn: Mango, (ptr)
+Native: Mango = world
+Expected error: validator_fail: Nectarine, (ptr)
+MbTable: Nectarine = nectarine
+Expected error: validator_fail: Nectarine, (ptr)
+Native: Nectarine = nectarine
 ---- test_inherit ------------------------------------------
-Event: Nectarine has been set to 'hello'
-      Nectarine = hello
-fruit:Nectarine = hello
-Event: fruit:Nectarine has been set to 'world'
-      Nectarine = hello
-fruit:Nectarine = world
-Event: fruit:Nectarine has been reset to 'hello'
-      Nectarine = hello
-fruit:Nectarine = hello
-Event: Nectarine has been reset to ''
-      Nectarine = 
-fruit:Nectarine = 
+Event: Olive has been set to 'hello'
+          Olive = hello
+    fruit:Olive = hello
+Event: fruit:Olive has been set to 'world'
+          Olive = hello
+    fruit:Olive = world
+Event: fruit:Olive has been reset to 'hello'
+          Olive = hello
+    fruit:Olive = hello
+Event: Olive has been reset to ''
+          Olive = 
+    fruit:Olive = 

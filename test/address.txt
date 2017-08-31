@@ -3,6 +3,7 @@
 address Damson = damson@example.com
 address Lemon = lemon@example.com
 address Cherry = 
+address Olive = 
 address Fig = fig@example.com
 address Elderberry = 
 address Ilama = ilama@example.com
@@ -13,7 +14,7 @@ address Guava =
 address Mango = mango@example.com
 address Hawthorn = 
 address Jackfruit = 
-address Nectarine = 
+address Nectarine = nectarine@example.com
 ---- test_initial_values_values ----------------------------
 Apple = apple@example.com
 Banana = banana@example.com
@@ -56,20 +57,26 @@ Address: Lemon = hello@example.com
 Event: Lemon has been set to 'world@example.com'
 validator_succeed: Lemon, (ptr)
 Native: Lemon = world@example.com
-Expected error: validator_fail: Mango, (ptr)
-Address: Mango = mango@example.com
-Expected error: validator_fail: Mango, (ptr)
-Native: Mango = mango@example.com
+Event: Mango has been set to 'hello@example.com'
+validator_warn: Mango, (ptr)
+Address: Mango = hello@example.com
+Event: Mango has been set to 'world@example.com'
+validator_warn: Mango, (ptr)
+Native: Mango = world@example.com
+Expected error: validator_fail: Nectarine, (ptr)
+Address: Nectarine = nectarine@example.com
+Expected error: validator_fail: Nectarine, (ptr)
+Native: Nectarine = nectarine@example.com
 ---- test_inherit ------------------------------------------
-Event: Nectarine has been set to 'hello@example.com'
-      Nectarine = hello@example.com
-fruit:Nectarine = hello@example.com
-Event: fruit:Nectarine has been set to 'world@example.com'
-      Nectarine = hello@example.com
-fruit:Nectarine = world@example.com
-Event: fruit:Nectarine has been reset to 'hello@example.com'
-      Nectarine = hello@example.com
-fruit:Nectarine = hello@example.com
-Event: Nectarine has been reset to ''
-      Nectarine = 
-fruit:Nectarine = 
+Event: Olive has been set to 'hello@example.com'
+          Olive = hello@example.com
+    fruit:Olive = hello@example.com
+Event: fruit:Olive has been set to 'world@example.com'
+          Olive = hello@example.com
+    fruit:Olive = world@example.com
+Event: fruit:Olive has been reset to 'hello@example.com'
+          Olive = hello@example.com
+    fruit:Olive = hello@example.com
+Event: Olive has been reset to ''
+          Olive = 
+    fruit:Olive = 

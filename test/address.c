@@ -13,7 +13,6 @@
 #include "mutt_options.h"
 #include "test/common.h"
 
-
 static struct Address *VarApple;
 static struct Address *VarBanana;
 static struct Address *VarCherry;
@@ -28,23 +27,25 @@ static struct Address *VarKumquat;
 static struct Address *VarLemon;
 static struct Address *VarMango;
 static struct Address *VarNectarine;
+static struct Address *VarOlive;
 
 // clang-format off
 static struct VariableDef Vars[] = {
-  { "Apple",      DT_ADDRESS, &VarApple,      IP "apple@example.com",   NULL              }, /* test_initial_values() */
-  { "Banana",     DT_ADDRESS, &VarBanana,     IP "banana@example.com",  NULL              },
-  { "Cherry",     DT_ADDRESS, &VarCherry,     0,                        NULL              }, /* test_basic_address_set */
-  { "Damson",     DT_ADDRESS, &VarDamson,     IP "damson@example.com",  NULL              },
-  { "Elderberry", DT_ADDRESS, &VarElderberry, 0,                        NULL              }, /* test_basic_address_get */
-  { "Fig",        DT_ADDRESS, &VarFig,        IP "fig@example.com",     NULL              },
-  { "Guava",      DT_ADDRESS, &VarGuava,      0,                        NULL              },
-  { "Hawthorn",   DT_ADDRESS, &VarHawthorn,   0,                        NULL              }, /* test_basic_native_set */
-  { "Ilama",      DT_ADDRESS, &VarIlama,      IP "ilama@example.com",   NULL              },
-  { "Jackfruit",  DT_ADDRESS, &VarJackfruit,  0,                        NULL              }, /* test_basic_native_get */
-  { "Kumquat",    DT_ADDRESS, &VarKumquat,    IP "kumquat@example.com", NULL              }, /* test_reset */
-  { "Lemon",      DT_ADDRESS, &VarLemon,      IP "lemon@example.com",   validator_succeed }, /* test_validator */
-  { "Mango",      DT_ADDRESS, &VarMango,      IP "mango@example.com",   validator_fail    },
-  { "Nectarine",  DT_ADDRESS, &VarNectarine,  0,                        NULL              }, /* test_inherit */
+  { "Apple",      DT_ADDRESS, &VarApple,      IP "apple@example.com",     NULL              }, /* test_initial_values() */
+  { "Banana",     DT_ADDRESS, &VarBanana,     IP "banana@example.com",    NULL              },
+  { "Cherry",     DT_ADDRESS, &VarCherry,     0,                          NULL              }, /* test_basic_address_set */
+  { "Damson",     DT_ADDRESS, &VarDamson,     IP "damson@example.com",    NULL              },
+  { "Elderberry", DT_ADDRESS, &VarElderberry, 0,                          NULL              }, /* test_basic_address_get */
+  { "Fig",        DT_ADDRESS, &VarFig,        IP "fig@example.com",       NULL              },
+  { "Guava",      DT_ADDRESS, &VarGuava,      0,                          NULL              },
+  { "Hawthorn",   DT_ADDRESS, &VarHawthorn,   0,                          NULL              }, /* test_basic_native_set */
+  { "Ilama",      DT_ADDRESS, &VarIlama,      IP "ilama@example.com",     NULL              },
+  { "Jackfruit",  DT_ADDRESS, &VarJackfruit,  0,                          NULL              }, /* test_basic_native_get */
+  { "Kumquat",    DT_ADDRESS, &VarKumquat,    IP "kumquat@example.com",   NULL              }, /* test_reset */
+  { "Lemon",      DT_ADDRESS, &VarLemon,      IP "lemon@example.com",     validator_succeed }, /* test_validator */
+  { "Mango",      DT_ADDRESS, &VarMango,      IP "mango@example.com",     validator_warn    },
+  { "Nectarine",  DT_ADDRESS, &VarNectarine,  IP "nectarine@example.com", validator_fail    },
+  { "Olive",      DT_ADDRESS, &VarOlive,      0,                          NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -267,11 +268,11 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Lemon";
   char *addr = NULL;
   struct Address *a = address_create("world@example.com");
   bool result = false;
 
+  char *name = "Lemon";
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello@example.com", err);
   if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
@@ -303,6 +304,35 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Mango";
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "hello@example.com", err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  addr = VarMango ? VarMango->personal : NULL;
+  printf("Address: %s = %s\n", name, NONULL(addr));
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, IP a, err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  addr = VarMango ? VarMango->personal : NULL;
+  printf("Native: %s = %s\n", name, NONULL(addr));
+
+  name = "Nectarine";
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "hello@example.com", err);
   if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -312,7 +342,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarMango ? VarMango->personal : NULL;
+  addr = VarNectarine ? VarNectarine->personal : NULL;
   printf("Address: %s = %s\n", name, NONULL(addr));
 
   mutt_buffer_reset(err);
@@ -326,7 +356,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarMango ? VarMango->personal : NULL;
+  addr = VarNectarine ? VarNectarine->personal : NULL;
   printf("Native: %s = %s\n", name, NONULL(addr));
 
   result = true;
@@ -356,7 +386,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Nectarine";
+  const char *parent = "Olive";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 

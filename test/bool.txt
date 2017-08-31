@@ -5,6 +5,7 @@ boolean Cherry = no
 boolean Fig = no
 boolean Elderberry = no
 boolean Ilama = no
+boolean Kumquat = no
 boolean Banana = yes
 boolean Apple = no
 boolean Guava = no
@@ -59,20 +60,26 @@ String: Hawthorn = 1
 Event: Hawthorn has been set to 'yes'
 validator_succeed: Hawthorn, 1
 Native: Hawthorn = 1
-Expected error: validator_fail: Ilama, 1
-String: Ilama = 0
-Expected error: validator_fail: Ilama, 1
-Native: Ilama = 0
+Event: Ilama has been set to 'yes'
+validator_warn: Ilama, 1
+String: Ilama = 1
+Event: Ilama has been set to 'yes'
+validator_warn: Ilama, 1
+Native: Ilama = 1
+Expected error: validator_fail: Jackfruit, 1
+String: Jackfruit = 0
+Expected error: validator_fail: Jackfruit, 1
+Native: Jackfruit = 0
 ---- test_inherit ------------------------------------------
-Event: Jackfruit has been set to 'yes'
-      Jackfruit = 1
-fruit:Jackfruit = 1
-Event: fruit:Jackfruit has been set to 'no'
-      Jackfruit = 1
-fruit:Jackfruit = 0
-Event: fruit:Jackfruit has been reset to 'yes'
-      Jackfruit = 1
-fruit:Jackfruit = 1
-Event: Jackfruit has been reset to 'no'
-      Jackfruit = 0
-fruit:Jackfruit = 0
+Event: Kumquat has been set to 'yes'
+        Kumquat = 1
+  fruit:Kumquat = 1
+Event: fruit:Kumquat has been set to 'no'
+        Kumquat = 1
+  fruit:Kumquat = 0
+Event: fruit:Kumquat has been reset to 'yes'
+        Kumquat = 1
+  fruit:Kumquat = 1
+Event: Kumquat has been reset to 'no'
+        Kumquat = 0
+  fruit:Kumquat = 0

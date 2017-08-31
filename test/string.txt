@@ -3,6 +3,7 @@
 string Damson = damson
 string Lemon = lemon
 string Cherry = 
+string Olive = 
 string Fig = fig
 string Elderberry = 
 string Ilama = ilama
@@ -13,7 +14,7 @@ string Guava =
 string Mango = mango
 string Hawthorn = 
 string Jackfruit = 
-string Nectarine = 
+string Nectarine = nectarine
 ---- test_initial_values_values ----------------------------
 Apple = apple
 Banana = banana
@@ -72,20 +73,26 @@ String: Lemon = hello
 Event: Lemon has been set to 'world'
 validator_succeed: Lemon, (ptr)
 Native: Lemon = world
-Expected error: validator_fail: Mango, (ptr)
-String: Mango = mango
-Expected error: validator_fail: Mango, (ptr)
-Native: Mango = mango
+Event: Mango has been set to 'hello'
+validator_warn: Mango, (ptr)
+String: Mango = hello
+Event: Mango has been set to 'world'
+validator_warn: Mango, (ptr)
+Native: Mango = world
+Expected error: validator_fail: Nectarine, (ptr)
+String: Nectarine = nectarine
+Expected error: validator_fail: Nectarine, (ptr)
+Native: Nectarine = nectarine
 ---- test_inherit ------------------------------------------
-Event: Nectarine has been set to 'hello'
-      Nectarine = hello
-fruit:Nectarine = hello
-Event: fruit:Nectarine has been set to 'world'
-      Nectarine = hello
-fruit:Nectarine = world
-Event: fruit:Nectarine has been reset to 'hello'
-      Nectarine = hello
-fruit:Nectarine = hello
-Event: Nectarine has been reset to ''
-      Nectarine = (null)
-fruit:Nectarine = (null)
+Event: Olive has been set to 'hello'
+          Olive = hello
+    fruit:Olive = hello
+Event: fruit:Olive has been set to 'world'
+          Olive = hello
+    fruit:Olive = world
+Event: fruit:Olive has been reset to 'hello'
+          Olive = hello
+    fruit:Olive = hello
+Event: Olive has been reset to ''
+          Olive = (null)
+    fruit:Olive = (null)

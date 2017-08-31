@@ -31,6 +31,7 @@ static short VarMango;
 static short VarNectarine;
 static short VarOlive;
 static short VarPapaya;
+static short VarQuince;
 
 // clang-format off
 static struct VariableDef Vars[] = {
@@ -47,9 +48,10 @@ static struct VariableDef Vars[] = {
   { "Kumquat",    DT_SORT,                           &VarKumquat,     1,  NULL              }, /* test_basic_native_get */
   { "Lemon",      DT_SORT,                           &VarLemon,       1,  NULL              }, /* test_reset */
   { "Mango",      DT_SORT,                           &VarMango,       1,  validator_succeed }, /* test_validator */
-  { "Nectarine",  DT_SORT,                           &VarNectarine,   1,  validator_fail    },
-  { "Olive",      DT_SORT,                           &VarOlive,       1,  NULL              }, /* test_inherit */
-  { "Papaya",     DT_SORT|DT_SORT_AUX|DT_SORT_ALIAS, &VarPapaya,      0,  NULL              }, /* test_sort_type */
+  { "Nectarine",  DT_SORT,                           &VarNectarine,   1,  validator_warn    },
+  { "Olive",      DT_SORT,                           &VarOlive,       1,  validator_fail    },
+  { "Papaya",     DT_SORT,                           &VarPapaya,      1,  NULL              }, /* test_inherit */
+  { "Quince",     DT_SORT|DT_SORT_AUX|DT_SORT_ALIAS, &VarQuince,      0,  NULL              }, /* test_sort_type */
   { NULL },
 };
 // clang-format on
@@ -386,9 +388,9 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarNectarine = SORT_SUBJECT;
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "threads", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
   {
-    printf("Expected error: %s\n", err->data);
+    printf("%s\n", err->data);
   }
   else
   {
@@ -400,6 +402,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarNectarine = SORT_SUBJECT;
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarNectarine);
+
+  name = "Olive";
+  VarOlive = SORT_SUBJECT;
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "threads", err);
   if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -409,7 +426,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarNectarine);
+  printf("String: %s = %d\n", name, VarOlive);
+
+  VarOlive = SORT_SUBJECT;
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarOlive);
 
   return true;
 }
@@ -429,7 +460,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Olive";
+  const char *parent = "Papaya";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
@@ -440,7 +471,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   struct Account *ac = ac_create(cs, account, AccountVarStr);
 
   // set parent
-  VarOlive = SORT_SUBJECT;
+  VarPapaya = SORT_SUBJECT;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, parent, "threads", err);
   if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
@@ -490,7 +521,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *name = "Papaya";
+  const char *name = "Quince";
   char *value = "alpha";
 
   mutt_buffer_reset(err);
@@ -501,7 +532,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   }
   else
   {
-    printf("%s = %d, set by '%s'\n", name, VarPapaya, value);
+    printf("%s = %d, set by '%s'\n", name, VarQuince, value);
     printf("This test should have failed\n");
     return false;
   }
@@ -514,7 +545,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   }
   else
   {
-    printf("%s = %d, set by %d\n", name, VarPapaya, SORT_THREADS);
+    printf("%s = %d, set by %d\n", name, VarQuince, SORT_THREADS);
     printf("This test should have failed\n");
     return false;
   }
