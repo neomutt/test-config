@@ -73,7 +73,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   {
     mutt_buffer_reset(err);
     rc = cs_str_string_set(cs, name, valid[i], err);
-    if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
     {
       printf("%s\n", err->data);
       return false;
@@ -93,7 +93,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   {
     mutt_buffer_reset(err);
     rc = cs_str_string_set(cs, name, valid[i], err);
-    if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
     {
       printf("%s\n", err->data);
       return false;
@@ -119,7 +119,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   int rc = cs_str_string_get(cs, name, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -130,7 +130,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   name = "Fig";
   mutt_buffer_reset(err);
   rc = cs_str_string_get(cs, name, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -140,12 +140,12 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   name = "Guava";
   rc = cs_str_string_set(cs, name, "guava", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
   mutt_buffer_reset(err);
   rc = cs_str_string_get(cs, name, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -166,7 +166,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   int rc = cs_str_native_set(cs, name, (intptr_t) t, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;
@@ -183,7 +183,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   name = "Ilama";
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, 0, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;
@@ -207,7 +207,7 @@ static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
   char *name = "Jackfruit";
 
   int rc = cs_str_string_set(cs, name, "jackfruit", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
   mutt_buffer_reset(err);
@@ -238,13 +238,13 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   mb = VarKumquat ? VarKumquat->orig_str : NULL;
   printf("Initial: %s = '%s'\n", name, NONULL(mb));
   int rc = cs_str_string_set(cs, name, "hello", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
   mb = VarKumquat ? VarKumquat->orig_str : NULL;
   printf("Set: %s = '%s'\n", name, NONULL(mb));
 
   rc = cs_reset_variable(cs, name, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
     return false;
@@ -272,7 +272,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   char *mb = NULL;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello", err);
-  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
   }
@@ -286,7 +286,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, IP t, err);
-  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
   }
@@ -301,7 +301,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Mango";
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "hello", err);
-  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
   }
@@ -315,7 +315,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, IP t, err);
-  if ((rc & CSR_RESULT_MASK) == CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
   }
@@ -330,7 +330,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Nectarine";
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "hello", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -344,7 +344,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, IP t, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
   }
@@ -394,7 +394,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   // set parent
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, parent, "hello", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -404,7 +404,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   // set child
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, child, "world", err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -414,7 +414,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   // reset child
   mutt_buffer_reset(err);
   rc = cs_reset_variable(cs, child, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;
@@ -424,7 +424,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   // reset parent
   mutt_buffer_reset(err);
   rc = cs_reset_variable(cs, parent, err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
     goto bti_out;

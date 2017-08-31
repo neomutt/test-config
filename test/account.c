@@ -72,14 +72,14 @@ bool account_test(void)
   unsigned int index = 0;
   mutt_buffer_reset(&err);
   int rc = ac_set_value(ac, index, 42, &err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err.data);
   }
 
   mutt_buffer_reset(&err);
   rc = ac_set_value(ac, 99, 42, &err);
-  if ((rc & CSR_RESULT_MASK) == CSR_ERR_UNKNOWN)
+  if (CSR_RESULT(rc) == CSR_ERR_UNKNOWN)
   {
     printf("Expected error: %s\n", err.data);
   }
@@ -91,7 +91,7 @@ bool account_test(void)
 
   mutt_buffer_reset(&err);
   rc = ac_get_value(ac, index, &err);
-  if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err.data);
   }

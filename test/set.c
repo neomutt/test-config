@@ -65,7 +65,7 @@ bool set_test(void)
 
   const char *name = "Unknown";
   int result = cs_str_string_set(cs, name, "hello", &err);
-  if ((result & CSR_RESULT_MASK) == CSR_ERR_UNKNOWN)
+  if (CSR_RESULT(result) == CSR_ERR_UNKNOWN)
   {
     printf("Expected error: Unknown var '%s'\n", name);
   }

@@ -289,7 +289,7 @@ int cs_str_string_set(const struct ConfigSet *cs, const char *name,
     return CSR_ERR_CODE;
 
   int result = cst->string_set(cs, var, vdef, value, err);
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
+  if (CSR_RESULT(result) != CSR_SUCCESS)
     return result;
 
   if (he->type & DT_INHERITED)
@@ -465,7 +465,7 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
   }
 
   int result = cst->native_set(cs, var, vdef, value, err);
-  if ((result & CSR_RESULT_MASK) == CSR_SUCCESS)
+  if (CSR_RESULT(result) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
       he->type = DT_INHERITED | vdef->type;
@@ -554,7 +554,7 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
   }
 
   int result = cst->native_set(cs, var, vdef, value, err);
-  if ((result & CSR_RESULT_MASK) == CSR_SUCCESS)
+  if (CSR_RESULT(result) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
       he->type = DT_INHERITED | vdef->type;

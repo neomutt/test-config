@@ -40,7 +40,7 @@ static int string_string_set(const struct ConfigSet *cs, void *var,
   {
     int rv = vdef->validator(cs, vdef, (intptr_t) value, err);
 
-    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+    if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
   }
 
@@ -86,7 +86,7 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
   {
     int rv = vdef->validator(cs, vdef, value, err);
 
-    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+    if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
   }
 

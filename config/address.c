@@ -44,7 +44,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
   {
     int rv = vdef->validator(cs, vdef, (intptr_t) addr, err);
 
-    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+    if (CSR_RESULT(rv) != CSR_SUCCESS)
     {
       address_destroy(cs, &addr, vdef);
       return rv | CSR_INV_VALIDATOR;
@@ -97,7 +97,7 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
   {
     int rv = vdef->validator(cs, vdef, value, err);
 
-    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+    if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
   }
 

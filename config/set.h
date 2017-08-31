@@ -27,7 +27,9 @@ enum ConfigEvent
 /* Flags for CSR_INVALID */
 #define CSR_INV_TYPE      (1 << 4) /**< Value is not valid for the type */
 #define CSR_INV_VALIDATOR (1 << 5) /**< Value was rejected by the validator */
+
 #define CSR_RESULT_MASK 0x0F
+#define CSR_RESULT(x) ((x) & CSR_RESULT_MASK)
 
 enum CsListenerAction
 {
