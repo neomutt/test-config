@@ -72,7 +72,7 @@ struct ConfigSetType
 struct ConfigSet
 {
   struct Hash *hash;
-  struct ConfigSetType types[16];
+  struct ConfigSetType types[14];
   cs_listener listeners[4];
 };
 

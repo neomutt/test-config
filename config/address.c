@@ -132,7 +132,11 @@ static int address_reset(const struct ConfigSet *cs, void *var,
 
   address_destroy(cs, var, vdef);
 
-  struct Address *a = address_create((char *) vdef->initial);
+  struct Address *a = NULL;
+  const char *initial = (const char *) vdef->initial;
+
+  if (initial)
+    a = address_create(initial);
 
   int result = CSR_SUCCESS;
   if (!a)

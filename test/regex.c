@@ -163,20 +163,21 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   struct Regex *r = regex_create("hello.*");
   char *name = "Hawthorn";
   char *regex = NULL;
+  bool result = false;
 
   mutt_buffer_reset(err);
   int rc = cs_str_native_set(cs, name, (intptr_t) r, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
-    return false;
+    goto tns_out;
   }
 
   regex = VarHawthorn ? VarHawthorn->pattern : NULL;
   if (mutt_strcmp(regex, r->pattern) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
-    return false;
+    goto tns_out;
   }
   printf("%s = '%s', set by '%s'\n", name, NONULL(regex), r->pattern);
 
@@ -186,19 +187,21 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
-    return false;
+    goto tns_out;
   }
 
   if (VarIlama != NULL)
   {
     printf("Value of %s wasn't changed\n", name);
-    return false;
+    goto tns_out;
   }
   regex = VarIlama ? VarIlama->pattern : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(regex));
 
+  result = true;
+tns_out:
   regex_free(&r);
-  return true;
+  return result;
 }
 
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
@@ -268,6 +271,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 
   char *regex = NULL;
   struct Regex *r = regex_create("world.*");
+  bool result = false;
 
   char *name = "Lemon";
   mutt_buffer_reset(err);
@@ -279,7 +283,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   regex = VarLemon ? VarLemon->pattern : NULL;
   printf("Regex: %s = %s\n", name, NONULL(regex));
@@ -293,7 +297,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   regex = VarLemon ? VarLemon->pattern : NULL;
   printf("Native: %s = %s\n", name, NONULL(regex));
@@ -308,7 +312,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   regex = VarMango ? VarMango->pattern : NULL;
   printf("Regex: %s = %s\n", name, NONULL(regex));
@@ -322,7 +326,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   regex = VarMango ? VarMango->pattern : NULL;
   printf("Native: %s = %s\n", name, NONULL(regex));
@@ -337,7 +341,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   regex = VarNectarine ? VarNectarine->pattern : NULL;
   printf("Regex: %s = %s\n", name, NONULL(regex));
@@ -351,13 +355,15 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   regex = VarNectarine ? VarNectarine->pattern : NULL;
   printf("Native: %s = %s\n", name, NONULL(regex));
 
+  result = true;
+tv_out:
   regex_free(&r);
-  return true;
+  return result;
 }
 
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
@@ -397,7 +403,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -407,7 +413,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -417,7 +423,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -427,12 +433,12 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
   result = true;
-bti_out:
+ti_out:
   ac_free(cs, &ac);
   return result;
 }

@@ -128,17 +128,21 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
 
   regex_destroy(cs, var, vdef);
 
-  struct Regex *r = safe_calloc(1, sizeof(*r));
+  struct Regex *r = NULL;
+  const char *initial = (const char *) vdef->initial;
 
-  r->pattern = safe_strdup((char *) vdef->initial);
-  r->regex = NULL; // regenerate r->regex
-
-  *(struct Regex **) var = r;
+  if (initial)
+  {
+    r = safe_calloc(1, sizeof(*r));
+    r->pattern = safe_strdup((char *) vdef->initial);
+    r->regex = NULL; // regenerate r->regex
+  }
 
   int result = CSR_SUCCESS;
   if (!r)
     result |= CSR_SUC_EMPTY;
 
+  *(struct Regex **) var = r;
   return result;
 }
 

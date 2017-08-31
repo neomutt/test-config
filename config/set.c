@@ -138,7 +138,7 @@ struct ConfigSet *cs_create(int size)
 void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 {
   if (!cs || !fn)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   // check for dupes
   for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
@@ -163,7 +163,7 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
 {
   if (!cs || !fn)
-    return;
+    return; /* LCOV_EXCL_LINE */
 
   for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
   {
@@ -437,6 +437,11 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
   i->name = safe_strdup(name);
 
   struct HashElem *he = hash_typed_insert(cs->hash, i->name, DT_INHERITED, i);
+  if (!he)
+  {
+    FREE(&i->name);
+    FREE(&i);
+  }
 
   FREE(&err.data);
   return he;

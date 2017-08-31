@@ -45,7 +45,7 @@ bool account_test(void)
 
   cs_add_listener(cs, log_listener);
 
-  const char *account = "fruit";
+  const char *account = "damaged";
   const char *BrokenVarStr[] = {
     "Pineapple", NULL,
   };
@@ -57,10 +57,25 @@ bool account_test(void)
   }
   else
   {
+    ac_free(cs, &ac);
     printf("This test should have failed\n");
     return false;
   }
 
+  const char *AccountVarStr2[] = {
+    "Apple", "Apple", NULL,
+  };
+
+  printf("Expect error for next test\n");
+  ac = ac_create(cs, account, AccountVarStr2);
+  if (ac)
+  {
+    ac_free(cs, &ac);
+    printf("This test should have failed\n");
+    return false;
+  }
+
+  account = "fruit";
   const char *AccountVarStr[] = {
     "Apple", "Cherry", NULL,
   };
@@ -98,6 +113,88 @@ bool account_test(void)
   else
   {
     printf("%s = %s\n", AccountVarStr[index], err.data);
+  }
+
+  index++;
+  mutt_buffer_reset(&err);
+  rc = ac_get_value(ac, index, &err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err.data);
+  }
+  else
+  {
+    printf("%s = %s\n", AccountVarStr[index], err.data);
+  }
+
+  mutt_buffer_reset(&err);
+  rc = ac_get_value(ac, 99, &err);
+  if (CSR_RESULT(rc) == CSR_ERR_UNKNOWN)
+  {
+    printf("Expected error\n");
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
+
+  const char *name = "fruit:Apple";
+  mutt_buffer_reset(&err);
+  int result = cs_str_string_get(cs, name, &err);
+  if (CSR_RESULT(result) == CSR_SUCCESS)
+  {
+    printf("%s = '%s'\n", name, err.data);
+  }
+  else
+  {
+    printf("%s\n", err.data);
+    return false;
+  }
+
+  mutt_buffer_reset(&err);
+  result = cs_str_native_set(cs, name, 42, &err);
+  if (CSR_RESULT(result) == CSR_SUCCESS)
+  {
+    printf("Set %s\n", name);
+  }
+  else
+  {
+    printf("%s\n", err.data);
+    return false;
+  }
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+    return false;
+
+  mutt_buffer_reset(&err);
+  result = cs_set_initial_value(cs, he, "42", &err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error\n");
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
+
+  name = "Apple";
+  he = cs_get_elem(cs, name);
+  if (!he)
+    return false;
+
+  mutt_buffer_reset(&err);
+  result = cs_he_native_set(cs, he, 42, &err);
+  if (CSR_RESULT(result) == CSR_SUCCESS)
+  {
+    printf("Set %s\n", name);
+  }
+  else
+  {
+    printf("%s\n", err.data);
+    return false;
   }
 
   ac_free(cs, &ac);

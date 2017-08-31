@@ -19,10 +19,11 @@ static struct MbTable *mbtable_parse(const char *s)
   mbstate_t mbstate;
   char *d = NULL;
 
-  t = safe_calloc(1, sizeof(struct MbTable));
   slen = mutt_strlen(s);
   if (!slen)
-    return t;
+    return NULL;
+
+  t = safe_calloc(1, sizeof(struct MbTable));
 
   t->orig_str = safe_strdup(s);
   /* This could be more space efficient.  However, being used on tiny
@@ -71,6 +72,9 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
 {
   if (!cs || !var || !vdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  if (value && (value[0] == '\0'))
+    value = NULL;
 
   struct MbTable *table = mbtable_parse(value);
 
@@ -165,7 +169,11 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
 
   mbtable_destroy(cs, var, vdef);
 
-  struct MbTable *table = mbtable_parse((const char *) vdef->initial);
+  struct MbTable *table = NULL;
+  const char *initial = (const char *) vdef->initial;
+
+  if (initial)
+    table = mbtable_parse(initial);
 
   int result = CSR_SUCCESS;
   if (!table)

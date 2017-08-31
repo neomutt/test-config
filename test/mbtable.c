@@ -64,7 +64,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", NULL };
+  const char *valid[] = { "hello", "world", "", NULL };
   char *name = "Cherry";
   char *mb = NULL;
 
@@ -99,13 +99,13 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (mutt_strcmp(VarDamson->orig_str, valid[i]) != 0)
+    const char *orig_str = VarDamson ? VarDamson->orig_str : NULL;
+    if (mutt_strcmp(orig_str, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = '%s', set by '%s'\n", name, NONULL(VarDamson->orig_str),
-           NONULL(valid[i]));
+    printf("%s = '%s', set by '%s'\n", name, NONULL(orig_str), NONULL(valid[i]));
   }
 
   return true;
@@ -163,20 +163,21 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   struct MbTable *t = mbtable_create("hello");
   char *name = "Hawthorn";
   char *mb = NULL;
+  bool result = false;
 
   mutt_buffer_reset(err);
   int rc = cs_str_native_set(cs, name, (intptr_t) t, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
-    return false;
+    goto tns_out;
   }
 
   mb = VarHawthorn ? VarHawthorn->orig_str : NULL;
   if (mutt_strcmp(mb, t->orig_str) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
-    return false;
+    goto tns_out;
   }
   printf("%s = '%s', set by '%s'\n", name, NONULL(mb), t->orig_str);
 
@@ -186,19 +187,21 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
-    return false;
+    goto tns_out;
   }
 
   if (VarIlama != NULL)
   {
     printf("Value of %s wasn't changed\n", name);
-    return false;
+    goto tns_out;
   }
   mb = VarIlama ? VarIlama->orig_str : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(mb));
 
+  result = true;
+tns_out:
   mbtable_free(&t);
-  return true;
+  return result;
 }
 
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
@@ -267,6 +270,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   struct MbTable *t = mbtable_create("world");
+  bool result = false;
 
   char *name = "Lemon";
   char *mb = NULL;
@@ -279,7 +283,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   mb = VarLemon ? VarLemon->orig_str : NULL;
   printf("MbTable: %s = %s\n", name, NONULL(mb));
@@ -293,7 +297,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   mb = VarLemon ? VarLemon->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
@@ -308,7 +312,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   mb = VarMango ? VarMango->orig_str : NULL;
   printf("MbTable: %s = %s\n", name, NONULL(mb));
@@ -322,7 +326,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   mb = VarMango ? VarMango->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
@@ -337,7 +341,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   mb = VarNectarine ? VarNectarine->orig_str : NULL;
   printf("MbTable: %s = %s\n", name, NONULL(mb));
@@ -351,13 +355,15 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   else
   {
     printf("%s\n", err->data);
-    return false;
+    goto tv_out;
   }
   mb = VarNectarine ? VarNectarine->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
 
+  result = true;
+tv_out:
   mbtable_free(&t);
-  return true;
+  return result;
 }
 
 static void dump_native(struct ConfigSet *cs, const char *parent, const char *child)
@@ -397,7 +403,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -407,7 +413,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -417,7 +423,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -427,12 +433,12 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
   result = true;
-bti_out:
+ti_out:
   ac_free(cs, &ac);
   return result;
 }

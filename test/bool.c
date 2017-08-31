@@ -356,7 +356,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -366,7 +366,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -376,7 +376,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
@@ -386,12 +386,12 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
-    goto bti_out;
+    goto ti_out;
   }
   dump_native(cs, parent, child);
 
   result = true;
-bti_out:
+ti_out:
   ac_free(cs, &ac);
   return result;
 }
