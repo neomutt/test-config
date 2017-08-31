@@ -16,11 +16,10 @@ sort Hawthorn = flagged
 sort Jackfruit = date
 sort Nectarine = date
 sort Papaya = date
-Expect error for next test
 ---- test_initial_values_values ----------------------------
 Apple = 1
 Banana = 2
----- test_basic_string_set ---------------------------------
+---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'date'
 Cherry = 1, set by 'date'
 Event: Cherry has been set to 'date'
@@ -141,12 +140,12 @@ Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
 Expected error: 
----- test_basic_string_get ---------------------------------
+---- test_string_get ---------------------------------------
 Ilama = 3, subject
 Ilama = 6, threads
 Expect error for next test
 Variable has an invalid value: 0/-1
----- test_basic_native_set ---------------------------------
+---- test_native_set ---------------------------------------
 Event: Cherry has been set to 'date'
 Cherry = 1, set by 'date'
 Event: Cherry has been set to 'date'
@@ -247,7 +246,7 @@ Event: Jackfruit has been set to 'threads'
 Jackfruit = 6, set to '6'
 Expected error: Invalid sort type: -1
 Expected error: Invalid sort type: 999
----- test_basic_native_get ---------------------------------
+---- test_native_get ---------------------------------------
 Kumquat = 6
 ---- test_reset --------------------------------------------
 Event: Lemon has been reset to 'date'

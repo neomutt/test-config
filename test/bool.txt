@@ -14,7 +14,7 @@ boolean Jackfruit = no
 ---- test_initial_values_values ----------------------------
 Apple = 0
 Banana = 1
----- test_basic_string_set ---------------------------------
+---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'no'
 Cherry = 0, set by 'no'
 Event: Cherry has been set to 'yes'
@@ -39,17 +39,17 @@ Expected error: Invalid boolean value: nope
 Expected error: Invalid boolean value: ye
 Expected error: Invalid boolean value: 
 Expected error: 
----- test_basic_string_get ---------------------------------
+---- test_string_get ---------------------------------------
 Damson = 0, no
 Damson = 1, yes
 Expect error for next test
 Variable has an invalid value: 3
----- test_basic_native_set ---------------------------------
+---- test_native_set ---------------------------------------
 Event: Elderberry has been set to 'yes'
 Elderberry = 1, set to '1'
 Expected error: Invalid boolean value: -1
 Expected error: Invalid boolean value: 2
----- test_basic_native_get ---------------------------------
+---- test_native_get ---------------------------------------
 Fig = 1
 ---- test_reset --------------------------------------------
 Event: Guava has been reset to 'no'

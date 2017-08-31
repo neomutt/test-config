@@ -29,10 +29,10 @@ static short VarKumquat;
 static struct VariableDef Vars[] = {
   { "Apple",      DT_MAGIC, &VarApple,      1, NULL              }, /* test_initial_values() */
   { "Banana",     DT_MAGIC, &VarBanana,     3, NULL              },
-  { "Cherry",     DT_MAGIC, &VarCherry,     1, NULL              }, /* test_basic_string_set */
-  { "Damson",     DT_MAGIC, &VarDamson,     1, NULL              }, /* test_basic_string_get */
-  { "Elderberry", DT_MAGIC, &VarElderberry, 1, NULL              }, /* test_basic_native_set */
-  { "Fig",        DT_MAGIC, &VarFig,        1, NULL              }, /* test_basic_native_get */
+  { "Cherry",     DT_MAGIC, &VarCherry,     1, NULL              }, /* test_string_set */
+  { "Damson",     DT_MAGIC, &VarDamson,     1, NULL              }, /* test_string_get */
+  { "Elderberry", DT_MAGIC, &VarElderberry, 1, NULL              }, /* test_native_set */
+  { "Fig",        DT_MAGIC, &VarFig,        1, NULL              }, /* test_native_get */
   { "Guava",      DT_MAGIC, &VarGuava,      1, NULL              }, /* test_reset */
   { "Hawthorn",   DT_MAGIC, &VarHawthorn,   1, validator_succeed }, /* test_validator */
   { "Ilama",      DT_MAGIC, &VarIlama,      1, validator_warn    },
@@ -50,7 +50,7 @@ static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
   return ((VarApple == 1) && (VarBanana == 3));
 }
 
-static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -100,7 +100,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Damson";
@@ -134,7 +134,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Elderberry";
@@ -178,7 +178,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Fig";
@@ -409,13 +409,13 @@ bool magic_test(void)
 
   if (!test_initial_values_values(cs, &err))
     return false;
-  if (!test_basic_string_set(cs, &err))
+  if (!test_string_set(cs, &err))
     return false;
-  if (!test_basic_string_get(cs, &err))
+  if (!test_string_get(cs, &err))
     return false;
-  if (!test_basic_native_set(cs, &err))
+  if (!test_native_set(cs, &err))
     return false;
-  if (!test_basic_native_get(cs, &err))
+  if (!test_native_get(cs, &err))
     return false;
   if (!test_reset(cs, &err))
     return false;

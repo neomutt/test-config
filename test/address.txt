@@ -18,7 +18,7 @@ address Nectarine = nectarine@example.com
 ---- test_initial_values_values ----------------------------
 Apple = apple@example.com
 Banana = banana@example.com
----- test_basic_string_set ---------------------------------
+---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'hello@example.com'
 Cherry = 'hello@example.com', set by 'hello@example.com'
 Event: Cherry has been set to 'world@example.com'
@@ -31,17 +31,17 @@ Event: Damson has been set to 'world@example.com'
 Damson = 'world@example.com', set by 'world@example.com'
 Event: Damson has been set to ''
 Damson = '', set by ''
----- test_basic_string_get ---------------------------------
+---- test_string_get ---------------------------------------
 Elderberry = '', ''
 Fig = 'fig@example.com', 'fig@example.com'
 Event: Guava has been set to 'guava'
 Guava = 'guava', 'guava'
----- test_basic_native_set ---------------------------------
+---- test_native_set ---------------------------------------
 Event: Hawthorn has been set to 'hello@example.com'
 Hawthorn = 'hello@example.com', set by 'hello@example.com'
 Event: Ilama has been set to ''
 Ilama = '', set by NULL
----- test_basic_native_get ---------------------------------
+---- test_native_get ---------------------------------------
 Event: Jackfruit has been set to 'jackfruit@example.com'
 Jackfruit = 'jackfruit@example.com', 'jackfruit@example.com'
 ---- test_reset --------------------------------------------

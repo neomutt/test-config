@@ -14,7 +14,7 @@ number Jackfruit = 0
 ---- test_initial_values_values ----------------------------
 Apple = -42
 Banana = 99
----- test_basic_string_set ---------------------------------
+---- test_string_set ---------------------------------------
 Event: Cherry has been set to '-123'
 Cherry = -123, set by '-123'
 Event: Cherry has been set to '0'
@@ -28,15 +28,15 @@ Expected error: Invalid number: junk
 Expected error: Invalid number: 
 Expected error: Invalid number: (null)
 
----- test_basic_string_get ---------------------------------
+---- test_string_get ---------------------------------------
 Damson = 123, 123
 Damson = -789, -789
----- test_basic_native_set ---------------------------------
+---- test_native_set ---------------------------------------
 Event: Elderberry has been set to '12345'
 Elderberry = 12345, set to '12345'
 Expected error: Invalid number: -32769
 Expected error: Invalid number: 32768
----- test_basic_native_get ---------------------------------
+---- test_native_get ---------------------------------------
 Fig = 3456
 ---- test_reset --------------------------------------------
 Event: Guava has been reset to '99'

@@ -14,7 +14,7 @@ magic Jackfruit = mbox
 ---- test_initial_values_values ----------------------------
 Apple = 1
 Banana = 3
----- test_basic_string_set ---------------------------------
+---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'mbox'
 Cherry = 1, set by 'mbox'
 Event: Cherry has been set to 'MMDF'
@@ -27,19 +27,19 @@ Expected error: Invalid magic value: mbox2
 Expected error: Invalid magic value: mm
 Expected error: Invalid magic value: 
 Expected error: 
----- test_basic_string_get ---------------------------------
+---- test_string_get ---------------------------------------
 Damson = 1, mbox
 Damson = 2, MMDF
 Damson = 3, MH
 Damson = 4, Maildir
 Expect error for next test
 Variable has an invalid value: 5
----- test_basic_native_set ---------------------------------
+---- test_native_set ---------------------------------------
 Event: Elderberry has been set to 'Maildir'
 Elderberry = 4, set to '4'
 Expected error: Invalid magic value: 0
 Expected error: Invalid magic value: 5
----- test_basic_native_get ---------------------------------
+---- test_native_get ---------------------------------------
 Fig = 4
 ---- test_reset --------------------------------------------
 Event: Guava has been reset to 'mbox'

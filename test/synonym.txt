@@ -7,15 +7,15 @@ string Elderberry =
 string Ilama = iguana
 string Apple = 
 string Guava = 
----- test_basic_string_set ---------------------------------
+---- test_string_set ---------------------------------------
 Event: Apple has been set to 'pudding'
 Banana = pudding, set by 'pudding'
----- test_basic_string_get ---------------------------------
+---- test_string_get ---------------------------------------
 Damson = 'cherry', 'cherry'
----- test_basic_native_set ---------------------------------
+---- test_native_set ---------------------------------------
 Event: Elderberry has been set to 'tree'
 Fig = tree, set by 'tree'
----- test_basic_native_get ---------------------------------
+---- test_native_get ---------------------------------------
 Event: Guava has been set to 'tree'
 Hawthorn = 'tree', 'tree'
 ---- test_reset --------------------------------------------

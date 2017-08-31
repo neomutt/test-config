@@ -39,7 +39,7 @@ static struct VariableDef Vars2[] = {
 };
 // clang-format on
 
-static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -64,7 +64,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Damson";
@@ -81,7 +81,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -106,7 +106,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Hawthorn";
@@ -189,13 +189,13 @@ bool synonym_test(void)
 
   set_list(cs);
 
-  if (!test_basic_string_set(cs, &err))
+  if (!test_string_set(cs, &err))
     return false;
-  if (!test_basic_string_get(cs, &err))
+  if (!test_string_get(cs, &err))
     return false;
-  if (!test_basic_native_set(cs, &err))
+  if (!test_native_set(cs, &err))
     return false;
-  if (!test_basic_native_get(cs, &err))
+  if (!test_native_get(cs, &err))
     return false;
   if (!test_reset(cs, &err))
     return false;

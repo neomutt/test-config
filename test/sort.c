@@ -37,15 +37,15 @@ static short VarQuince;
 static struct VariableDef Vars[] = {
   { "Apple",      DT_SORT,                 &VarApple,       1, NULL              }, /* test_initial_values() */
   { "Banana",     DT_SORT,                 &VarBanana,      2, NULL              },
-  { "Cherry",     DT_SORT|DT_SORT_INDEX,   &VarCherry,      1, NULL              }, /* test_basic_string_set */
+  { "Cherry",     DT_SORT|DT_SORT_INDEX,   &VarCherry,      1, NULL              }, /* test_string_set */
   { "Damson",     DT_SORT|DT_SORT_ALIAS,   &VarDamson,     11, NULL              },
   { "Elderberry", DT_SORT|DT_SORT_BROWSER, &VarElderberry,  1, NULL              },
   { "Fig",        DT_SORT|DT_SORT_KEYS,    &VarFig,         1, NULL              },
   { "Guava",      DT_SORT|DT_SORT_AUX,     &VarGuava,       1, NULL              },
   { "Hawthorn",   DT_SORT|DT_SORT_SIDEBAR, &VarHawthorn,   17, NULL              },
-  { "Ilama",      DT_SORT,                 &VarIlama,       1, NULL              }, /* test_basic_string_get */
-  { "Jackfruit",  DT_SORT,                 &VarJackfruit,   1, NULL              }, /* test_basic_native_set */
-  { "Kumquat",    DT_SORT,                 &VarKumquat,     1, NULL              }, /* test_basic_native_get */
+  { "Ilama",      DT_SORT,                 &VarIlama,       1, NULL              }, /* test_string_get */
+  { "Jackfruit",  DT_SORT,                 &VarJackfruit,   1, NULL              }, /* test_native_set */
+  { "Kumquat",    DT_SORT,                 &VarKumquat,     1, NULL              }, /* test_native_get */
   { "Lemon",      DT_SORT,                 &VarLemon,       1, NULL              }, /* test_reset */
   { "Mango",      DT_SORT,                 &VarMango,       1, validator_succeed }, /* test_validator */
   { "Nectarine",  DT_SORT,                 &VarNectarine,   1, validator_warn    },
@@ -143,7 +143,7 @@ static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
   return ((VarApple == 1) && (VarBanana == 2));
 }
 
-static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -198,7 +198,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Ilama";
@@ -236,7 +236,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -308,7 +308,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Kumquat";
@@ -574,13 +574,13 @@ bool sort_test(void)
 
   if (!test_initial_values_values(cs, &err))
     return false;
-  if (!test_basic_string_set(cs, &err))
+  if (!test_string_set(cs, &err))
     return false;
-  if (!test_basic_string_get(cs, &err))
+  if (!test_string_get(cs, &err))
     return false;
-  if (!test_basic_native_set(cs, &err))
+  if (!test_native_set(cs, &err))
     return false;
-  if (!test_basic_native_get(cs, &err))
+  if (!test_native_get(cs, &err))
     return false;
   if (!test_reset(cs, &err))
     return false;

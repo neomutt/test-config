@@ -33,14 +33,14 @@ static struct MbTable *VarOlive;
 static struct VariableDef Vars[] = {
   { "Apple",      DT_MBTABLE, &VarApple,      IP "apple",     NULL              }, /* test_initial_values() */
   { "Banana",     DT_MBTABLE, &VarBanana,     IP "banana",    NULL              },
-  { "Cherry",     DT_MBTABLE, &VarCherry,     0,              NULL              }, /* test_basic_mbtable_set */
+  { "Cherry",     DT_MBTABLE, &VarCherry,     0,              NULL              }, /* test_mbtable_set */
   { "Damson",     DT_MBTABLE, &VarDamson,     IP "damson",    NULL              },
-  { "Elderberry", DT_MBTABLE, &VarElderberry, 0,              NULL              }, /* test_basic_mbtable_get */
+  { "Elderberry", DT_MBTABLE, &VarElderberry, 0,              NULL              }, /* test_mbtable_get */
   { "Fig",        DT_MBTABLE, &VarFig,        IP "fig",       NULL              },
   { "Guava",      DT_MBTABLE, &VarGuava,      0,              NULL              },
-  { "Hawthorn",   DT_MBTABLE, &VarHawthorn,   0,              NULL              }, /* test_basic_native_set */
+  { "Hawthorn",   DT_MBTABLE, &VarHawthorn,   0,              NULL              }, /* test_native_set */
   { "Ilama",      DT_MBTABLE, &VarIlama,      IP "ilama",     NULL              },
-  { "Jackfruit",  DT_MBTABLE, &VarJackfruit,  0,              NULL              }, /* test_basic_native_get */
+  { "Jackfruit",  DT_MBTABLE, &VarJackfruit,  0,              NULL              }, /* test_native_get */
   { "Kumquat",    DT_MBTABLE, &VarKumquat,    IP "kumquat",   NULL              }, /* test_reset */
   { "Lemon",      DT_MBTABLE, &VarLemon,      IP "lemon",     validator_succeed }, /* test_validator */
   { "Mango",      DT_MBTABLE, &VarMango,      IP "mango",     validator_warn    },
@@ -60,7 +60,7 @@ static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
           (mutt_strcmp(VarBanana->orig_str, "banana") == 0));
 }
 
-static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -111,7 +111,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Elderberry";
@@ -156,7 +156,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -201,7 +201,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Jackfruit";
@@ -459,13 +459,13 @@ bool mbtable_test(void)
 
   if (!test_initial_values_values(cs, &err))
     return false;
-  if (!test_basic_string_set(cs, &err))
+  if (!test_string_set(cs, &err))
     return false;
-  if (!test_basic_string_get(cs, &err))
+  if (!test_string_get(cs, &err))
     return false;
-  if (!test_basic_native_set(cs, &err))
+  if (!test_native_set(cs, &err))
     return false;
-  if (!test_basic_native_get(cs, &err))
+  if (!test_native_get(cs, &err))
     return false;
   if (!test_reset(cs, &err))
     return false;

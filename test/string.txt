@@ -18,7 +18,7 @@ string Nectarine = nectarine
 ---- test_initial_values_values ----------------------------
 Apple = apple
 Banana = banana
----- test_basic_string_set ---------------------------------
+---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'hello'
 Cherry = 'hello', set by 'hello'
 Event: Cherry has been set to 'world'
@@ -35,12 +35,12 @@ Event: Damson has been set to ''
 Damson = '', set by ''
 Event: Damson has been set to ''
 Damson = '', set by ''
----- test_basic_string_get ---------------------------------
+---- test_string_get ---------------------------------------
 Elderberry = '', ''
 Fig = 'fig', 'fig'
 Event: Guava has been set to 'guava'
 Guava = 'guava', 'guava'
----- test_basic_native_set ---------------------------------
+---- test_native_set ---------------------------------------
 Event: Hawthorn has been set to 'hello'
 Hawthorn = 'hello', set by 'hello'
 Event: Hawthorn has been set to 'world'
@@ -57,7 +57,7 @@ Event: Ilama has been set to ''
 Ilama = '', set by ''
 Event: Ilama has been set to ''
 Ilama = '', set by ''
----- test_basic_native_get ---------------------------------
+---- test_native_get ---------------------------------------
 Event: Jackfruit has been set to 'jackfruit'
 Jackfruit = 'jackfruit', 'jackfruit'
 ---- test_reset --------------------------------------------

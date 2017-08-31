@@ -33,14 +33,14 @@ static char *VarOlive;
 static struct VariableDef Vars[] = {
   { "Apple",      DT_PATH, &VarApple,      IP "/apple",     NULL              }, /* test_initial_values() */
   { "Banana",     DT_PATH, &VarBanana,     IP "/banana",    NULL              },
-  { "Cherry",     DT_PATH, &VarCherry,     0,               NULL              }, /* test_basic_string_set */
+  { "Cherry",     DT_PATH, &VarCherry,     0,               NULL              }, /* test_string_set */
   { "Damson",     DT_PATH, &VarDamson,     IP "/damson",    NULL              },
-  { "Elderberry", DT_PATH, &VarElderberry, 0,               NULL              }, /* test_basic_string_get */
+  { "Elderberry", DT_PATH, &VarElderberry, 0,               NULL              }, /* test_string_get */
   { "Fig",        DT_PATH, &VarFig,        IP "/fig",       NULL              },
   { "Guava",      DT_PATH, &VarGuava,      0,               NULL              },
-  { "Hawthorn",   DT_PATH, &VarHawthorn,   0,               NULL              }, /* test_basic_native_set */
+  { "Hawthorn",   DT_PATH, &VarHawthorn,   0,               NULL              }, /* test_native_set */
   { "Ilama",      DT_PATH, &VarIlama,      IP "/ilama",     NULL              },
-  { "Jackfruit",  DT_PATH, &VarJackfruit,  0,               NULL              }, /* test_basic_native_get */
+  { "Jackfruit",  DT_PATH, &VarJackfruit,  0,               NULL              }, /* test_native_get */
   { "Kumquat",    DT_PATH, &VarKumquat,    IP "/kumquat",   NULL              }, /* test_reset */
   { "Lemon",      DT_PATH, &VarLemon,      IP "/lemon",     validator_succeed }, /* test_validator */
   { "Mango",      DT_PATH, &VarMango,      IP "/mango",     validator_warn    },
@@ -60,7 +60,7 @@ static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
           (mutt_strcmp(VarBanana, "/banana") == 0));
 }
 
-static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -108,7 +108,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   const char *name = "Elderberry";
@@ -149,7 +149,7 @@ static bool test_basic_string_get(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
@@ -197,7 +197,7 @@ static bool test_basic_native_set(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-static bool test_basic_native_get(struct ConfigSet *cs, struct Buffer *err)
+static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Jackfruit";
@@ -430,13 +430,13 @@ bool path_test(void)
 
   if (!test_initial_values_values(cs, &err))
     return false;
-  if (!test_basic_string_set(cs, &err))
+  if (!test_string_set(cs, &err))
     return false;
-  if (!test_basic_string_get(cs, &err))
+  if (!test_string_get(cs, &err))
     return false;
-  if (!test_basic_native_set(cs, &err))
+  if (!test_native_set(cs, &err))
     return false;
-  if (!test_basic_native_get(cs, &err))
+  if (!test_native_get(cs, &err))
     return false;
   if (!test_reset(cs, &err))
     return false;
