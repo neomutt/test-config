@@ -69,7 +69,7 @@ bool account_test(void)
   if (!ac)
     return false;
 
-  int index = 0;
+  unsigned int index = 0;
   mutt_buffer_reset(&err);
   int rc = ac_set_value(ac, index, 42, &err);
   if ((rc & CSR_RESULT_MASK) != CSR_SUCCESS)

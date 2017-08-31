@@ -1,4 +1,5 @@
 #include "config.h"
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -288,7 +289,7 @@ int cs_str_string_set(const struct ConfigSet *cs, const char *name,
     return CSR_ERR_CODE;
 
   int result = cst->string_set(cs, var, vdef, value, err);
-  if (result != CSR_SUCCESS)
+  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
     return result;
 
   if (he->type & DT_INHERITED)
@@ -464,7 +465,7 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
   }
 
   int result = cst->native_set(cs, var, vdef, value, err);
-  if (result == CSR_SUCCESS)
+  if ((result & CSR_RESULT_MASK) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
       he->type = DT_INHERITED | vdef->type;
@@ -553,7 +554,7 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
   }
 
   int result = cst->native_set(cs, var, vdef, value, err);
-  if (result == CSR_SUCCESS)
+  if ((result & CSR_RESULT_MASK) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
       he->type = DT_INHERITED | vdef->type;
@@ -566,13 +567,13 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
 intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
-    return -1; /* LCOV_EXCL_LINE */
+    return INT_MIN; /* LCOV_EXCL_LINE */
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
   {
     mutt_buffer_printf(err, "Unknown var '%s'", name);
-    return -1;
+    return INT_MIN;
   }
 
   struct Inheritance *i = NULL;
@@ -604,7 +605,7 @@ intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct 
   if (!cst)
   {
     mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
-    return -1;
+    return INT_MIN;
   }
 
   return cst->native_get(cs, var, vdef, err);

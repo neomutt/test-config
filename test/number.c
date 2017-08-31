@@ -57,7 +57,7 @@ static bool test_basic_string_set(struct ConfigSet *cs, struct Buffer *err)
   const char *valid[] = { "-123", "0", "456" };
   int numbers[] = { -123, 0, 456 };
   const char *invalid[] = {
-    "-32769", "32768", "junk", NULL,
+    "-32769", "32768", "junk", "", NULL,
   };
   char *name = "Cherry";
 

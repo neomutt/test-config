@@ -11,7 +11,7 @@
 
 static void path_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
 {
-  if (!var || !vdef)
+  if (!cs || !var || !vdef)
     return; /* LCOV_EXCL_LINE */
 
   /* Don't free strings from the var definition */
@@ -32,17 +32,23 @@ static int path_string_set(const struct ConfigSet *cs, void *var,
   if (value && (value[0] == '\0'))
     value = NULL;
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, (intptr_t) value, err);
+  {
+    int rv = vdef->validator(cs, vdef, (intptr_t) value, err);
 
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
-    return result | CSR_INV_VALIDATOR;
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+      return rv | CSR_INV_VALIDATOR;
+  }
 
   path_destroy(cs, var, vdef);
 
-  *(const char **) var = safe_strdup(value);
-  return CSR_SUCCESS;
+  const char *str = safe_strdup(value);
+  int result = CSR_SUCCESS;
+  if (!str)
+    result |= CSR_SUC_EMPTY;
+
+  *(const char **) var = str;
+  return result;
 }
 
 static int path_string_get(const struct ConfigSet *cs, void *var,
@@ -72,17 +78,23 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
   if (str && (str[0] == '\0'))
     value = 0;
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, value, err);
+  {
+    int rv = vdef->validator(cs, vdef, value, err);
 
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
-    return result | CSR_INV_VALIDATOR;
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+      return rv | CSR_INV_VALIDATOR;
+  }
 
   path_destroy(cs, var, vdef);
 
-  *(const char **) var = safe_strdup((const char *) value);
-  return CSR_SUCCESS;
+  str = safe_strdup((const char *) value);
+  int result = CSR_SUCCESS;
+  if (!str)
+    result |= CSR_SUC_EMPTY;
+
+  *(const char **) var = str;
+  return result;
 }
 
 static intptr_t path_native_get(const struct ConfigSet *cs, void *var,
@@ -104,8 +116,14 @@ static int path_reset(const struct ConfigSet *cs, void *var,
 
   path_destroy(cs, var, vdef);
 
-  *(const char **) var = (const char *) vdef->initial;
-  return CSR_SUCCESS;
+  const char *path = (const char *) vdef->initial;
+
+  int result = CSR_SUCCESS;
+  if (!path)
+    result |= CSR_SUC_EMPTY;
+
+  *(const char **) var = path;
+  return result;
 }
 
 void path_init(struct ConfigSet *cs)

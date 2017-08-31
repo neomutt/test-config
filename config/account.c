@@ -76,22 +76,22 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   FREE(ac);
 }
 
-int ac_set_value(const struct Account *ac, int vid, intptr_t value, struct Buffer *err)
+int ac_set_value(const struct Account *ac, unsigned int vid, intptr_t value, struct Buffer *err)
 {
   if (!ac)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-  if ((vid < 0) || (vid >= ac->num_vars))
+  if (vid >= ac->num_vars)
     return CSR_ERR_UNKNOWN;
 
   struct HashElem *he = ac->vars[vid];
   return cs_he_native_set(ac->cs, he, value, err);
 }
 
-int ac_get_value(const struct Account *ac, int vid, struct Buffer *err)
+int ac_get_value(const struct Account *ac, unsigned int vid, struct Buffer *err)
 {
   if (!ac)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-  if ((vid < 0) || (vid >= ac->num_vars))
+  if (vid >= ac->num_vars)
     return CSR_ERR_UNKNOWN;
 
   struct HashElem *he = ac->vars[vid];

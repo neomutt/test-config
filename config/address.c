@@ -13,7 +13,7 @@
 static void address_destroy(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef)
 {
-  if (!var || !vdef)
+  if (!cs || !var || !vdef)
     return; /* LCOV_EXCL_LINE */
 
   struct Address **a = (struct Address **) var;
@@ -40,20 +40,25 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
     addr->mailbox = safe_strdup("dummy1");
   }
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, (intptr_t) addr, err);
-
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
-    address_destroy(cs, &addr, vdef);
-    return result | CSR_INV_VALIDATOR;
+    int rv = vdef->validator(cs, vdef, (intptr_t) addr, err);
+
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+    {
+      address_destroy(cs, &addr, vdef);
+      return rv | CSR_INV_VALIDATOR;
+    }
   }
 
   address_destroy(cs, var, vdef);
 
+  int result = CSR_SUCCESS;
+  if (!addr)
+    result |= CSR_SUC_EMPTY;
+
   *(struct Address **) var = addr;
-  return CSR_SUCCESS;
+  return result;
 }
 
 static int address_string_get(const struct ConfigSet *cs, void *var,
@@ -88,17 +93,24 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !vdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, value, err);
+  {
+    int rv = vdef->validator(cs, vdef, value, err);
 
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
-    return result | CSR_INV_VALIDATOR;
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+      return rv | CSR_INV_VALIDATOR;
+  }
 
   address_free(var);
 
-  *(struct Address **) var = address_dup((struct Address *) value);
-  return CSR_SUCCESS;
+  struct Address *addr = address_dup((struct Address *) value);
+
+  int result = CSR_SUCCESS;
+  if (!addr)
+    result |= CSR_SUC_EMPTY;
+
+  *(struct Address **) var = addr;
+  return result;
 }
 
 static intptr_t address_native_get(const struct ConfigSet *cs, void *var,
@@ -122,8 +134,12 @@ static int address_reset(const struct ConfigSet *cs, void *var,
 
   struct Address *a = address_create((char *) vdef->initial);
 
+  int result = CSR_SUCCESS;
+  if (!a)
+    result |= CSR_SUC_EMPTY;
+
   *(struct Address **) var = a;
-  return CSR_SUCCESS;
+  return result;
 }
 
 void address_init(struct ConfigSet *cs)

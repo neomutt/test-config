@@ -34,12 +34,13 @@ static int quad_string_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, (intptr_t) num, err);
+  {
+    int rv = vdef->validator(cs, vdef, (intptr_t) num, err);
 
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
-    return result | CSR_INV_VALIDATOR;
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+      return rv | CSR_INV_VALIDATOR;
+  }
 
   *(short *) var = num;
   return CSR_SUCCESS;
@@ -75,12 +76,13 @@ static int quad_native_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, value, err);
+  {
+    int rv = vdef->validator(cs, vdef, value, err);
 
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
-    return result | CSR_INV_VALIDATOR;
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+      return rv | CSR_INV_VALIDATOR;
+  }
 
   *(short *) var = value;
   return CSR_SUCCESS;

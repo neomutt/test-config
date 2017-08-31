@@ -55,7 +55,7 @@ static struct MbTable *mbtable_parse(const char *s)
 static void mbtable_destroy(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef)
 {
-  if (!var || !vdef)
+  if (!cs || !var || !vdef)
     return; /* LCOV_EXCL_LINE */
 
   struct MbTable **m = (struct MbTable **) var;
@@ -74,20 +74,25 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
 
   struct MbTable *table = mbtable_parse(value);
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, (intptr_t) table, err);
-
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
-    mbtable_free(&table);
-    return result | CSR_INV_VALIDATOR;
+    int rv = vdef->validator(cs, vdef, (intptr_t) table, err);
+
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+    {
+      mbtable_free(&table);
+      return rv | CSR_INV_VALIDATOR;
+    }
   }
 
   mbtable_destroy(cs, var, vdef);
 
+  int result = CSR_SUCCESS;
+  if (!table)
+    result |= CSR_SUC_EMPTY;
+
   *(struct MbTable **) var = table;
-  return CSR_SUCCESS;
+  return result;
 }
 
 static int mbtable_string_get(const struct ConfigSet *cs, void *var,
@@ -97,10 +102,7 @@ static int mbtable_string_get(const struct ConfigSet *cs, void *var,
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct MbTable *table = *(struct MbTable **) var;
-  if (!table)
-    return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
-
-  if (!table->orig_str)
+  if (!table || !table->orig_str)
     return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
 
   mutt_buffer_addstr(result, table->orig_str);
@@ -124,19 +126,24 @@ static int mbtable_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !vdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, value, err);
+  {
+    int rv = vdef->validator(cs, vdef, value, err);
 
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
-    return result | CSR_INV_VALIDATOR;
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+      return rv | CSR_INV_VALIDATOR;
+  }
 
   mbtable_free(var);
 
   struct MbTable *table = mbtable_dup((struct MbTable *) value);
 
+  int result = CSR_SUCCESS;
+  if (!table)
+    result |= CSR_SUC_EMPTY;
+
   *(struct MbTable **) var = table;
-  return CSR_SUCCESS;
+  return result;
 }
 
 static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
@@ -159,8 +166,10 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
   mbtable_destroy(cs, var, vdef);
 
   struct MbTable *table = mbtable_parse((const char *) vdef->initial);
+
+  int result = CSR_SUCCESS;
   if (!table)
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    result |= CSR_SUC_EMPTY;
 
   *(struct MbTable **) var = table;
   return CSR_SUCCESS;

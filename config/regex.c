@@ -12,7 +12,7 @@
 
 static void regex_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
 {
-  if (!var || !vdef)
+  if (!cs || !var || !vdef)
     return; /* LCOV_EXCL_LINE */
 
   struct Regex **r = (struct Regex **) var;
@@ -37,20 +37,25 @@ static int regex_string_set(const struct ConfigSet *cs, void *var,
     r->regex = NULL; //XXX regenerate r->regex
   }
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, (intptr_t) r, err);
-
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
   {
-    regex_free(&r);
-    return result | CSR_INV_VALIDATOR;
+    int rv = vdef->validator(cs, vdef, (intptr_t) r, err);
+
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+    {
+      regex_free(&r);
+      return rv | CSR_INV_VALIDATOR;
+    }
   }
 
   regex_destroy(cs, var, vdef);
 
+  int result = CSR_SUCCESS;
+  if (!r)
+    result |= CSR_SUC_EMPTY;
+
   *(struct Regex **) var = r;
-  return CSR_SUCCESS;
+  return result;
 }
 
 static int regex_string_get(const struct ConfigSet *cs, void *var,
@@ -61,7 +66,7 @@ static int regex_string_get(const struct ConfigSet *cs, void *var,
 
   struct Regex *r = *(struct Regex **) var;
   if (!r)
-    return CSR_ERR_CODE;
+    return CSR_SUCCESS | CSR_SUC_EMPTY;
 
   mutt_buffer_addstr(result, r->pattern);
   return CSR_SUCCESS;
@@ -84,19 +89,24 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !vdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  int result = CSR_SUCCESS;
   if (vdef->validator)
-    result = vdef->validator(cs, vdef, value, err);
+  {
+    int rv = vdef->validator(cs, vdef, value, err);
 
-  if ((result & CSR_RESULT_MASK) != CSR_SUCCESS)
-    return result | CSR_INV_VALIDATOR;
+    if ((rv & CSR_RESULT_MASK) != CSR_SUCCESS)
+      return rv | CSR_INV_VALIDATOR;
+  }
 
   regex_free(var);
 
   struct Regex *r = regex_dup((struct Regex *) value);
 
+  int result = CSR_SUCCESS;
+  if (!r)
+    result |= CSR_SUC_EMPTY;
+
   *(struct Regex **) var = r;
-  return CSR_SUCCESS;
+  return result;
 }
 
 static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
@@ -124,7 +134,12 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   r->regex = NULL; //XXX regenerate r->regex
 
   *(struct Regex **) var = r;
-  return CSR_SUCCESS;
+
+  int result = CSR_SUCCESS;
+  if (!r)
+    result |= CSR_SUC_EMPTY;
+
+  return result;
 }
 
 void regex_init(struct ConfigSet *cs)

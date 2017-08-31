@@ -25,7 +25,8 @@ Cherry = 456, set by '456'
 Expected error: Number is too big: -32769
 Expected error: Number is too big: 32768
 Expected error: Invalid number: junk
-Expected error: 
+Expected error: Invalid number: 
+Expected error: Invalid number: (null)
 
 ---- test_basic_string_get ---------------------------------
 Damson = 123, 123
