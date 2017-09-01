@@ -34,6 +34,15 @@
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 
+/**
+ * magic_string_set - Set a Mailbox Magic by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int magic_string_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, const char *value,
                             struct Buffer *err)
@@ -69,6 +78,14 @@ static int magic_string_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * magic_string_get - Get a Mailbox Magic as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int magic_string_get(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -86,6 +103,15 @@ static int magic_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * magic_native_set - Set a Mailbox Magic config item by int
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Mailbox magic
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int magic_native_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, intptr_t value,
                             struct Buffer *err)
@@ -111,6 +137,14 @@ static int magic_native_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * magic_native_get - Get an int from a Mailbox Magic config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t Mailbox magic
+ */
 static intptr_t magic_native_get(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -120,6 +154,14 @@ static intptr_t magic_native_get(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
+/**
+ * magic_reset - Reset a Mailbox Magic to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int magic_reset(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -130,6 +172,10 @@ static int magic_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * magic_init - Register the Mailbox Magic config type
+ * @param cs Config items
+ */
 void magic_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_magic = {

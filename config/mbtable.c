@@ -34,6 +34,11 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * mbtable_parse - Parse a multibyte string into a table
+ * @param s String of multibyte characters
+ * @retval ptr New MbTable object
+ */
 static struct MbTable *mbtable_parse(const char *s)
 {
   struct MbTable *t = NULL;
@@ -75,6 +80,12 @@ static struct MbTable *mbtable_parse(const char *s)
   return t;
 }
 
+/**
+ * mbtable_destroy - Destroy an MbTable object
+ * @param cs   Config items
+ * @param var  Variable to destroy
+ * @param vdef Variable definition
+ */
 static void mbtable_destroy(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef)
 {
@@ -88,6 +99,15 @@ static void mbtable_destroy(const struct ConfigSet *cs, void *var,
   mbtable_free(m);
 }
 
+/**
+ * mbtable_string_set - Set a MbTable by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int mbtable_string_set(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, const char *value,
                               struct Buffer *err)
@@ -121,6 +141,14 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * mbtable_string_get - Get a MbTable as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int mbtable_string_get(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -135,6 +163,11 @@ static int mbtable_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * mbtable_dup - Create a copy of an MbTable object
+ * @param table MbTable to duplicate
+ * @retval ptr New MbTable object
+ */
 static struct MbTable *mbtable_dup(struct MbTable *table)
 {
   if (!table)
@@ -145,6 +178,15 @@ static struct MbTable *mbtable_dup(struct MbTable *table)
   return m;
 }
 
+/**
+ * mbtable_native_set - Set a MbTable config item by MbTable object
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value MbTable pointer
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int mbtable_native_set(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, intptr_t value,
                               struct Buffer *err)
@@ -172,6 +214,14 @@ static int mbtable_native_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * mbtable_native_get - Get an MbTable object from a MbTable config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t MbTable pointer
+ */
 static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
                                    const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -183,6 +233,14 @@ static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
   return (intptr_t) table;
 }
 
+/**
+ * mbtable_reset - Reset an MbTable to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int mbtable_reset(const struct ConfigSet *cs, void *var,
                          const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -205,6 +263,10 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * mbtable_init - Register the MbTable config type
+ * @param cs Config items
+ */
 void mbtable_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_mbtable = {
@@ -215,6 +277,11 @@ void mbtable_init(struct ConfigSet *cs)
   cs_register_type(cs, DT_MBTABLE, &cst_mbtable);
 }
 
+/**
+ * mbtable_create - Create an MbTable from a string
+ * @param str String of multibyte characters
+ * @retval ptr New MbTable object
+ */
 struct MbTable *mbtable_create(const char *str)
 {
   struct MbTable *m = safe_calloc(1, sizeof(*m));
@@ -222,6 +289,10 @@ struct MbTable *mbtable_create(const char *str)
   return m;
 }
 
+/**
+ * mbtable_free - Free an MbTable object
+ * @param table MbTable to free
+ */
 void mbtable_free(struct MbTable **table)
 {
   if (!table || !*table)

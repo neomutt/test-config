@@ -34,6 +34,15 @@
 
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
 
+/**
+ * quad_string_set - Set a Quad-option by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int quad_string_set(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, const char *value,
                            struct Buffer *err)
@@ -69,6 +78,14 @@ static int quad_string_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * quad_string_get - Get a Quad-option as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int quad_string_get(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -86,6 +103,15 @@ static int quad_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * quad_native_set - Set a Quad-option config item by int
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Quad-option value
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int quad_native_set(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, intptr_t value,
                            struct Buffer *err)
@@ -111,6 +137,14 @@ static int quad_native_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * quad_native_get - Get an int object from a Quad-option config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t Quad-option value
+ */
 static intptr_t quad_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -120,6 +154,14 @@ static intptr_t quad_native_get(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
+/**
+ * quad_reset - Reset a Quad-option to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int quad_reset(const struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -130,6 +172,10 @@ static int quad_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * quad_init - Register the Quad-option config type
+ * @param cs Config items
+ */
 void quad_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_quad = {

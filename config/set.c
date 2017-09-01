@@ -38,6 +38,12 @@ struct ConfigSetType RegisteredTypes[16] = {
   { NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
+/**
+ * destroy - Callback function for the Hash Table
+ * @param type Object type, e.g. #DT_STRING
+ * @param obj  Object to destroy
+ * @param data ConfigSet associated with the object
+ */
 static void destroy(int type, void *obj, intptr_t data)
 {
   if (!obj)
@@ -75,6 +81,13 @@ static void destroy(int type, void *obj, intptr_t data)
   }
 }
 
+/**
+ * create_synonym - Create an alternative name for a config item
+ * @param cs   Config items
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval ptr New HashElem representing the config item synonym
+ */
 static struct HashElem *create_synonym(const struct ConfigSet *cs,
                                        struct VariableDef *vdef, struct Buffer *err)
 {
@@ -98,6 +111,13 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs,
   return child;
 }
 
+/**
+ * reg_one_var - Register one config item
+ * @param cs   Config items
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval ptr New HashElem representing the config item
+ */
 static struct HashElem *reg_one_var(const struct ConfigSet *cs,
                                     struct VariableDef *vdef, struct Buffer *err)
 {
@@ -125,6 +145,12 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
   return he;
 }
 
+/**
+ * cs_get_type_def - Get the definition for a type
+ * @param cs   Config items
+ * @param type Type to lookup, e.g. #DT_NUMBER
+ * @retval ptr ConfigSetType representing the type
+ */
 const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type)
 {
   if (!cs)
@@ -140,6 +166,11 @@ const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned
   return &cs->types[type];
 }
 
+/**
+ * cs_init - Initialise a Config Set
+ * @param cs   Config items
+ * @param size Number of expected config items
+ */
 void cs_init(struct ConfigSet *cs, int size)
 {
   if (!cs)
@@ -150,6 +181,11 @@ void cs_init(struct ConfigSet *cs, int size)
   hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
 }
 
+/**
+ * cs_create - Create a new Config Set
+ * @param size Number of expected config items
+ * @retval ptr New ConfigSet object
+ */
 struct ConfigSet *cs_create(int size)
 {
   struct ConfigSet *cs = safe_malloc(sizeof(*cs));
@@ -157,6 +193,11 @@ struct ConfigSet *cs_create(int size)
   return cs;
 }
 
+/**
+ * cs_add_listener - Add a listener (callback function)
+ * @param cs Config items
+ * @param fn Listener callback function 
+ */
 void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 {
   if (!cs || !fn)
@@ -182,6 +223,11 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
   }
 }
 
+/**
+ * cs_remove_listener - Remove a listener (callback function)
+ * @param cs Config items
+ * @param fn Listener callback function 
+ */
 void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
 {
   if (!cs || !fn)
@@ -198,6 +244,10 @@ void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
   mutt_debug(1, "Listener wasn't registered\n");
 }
 
+/**
+ * cs_free - Free a Config Set
+ * @param cs Config items
+ */
 void cs_free(struct ConfigSet **cs)
 {
   if (!cs || !*cs)
@@ -207,6 +257,13 @@ void cs_free(struct ConfigSet **cs)
   FREE(cs);
 }
 
+/**
+ * cs_notify_listeners - Notify all listeners of an event
+ * @param cs   Config items
+ * @param he   HashElem representing config item
+ * @param name Name of config item 
+ * @param ev   Type of event
+ */
 void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
                          const char *name, enum ConfigEvent ev)
 {
@@ -222,6 +279,13 @@ void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
   }
 }
 
+/**
+ * cs_register_type - Register a type of config item
+ * @param cs   Config items
+ * @param type Object type, e.g. #DT_BOOL
+ * @param cst  Structure defining the type
+ * @retval bool True, if type was registered successfully
+ */
 bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct ConfigSetType *cst)
 {
   if (!cs || !cst)
@@ -241,6 +305,12 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
   return true;
 }
 
+/**
+ * cs_register_variables - Register a set of config items
+ * @param cs   Config items
+ * @param vars Variable definition
+ * @retval bool True, if all variables were registered successfully
+ */
 bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[])
 {
   if (!cs || !vars)
@@ -266,6 +336,14 @@ bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]
   return result;
 }
 
+/**
+ * cs_str_string_set - Set a config item by string
+ * @param cs    Config items
+ * @param name  Name of config item
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int cs_str_string_set(const struct ConfigSet *cs, const char *name,
                       const char *value, struct Buffer *err)
 {
@@ -332,6 +410,13 @@ int cs_str_string_set(const struct ConfigSet *cs, const char *name,
   return CSR_SUCCESS;
 }
 
+/**
+ * cs_reset_variable - Reset a config item to its initial value
+ * @param cs   Config items
+ * @param name Name of config item
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
@@ -379,6 +464,13 @@ int cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffe
   return CSR_SUCCESS;
 }
 
+/**
+ * cs_str_string_get - Get a config item as a string
+ * @param cs     Config items
+ * @param name   Name of config item
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
 {
   if (!cs || !name)
@@ -426,6 +518,12 @@ int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffe
   return cst->string_get(cs, var, vdef, result);
 }
 
+/**
+ * cs_get_elem - Get the HashElem representing a config item
+ * @param cs   Config items
+ * @param name Name of config item
+ * @retval ptr HashElem representing the config item
+ */
 struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 {
   if (!cs || !name)
@@ -443,6 +541,13 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
   return vdef->var;
 }
 
+/**
+ * cs_inherit_variable - Create in inherited config item
+ * @param cs     Config items
+ * @param parent HashElem of parent config item
+ * @param name   Name of account-specific config item
+ * @retval ptr New HashElem representing the inherited config item
+ */
 struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
                                      struct HashElem *parent, const char *name)
 {
@@ -470,6 +575,14 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
 }
 
 
+/**
+ * cs_he_native_set - Natively set the value of a HashElem config item
+ * @param cs    Config items
+ * @param he    HashElem representing config item
+ * @param value Native pointer/value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
                      intptr_t value, struct Buffer *err)
 {
@@ -511,6 +624,13 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
   return result;
 }
 
+/**
+ * cs_he_native_get - Natively get the value of a HashElem config item
+ * @param cs     Config items
+ * @param he     HashElem representing config item
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
 {
   if (!cs || !he)
@@ -552,6 +672,14 @@ int cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 }
 
 
+/**
+ * cs_str_native_set - Natively set the value of a string config item
+ * @param cs    Config items
+ * @param name  Name of config item
+ * @param value Native pointer/value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int cs_str_native_set(const struct ConfigSet *cs, const char *name,
                       intptr_t value, struct Buffer *err)
 {
@@ -600,6 +728,13 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
   return result;
 }
 
+/**
+ * cs_str_native_get - Natively get the value of a string config item
+ * @param cs   Config items
+ * @param name Name of config item
+ * @param err  Buffer for error messages
+ * @retval intptr_t Native pointer/value
+ */
 intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
@@ -647,6 +782,14 @@ intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct 
   return cst->native_get(cs, var, vdef, err);
 }
 
+/**
+ * cs_set_initial_value - Override the initial value of a config item
+ * @param cs    Config items
+ * @param he    HashElem representing config item
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he,
                          const char *value, struct Buffer *err)
 {

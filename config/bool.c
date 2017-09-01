@@ -36,6 +36,15 @@ const char *bool_values[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",
 };
 
+/**
+ * bool_string_set - Set a Bool by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int bool_string_set(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, const char *value,
                            struct Buffer *err)
@@ -71,6 +80,14 @@ static int bool_string_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * bool_string_get - Get a Bool as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int bool_string_get(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -88,6 +105,15 @@ static int bool_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * bool_native_set - Set a Bool config item by bool
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Bool value
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int bool_native_set(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, intptr_t value,
                            struct Buffer *err)
@@ -113,6 +139,14 @@ static int bool_native_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * bool_native_get - Get a bool from a Bool config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t Bool
+ */
 static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -122,6 +156,14 @@ static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
   return *(bool *) var;
 }
 
+/**
+ * bool_reset - Reset a Bool to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int bool_reset(const struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -132,6 +174,10 @@ static int bool_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * bool_init - Register the Bool config type
+ * @param cs Config items
+ */
 void bool_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_bool = {

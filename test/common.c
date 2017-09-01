@@ -26,9 +26,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "config/inheritance.h"
 #include "config/set.h"
 #include "config/types.h"
-#include "config/inheritance.h"
 #include "lib/buffer.h"
 #include "lib/hash.h"
 #include "lib/memory.h"

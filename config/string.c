@@ -31,6 +31,12 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * string_destroy - Destroy a String
+ * @param cs   Config items
+ * @param var  Variable to set
+ * @param vdef Variable definition
+ */
 static void string_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
 {
   if (!cs || !var || !vdef)
@@ -47,6 +53,15 @@ static void string_destroy(const struct ConfigSet *cs, void *var, const struct V
   FREE(var);
 }
 
+/**
+ * string_string_set - Set a String by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int string_string_set(const struct ConfigSet *cs, void *var,
                              const struct VariableDef *vdef, const char *value,
                              struct Buffer *err)
@@ -77,6 +92,14 @@ static int string_string_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * string_string_get - Get a String as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int string_string_get(const struct ConfigSet *cs, void *var,
                              const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -91,6 +114,15 @@ static int string_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * string_native_set - Set a String config item by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Native pointer/value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int string_native_set(const struct ConfigSet *cs, void *var,
                              const struct VariableDef *vdef, intptr_t value,
                              struct Buffer *err)
@@ -125,6 +157,14 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * string_native_get - Get a string from a String config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t String pointer
+ */
 static intptr_t string_native_get(const struct ConfigSet *cs, void *var,
                                   const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -136,6 +176,14 @@ static intptr_t string_native_get(const struct ConfigSet *cs, void *var,
   return (intptr_t) str;
 }
 
+/**
+ * string_reset - Reset a String to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int string_reset(const struct ConfigSet *cs, void *var,
                         const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -153,6 +201,10 @@ static int string_reset(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * string_init - Register the String config type
+ * @param cs Config items
+ */
 void string_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_string = {

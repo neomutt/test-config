@@ -32,6 +32,12 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * address_destroy - Destroy an Address object
+ * @param cs   Config items
+ * @param var  Variable to destroy
+ * @param vdef Variable definition
+ */
 static void address_destroy(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef)
 {
@@ -45,6 +51,15 @@ static void address_destroy(const struct ConfigSet *cs, void *var,
   address_free(a);
 }
 
+/**
+ * address_string_set - Set an Address by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int address_string_set(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, const char *value,
                               struct Buffer *err)
@@ -83,6 +98,14 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * address_string_get - Get an Address as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int address_string_get(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -97,6 +120,11 @@ static int address_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * address_dup - Create a copy of an Address object
+ * @param addr Address to duplicate
+ * @retval ptr New Address object
+ */
 static struct Address *address_dup(struct Address *addr)
 {
   if (!addr)
@@ -108,6 +136,15 @@ static struct Address *address_dup(struct Address *addr)
   return a;
 }
 
+/**
+ * address_native_set - Set an Address config item by Address object
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Address pointer
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int address_native_set(const struct ConfigSet *cs, void *var,
                               const struct VariableDef *vdef, intptr_t value,
                               struct Buffer *err)
@@ -135,6 +172,14 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * address_native_get - Get an Address object from an Address config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t Address pointer
+ */
 static intptr_t address_native_get(const struct ConfigSet *cs, void *var,
                                    const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -146,6 +191,14 @@ static intptr_t address_native_get(const struct ConfigSet *cs, void *var,
   return (intptr_t) addr;
 }
 
+/**
+ * address_reset - Reset an Address to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int address_reset(const struct ConfigSet *cs, void *var,
                          const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -168,6 +221,10 @@ static int address_reset(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * address_init - Register the Address config type
+ * @param cs Config items
+ */
 void address_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_address = {
@@ -178,6 +235,11 @@ void address_init(struct ConfigSet *cs)
   cs_register_type(cs, DT_ADDRESS, &cst_address);
 }
 
+/**
+ * address_create - Create an Address from a string
+ * @param addr Email address to parse
+ * @retval ptr New Address object
+ */
 struct Address *address_create(const char *addr)
 {
   struct Address *a = safe_calloc(1, sizeof(*a));
@@ -186,6 +248,10 @@ struct Address *address_create(const char *addr)
   return a;
 }
 
+/**
+ * address_free - Free an Address object
+ * @param addr Address to free
+ */
 void address_free(struct Address **addr)
 {
   if (!addr || !*addr)

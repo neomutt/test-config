@@ -95,18 +95,32 @@ const struct Mapping SortSidebarMethods[] = {
   { NULL, 0 },
 };
 
-static const char *find_string(const struct Mapping *map, int type)
+/**
+ * find_string - Lookup a sort string
+ * @param map  Mapping between strings and constants
+ * @param type Sort code to lookup, e.g. #SORT_ADDRESS
+ * @retval ptr String for sort ID
+ * @retval NULL No match
+ */
+static const char *find_string(const struct Mapping *map, int value)
 {
   if (!map)
     return NULL; /* LCOV_EXCL_LINE */
 
   for (int i = 0; map[i].name; i++)
-    if (map[i].value == type)
+    if (map[i].value == value)
       return map[i].name;
 
   return NULL;
 }
 
+/**
+ * find_id - Lookup a sort ID
+ * @param map Mapping between strings and constants
+ * @param str Sort string to find, e.g. "alpha"
+ * @retval int ID matching string, e.g. #SORT_ADDRESS
+ * @retval int -1 No match
+ */
 static int find_id(const struct Mapping *map, const char *str)
 {
   if (!map || !str)
@@ -119,6 +133,15 @@ static int find_id(const struct Mapping *map, const char *str)
   return -1;
 }
 
+/**
+ * sort_string_set - Set a Sort by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int sort_string_set(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, const char *value,
                            struct Buffer *err)
@@ -172,6 +195,14 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * sort_string_get - Get a Sort as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int sort_string_get(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -210,7 +241,8 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
 
   if (!str)
   {
-    mutt_debug(1, "Variable has an invalid value: %d/%d\n", vdef->type & DT_SUBTYPE_MASK, sort);
+    mutt_debug(1, "Variable has an invalid value: %d/%d\n",
+               vdef->type & DT_SUBTYPE_MASK, sort);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
@@ -218,6 +250,15 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * sort_native_set - Set a Sort config item by int
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Sort value
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int sort_native_set(const struct ConfigSet *cs, void *var,
                            const struct VariableDef *vdef, intptr_t value,
                            struct Buffer *err)
@@ -271,6 +312,14 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * sort_native_get - Get an int from a Sort config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t Sort ID
+ */
 static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
                                 const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -280,6 +329,14 @@ static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
   return *(short *) var;
 }
 
+/**
+ * sort_reset - Reset a Sort to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int sort_reset(const struct ConfigSet *cs, void *var,
                       const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -290,6 +347,10 @@ static int sort_reset(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * sort_init - Register the Sort config type
+ * @param cs Config items
+ */
 void sort_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_sort = {

@@ -33,6 +33,13 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * ac_create - Create an Account
+ * @param cs        Config items
+ * @param name      Name of Account
+ * @param var_names List of config items (NULL terminated)
+ * @retval ptr New Account object
+ */
 struct Account *ac_create(const struct ConfigSet *cs, const char *name,
                           const char *var_names[])
 {
@@ -80,6 +87,11 @@ struct Account *ac_create(const struct ConfigSet *cs, const char *name,
   return NULL;
 }
 
+/**
+ * ac_free - Free an Account object
+ * @param cs Config items
+ * @param ac Account to free
+ */
 void ac_free(const struct ConfigSet *cs, struct Account **ac)
 {
   if (!cs || !ac || !*ac)
@@ -106,6 +118,14 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   FREE(ac);
 }
 
+/**
+ * ac_set_value - Set an Account-specific config item
+ * @param ac    Account-specific config items
+ * @param vid   Value ID (index into Account's HashElem's)
+ * @param value Native pointer/value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int ac_set_value(const struct Account *ac, unsigned int vid, intptr_t value, struct Buffer *err)
 {
   if (!ac)
@@ -117,6 +137,13 @@ int ac_set_value(const struct Account *ac, unsigned int vid, intptr_t value, str
   return cs_he_native_set(ac->cs, he, value, err);
 }
 
+/**
+ * ac_get_value - Get an Account-specific config item
+ * @param ac  Account-specific config items
+ * @param vid Value ID (index into Account's HashElem's)
+ * @param err Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int ac_get_value(const struct Account *ac, unsigned int vid, struct Buffer *err)
 {
   if (!ac)

@@ -33,6 +33,12 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * regex_destroy - Destroy a Regex object
+ * @param cs   Config items
+ * @param var  Variable to destroy
+ * @param vdef Variable definition
+ */
 static void regex_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
 {
   if (!cs || !var || !vdef)
@@ -45,6 +51,15 @@ static void regex_destroy(const struct ConfigSet *cs, void *var, const struct Va
   regex_free(r);
 }
 
+/**
+ * regex_string_set - Set a Regex by string
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int regex_string_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, const char *value,
                             struct Buffer *err)
@@ -81,6 +96,14 @@ static int regex_string_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * regex_string_get - Get a Regex as a string
+ * @param cs     Config items
+ * @param var    Variable to get
+ * @param vdef   Variable definition
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int regex_string_get(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, struct Buffer *result)
 {
@@ -95,6 +118,11 @@ static int regex_string_get(const struct ConfigSet *cs, void *var,
   return CSR_SUCCESS;
 }
 
+/**
+ * regex_dup - Create a copy of a Regex object
+ * @param r Regex to duplicate
+ * @retval ptr New Regex object
+ */
 static struct Regex *regex_dup(struct Regex *r)
 {
   if (!r)
@@ -105,6 +133,15 @@ static struct Regex *regex_dup(struct Regex *r)
   return copy;
 }
 
+/**
+ * regex_native_set - Set a Regex config item by Regex object
+ * @param cs    Config items
+ * @param var   Variable to set
+ * @param vdef  Variable definition
+ * @param value Regex pointer
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int regex_native_set(const struct ConfigSet *cs, void *var,
                             const struct VariableDef *vdef, intptr_t value,
                             struct Buffer *err)
@@ -132,6 +169,14 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * regex_native_get - Get a Regex object from a Regex config item
+ * @param cs   Config items
+ * @param var  Variable to get
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval intptr_t Regex pointer
+ */
 static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
                                  const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -143,6 +188,14 @@ static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
   return (intptr_t) r;
 }
 
+/**
+ * regex_reset - Reset a Regex to its initial value
+ * @param cs   Config items
+ * @param var  Variable to reset
+ * @param vdef Variable definition
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 static int regex_reset(const struct ConfigSet *cs, void *var,
                        const struct VariableDef *vdef, struct Buffer *err)
 {
@@ -169,6 +222,10 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   return result;
 }
 
+/**
+ * regex_init - Register the Regex config type
+ * @param cs Config items
+ */
 void regex_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_regex = {
@@ -178,6 +235,11 @@ void regex_init(struct ConfigSet *cs)
   cs_register_type(cs, DT_REGEX, &cst_regex);
 }
 
+/**
+ * regex_create - Create an Regex from a string
+ * @param str Regular expression
+ * @retval ptr New Regex object
+ */
 struct Regex *regex_create(const char *str)
 {
   struct Regex *r = safe_calloc(1, sizeof(*r));
@@ -185,6 +247,10 @@ struct Regex *regex_create(const char *str)
   return r;
 }
 
+/**
+ * regex_free - Free a Regex object
+ * @param r Regex to free
+ */
 void regex_free(struct Regex **r)
 {
   if (!r || !*r)
