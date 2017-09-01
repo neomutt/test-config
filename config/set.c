@@ -327,7 +327,7 @@ bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]
   {
     if (!reg_one_var(cs, &vars[i], &err))
     {
-      printf("%s\n", err.data);
+      mutt_debug(1, "%s\n", err.data);
       result = false;
     }
   }

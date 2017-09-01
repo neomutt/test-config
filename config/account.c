@@ -65,7 +65,7 @@ struct Account *ac_create(const struct ConfigSet *cs, const char *name,
     struct HashElem *parent = cs_get_elem(cs, ac->var_names[i]);
     if (!parent)
     {
-      printf("%s doesn't exist\n", ac->var_names[i]);
+      mutt_debug(1, "%s doesn't exist\n", ac->var_names[i]);
       success = false;
       break;
     }
@@ -74,7 +74,7 @@ struct Account *ac_create(const struct ConfigSet *cs, const char *name,
     ac->vars[i] = cs_inherit_variable(cs, parent, acname);
     if (!ac->vars[i])
     {
-      printf("failed to create %s\n", acname);
+      mutt_debug(1, "failed to create %s\n", acname);
       success = false;
       break;
     }
