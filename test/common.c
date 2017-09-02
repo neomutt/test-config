@@ -122,8 +122,8 @@ void hash_dump(struct Hash *table)
     {
       if (he->type & DT_INHERITED)
       {
-        struct Inheritance *i = he->data;
-        printf("\033[1;32m[%s]\033[m ", i->name);
+        struct Inheritance *inh = he->data;
+        printf("\033[1;32m[%s]\033[m ", inh->name);
       }
       else
       {
