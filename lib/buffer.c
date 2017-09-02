@@ -35,6 +35,7 @@
  * | mutt_buffer_init()   | Initialise a new Buffer
  * | mutt_buffer_new()    | Create and initialise a Buffer
  * | mutt_buffer_printf() | Format a string into a Buffer
+ * | mutt_buffer_reset    | Reset an existing Buffer
  */
 
 #include "config.h"
@@ -75,6 +76,13 @@ struct Buffer *mutt_buffer_init(struct Buffer *b)
   return b;
 }
 
+/**
+ * mutt_buffer_reset - Reset an existing Buffer
+ * @param b Buffer to reset
+ *
+ * This can be called on a Buffer to reset the pointers,
+ * effectively emptying it.
+ */
 void mutt_buffer_reset(struct Buffer *b)
 {
   memset(b->data, 0, b->dsize);

@@ -46,15 +46,15 @@
  * @param format printf-like formatting string
  * @param ...    Arguments to format
  *
- * This stub function writes to stdout.
+ * This stub function writes to stderr.
  */
 static void default_error(const char *format, ...)
 {
   va_list ap;
   va_start(ap, format);
-  vfprintf(stdout, format, ap);
+  vfprintf(stderr, format, ap);
   va_end(ap);
-  fputc('\n', stdout);
+  fputc('\n', stderr);
 }
 
 void (*mutt_error)(const char *, ...) = default_error;
@@ -81,7 +81,7 @@ void (*mutt_message)(const char *, ...) = default_message;
  * default_perror - Lookup a standard error message (using errno)
  * @param message Prefix message to display
  *
- * This stub function writes to stdout.
+ * This stub function writes to stderr.
  */
 static void default_perror(const char *message)
 {
