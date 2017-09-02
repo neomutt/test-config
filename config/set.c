@@ -20,6 +20,37 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-set Some set
+ *
+ * LONG set
+ *
+ * | Function              | Description
+ * | :-------------------- | :-----------------------------------------------
+ * | create_synonym        | Create an alternative name for a config item
+ * | cs_add_listener       | Add a listener (callback function)
+ * | cs_create             | Create a new Config Set
+ * | cs_free               | Free a Config Set
+ * | cs_get_elem           | Get the HashElem representing a config item
+ * | cs_get_type_def       | Get the definition for a type
+ * | cs_he_native_get      | Natively get the value of a HashElem config item
+ * | cs_he_native_set      | Natively set the value of a HashElem config item
+ * | cs_inherit_variable   | Create in inherited config item
+ * | cs_init               | Initialise a Config Set
+ * | cs_notify_listeners   | Notify all listeners of an event
+ * | cs_register_type      | Register a type of config item
+ * | cs_register_variables | Register a set of config items
+ * | cs_remove_listener    | Remove a listener (callback function)
+ * | cs_reset_variable     | Reset a config item to its initial value
+ * | cs_set_initial_value  | Override the initial value of a config item
+ * | cs_str_native_get     | Natively get the value of a string config item
+ * | cs_str_native_set     | Natively set the value of a string config item
+ * | cs_str_string_get     | Get a config item as a string
+ * | cs_str_string_set     | Set a config item by string
+ * | destroy               | Callback function for the Hash Table
+ * | reg_one_var           | Register one config item
+ */
+
 #include "config.h"
 #include <limits.h>
 #include <stdio.h>

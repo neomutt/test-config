@@ -20,6 +20,19 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-account Some account
+ *
+ * LONG account
+ *
+ * | Function     | Description
+ * | :----------- | :----------------------------------
+ * | ac_create    | Create an Account
+ * | ac_free      | Free an Account object
+ * | ac_get_value | Get an Account-specific config item
+ * | ac_set_value | Set an Account-specific config item
+ */
+
 #include "config.h"
 #include <stddef.h>
 #include <stdio.h>

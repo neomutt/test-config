@@ -20,6 +20,21 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-magic Some magic
+ *
+ * LONG magic
+ *
+ * | Function         | Description
+ * | :--------------- | :------------------------------------------
+ * | magic_init       | Register the Mailbox Magic config type
+ * | magic_native_get | Get an int from a Mailbox Magic config item
+ * | magic_native_set | Set a Mailbox Magic config item by int
+ * | magic_reset      | Reset a Mailbox Magic to its initial value
+ * | magic_string_get | Get a Mailbox Magic as a string
+ * | magic_string_set | Set a Mailbox Magic by string
+ */
+
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>

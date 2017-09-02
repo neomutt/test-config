@@ -20,6 +20,23 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-sort Some sort
+ *
+ * LONG sort
+ *
+ * | Function        | Description
+ * | :-------------- | :---------------------------------
+ * | find_id         | Lookup a sort ID
+ * | find_string     | Lookup a sort string
+ * | sort_init       | Register the Sort config type
+ * | sort_native_get | Get an int from a Sort config item
+ * | sort_native_set | Set a Sort config item by int
+ * | sort_reset      | Reset a Sort to its initial value
+ * | sort_string_get | Get a Sort as a string
+ * | sort_string_set | Set a Sort by string
+ */
+
 #include "config.h"
 #include <limits.h>
 #include <stdbool.h>
@@ -97,8 +114,8 @@ const struct Mapping SortSidebarMethods[] = {
 
 /**
  * find_string - Lookup a sort string
- * @param map  Mapping between strings and constants
- * @param type Sort code to lookup, e.g. #SORT_ADDRESS
+ * @param map   Mapping between strings and constants
+ * @param value Sort code to lookup, e.g. #SORT_ADDRESS
  * @retval ptr String for sort ID
  * @retval NULL No match
  */

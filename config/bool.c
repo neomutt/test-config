@@ -20,6 +20,21 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-bool Some bool
+ *
+ * LONG bool
+ *
+ * | Function        | Description
+ * | :-------------- | :---------------------------------
+ * | bool_init       | Register the Bool config type
+ * | bool_native_get | Get a bool from a Bool config item
+ * | bool_native_set | Set a Bool config item by bool
+ * | bool_reset      | Reset a Bool to its initial value
+ * | bool_string_get | Get a Bool as a string
+ * | bool_string_set | Set a Bool by string
+ */
+
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>

@@ -20,6 +20,22 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-path Some path
+ *
+ * LONG path
+ *
+ * | Function        | Description
+ * | :-------------- | :-----------------------------------
+ * | path_destroy    | Destroy a Path
+ * | path_init       | Register the Path config type
+ * | path_native_get | Get a string from a Path config item
+ * | path_native_set | Set a Path config item by string
+ * | path_reset      | Reset a Path to its initial value
+ * | path_string_get | Get a Path as a string
+ * | path_string_set | Set a Path by string
+ */
+
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>

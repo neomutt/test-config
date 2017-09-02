@@ -20,6 +20,21 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-number Some number
+ *
+ * LONG number
+ *
+ * | Function          | Description
+ * | :---------------- | :-----------------------------------
+ * | number_init       | Register the Number config type
+ * | number_native_get | Get an int from a Number config item
+ * | number_native_set | Set a Number config item by int
+ * | number_reset      | Reset a Number to its initial value
+ * | number_string_get | Get a Number as a string
+ * | number_string_set | Set a Number by string
+ */
+
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>

@@ -20,6 +20,26 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-mbtable Some mbtable
+ *
+ * LONG mbtable
+ *
+ * | Function           | Description
+ * | :----------------- | :-----------------------------------------------
+ * | mbtable_create     | Create an MbTable from a string
+ * | mbtable_destroy    | Destroy an MbTable object
+ * | mbtable_dup        | Create a copy of an MbTable object
+ * | mbtable_free       | Free an MbTable object
+ * | mbtable_init       | Register the MbTable config type
+ * | mbtable_native_get | Get an MbTable object from a MbTable config item
+ * | mbtable_native_set | Set a MbTable config item by MbTable object
+ * | mbtable_parse      | Parse a multibyte string into a table
+ * | mbtable_reset      | Reset an MbTable to its initial value
+ * | mbtable_string_get | Get a MbTable as a string
+ * | mbtable_string_set | Set a MbTable by string
+ */
+
 #include "config.h"
 #include <limits.h>
 #include <stdbool.h>

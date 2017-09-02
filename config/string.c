@@ -20,6 +20,22 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-string Some string
+ *
+ * LONG string
+ *
+ * | Function          | Description
+ * | :---------------- | :-------------------------------------
+ * | string_destroy    | Destroy a String
+ * | string_init       | Register the String config type
+ * | string_native_get | Get a string from a String config item
+ * | string_native_set | Set a String config item by string
+ * | string_reset      | Reset a String to its initial value
+ * | string_string_get | Get a String as a string
+ * | string_string_set | Set a String by string
+ */
+
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>

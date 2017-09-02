@@ -20,6 +20,21 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @page config-quad Some quad
+ *
+ * LONG quad
+ *
+ * | Function        | Description
+ * | :-------------- | :-----------------------------------------------
+ * | quad_init       | Register the Quad-option config type
+ * | quad_native_get | Get an int object from a Quad-option config item
+ * | quad_native_set | Set a Quad-option config item by int
+ * | quad_reset      | Reset a Quad-option to its initial value
+ * | quad_string_get | Get a Quad-option as a string
+ * | quad_string_set | Set a Quad-option by string
+ */
+
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>
