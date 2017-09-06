@@ -48,18 +48,18 @@ static short VarJackfruit;
 static short VarKumquat;
 
 // clang-format off
-static struct VariableDef Vars[] = {
-  { "Apple",      DT_QUAD, &VarApple,      0, NULL              }, /* test_initial_values() */
-  { "Banana",     DT_QUAD, &VarBanana,     3, NULL              },
-  { "Cherry",     DT_QUAD, &VarCherry,     0, NULL              }, /* test_string_set */
-  { "Damson",     DT_QUAD, &VarDamson,     0, NULL              }, /* test_string_get */
-  { "Elderberry", DT_QUAD, &VarElderberry, 0, NULL              }, /* test_native_set */
-  { "Fig",        DT_QUAD, &VarFig,        0, NULL              }, /* test_native_get */
-  { "Guava",      DT_QUAD, &VarGuava,      0, NULL              }, /* test_reset */
-  { "Hawthorn",   DT_QUAD, &VarHawthorn,   0, validator_succeed }, /* test_validator */
-  { "Ilama",      DT_QUAD, &VarIlama,      0, validator_warn    },
-  { "Jackfruit",  DT_QUAD, &VarJackfruit,  0, validator_fail    },
-  { "Kumquat",    DT_QUAD, &VarKumquat,    0, NULL              }, /* test_inherit */
+static struct ConfigDef Vars[] = {
+  { "Apple",      DT_QUAD, 0, &VarApple,      0, NULL              }, /* test_initial_values() */
+  { "Banana",     DT_QUAD, 0, &VarBanana,     3, NULL              },
+  { "Cherry",     DT_QUAD, 0, &VarCherry,     0, NULL              }, /* test_string_set */
+  { "Damson",     DT_QUAD, 0, &VarDamson,     0, NULL              }, /* test_string_get */
+  { "Elderberry", DT_QUAD, 0, &VarElderberry, 0, NULL              }, /* test_native_set */
+  { "Fig",        DT_QUAD, 0, &VarFig,        0, NULL              }, /* test_native_get */
+  { "Guava",      DT_QUAD, 0, &VarGuava,      0, NULL              }, /* test_reset */
+  { "Hawthorn",   DT_QUAD, 0, &VarHawthorn,   0, validator_succeed }, /* test_validator */
+  { "Ilama",      DT_QUAD, 0, &VarIlama,      0, validator_warn    },
+  { "Jackfruit",  DT_QUAD, 0, &VarJackfruit,  0, validator_fail    },
+  { "Kumquat",    DT_QUAD, 0, &VarKumquat,    0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on

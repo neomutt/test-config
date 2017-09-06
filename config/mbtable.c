@@ -46,7 +46,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <wchar.h>
-#include "mbtable.h"
+#include "config/mbtable.h"
 #include "lib/buffer.h"
 #include "lib/debug.h"
 #include "lib/memory.h"
@@ -74,7 +74,7 @@ static struct MbTable *mbtable_parse(const char *s)
 
   t->orig_str = safe_strdup(s);
   /* This could be more space efficient.  However, being used on tiny
-   * strings (Tochars and StChars), the overhead is not great. */
+   * strings (Tochars and StatusChars), the overhead is not great. */
   t->chars = safe_calloc(slen, sizeof(char *));
   d = t->segmented_str = safe_calloc(slen * 2, sizeof(char));
 
@@ -104,12 +104,12 @@ static struct MbTable *mbtable_parse(const char *s)
  * mbtable_destroy - Destroy an MbTable object
  * @param cs   Config items
  * @param var  Variable to destroy
- * @param vdef Variable definition
+ * @param cdef Variable definition
  */
 static void mbtable_destroy(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef)
+                            const struct ConfigDef *cdef)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
 
   struct MbTable **m = (struct MbTable **) var;
@@ -123,16 +123,16 @@ static void mbtable_destroy(const struct ConfigSet *cs, void *var,
  * mbtable_string_set - Set a MbTable by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int mbtable_string_set(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, const char *value,
+                              const struct ConfigDef *cdef, const char *value,
                               struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if (value && (value[0] == '\0'))
@@ -140,9 +140,9 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
 
   struct MbTable *table = mbtable_parse(value);
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, (intptr_t) table, err);
+    int rv = cdef->validator(cs, cdef, (intptr_t) table, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
     {
@@ -151,7 +151,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
     }
   }
 
-  mbtable_destroy(cs, var, vdef);
+  mbtable_destroy(cs, var, cdef);
 
   int result = CSR_SUCCESS;
   if (!table)
@@ -165,14 +165,14 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
  * mbtable_string_get - Get a MbTable as a string
  * @param cs     Config items
  * @param var    Variable to get
- * @param vdef   Variable definition
+ * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int mbtable_string_get(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, struct Buffer *result)
+                              const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct MbTable *table = *(struct MbTable **) var;
@@ -202,21 +202,21 @@ static struct MbTable *mbtable_dup(struct MbTable *table)
  * mbtable_native_set - Set a MbTable config item by MbTable object
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value MbTable pointer
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int mbtable_native_set(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, intptr_t value,
+                              const struct ConfigDef *cdef, intptr_t value,
                               struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, value, err);
+    int rv = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -238,14 +238,14 @@ static int mbtable_native_set(const struct ConfigSet *cs, void *var,
  * mbtable_native_get - Get an MbTable object from a MbTable config item
  * @param cs   Config items
  * @param var  Variable to get
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval intptr_t MbTable pointer
  */
 static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
-                                   const struct VariableDef *vdef, struct Buffer *err)
+                                   const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
   struct MbTable *table = *(struct MbTable **) var;
@@ -257,20 +257,20 @@ static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
  * mbtable_reset - Reset an MbTable to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int mbtable_reset(const struct ConfigSet *cs, void *var,
-                         const struct VariableDef *vdef, struct Buffer *err)
+                         const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  mbtable_destroy(cs, var, vdef);
+  mbtable_destroy(cs, var, cdef);
 
   struct MbTable *table = NULL;
-  const char *initial = (const char *) vdef->initial;
+  const char *initial = (const char *) cdef->initial;
 
   if (initial)
     table = mbtable_parse(initial);

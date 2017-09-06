@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_SORTS_H
-#define _CONFIG_SORTS_H
+#ifndef _CONFIG_SORT_H
+#define _CONFIG_SORT_H
 
 struct ConfigSet;
 
@@ -47,6 +47,22 @@ struct ConfigSet;
 #define SORT_LABEL    19
 #define SORT_DESC     20
 
+/* Sort and sort_aux are shorts, and are a composite of a
+ * constant sort operation number and a set of compounded
+ * bitflags.
+ *
+ * Everything below SORT_MASK is a constant. There's room for
+ * SORT_MASK constant SORT_ values.
+ *
+ * Everything above is a bitflag. It's OK to move SORT_MASK
+ * down by powers of 2 if we need more, so long as we don't
+ * collide with the constants above. (Or we can just expand
+ * sort and sort_aux to uint32_t.)
+ */
+#define SORT_MASK    ((1 << 8) - 1)
+#define SORT_REVERSE (1 << 8)
+#define SORT_LAST    (1 << 9)
+
 void sort_init(struct ConfigSet *cs);
 
-#endif /* _CONFIG_SORTS_H */
+#endif /* _CONFIG_SORT_H */

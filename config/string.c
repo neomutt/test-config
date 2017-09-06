@@ -51,11 +51,11 @@
  * string_destroy - Destroy a String
  * @param cs   Config items
  * @param var  Variable to set
- * @param vdef Variable definition
+ * @param cdef Variable definition
  */
-static void string_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
+static void string_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
 
   const char **str = (const char **) var;
@@ -63,7 +63,7 @@ static void string_destroy(const struct ConfigSet *cs, void *var, const struct V
     return;
 
   /* Don't free strings from the var definition */
-  if (*(char **) var == (char *) vdef->initial)
+  if (*(char **) var == (char *) cdef->initial)
     return;
 
   FREE(var);
@@ -73,31 +73,31 @@ static void string_destroy(const struct ConfigSet *cs, void *var, const struct V
  * string_string_set - Set a String by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int string_string_set(const struct ConfigSet *cs, void *var,
-                             const struct VariableDef *vdef, const char *value,
+                             const struct ConfigDef *cdef, const char *value,
                              struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   /* Store empty strings as NULL */
   if (value && (value[0] == '\0'))
     value = NULL;
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, (intptr_t) value, err);
+    int rv = cdef->validator(cs, cdef, (intptr_t) value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
   }
 
-  string_destroy(cs, var, vdef);
+  string_destroy(cs, var, cdef);
 
   const char *str = safe_strdup(value);
   int result = CSR_SUCCESS;
@@ -112,14 +112,14 @@ static int string_string_set(const struct ConfigSet *cs, void *var,
  * string_string_get - Get a String as a string
  * @param cs     Config items
  * @param var    Variable to get
- * @param vdef   Variable definition
+ * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int string_string_get(const struct ConfigSet *cs, void *var,
-                             const struct VariableDef *vdef, struct Buffer *result)
+                             const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   const char *str = *(const char **) var;
@@ -134,16 +134,16 @@ static int string_string_get(const struct ConfigSet *cs, void *var,
  * string_native_set - Set a String config item by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Native pointer/value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int string_native_set(const struct ConfigSet *cs, void *var,
-                             const struct VariableDef *vdef, intptr_t value,
+                             const struct ConfigDef *cdef, intptr_t value,
                              struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   const char *str = (const char *) value;
@@ -152,16 +152,16 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
   if (str && (str[0] == '\0'))
     value = 0;
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, value, err);
+    int rv = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
   }
 
   /* Don't free strings from the var definition */
-  if (*(char **) var != (char *) vdef->initial)
+  if (*(char **) var != (char *) cdef->initial)
     FREE(var);
 
   str = safe_strdup(str);
@@ -177,14 +177,14 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
  * string_native_get - Get a string from a String config item
  * @param cs   Config items
  * @param var  Variable to get
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval intptr_t String pointer
  */
 static intptr_t string_native_get(const struct ConfigSet *cs, void *var,
-                                  const struct VariableDef *vdef, struct Buffer *err)
+                                  const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
   const char *str = *(const char **) var;
@@ -196,19 +196,19 @@ static intptr_t string_native_get(const struct ConfigSet *cs, void *var,
  * string_reset - Reset a String to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int string_reset(const struct ConfigSet *cs, void *var,
-                        const struct VariableDef *vdef, struct Buffer *err)
+                        const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  string_destroy(cs, var, vdef);
+  string_destroy(cs, var, cdef);
 
-  const char *str = (const char *) vdef->initial;
+  const char *str = (const char *) cdef->initial;
   int result = CSR_SUCCESS;
   if (!str)
     result |= CSR_SUC_EMPTY;

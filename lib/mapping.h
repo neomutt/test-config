@@ -1,6 +1,6 @@
 /**
  * @file
- * Store links between user-readable string and a constant
+ * Store links between a user-readable string and a constant
  *
  * @authors
  * Copyright (C) 1996-2000 Michael R. Elkins <me@mutt.org>

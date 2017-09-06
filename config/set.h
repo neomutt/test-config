@@ -29,7 +29,7 @@
 struct Buffer;
 struct ConfigSet;
 struct HashElem;
-struct VariableDef;
+struct ConfigDef;
 
 enum ConfigEvent
 {
@@ -60,24 +60,25 @@ enum CsListenerAction
 };
 
 typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
-typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct VariableDef *vdef, intptr_t value, struct Buffer *result);
+typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct ConfigDef *cdef, intptr_t value, struct Buffer *result);
 
-typedef int     (*cst_string_set)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, const char *value, struct Buffer *err);
-typedef int     (*cst_string_get)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *result);
-typedef int     (*cst_native_set)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, intptr_t value, struct Buffer *err);
-typedef intptr_t(*cst_native_get)(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
-typedef int     (*cst_reset)     (const struct ConfigSet *cs, void *var, const struct VariableDef *vdef, struct Buffer *err);
-typedef void    (*cst_destroy)   (const struct ConfigSet *cs, void *var, const struct VariableDef *vdef);
+typedef int     (*cst_string_set)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef, const char *value, struct Buffer *err);
+typedef int     (*cst_string_get)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef, struct Buffer *result);
+typedef int     (*cst_native_set)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef, intptr_t value, struct Buffer *err);
+typedef intptr_t(*cst_native_get)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef, struct Buffer *err);
+typedef int     (*cst_reset)     (const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef, struct Buffer *err);
+typedef void    (*cst_destroy)   (const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef);
 
 #define IP (intptr_t)
 
-struct VariableDef
+struct ConfigDef
 {
-  const char   *name;
-  unsigned int  type;
-  void         *var;
-  intptr_t      initial;
-  cs_validator  validator;
+  const char   *name;      /**< user-visible name */
+  unsigned int  type;      /**< variable type, e.g. *DT_STRING */
+  short         flags;     /**< notification flags, e.g. R_PAGER */
+  void         *var;       /**< pointer to the global variable */
+  intptr_t      initial;   /**< initial value */
+  cs_validator  validator; /**< validator callback function */
 };
 
 struct ConfigSetType
@@ -106,7 +107,7 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name);
 const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type);
 
 bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct ConfigSetType *cst);
-bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[]);
+bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[]);
 struct HashElem *cs_inherit_variable(const struct ConfigSet *cs, struct HashElem *parent, const char *name);
 int cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err);
 

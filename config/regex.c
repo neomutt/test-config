@@ -56,11 +56,11 @@
  * regex_destroy - Destroy a Regex object
  * @param cs   Config items
  * @param var  Variable to destroy
- * @param vdef Variable definition
+ * @param cdef Variable definition
  */
-static void regex_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
+static void regex_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
 
   struct Regex **r = (struct Regex **) var;
@@ -74,16 +74,16 @@ static void regex_destroy(const struct ConfigSet *cs, void *var, const struct Va
  * regex_string_set - Set a Regex by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int regex_string_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, const char *value,
+                            const struct ConfigDef *cdef, const char *value,
                             struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct Regex *r = NULL;
@@ -94,9 +94,9 @@ static int regex_string_set(const struct ConfigSet *cs, void *var,
     r->regex = NULL; // regenerate r->regex
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, (intptr_t) r, err);
+    int rv = cdef->validator(cs, cdef, (intptr_t) r, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
     {
@@ -105,7 +105,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var,
     }
   }
 
-  regex_destroy(cs, var, vdef);
+  regex_destroy(cs, var, cdef);
 
   int result = CSR_SUCCESS;
   if (!r)
@@ -119,14 +119,14 @@ static int regex_string_set(const struct ConfigSet *cs, void *var,
  * regex_string_get - Get a Regex as a string
  * @param cs     Config items
  * @param var    Variable to get
- * @param vdef   Variable definition
+ * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int regex_string_get(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, struct Buffer *result)
+                            const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct Regex *r = *(struct Regex **) var;
@@ -156,21 +156,21 @@ static struct Regex *regex_dup(struct Regex *r)
  * regex_native_set - Set a Regex config item by Regex object
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Regex pointer
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int regex_native_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, intptr_t value,
+                            const struct ConfigDef *cdef, intptr_t value,
                             struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, value, err);
+    int rv = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -192,14 +192,14 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
  * regex_native_get - Get a Regex object from a Regex config item
  * @param cs   Config items
  * @param var  Variable to get
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval intptr_t Regex pointer
  */
 static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
-                                 const struct VariableDef *vdef, struct Buffer *err)
+                                 const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
   struct Regex *r = *(struct Regex **) var;
@@ -211,25 +211,25 @@ static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
  * regex_reset - Reset a Regex to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int regex_reset(const struct ConfigSet *cs, void *var,
-                       const struct VariableDef *vdef, struct Buffer *err)
+                       const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  regex_destroy(cs, var, vdef);
+  regex_destroy(cs, var, cdef);
 
   struct Regex *r = NULL;
-  const char *initial = (const char *) vdef->initial;
+  const char *initial = (const char *) cdef->initial;
 
   if (initial)
   {
     r = safe_calloc(1, sizeof(*r));
-    r->pattern = safe_strdup((char *) vdef->initial);
+    r->pattern = safe_strdup((char *) cdef->initial);
     r->regex = NULL; // regenerate r->regex
   }
 

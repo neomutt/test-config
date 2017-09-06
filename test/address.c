@@ -52,22 +52,22 @@ static struct Address *VarNectarine;
 static struct Address *VarOlive;
 
 // clang-format off
-static struct VariableDef Vars[] = {
-  { "Apple",      DT_ADDRESS, &VarApple,      IP "apple@example.com",     NULL              }, /* test_initial_values() */
-  { "Banana",     DT_ADDRESS, &VarBanana,     IP "banana@example.com",    NULL              },
-  { "Cherry",     DT_ADDRESS, &VarCherry,     0,                          NULL              }, /* test_address_set */
-  { "Damson",     DT_ADDRESS, &VarDamson,     IP "damson@example.com",    NULL              },
-  { "Elderberry", DT_ADDRESS, &VarElderberry, 0,                          NULL              }, /* test_address_get */
-  { "Fig",        DT_ADDRESS, &VarFig,        IP "fig@example.com",       NULL              },
-  { "Guava",      DT_ADDRESS, &VarGuava,      0,                          NULL              },
-  { "Hawthorn",   DT_ADDRESS, &VarHawthorn,   0,                          NULL              }, /* test_native_set */
-  { "Ilama",      DT_ADDRESS, &VarIlama,      IP "ilama@example.com",     NULL              },
-  { "Jackfruit",  DT_ADDRESS, &VarJackfruit,  0,                          NULL              }, /* test_native_get */
-  { "Kumquat",    DT_ADDRESS, &VarKumquat,    IP "kumquat@example.com",   NULL              }, /* test_reset */
-  { "Lemon",      DT_ADDRESS, &VarLemon,      IP "lemon@example.com",     validator_succeed }, /* test_validator */
-  { "Mango",      DT_ADDRESS, &VarMango,      IP "mango@example.com",     validator_warn    },
-  { "Nectarine",  DT_ADDRESS, &VarNectarine,  IP "nectarine@example.com", validator_fail    },
-  { "Olive",      DT_ADDRESS, &VarOlive,      0,                          NULL              }, /* test_inherit */
+static struct ConfigDef Vars[] = {
+  { "Apple",      DT_ADDRESS, 0, &VarApple,      IP "apple@example.com",     NULL              }, /* test_initial_values() */
+  { "Banana",     DT_ADDRESS, 0, &VarBanana,     IP "banana@example.com",    NULL              },
+  { "Cherry",     DT_ADDRESS, 0, &VarCherry,     0,                          NULL              }, /* test_address_set */
+  { "Damson",     DT_ADDRESS, 0, &VarDamson,     IP "damson@example.com",    NULL              },
+  { "Elderberry", DT_ADDRESS, 0, &VarElderberry, 0,                          NULL              }, /* test_address_get */
+  { "Fig",        DT_ADDRESS, 0, &VarFig,        IP "fig@example.com",       NULL              },
+  { "Guava",      DT_ADDRESS, 0, &VarGuava,      0,                          NULL              },
+  { "Hawthorn",   DT_ADDRESS, 0, &VarHawthorn,   0,                          NULL              }, /* test_native_set */
+  { "Ilama",      DT_ADDRESS, 0, &VarIlama,      IP "ilama@example.com",     NULL              },
+  { "Jackfruit",  DT_ADDRESS, 0, &VarJackfruit,  0,                          NULL              }, /* test_native_get */
+  { "Kumquat",    DT_ADDRESS, 0, &VarKumquat,    IP "kumquat@example.com",   NULL              }, /* test_reset */
+  { "Lemon",      DT_ADDRESS, 0, &VarLemon,      IP "lemon@example.com",     validator_succeed }, /* test_validator */
+  { "Mango",      DT_ADDRESS, 0, &VarMango,      IP "mango@example.com",     validator_warn    },
+  { "Nectarine",  DT_ADDRESS, 0, &VarNectarine,  IP "nectarine@example.com", validator_fail    },
+  { "Olive",      DT_ADDRESS, 0, &VarOlive,      0,                          NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on

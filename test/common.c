@@ -39,33 +39,33 @@ struct HashElem;
 const char *line = "----------------------------------------"
                    "----------------------------------------";
 
-int validator_fail(const struct ConfigSet *cs, const struct VariableDef *vdef,
+int validator_fail(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                    intptr_t value, struct Buffer *result)
 {
   if (value > 1000000)
-    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
+    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, cdef->name);
   else
-    mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
+    mutt_buffer_printf(result, "%s: %s, %ld", __func__, cdef->name, value);
   return CSR_ERR_INVALID;
 }
 
-int validator_warn(const struct ConfigSet *cs, const struct VariableDef *vdef,
+int validator_warn(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                    intptr_t value, struct Buffer *result)
 {
   if (value > 1000000)
-    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
+    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, cdef->name);
   else
-    mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
+    mutt_buffer_printf(result, "%s: %s, %ld", __func__, cdef->name, value);
   return CSR_SUCCESS | CSR_SUC_WARNING;
 }
 
-int validator_succeed(const struct ConfigSet *cs, const struct VariableDef *vdef,
+int validator_succeed(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                       intptr_t value, struct Buffer *result)
 {
   if (value > 1000000)
-    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, vdef->name);
+    mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, cdef->name);
   else
-    mutt_buffer_printf(result, "%s: %s, %ld", __func__, vdef->name, value);
+    mutt_buffer_printf(result, "%s: %s, %ld", __func__, cdef->name, value);
   return CSR_SUCCESS;
 }
 
@@ -176,9 +176,9 @@ void cs_dump_set(const struct ConfigSet *cs)
     mutt_buffer_reset(&result);
     printf("%s %s", cst->name, name);
 
-    const struct VariableDef *vdef = he->data;
+    const struct ConfigDef *cdef = he->data;
 
-    int rc = cst->string_get(cs, vdef->var, vdef, &result);
+    int rc = cst->string_get(cs, cdef->var, cdef, &result);
     if (CSR_RESULT(rc) == CSR_SUCCESS)
       printf(" = %s\n", result.data);
     else

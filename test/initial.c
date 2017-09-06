@@ -40,10 +40,10 @@ static char *VarBanana;
 static char *VarCherry;
 
 // clang-format off
-static struct VariableDef Vars[] = {
-  { "Apple",  DT_STRING, &VarApple,  IP "apple", NULL },
-  { "Banana", DT_STRING, &VarBanana, 0,          NULL },
-  { "Cherry", DT_STRING, &VarCherry, 0,          NULL },
+static struct ConfigDef Vars[] = {
+  { "Apple",  DT_STRING, 0, &VarApple,  IP "apple", NULL },
+  { "Banana", DT_STRING, 0, &VarBanana, 0,          NULL },
+  { "Cherry", DT_STRING, 0, &VarCherry, 0,          NULL },
   { NULL },
 };
 // clang-format on

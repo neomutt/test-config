@@ -47,7 +47,7 @@
 #include "bool.h"
 #include "inheritance.h"
 #include "magic.h"
-#include "mbtable.h"
+#include "config/mbtable.h"
 #include "number.h"
 #include "path.h"
 #include "quad.h"

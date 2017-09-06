@@ -55,16 +55,16 @@ const char *bool_values[] = {
  * bool_string_set - Set a Bool by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int bool_string_set(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, const char *value,
+                           const struct ConfigDef *cdef, const char *value,
                            struct Buffer *err)
 {
-  if (!cs || !var || !vdef || !value)
+  if (!cs || !var || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
@@ -83,9 +83,9 @@ static int bool_string_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, (intptr_t) num, err);
+    int rv = cdef->validator(cs, cdef, (intptr_t) num, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -99,14 +99,14 @@ static int bool_string_set(const struct ConfigSet *cs, void *var,
  * bool_string_get - Get a Bool as a string
  * @param cs     Config items
  * @param var    Variable to get
- * @param vdef   Variable definition
+ * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int bool_string_get(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, struct Buffer *result)
+                           const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   unsigned int index = *(bool *) var;
@@ -124,16 +124,16 @@ static int bool_string_get(const struct ConfigSet *cs, void *var,
  * bool_native_set - Set a Bool config item by bool
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Bool value
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int bool_native_set(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, intptr_t value,
+                           const struct ConfigDef *cdef, intptr_t value,
                            struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if ((value < 0) || (value > 1))
@@ -142,9 +142,9 @@ static int bool_native_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, value, err);
+    int rv = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -158,14 +158,14 @@ static int bool_native_set(const struct ConfigSet *cs, void *var,
  * bool_native_get - Get a bool from a Bool config item
  * @param cs   Config items
  * @param var  Variable to get
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval intptr_t Bool
  */
 static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
-                                const struct VariableDef *vdef, struct Buffer *err)
+                                const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(bool *) var;
@@ -175,17 +175,17 @@ static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
  * bool_reset - Reset a Bool to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int bool_reset(const struct ConfigSet *cs, void *var,
-                      const struct VariableDef *vdef, struct Buffer *err)
+                      const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  *(bool *) var = vdef->initial;
+  *(bool *) var = cdef->initial;
   return CSR_SUCCESS;
 }
 

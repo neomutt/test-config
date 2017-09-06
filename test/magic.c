@@ -48,18 +48,18 @@ static short VarJackfruit;
 static short VarKumquat;
 
 // clang-format off
-static struct VariableDef Vars[] = {
-  { "Apple",      DT_MAGIC, &VarApple,      1, NULL              }, /* test_initial_values() */
-  { "Banana",     DT_MAGIC, &VarBanana,     3, NULL              },
-  { "Cherry",     DT_MAGIC, &VarCherry,     1, NULL              }, /* test_string_set */
-  { "Damson",     DT_MAGIC, &VarDamson,     1, NULL              }, /* test_string_get */
-  { "Elderberry", DT_MAGIC, &VarElderberry, 1, NULL              }, /* test_native_set */
-  { "Fig",        DT_MAGIC, &VarFig,        1, NULL              }, /* test_native_get */
-  { "Guava",      DT_MAGIC, &VarGuava,      1, NULL              }, /* test_reset */
-  { "Hawthorn",   DT_MAGIC, &VarHawthorn,   1, validator_succeed }, /* test_validator */
-  { "Ilama",      DT_MAGIC, &VarIlama,      1, validator_warn    },
-  { "Jackfruit",  DT_MAGIC, &VarJackfruit,  1, validator_fail    },
-  { "Kumquat",    DT_MAGIC, &VarKumquat,    1, NULL              }, /* test_inherit */
+static struct ConfigDef Vars[] = {
+  { "Apple",      DT_MAGIC, 0, &VarApple,      1, NULL              }, /* test_initial_values() */
+  { "Banana",     DT_MAGIC, 0, &VarBanana,     3, NULL              },
+  { "Cherry",     DT_MAGIC, 0, &VarCherry,     1, NULL              }, /* test_string_set */
+  { "Damson",     DT_MAGIC, 0, &VarDamson,     1, NULL              }, /* test_string_get */
+  { "Elderberry", DT_MAGIC, 0, &VarElderberry, 1, NULL              }, /* test_native_set */
+  { "Fig",        DT_MAGIC, 0, &VarFig,        1, NULL              }, /* test_native_get */
+  { "Guava",      DT_MAGIC, 0, &VarGuava,      1, NULL              }, /* test_reset */
+  { "Hawthorn",   DT_MAGIC, 0, &VarHawthorn,   1, validator_succeed }, /* test_validator */
+  { "Ilama",      DT_MAGIC, 0, &VarIlama,      1, validator_warn    },
+  { "Jackfruit",  DT_MAGIC, 0, &VarJackfruit,  1, validator_fail    },
+  { "Kumquat",    DT_MAGIC, 0, &VarKumquat,    1, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on

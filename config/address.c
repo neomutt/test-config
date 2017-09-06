@@ -43,7 +43,7 @@
 #include <stddef.h>
 #include <limits.h>
 #include <stdint.h>
-#include "address.h"
+#include "config/lib.h"
 #include "lib/buffer.h"
 #include "lib/debug.h"
 #include "lib/memory.h"
@@ -55,12 +55,12 @@
  * address_destroy - Destroy an Address object
  * @param cs   Config items
  * @param var  Variable to destroy
- * @param vdef Variable definition
+ * @param cdef Variable definition
  */
 static void address_destroy(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef)
+                            const struct ConfigDef *cdef)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
 
   struct Address **a = (struct Address **) var;
@@ -74,16 +74,16 @@ static void address_destroy(const struct ConfigSet *cs, void *var,
  * address_string_set - Set an Address by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int address_string_set(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, const char *value,
+                              const struct ConfigDef *cdef, const char *value,
                               struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct Address *addr = NULL;
@@ -96,18 +96,18 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
     addr->mailbox = safe_strdup("dummy1");
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, (intptr_t) addr, err);
+    int rv = cdef->validator(cs, cdef, (intptr_t) addr, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
     {
-      address_destroy(cs, &addr, vdef);
+      address_destroy(cs, &addr, cdef);
       return rv | CSR_INV_VALIDATOR;
     }
   }
 
-  address_destroy(cs, var, vdef);
+  address_destroy(cs, var, cdef);
 
   int result = CSR_SUCCESS;
   if (!addr)
@@ -121,14 +121,14 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
  * address_string_get - Get an Address as a string
  * @param cs     Config items
  * @param var    Variable to get
- * @param vdef   Variable definition
+ * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int address_string_get(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, struct Buffer *result)
+                              const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct Address *a = *(struct Address **) var;
@@ -159,21 +159,21 @@ static struct Address *address_dup(struct Address *addr)
  * address_native_set - Set an Address config item by Address object
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Address pointer
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int address_native_set(const struct ConfigSet *cs, void *var,
-                              const struct VariableDef *vdef, intptr_t value,
+                              const struct ConfigDef *cdef, intptr_t value,
                               struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, value, err);
+    int rv = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -195,14 +195,14 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
  * address_native_get - Get an Address object from an Address config item
  * @param cs   Config items
  * @param var  Variable to get
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval intptr_t Address pointer
  */
 static intptr_t address_native_get(const struct ConfigSet *cs, void *var,
-                                   const struct VariableDef *vdef, struct Buffer *err)
+                                   const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
   struct Address *addr = *(struct Address **) var;
@@ -214,20 +214,20 @@ static intptr_t address_native_get(const struct ConfigSet *cs, void *var,
  * address_reset - Reset an Address to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int address_reset(const struct ConfigSet *cs, void *var,
-                         const struct VariableDef *vdef, struct Buffer *err)
+                         const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  address_destroy(cs, var, vdef);
+  address_destroy(cs, var, cdef);
 
   struct Address *a = NULL;
-  const char *initial = (const char *) vdef->initial;
+  const char *initial = (const char *) cdef->initial;
 
   if (initial)
     a = address_create(initial);

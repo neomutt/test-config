@@ -154,21 +154,21 @@ static int find_id(const struct Mapping *map, const char *str)
  * sort_string_set - Set a Sort by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int sort_string_set(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, const char *value,
+                           const struct ConfigDef *cdef, const char *value,
                            struct Buffer *err)
 {
-  if (!cs || !var || !vdef || !value)
+  if (!cs || !var || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   intptr_t id = -1;
 
-  switch (vdef->type & DT_SUBTYPE_MASK)
+  switch (cdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
       id = find_id(SortMethods, value);
@@ -189,7 +189,7 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
       id = find_id(SortSidebarMethods, value);
       break;
     default:
-      mutt_debug(1, "Invalid sort type: %ld\n", vdef->type & DT_SUBTYPE_MASK);
+      mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
       return CSR_ERR_CODE;
       break;
   }
@@ -200,9 +200,9 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, (intptr_t) id, err);
+    int rv = cdef->validator(cs, cdef, (intptr_t) id, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -216,21 +216,21 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
  * sort_string_get - Get a Sort as a string
  * @param cs     Config items
  * @param var    Variable to get
- * @param vdef   Variable definition
+ * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int sort_string_get(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, struct Buffer *result)
+                           const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int sort = *(short *) var;
 
   const char *str = NULL;
 
-  switch (vdef->type & DT_SUBTYPE_MASK)
+  switch (cdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
       str = find_string(SortMethods, sort);
@@ -251,7 +251,7 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
       str = find_string(SortSidebarMethods, sort);
       break;
     default:
-      mutt_debug(1, "Invalid sort type: %ld\n", vdef->type & DT_SUBTYPE_MASK);
+      mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
       return CSR_ERR_CODE;
       break;
   }
@@ -259,7 +259,7 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
   if (!str)
   {
     mutt_debug(1, "Variable has an invalid value: %d/%d\n",
-               vdef->type & DT_SUBTYPE_MASK, sort);
+               cdef->type & DT_SUBTYPE_MASK, sort);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
@@ -271,21 +271,21 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
  * sort_native_set - Set a Sort config item by int
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Sort value
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int sort_native_set(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, intptr_t value,
+                           const struct ConfigDef *cdef, intptr_t value,
                            struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   const char *str = NULL;
 
-  switch (vdef->type & DT_SUBTYPE_MASK)
+  switch (cdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
       str = find_string(SortMethods, value);
@@ -306,7 +306,7 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
       str = find_string(SortSidebarMethods, value);
       break;
     default:
-      mutt_debug(1, "Invalid sort type: %ld\n", vdef->type & DT_SUBTYPE_MASK);
+      mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
       return CSR_ERR_CODE;
       break;
   }
@@ -317,9 +317,9 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, value, err);
+    int rv = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -333,14 +333,14 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
  * sort_native_get - Get an int from a Sort config item
  * @param cs   Config items
  * @param var  Variable to get
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval intptr_t Sort ID
  */
 static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
-                                const struct VariableDef *vdef, struct Buffer *err)
+                                const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
@@ -350,17 +350,17 @@ static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
  * sort_reset - Reset a Sort to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int sort_reset(const struct ConfigSet *cs, void *var,
-                      const struct VariableDef *vdef, struct Buffer *err)
+                      const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  *(short *) var = vdef->initial;
+  *(short *) var = cdef->initial;
   return CSR_SUCCESS;
 }
 

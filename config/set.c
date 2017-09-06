@@ -89,43 +89,43 @@ static void destroy(int type, void *obj, intptr_t data)
   if (type & DT_INHERITED)
   {
     struct Inheritance *i = obj;
-    // struct VariableDef *vdef = i->parent->data;
+    // struct ConfigDef *cdef = i->parent->data;
     // cst = cs_get_type_def(cs, i->parent->type);
 
     // if (cst->destroy)
-    //   cst->destroy(cs, &i->var, vdef);
+    //   cst->destroy(cs, &i->var, cdef);
 
     FREE(&i->name);
     FREE(&i);
   }
   else
   {
-    struct VariableDef *vdef = obj;
+    struct ConfigDef *cdef = obj;
 
     cst = cs_get_type_def(cs, type);
     if (cst && cst->destroy)
-      cst->destroy(cs, vdef->var, vdef);
+      cst->destroy(cs, cdef->var, cdef);
 
     /* If we allocated the initial value, clean it up */
     if (type & DT_INITIAL_SET)
-      FREE(&vdef->initial);
+      FREE(&cdef->initial);
   }
 }
 
 /**
  * create_synonym - Create an alternative name for a config item
  * @param cs   Config items
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval ptr New HashElem representing the config item synonym
  */
 static struct HashElem *create_synonym(const struct ConfigSet *cs,
-                                       struct VariableDef *vdef, struct Buffer *err)
+                                       struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !vdef)
+  if (!cs || !cdef)
     return NULL; /* LCOV_EXCL_LINE */
 
-  const char *name = (const char *) vdef->initial;
+  const char *name = (const char *) cdef->initial;
   struct HashElem *parent = cs_get_elem(cs, name);
   if (!parent)
   {
@@ -134,44 +134,44 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs,
   }
 
   struct HashElem *child =
-      hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
+      hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
   if (!child)
     return NULL;
 
-  vdef->var = parent;
+  cdef->var = parent;
   return child;
 }
 
 /**
  * reg_one_var - Register one config item
  * @param cs   Config items
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval ptr New HashElem representing the config item
  */
 static struct HashElem *reg_one_var(const struct ConfigSet *cs,
-                                    struct VariableDef *vdef, struct Buffer *err)
+                                    struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !vdef)
+  if (!cs || !cdef)
     return NULL; /* LCOV_EXCL_LINE */
 
-  if (vdef->type == DT_SYNONYM)
-    return create_synonym(cs, vdef, err);
+  if (cdef->type == DT_SYNONYM)
+    return create_synonym(cs, cdef, err);
 
-  const struct ConfigSetType *cst = cs_get_type_def(cs, vdef->type);
+  const struct ConfigSetType *cst = cs_get_type_def(cs, cdef->type);
   if (!cst)
   {
-    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, vdef->type);
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", cdef->name, cdef->type);
     return NULL;
   }
 
   struct HashElem *he =
-      hash_typed_insert(cs->hash, vdef->name, vdef->type, (void *) vdef);
+      hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
   if (!he)
     return NULL;
 
   if (cst && cst->reset)
-    cst->reset(cs, vdef->var, vdef, err);
+    cst->reset(cs, cdef->var, cdef, err);
 
   return he;
 }
@@ -342,7 +342,7 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
  * @param vars Variable definition
  * @retval bool True, if all variables were registered successfully
  */
-bool cs_register_variables(const struct ConfigSet *cs, struct VariableDef vars[])
+bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[])
 {
   if (!cs || !vars)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -409,26 +409,26 @@ int cs_str_string_set(const struct ConfigSet *cs, const char *name,
 
   void *var = NULL;
 
-  struct VariableDef *vdef = NULL;
+  struct ConfigDef *cdef = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
-    vdef = i->parent->data;
+    cdef = i->parent->data;
     var = &i->var;
     notify_name = name;
   }
   else
   {
-    vdef = he->data;
-    var = vdef->var;
-    notify_name = vdef->name;
+    cdef = he->data;
+    var = cdef->var;
+    notify_name = cdef->name;
   }
 
   if (!var)
     return CSR_ERR_CODE;
 
-  int result = cst->string_set(cs, var, vdef, value, err);
+  int result = cst->string_set(cs, var, cdef, value, err);
   if (CSR_RESULT(result) != CSR_SUCCESS)
     return result;
 
@@ -466,29 +466,29 @@ int cs_reset_variable(const struct ConfigSet *cs, const char *name, struct Buffe
     return CSR_SUCCESS;
 
   const struct ConfigSetType *cst = NULL;
-  const struct VariableDef *vdef = NULL;
+  const struct ConfigDef *cdef = NULL;
   const char *notify_name = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
     cst = cs_get_type_def(cs, i->parent->type);
-    vdef = i->parent->data;
+    cdef = i->parent->data;
     notify_name = name;
 
     if (cst && cst->destroy)
-      cst->destroy(cs, (void **) &i->var, vdef);
+      cst->destroy(cs, (void **) &i->var, cdef);
 
     he->type = DT_INHERITED;
   }
   else
   {
     cst = cs_get_type_def(cs, he->type);
-    vdef = he->data;
-    notify_name = vdef->name;
+    cdef = he->data;
+    notify_name = cdef->name;
 
     if (cst)
-      cst->reset(cs, vdef->var, vdef, err);
+      cst->reset(cs, cdef->var, cdef, err);
   }
 
   cs_notify_listeners(cs, he, notify_name, CE_RESET);
@@ -515,19 +515,19 @@ int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffe
   }
 
   struct Inheritance *i = NULL;
-  const struct VariableDef *vdef = NULL;
+  const struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
   void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     i = he->data;
-    vdef = i->parent->data;
+    cdef = i->parent->data;
     cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
-    vdef = he->data;
+    cdef = he->data;
     cst = cs_get_type_def(cs, he->type);
   }
 
@@ -537,7 +537,7 @@ int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffe
   }
   else
   {
-    var = vdef->var; // Normal var
+    var = cdef->var; // Normal var
   }
 
   if (!cst)
@@ -546,7 +546,7 @@ int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffe
     return CSR_ERR_CODE;
   }
 
-  return cst->string_get(cs, var, vdef, result);
+  return cst->string_get(cs, var, cdef, result);
 }
 
 /**
@@ -567,9 +567,9 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
   if (he->type != DT_SYNONYM)
     return he;
 
-  const struct VariableDef *vdef = he->data;
+  const struct ConfigDef *cdef = he->data;
 
-  return vdef->var;
+  return cdef->var;
 }
 
 /**
@@ -620,36 +620,36 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
   if (!cs || !he)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  const struct VariableDef *vdef = NULL;
+  const struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
   void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
-    vdef = i->parent->data;
+    cdef = i->parent->data;
     var = &i->var;
     cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
-    vdef = he->data;
-    var = vdef->var;
+    cdef = he->data;
+    var = cdef->var;
     cst = cs_get_type_def(cs, he->type);
   }
 
   if (!cst)
   {
-    mutt_debug(1, "Variable '%s' has an invalid type %d\n", vdef->name, he->type);
+    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, he->type);
     return CSR_ERR_CODE;
   }
 
-  int result = cst->native_set(cs, var, vdef, value, err);
+  int result = cst->native_set(cs, var, cdef, value, err);
   if (CSR_RESULT(result) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
-      he->type = DT_INHERITED | vdef->type;
-    cs_notify_listeners(cs, he, vdef->name, CE_SET);
+      he->type = DT_INHERITED | cdef->type;
+    cs_notify_listeners(cs, he, cdef->name, CE_SET);
   }
 
   return result;
@@ -668,19 +668,19 @@ int cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buf
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   struct Inheritance *i = NULL;
-  const struct VariableDef *vdef = NULL;
+  const struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
   void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     i = he->data;
-    vdef = i->parent->data;
+    cdef = i->parent->data;
     cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
-    vdef = he->data;
+    cdef = he->data;
     cst = cs_get_type_def(cs, he->type);
   }
 
@@ -690,16 +690,16 @@ int cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buf
   }
   else
   {
-    var = vdef->var; // Normal var
+    var = cdef->var; // Normal var
   }
 
   if (!cst)
   {
-    mutt_debug(1, "Variable '%s' has an invalid type %d\n", vdef->name, DTYPE(he->type));
+    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, DTYPE(he->type));
     return CSR_ERR_CODE;
   }
 
-  return cst->string_get(cs, var, vdef, result);
+  return cst->string_get(cs, var, cdef, result);
 }
 
 
@@ -724,36 +724,36 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
     return CSR_ERR_UNKNOWN;
   }
 
-  const struct VariableDef *vdef = NULL;
+  const struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
   void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
-    vdef = i->parent->data;
+    cdef = i->parent->data;
     var = &i->var;
     cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
-    vdef = he->data;
-    var = vdef->var;
+    cdef = he->data;
+    var = cdef->var;
     cst = cs_get_type_def(cs, he->type);
   }
 
   if (!cst)
   {
-    mutt_debug(1, "Variable '%s' has an invalid type %d\n", vdef->name, he->type);
+    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, he->type);
     return CSR_ERR_CODE;
   }
 
-  int result = cst->native_set(cs, var, vdef, value, err);
+  int result = cst->native_set(cs, var, cdef, value, err);
   if (CSR_RESULT(result) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
-      he->type = DT_INHERITED | vdef->type;
-    cs_notify_listeners(cs, he, vdef->name, CE_SET);
+      he->type = DT_INHERITED | cdef->type;
+    cs_notify_listeners(cs, he, cdef->name, CE_SET);
   }
 
   return result;
@@ -779,19 +779,19 @@ intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct 
   }
 
   struct Inheritance *i = NULL;
-  const struct VariableDef *vdef = NULL;
+  const struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
   void *var = NULL;
 
   if (he->type & DT_INHERITED)
   {
     i = he->data;
-    vdef = i->parent->data;
+    cdef = i->parent->data;
     cst = cs_get_type_def(cs, i->parent->type);
   }
   else
   {
-    vdef = he->data;
+    cdef = he->data;
     cst = cs_get_type_def(cs, he->type);
   }
 
@@ -801,16 +801,16 @@ intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct 
   }
   else
   {
-    var = vdef->var;
+    var = cdef->var;
   }
 
   if (!cst)
   {
-    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", vdef->name, he->type);
+    mutt_buffer_printf(err, "Variable '%s' has an invalid type %d", cdef->name, he->type);
     return INT_MIN;
   }
 
-  return cst->native_get(cs, var, vdef, err);
+  return cst->native_get(cs, var, cdef, err);
 }
 
 /**
@@ -840,18 +840,18 @@ int cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he,
     return CSR_ERR_CODE;
   }
 
-  struct VariableDef *vdef = he->data;
-  if (!vdef)
+  struct ConfigDef *cdef = he->data;
+  if (!cdef)
     return CSR_ERR_CODE;
 
-  if (vdef->initial != 0)
+  if (cdef->initial != 0)
   {
     mutt_debug(1, "Config item was defined with an initial value\n");
     return CSR_ERR_CODE;
   }
 
-  vdef->initial = IP safe_strdup(value);
+  cdef->initial = IP safe_strdup(value);
   he->type |= DT_INITIAL_SET;
 
-  return cs_reset_variable(cs, vdef->name, err);
+  return cs_reset_variable(cs, cdef->name, err);
 }

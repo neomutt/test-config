@@ -52,22 +52,22 @@ static char *VarNectarine;
 static char *VarOlive;
 
 // clang-format off
-static struct VariableDef Vars[] = {
-  { "Apple",      DT_STRING, &VarApple,      IP "apple",     NULL              }, /* test_initial_values() */
-  { "Banana",     DT_STRING, &VarBanana,     IP "banana",    NULL              },
-  { "Cherry",     DT_STRING, &VarCherry,     0,              NULL              }, /* test_string_set */
-  { "Damson",     DT_STRING, &VarDamson,     IP "damson",    NULL              },
-  { "Elderberry", DT_STRING, &VarElderberry, 0,              NULL              }, /* test_string_get */
-  { "Fig",        DT_STRING, &VarFig,        IP "fig",       NULL              },
-  { "Guava",      DT_STRING, &VarGuava,      0,              NULL              },
-  { "Hawthorn",   DT_STRING, &VarHawthorn,   0,              NULL              }, /* test_native_set */
-  { "Ilama",      DT_STRING, &VarIlama,      IP "ilama",     NULL              },
-  { "Jackfruit",  DT_STRING, &VarJackfruit,  0,              NULL              }, /* test_native_get */
-  { "Kumquat",    DT_STRING, &VarKumquat,    IP "kumquat",   NULL              }, /* test_reset */
-  { "Lemon",      DT_STRING, &VarLemon,      IP "lemon",     validator_succeed }, /* test_validator */
-  { "Mango",      DT_STRING, &VarMango,      IP "mango",     validator_warn    },
-  { "Nectarine",  DT_STRING, &VarNectarine,  IP "nectarine", validator_fail    },
-  { "Olive",      DT_STRING, &VarOlive,      0,              NULL              }, /* test_inherit */
+static struct ConfigDef Vars[] = {
+  { "Apple",      DT_STRING, 0, &VarApple,      IP "apple",     NULL              }, /* test_initial_values() */
+  { "Banana",     DT_STRING, 0, &VarBanana,     IP "banana",    NULL              },
+  { "Cherry",     DT_STRING, 0, &VarCherry,     0,              NULL              }, /* test_string_set */
+  { "Damson",     DT_STRING, 0, &VarDamson,     IP "damson",    NULL              },
+  { "Elderberry", DT_STRING, 0, &VarElderberry, 0,              NULL              }, /* test_string_get */
+  { "Fig",        DT_STRING, 0, &VarFig,        IP "fig",       NULL              },
+  { "Guava",      DT_STRING, 0, &VarGuava,      0,              NULL              },
+  { "Hawthorn",   DT_STRING, 0, &VarHawthorn,   0,              NULL              }, /* test_native_set */
+  { "Ilama",      DT_STRING, 0, &VarIlama,      IP "ilama",     NULL              },
+  { "Jackfruit",  DT_STRING, 0, &VarJackfruit,  0,              NULL              }, /* test_native_get */
+  { "Kumquat",    DT_STRING, 0, &VarKumquat,    IP "kumquat",   NULL              }, /* test_reset */
+  { "Lemon",      DT_STRING, 0, &VarLemon,      IP "lemon",     validator_succeed }, /* test_validator */
+  { "Mango",      DT_STRING, 0, &VarMango,      IP "mango",     validator_warn    },
+  { "Nectarine",  DT_STRING, 0, &VarNectarine,  IP "nectarine", validator_fail    },
+  { "Olive",      DT_STRING, 0, &VarOlive,      0,              NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on

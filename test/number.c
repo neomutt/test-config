@@ -48,18 +48,18 @@ static short VarJackfruit;
 static short VarKumquat;
 
 // clang-format off
-static struct VariableDef Vars[] = {
-  { "Apple",      DT_NUMBER, &VarApple,      -42, NULL              }, /* test_initial_values() */
-  { "Banana",     DT_NUMBER, &VarBanana,      99, NULL              },
-  { "Cherry",     DT_NUMBER, &VarCherry,       0, NULL              }, /* test_string_set */
-  { "Damson",     DT_NUMBER, &VarDamson,       0, NULL              }, /* test_string_get */
-  { "Elderberry", DT_NUMBER, &VarElderberry,   0, NULL              }, /* test_native_set */
-  { "Fig",        DT_NUMBER, &VarFig,          0, NULL              }, /* test_native_get */
-  { "Guava",      DT_NUMBER, &VarGuava,       99, NULL              }, /* test_reset */
-  { "Hawthorn",   DT_NUMBER, &VarHawthorn,     0, validator_succeed }, /* test_validator */
-  { "Ilama",      DT_NUMBER, &VarIlama,        0, validator_warn    },
-  { "Jackfruit",  DT_NUMBER, &VarJackfruit,    0, validator_fail    },
-  { "Kumquat",    DT_NUMBER, &VarKumquat,      0, NULL              }, /* test_inherit */
+static struct ConfigDef Vars[] = {
+  { "Apple",      DT_NUMBER, 0, &VarApple,      -42, NULL              }, /* test_initial_values() */
+  { "Banana",     DT_NUMBER, 0, &VarBanana,      99, NULL              },
+  { "Cherry",     DT_NUMBER, 0, &VarCherry,       0, NULL              }, /* test_string_set */
+  { "Damson",     DT_NUMBER, 0, &VarDamson,       0, NULL              }, /* test_string_get */
+  { "Elderberry", DT_NUMBER, 0, &VarElderberry,   0, NULL              }, /* test_native_set */
+  { "Fig",        DT_NUMBER, 0, &VarFig,          0, NULL              }, /* test_native_get */
+  { "Guava",      DT_NUMBER, 0, &VarGuava,       99, NULL              }, /* test_reset */
+  { "Hawthorn",   DT_NUMBER, 0, &VarHawthorn,     0, validator_succeed }, /* test_validator */
+  { "Ilama",      DT_NUMBER, 0, &VarIlama,        0, validator_warn    },
+  { "Jackfruit",  DT_NUMBER, 0, &VarJackfruit,    0, validator_fail    },
+  { "Kumquat",    DT_NUMBER, 0, &VarKumquat,      0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on

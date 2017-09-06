@@ -33,11 +33,11 @@ struct HashElem;
 
 extern const char *line;
 
-int validator_succeed(const struct ConfigSet *cs, const struct VariableDef *vdef,
+int validator_succeed(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                       intptr_t value, struct Buffer *result);
-int validator_warn(const struct ConfigSet *cs, const struct VariableDef *vdef,
+int validator_warn(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                    intptr_t value, struct Buffer *result);
-int validator_fail(const struct ConfigSet *cs, const struct VariableDef *vdef,
+int validator_fail(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                    intptr_t value, struct Buffer *result);
 
 void log_line(const char *fn);

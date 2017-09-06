@@ -53,16 +53,16 @@ const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
  * quad_string_set - Set a Quad-option by string
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int quad_string_set(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, const char *value,
+                           const struct ConfigDef *cdef, const char *value,
                            struct Buffer *err)
 {
-  if (!cs || !var || !vdef || !value)
+  if (!cs || !var || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
@@ -81,9 +81,9 @@ static int quad_string_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, (intptr_t) num, err);
+    int rv = cdef->validator(cs, cdef, (intptr_t) num, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -97,14 +97,14 @@ static int quad_string_set(const struct ConfigSet *cs, void *var,
  * quad_string_get - Get a Quad-option as a string
  * @param cs     Config items
  * @param var    Variable to get
- * @param vdef   Variable definition
+ * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int quad_string_get(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, struct Buffer *result)
+                           const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   unsigned int index = *(short *) var;
@@ -122,16 +122,16 @@ static int quad_string_get(const struct ConfigSet *cs, void *var,
  * quad_native_set - Set a Quad-option config item by int
  * @param cs    Config items
  * @param var   Variable to set
- * @param vdef  Variable definition
+ * @param cdef  Variable definition
  * @param value Quad-option value
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int quad_native_set(const struct ConfigSet *cs, void *var,
-                           const struct VariableDef *vdef, intptr_t value,
+                           const struct ConfigDef *cdef, intptr_t value,
                            struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if ((value < 0) || (value >= mutt_array_size(quad_values)))
@@ -140,9 +140,9 @@ static int quad_native_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (vdef->validator)
+  if (cdef->validator)
   {
-    int rv = vdef->validator(cs, vdef, value, err);
+    int rv = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rv) != CSR_SUCCESS)
       return rv | CSR_INV_VALIDATOR;
@@ -156,14 +156,14 @@ static int quad_native_set(const struct ConfigSet *cs, void *var,
  * quad_native_get - Get an int object from a Quad-option config item
  * @param cs   Config items
  * @param var  Variable to get
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval intptr_t Quad-option value
  */
 static intptr_t quad_native_get(const struct ConfigSet *cs, void *var,
-                                const struct VariableDef *vdef, struct Buffer *err)
+                                const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
   return *(short *) var;
@@ -173,17 +173,17 @@ static intptr_t quad_native_get(const struct ConfigSet *cs, void *var,
  * quad_reset - Reset a Quad-option to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
- * @param vdef Variable definition
+ * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int quad_reset(const struct ConfigSet *cs, void *var,
-                      const struct VariableDef *vdef, struct Buffer *err)
+                      const struct ConfigDef *cdef, struct Buffer *err)
 {
-  if (!cs || !var || !vdef)
+  if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  *(short *) var = vdef->initial;
+  *(short *) var = cdef->initial;
   return CSR_SUCCESS;
 }
 

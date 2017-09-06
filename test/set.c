@@ -35,46 +35,46 @@ static short VarApple;
 static bool VarBanana;
 
 // clang-format off
-static struct VariableDef Vars[] = {
-  { "Apple",  DT_NUMBER,  &VarApple,  0, NULL },
-  { "Banana", DT_BOOL,    &VarBanana, 1, NULL },
+static struct ConfigDef Vars[] = {
+  { "Apple",  DT_NUMBER,  0, &VarApple,  0, NULL },
+  { "Banana", DT_BOOL,    0, &VarBanana, 1, NULL },
   { NULL },
 };
 // clang-format on
 
 static int dummy_string_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, const char *value,
+                            const struct ConfigDef *cdef, const char *value,
                             struct Buffer *err)
 {
   return CSR_ERR_CODE;
 }
 
 static int dummy_string_get(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, struct Buffer *result)
+                            const struct ConfigDef *cdef, struct Buffer *result)
 {
   return CSR_ERR_CODE;
 }
 
 static int dummy_native_set(const struct ConfigSet *cs, void *var,
-                            const struct VariableDef *vdef, intptr_t value,
+                            const struct ConfigDef *cdef, intptr_t value,
                             struct Buffer *err)
 {
   return CSR_ERR_CODE;
 }
 
 static intptr_t dummy_native_get(const struct ConfigSet *cs, void *var,
-                                 const struct VariableDef *vdef, struct Buffer *err)
+                                 const struct ConfigDef *cdef, struct Buffer *err)
 {
   return INT_MIN;
 }
 
 static int dummy_reset(const struct ConfigSet *cs, void *var,
-                       const struct VariableDef *vdef, struct Buffer *err)
+                       const struct ConfigDef *cdef, struct Buffer *err)
 {
   return CSR_ERR_CODE;
 }
 
-void dummy_destroy(const struct ConfigSet *cs, void *var, const struct VariableDef *vdef)
+void dummy_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
 }
 
