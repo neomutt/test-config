@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "buffer.h"
+#include "debug.h"
 #include "memory.h"
 #include "string2.h"
 
@@ -72,6 +73,8 @@ struct Buffer *mutt_buffer_new(void)
  */
 struct Buffer *mutt_buffer_init(struct Buffer *b)
 {
+  if (!b)
+    return NULL;
   memset(b, 0, sizeof(struct Buffer));
   return b;
 }
@@ -85,6 +88,8 @@ struct Buffer *mutt_buffer_init(struct Buffer *b)
  */
 void mutt_buffer_reset(struct Buffer *b)
 {
+  if (!b)
+    return;
   memset(b->data, 0, b->dsize);
   b->dptr = b->data;
 }
@@ -96,12 +101,10 @@ void mutt_buffer_reset(struct Buffer *b)
  */
 struct Buffer *mutt_buffer_from(char *seed)
 {
-  struct Buffer *b = NULL;
-
   if (!seed)
     return NULL;
 
-  b = mutt_buffer_new();
+  struct Buffer *b = mutt_buffer_new();
   b->data = safe_strdup(seed);
   b->dsize = mutt_strlen(seed);
   b->dptr = (char *) b->data + b->dsize;
@@ -125,6 +128,12 @@ static void mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
 
   if ((buf->dptr + len + 1) > (buf->data + buf->dsize))
   {
+    if (buf->fixed_size)
+    {
+      mutt_debug(1, "Fixed Buffer isn't big enough\n");
+      return;
+    }
+
     size_t offset = buf->dptr - buf->data;
     buf->dsize += (len < 128) ? 128 : len + 1;
     safe_realloc(&buf->data, buf->dsize);
@@ -185,6 +194,11 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
   len = vsnprintf(buf->dptr, blen, fmt, ap);
   if (len >= blen)
   {
+    if (buf->fixed_size)
+    {
+      mutt_debug(1, "Fixed Buffer isn't big enough\n");
+      return 0;
+    }
     blen = ++len - blen;
     if (blen < 128)
       blen = 128;
@@ -211,6 +225,8 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
  */
 void mutt_buffer_addstr(struct Buffer *buf, const char *s)
 {
+  if (!buf || !s)
+    return;
   mutt_buffer_add(buf, s, mutt_strlen(s));
 }
 
@@ -223,5 +239,7 @@ void mutt_buffer_addstr(struct Buffer *buf, const char *s)
  */
 void mutt_buffer_addch(struct Buffer *buf, char c)
 {
+  if (!buf)
+    return;
   mutt_buffer_add(buf, &c, 1);
 }

@@ -25,16 +25,17 @@
 #define _LIB_BUFFER_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 /**
  * struct Buffer - String manipulation buffer
  */
 struct Buffer
 {
-  char *data;   /**< pointer to data */
-  char *dptr;   /**< current read/write position */
-  size_t dsize; /**< length of data */
-  int destroy;  /**< destroy 'data' when done? */
+  char *data;      /**< pointer to data */
+  char *dptr;      /**< current read/write position */
+  size_t dsize;    /**< length of data */
+  bool fixed_size; /**< Buffer won't be dynamically resized */
 };
 
 #define MoreArgs(p) (*p->dptr && (*p->dptr != ';') && (*p->dptr != '#'))
@@ -47,5 +48,13 @@ void mutt_buffer_free(struct Buffer **p);
 int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...);
 void mutt_buffer_addstr(struct Buffer *buf, const char *s);
 void mutt_buffer_addch(struct Buffer *buf, char c);
+
+#define FIXED_BUFFER_INIT(var, size)                                           \
+  char var_data[size] = { 0 };                                                 \
+  struct Buffer var;                                                           \
+  var.data = var_data;                                                         \
+  var.dptr = var_data;                                                         \
+  var.dsize = size;                                                            \
+  var.fixed_size = true;
 
 #endif /* _LIB_BUFFER_H */

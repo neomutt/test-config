@@ -434,11 +434,7 @@ bool string_test(void)
 {
   log_line(__func__);
 
-  struct Buffer err;
-  mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
-  err.dsize = STRING;
-  mutt_buffer_reset(&err);
+  FIXED_BUFFER_INIT(err, STRING);
 
   struct ConfigSet *cs = cs_create(30);
 
@@ -468,7 +464,5 @@ bool string_test(void)
     return false;
 
   cs_free(&cs);
-  FREE(&err.data);
-
   return true;
 }
