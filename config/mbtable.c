@@ -47,10 +47,10 @@
 #include <string.h>
 #include <wchar.h>
 #include "config/mbtable.h"
-#include "lib/buffer.h"
-#include "lib/debug.h"
-#include "lib/memory.h"
-#include "lib/string2.h"
+#include "mutt/buffer.h"
+#include "mutt/debug.h"
+#include "mutt/memory.h"
+#include "mutt/string2.h"
 #include "set.h"
 #include "types.h"
 

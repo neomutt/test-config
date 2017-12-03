@@ -43,10 +43,10 @@
 #include <stdint.h>
 #include <string.h>
 #include "sort.h"
-#include "lib/buffer.h"
-#include "lib/debug.h"
-#include "lib/mapping.h"
-#include "lib/string2.h"
+#include "mutt/buffer.h"
+#include "mutt/debug.h"
+#include "mutt/mapping.h"
+#include "mutt/string2.h"
 #include "set.h"
 #include "types.h"
 

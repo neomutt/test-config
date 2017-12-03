@@ -29,9 +29,9 @@
 #include "config/regex2.h"
 #include "config/set.h"
 #include "config/types.h"
-#include "lib/buffer.h"
-#include "lib/memory.h"
-#include "lib/string2.h"
+#include "mutt/buffer.h"
+#include "mutt/memory.h"
+#include "mutt/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
 

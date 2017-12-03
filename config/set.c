@@ -58,11 +58,11 @@
 #include <string.h>
 #include "set.h"
 #include "inheritance.h"
-#include "lib/buffer.h"
-#include "lib/debug.h"
-#include "lib/hash.h"
-#include "lib/memory.h"
-#include "lib/string2.h"
+#include "mutt/buffer.h"
+#include "mutt/debug.h"
+#include "mutt/hash.h"
+#include "mutt/memory.h"
+#include "mutt/string2.h"
 #include "types.h"
 
 struct ConfigSetType RegisteredTypes[16] = {

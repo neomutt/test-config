@@ -40,8 +40,8 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "lib/buffer.h"
-#include "lib/string2.h"
+#include "mutt/buffer.h"
+#include "mutt/string2.h"
 #include "set.h"
 #include "types.h"
 
