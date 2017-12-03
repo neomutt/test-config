@@ -78,8 +78,8 @@ static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple = %s\n", VarApple->personal);
   printf("Banana = %s\n", VarBanana->personal);
 
-  return ((mutt_strcmp(VarApple->personal, "apple@example.com") == 0) &&
-          (mutt_strcmp(VarBanana->personal, "banana@example.com") == 0));
+  return ((mutt_str_strcmp(VarApple->personal, "apple@example.com") == 0) &&
+          (mutt_str_strcmp(VarBanana->personal, "banana@example.com") == 0));
 }
 
 static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
@@ -102,7 +102,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     }
 
     addr = VarCherry ? VarCherry->personal : NULL;
-    if (mutt_strcmp(addr, valid[i]) != 0)
+    if (mutt_str_strcmp(addr, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -122,7 +122,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     }
 
     addr = VarDamson ? VarDamson->personal : NULL;
-    if (mutt_strcmp(addr, valid[i]) != 0)
+    if (mutt_str_strcmp(addr, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -196,7 +196,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   }
 
   addr = VarHawthorn ? VarHawthorn->personal : NULL;
-  if (mutt_strcmp(addr, a->personal) != 0)
+  if (mutt_str_strcmp(addr, a->personal) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     goto tbns_out;
@@ -275,7 +275,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   addr = VarKumquat ? VarKumquat->personal : NULL;
-  if (mutt_strcmp(addr, "kumquat@example.com") != 0)
+  if (mutt_str_strcmp(addr, "kumquat@example.com") != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
@@ -470,7 +470,7 @@ bool address_test(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
+  err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 

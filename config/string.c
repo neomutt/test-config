@@ -99,7 +99,7 @@ static int string_string_set(const struct ConfigSet *cs, void *var,
 
   string_destroy(cs, var, cdef);
 
-  const char *str = safe_strdup(value);
+  const char *str = mutt_str_strdup(value);
   int result = CSR_SUCCESS;
   if (!str)
     result |= CSR_SUC_EMPTY;
@@ -164,7 +164,7 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
   if (*(char **) var != (char *) cdef->initial)
     FREE(var);
 
-  str = safe_strdup(str);
+  str = mutt_str_strdup(str);
   int result = CSR_SUCCESS;
   if (!str)
     result |= CSR_SUC_EMPTY;

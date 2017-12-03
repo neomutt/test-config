@@ -424,7 +424,7 @@ bool bool_test(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
+  err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 

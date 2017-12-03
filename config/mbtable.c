@@ -66,17 +66,17 @@ static struct MbTable *mbtable_parse(const char *s)
   mbstate_t mbstate;
   char *d = NULL;
 
-  slen = mutt_strlen(s);
+  slen = mutt_str_strlen(s);
   if (!slen)
     return NULL;
 
-  t = safe_calloc(1, sizeof(struct MbTable));
+  t = mutt_mem_calloc(1, sizeof(struct MbTable));
 
-  t->orig_str = safe_strdup(s);
+  t->orig_str = mutt_str_strdup(s);
   /* This could be more space efficient.  However, being used on tiny
    * strings (Tochars and StatusChars), the overhead is not great. */
-  t->chars = safe_calloc(slen, sizeof(char *));
-  d = t->segmented_str = safe_calloc(slen * 2, sizeof(char));
+  t->chars = mutt_mem_calloc(slen, sizeof(char *));
+  d = t->segmented_str = mutt_mem_calloc(slen * 2, sizeof(char));
 
   memset(&mbstate, 0, sizeof(mbstate));
   while (slen && (k = mbrtowc(NULL, s, slen, &mbstate)))
@@ -193,8 +193,8 @@ static struct MbTable *mbtable_dup(struct MbTable *table)
   if (!table)
     return NULL; /* LCOV_EXCL_LINE */
 
-  struct MbTable *m = safe_calloc(1, sizeof(*m));
-  m->orig_str = safe_strdup(table->orig_str);
+  struct MbTable *m = mutt_mem_calloc(1, sizeof(*m));
+  m->orig_str = mutt_str_strdup(table->orig_str);
   return m;
 }
 
@@ -304,8 +304,8 @@ void mbtable_init(struct ConfigSet *cs)
  */
 struct MbTable *mbtable_create(const char *str)
 {
-  struct MbTable *m = safe_calloc(1, sizeof(*m));
-  m->orig_str = safe_strdup(str);
+  struct MbTable *m = mutt_mem_calloc(1, sizeof(*m));
+  m->orig_str = mutt_str_strdup(str);
   return m;
 }
 

@@ -78,8 +78,8 @@ static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple = %s\n", VarApple);
   printf("Banana = %s\n", VarBanana);
 
-  return ((mutt_strcmp(VarApple, "/apple") == 0) &&
-          (mutt_strcmp(VarBanana, "/banana") == 0));
+  return ((mutt_str_strcmp(VarApple, "/apple") == 0) &&
+          (mutt_str_strcmp(VarBanana, "/banana") == 0));
 }
 
 static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
@@ -100,7 +100,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (mutt_strcmp(VarCherry, valid[i]) != 0)
+    if (mutt_str_strcmp(VarCherry, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -119,7 +119,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (mutt_strcmp(VarDamson, valid[i]) != 0)
+    if (mutt_str_strcmp(VarDamson, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -189,7 +189,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (mutt_strcmp(VarHawthorn, valid[i]) != 0)
+    if (mutt_str_strcmp(VarHawthorn, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -208,7 +208,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (mutt_strcmp(VarIlama, valid[i]) != 0)
+    if (mutt_str_strcmp(VarIlama, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -230,7 +230,7 @@ static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
   intptr_t value = cs_str_native_get(cs, name, err);
-  if (mutt_strcmp(VarJackfruit, (char *) value) != 0)
+  if (mutt_str_strcmp(VarJackfruit, (char *) value) != 0)
   {
     printf("Get failed: %s\n", err->data);
     return false;
@@ -260,7 +260,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (mutt_strcmp(VarKumquat, "/kumquat") != 0)
+  if (mutt_str_strcmp(VarKumquat, "/kumquat") != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
@@ -436,7 +436,7 @@ bool path_test(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
+  err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 

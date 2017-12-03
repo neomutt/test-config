@@ -71,7 +71,7 @@ int validator_succeed(const struct ConfigSet *cs, const struct ConfigDef *cdef,
 
 void log_line(const char *fn)
 {
-  int len = 54 - mutt_strlen(fn);
+  int len = 54 - mutt_str_strlen(fn);
   printf("---- %s %.*s\n", fn, len, line);
 }
 
@@ -80,7 +80,7 @@ bool log_listener(const struct ConfigSet *cs, struct HashElem *he,
 {
   struct Buffer result;
   mutt_buffer_init(&result);
-  result.data = safe_calloc(1, STRING);
+  result.data = mutt_mem_calloc(1, STRING);
   result.dsize = STRING;
 
   const char *events[] = { "set", "reset" };
@@ -145,10 +145,10 @@ void cs_dump_set(const struct ConfigSet *cs)
 
   struct Buffer result;
   mutt_buffer_init(&result);
-  result.data = safe_calloc(1, STRING);
+  result.data = mutt_mem_calloc(1, STRING);
   result.dsize = STRING;
 
-  while ((he = hash_walk(cs->hash, &state)))
+  while ((he = mutt_hash_walk(cs->hash, &state)))
   {
     if (he->type == DT_SYNONYM)
       continue;

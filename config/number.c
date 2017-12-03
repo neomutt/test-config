@@ -62,7 +62,7 @@ static int number_string_set(const struct ConfigSet *cs, void *var,
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = 0;
-  if (!value || !value[0] || mutt_atoi(value, &num) < 0)
+  if (!value || !value[0] || mutt_str_atoi(value, &num) < 0)
   {
     mutt_buffer_printf(err, "Invalid number: %s", value);
     return CSR_ERR_INVALID | CSR_INV_TYPE;

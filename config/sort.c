@@ -144,7 +144,7 @@ static int find_id(const struct Mapping *map, const char *str)
     return -1; /* LCOV_EXCL_LINE */
 
   for (int i = 0; map[i].name; i++)
-    if (mutt_strcasecmp(map[i].name, str) == 0)
+    if (mutt_str_strcasecmp(map[i].name, str) == 0)
       return map[i].value;
 
   return -1;

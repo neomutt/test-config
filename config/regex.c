@@ -89,8 +89,8 @@ static int regex_string_set(const struct ConfigSet *cs, void *var,
   struct Regex *r = NULL;
   if (value)
   {
-    r = safe_calloc(1, sizeof(*r));
-    r->pattern = safe_strdup(value);
+    r = mutt_mem_calloc(1, sizeof(*r));
+    r->pattern = mutt_str_strdup(value);
     r->regex = NULL; // regenerate r->regex
   }
 
@@ -147,8 +147,8 @@ static struct Regex *regex_dup(struct Regex *r)
   if (!r)
     return NULL; /* LCOV_EXCL_LINE */
 
-  struct Regex *copy = safe_calloc(1, sizeof(*copy));
-  copy->pattern = safe_strdup(r->pattern);
+  struct Regex *copy = mutt_mem_calloc(1, sizeof(*copy));
+  copy->pattern = mutt_str_strdup(r->pattern);
   return copy;
 }
 
@@ -228,8 +228,8 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
 
   if (initial)
   {
-    r = safe_calloc(1, sizeof(*r));
-    r->pattern = safe_strdup((char *) cdef->initial);
+    r = mutt_mem_calloc(1, sizeof(*r));
+    r->pattern = mutt_str_strdup((char *) cdef->initial);
     r->regex = NULL; // regenerate r->regex
   }
 
@@ -261,8 +261,8 @@ void regex_init(struct ConfigSet *cs)
  */
 struct Regex *regex_create(const char *str)
 {
-  struct Regex *r = safe_calloc(1, sizeof(*r));
-  r->pattern = safe_strdup(str);
+  struct Regex *r = mutt_mem_calloc(1, sizeof(*r));
+  r->pattern = mutt_str_strdup(str);
   return r;
 }
 

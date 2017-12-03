@@ -20,31 +20,23 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIB_MEMORY_H
-#define _LIB_MEMORY_H
+#ifndef _MUTT_MEMORY_H
+#define _MUTT_MEMORY_H
 
 #include <stddef.h>
 
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#define _(a) gettext(a)
-#ifdef gettext_noop
-#define N_(a) gettext_noop(a)
-#else
-#define N_(a) (a)
-#endif
-#else
-#define _(a) (a)
-#define N_(a) a
-#endif
+#undef MAX
+#undef MIN
+#define MAX(a, b) ((a) < (b) ? (b) : (a))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 #define mutt_array_size(x) (sizeof(x) / sizeof((x)[0]))
 
-void *safe_calloc(size_t nmemb, size_t size);
-void  safe_free(void *ptr);
-void *safe_malloc(size_t size);
-void  safe_realloc(void *ptr, size_t size);
+void *mutt_mem_calloc(size_t nmemb, size_t size);
+void  mutt_mem_free(void *ptr);
+void *mutt_mem_malloc(size_t size);
+void  mutt_mem_realloc(void *ptr, size_t size);
 
-#define FREE(x) safe_free(x)
+#define FREE(x) mutt_mem_free(x)
 
-#endif /* _LIB_MEMORY_H */
+#endif /* _MUTT_MEMORY_H */

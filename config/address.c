@@ -91,9 +91,9 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
   // An empty address "" will be stored as NULL
   if (value && (value[0] != '\0'))
   {
-    addr = safe_calloc(1, sizeof(*addr));
-    addr->personal = safe_strdup((const char *) value);
-    addr->mailbox = safe_strdup("dummy1");
+    addr = mutt_mem_calloc(1, sizeof(*addr));
+    addr->personal = mutt_str_strdup((const char *) value);
+    addr->mailbox = mutt_str_strdup("dummy1");
   }
 
   if (cdef->validator)
@@ -149,9 +149,9 @@ static struct Address *address_dup(struct Address *addr)
   if (!addr)
     return NULL; /* LCOV_EXCL_LINE */
 
-  struct Address *a = safe_calloc(1, sizeof(*a));
-  a->personal = safe_strdup(addr->personal);
-  a->mailbox = safe_strdup(addr->mailbox);
+  struct Address *a = mutt_mem_calloc(1, sizeof(*a));
+  a->personal = mutt_str_strdup(addr->personal);
+  a->mailbox = mutt_str_strdup(addr->mailbox);
   return a;
 }
 
@@ -261,9 +261,9 @@ void address_init(struct ConfigSet *cs)
  */
 struct Address *address_create(const char *addr)
 {
-  struct Address *a = safe_calloc(1, sizeof(*a));
-  a->personal = safe_strdup(addr);
-  a->mailbox = safe_strdup("dummy3");
+  struct Address *a = mutt_mem_calloc(1, sizeof(*a));
+  a->personal = mutt_str_strdup(addr);
+  a->mailbox = mutt_str_strdup("dummy3");
   return a;
 }
 

@@ -95,7 +95,7 @@ static int path_string_set(const struct ConfigSet *cs, void *var,
 
   path_destroy(cs, var, cdef);
 
-  const char *str = safe_strdup(value);
+  const char *str = mutt_str_strdup(value);
   int result = CSR_SUCCESS;
   if (!str)
     result |= CSR_SUC_EMPTY;
@@ -158,7 +158,7 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
 
   path_destroy(cs, var, cdef);
 
-  str = safe_strdup((const char *) value);
+  str = mutt_str_strdup((const char *) value);
   int result = CSR_SUCCESS;
   if (!str)
     result |= CSR_SUC_EMPTY;

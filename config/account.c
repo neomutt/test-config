@@ -63,11 +63,11 @@ struct Account *ac_create(const struct ConfigSet *cs, const char *name,
   for (; var_names[count]; count++)
     ;
 
-  struct Account *ac = safe_calloc(1, sizeof(*ac));
-  ac->name = safe_strdup(name);
+  struct Account *ac = mutt_mem_calloc(1, sizeof(*ac));
+  ac->name = mutt_str_strdup(name);
   ac->cs = cs;
   ac->var_names = var_names;
-  ac->vars = safe_calloc(count, sizeof(struct HashElem *));
+  ac->vars = mutt_mem_calloc(count, sizeof(struct HashElem *));
   ac->num_vars = count;
 
   bool success = true;
@@ -113,7 +113,7 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   char child[128];
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
+  err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
 
   for (int i = 0; i < (*ac)->num_vars; i++)

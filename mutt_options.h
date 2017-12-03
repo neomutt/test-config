@@ -1,6 +1,6 @@
 /**
  * @file
- * NotMuch virtual mailbox type
+ * Notmuch virtual mailbox type
  *
  * @authors
  * Copyright (C) 2016 Bernard Pratz <z+mutt+pub@m0g.net>
@@ -57,7 +57,7 @@ enum
 struct Option
 {
   const char *option; /**< user-visible name */
-  short type;         /**< variable type, e.g. *DT_STR */
+  short type;         /**< variable type, e.g. *DT_STRING */
   unsigned long data; /**< pointer to the global variable */
   unsigned long init; /**< initial value */
 };

@@ -68,7 +68,7 @@ static int quad_string_set(const struct ConfigSet *cs, void *var,
   int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(quad_values); i++)
   {
-    if (mutt_strcasecmp(quad_values[i], value) == 0)
+    if (mutt_str_strcasecmp(quad_values[i], value) == 0)
     {
       num = i;
       break;

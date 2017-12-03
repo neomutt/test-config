@@ -86,7 +86,7 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple = %s\n", VarApple);
   printf("Banana = %s\n", VarBanana);
 
-  return ((mutt_strcmp(VarApple, aval) != 0) && (mutt_strcmp(VarBanana, bval) == 0));
+  return ((mutt_str_strcmp(VarApple, aval) != 0) && (mutt_str_strcmp(VarBanana, bval) == 0));
 }
 
 bool initial_test(void)
@@ -95,7 +95,7 @@ bool initial_test(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
+  err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 

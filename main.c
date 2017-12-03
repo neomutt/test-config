@@ -21,12 +21,14 @@
 typedef bool (*test_fn)(void);
 
 /* stdout override */
-void mutt_debug(int level, const char *fmt, ...)
+int mutt_debug_real(const char *function, const char *file, int line, int level, ...)
 {
   va_list ap;
-  va_start(ap, fmt);
-  vfprintf(stdout, fmt, ap);
+  va_start(ap, level);
+  const char *fmt = va_arg(ap, const char *);
+  int ret = vfprintf(stdout, fmt, ap);
   va_end(ap);
+  return ret;
 }
 
 // clang-format off

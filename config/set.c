@@ -134,7 +134,7 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs,
   }
 
   struct HashElem *child =
-      hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
+      mutt_hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
   if (!child)
     return NULL;
 
@@ -166,7 +166,7 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
   }
 
   struct HashElem *he =
-      hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
+      mutt_hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
   if (!he)
     return NULL;
 
@@ -208,8 +208,8 @@ void cs_init(struct ConfigSet *cs, int size)
     return; /* LCOV_EXCL_LINE */
 
   memset(cs, 0, sizeof(*cs));
-  cs->hash = hash_create(size, 0);
-  hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
+  cs->hash = mutt_hash_create(size, 0);
+  mutt_hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
 }
 
 /**
@@ -219,7 +219,7 @@ void cs_init(struct ConfigSet *cs, int size)
  */
 struct ConfigSet *cs_create(int size)
 {
-  struct ConfigSet *cs = safe_malloc(sizeof(*cs));
+  struct ConfigSet *cs = mutt_mem_malloc(sizeof(*cs));
   cs_init(cs, size);
   return cs;
 }
@@ -284,7 +284,7 @@ void cs_free(struct ConfigSet **cs)
   if (!cs || !*cs)
     return; /* LCOV_EXCL_LINE */
 
-  hash_destroy(&(*cs)->hash);
+  mutt_hash_destroy(&(*cs)->hash);
   FREE(cs);
 }
 
@@ -560,7 +560,7 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
   if (!cs || !name)
     return NULL; /* LCOV_EXCL_LINE */
 
-  struct HashElem *he = hash_find_elem(cs->hash, name);
+  struct HashElem *he = mutt_hash_find_elem(cs->hash, name);
   if (!he)
     return NULL;
 
@@ -590,11 +590,11 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
   err.data = calloc(1, STRING);
   err.dsize = STRING;
 
-  struct Inheritance *i = safe_calloc(1, sizeof(*i));
+  struct Inheritance *i = mutt_mem_calloc(1, sizeof(*i));
   i->parent = parent;
-  i->name = safe_strdup(name);
+  i->name = mutt_str_strdup(name);
 
-  struct HashElem *he = hash_typed_insert(cs->hash, i->name, DT_INHERITED, i);
+  struct HashElem *he = mutt_hash_typed_insert(cs->hash, i->name, DT_INHERITED, i);
   if (!he)
   {
     FREE(&i->name);
@@ -850,7 +850,7 @@ int cs_set_initial_value(const struct ConfigSet *cs, struct HashElem *he,
     return CSR_ERR_CODE;
   }
 
-  cdef->initial = IP safe_strdup(value);
+  cdef->initial = IP mutt_str_strdup(value);
   he->type |= DT_INITIAL_SET;
 
   return cs_reset_variable(cs, cdef->name, err);

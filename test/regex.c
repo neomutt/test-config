@@ -78,8 +78,8 @@ static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple = %s\n", VarApple->pattern);
   printf("Banana = %s\n", VarBanana->pattern);
 
-  return ((mutt_strcmp(VarApple->pattern, "apple.*") == 0) &&
-          (mutt_strcmp(VarBanana->pattern, "banana.*") == 0));
+  return ((mutt_str_strcmp(VarApple->pattern, "apple.*") == 0) &&
+          (mutt_str_strcmp(VarBanana->pattern, "banana.*") == 0));
 }
 
 static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
@@ -102,7 +102,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     }
 
     regex = VarCherry ? VarCherry->pattern : NULL;
-    if (mutt_strcmp(regex, valid[i]) != 0)
+    if (mutt_str_strcmp(regex, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -122,7 +122,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     }
 
     regex = VarDamson ? VarDamson->pattern : NULL;
-    if (mutt_strcmp(regex, valid[i]) != 0)
+    if (mutt_str_strcmp(regex, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
       return false;
@@ -196,7 +196,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   }
 
   regex = VarHawthorn ? VarHawthorn->pattern : NULL;
-  if (mutt_strcmp(regex, r->pattern) != 0)
+  if (mutt_str_strcmp(regex, r->pattern) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     goto tns_out;
@@ -276,7 +276,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   regex = VarKumquat ? VarKumquat->pattern : NULL;
-  if (mutt_strcmp(regex, "kumquat.*") != 0)
+  if (mutt_str_strcmp(regex, "kumquat.*") != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
@@ -471,7 +471,7 @@ bool regex_test(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = safe_calloc(1, STRING);
+  err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 

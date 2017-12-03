@@ -68,7 +68,7 @@ static int magic_string_set(const struct ConfigSet *cs, void *var,
   int num = -1;
   for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
   {
-    if (mutt_strcasecmp(magic_values[i], value) == 0)
+    if (mutt_str_strcasecmp(magic_values[i], value) == 0)
     {
       num = i;
       break;

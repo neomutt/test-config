@@ -20,13 +20,10 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIB_DEBUG_H
-#define _LIB_DEBUG_H
+#ifndef _MUTT_DEBUG_H
+#define _MUTT_DEBUG_H
 
-#ifdef DEBUG
-void mutt_debug(int level, const char *fmt, ...);
-#else
-#define mutt_debug(...) do { } while (0)
-#endif
+int mutt_debug_real(const char *function, const char *file, int line, int level, ...);
+#define mutt_debug(LEVEL, ...) mutt_debug_real(__func__, __FILE__, __LINE__, LEVEL, __VA_ARGS__)
 
-#endif /* _LIB_DEBUG_H */
+#endif /* _MUTT_DEBUG_H */
