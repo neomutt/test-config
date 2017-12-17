@@ -25,14 +25,14 @@
  *
  * LONG magic
  *
- * | Function         | Description
- * | :--------------- | :------------------------------------------
- * | magic_init       | Register the Mailbox Magic config type
- * | magic_native_get | Get an int from a Mailbox Magic config item
- * | magic_native_set | Set a Mailbox Magic config item by int
- * | magic_reset      | Reset a Mailbox Magic to its initial value
- * | magic_string_get | Get a Mailbox Magic as a string
- * | magic_string_set | Set a Mailbox Magic by string
+ * | Function           | Description
+ * | :----------------- | :------------------------------------------
+ * | magic_init()       | Register the Mailbox Magic config type
+ * | magic_native_get() | Get an int from a Mailbox Magic config item
+ * | magic_native_set() | Set a Mailbox Magic config item by int
+ * | magic_reset()      | Reset a Mailbox Magic to its initial value
+ * | magic_string_get() | Get a Mailbox Magic as a string
+ * | magic_string_set() | Set a Mailbox Magic by string
  */
 
 #include "config.h"
@@ -83,10 +83,10 @@ static int magic_string_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) num, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(short *) var = num;
@@ -100,14 +100,22 @@ static int magic_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int magic_string_get(const struct ConfigSet *cs, void *var,
                             const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  unsigned int index = *(short *) var;
+  unsigned int index;
+
+  if (var)
+    index = *(short *) var;
+  else
+    index = (int) cdef->initial;
+
   if ((index < 1) || (index >= mutt_array_size(magic_values)))
   {
     mutt_debug(1, "Variable has an invalid value: %d\n", index);
@@ -128,8 +136,7 @@ static int magic_string_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int magic_native_set(const struct ConfigSet *cs, void *var,
-                            const struct ConfigDef *cdef, intptr_t value,
-                            struct Buffer *err)
+                            const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -142,10 +149,10 @@ static int magic_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(short *) var = value;

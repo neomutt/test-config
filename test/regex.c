@@ -182,7 +182,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct Regex *r = regex_create("hello.*");
+  struct Regex *r = regex_create("hello.*", 0, err);
   char *name = "Hawthorn";
   char *regex = NULL;
   bool result = false;
@@ -268,7 +268,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   regex = VarKumquat ? VarKumquat->pattern : NULL;
   printf("Set: %s = '%s'\n", name, NONULL(regex));
 
-  rc = cs_reset_variable(cs, name, err);
+  rc = cs_str_reset(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -292,7 +292,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   char *regex = NULL;
-  struct Regex *r = regex_create("world.*");
+  struct Regex *r = regex_create("world.*", 0, err);
   bool result = false;
 
   char *name = "Lemon";
@@ -441,7 +441,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset child
   mutt_buffer_reset(err);
-  rc = cs_reset_variable(cs, child, err);
+  rc = cs_str_reset(cs, child, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
@@ -451,7 +451,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset parent
   mutt_buffer_reset(err);
-  rc = cs_reset_variable(cs, parent, err);
+  rc = cs_str_reset(cs, parent, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
@@ -478,7 +478,7 @@ bool regex_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   regex_init(cs);
-  if (!cs_register_variables(cs, Vars))
+  if (!cs_register_variables(cs, Vars, 0))
     return false;
 
   cs_add_listener(cs, log_listener);

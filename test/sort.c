@@ -366,7 +366,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   VarLemon = SORT_SUBJECT;
   mutt_buffer_reset(err);
 
-  int rc = cs_reset_variable(cs, name, err);
+  int rc = cs_str_reset(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -526,7 +526,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset child
   mutt_buffer_reset(err);
-  rc = cs_reset_variable(cs, child, err);
+  rc = cs_str_reset(cs, child, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
@@ -536,7 +536,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset parent
   mutt_buffer_reset(err);
-  rc = cs_reset_variable(cs, parent, err);
+  rc = cs_str_reset(cs, parent, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
@@ -593,7 +593,7 @@ bool sort_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   sort_init(cs);
-  if (!cs_register_variables(cs, Vars))
+  if (!cs_register_variables(cs, Vars, 0))
     return false;
 
   cs_add_listener(cs, log_listener);
@@ -601,7 +601,7 @@ bool sort_test(void)
   set_list(cs);
 
   /* Register a broken variable separately */
-  if (!cs_register_variables(cs, Vars2))
+  if (!cs_register_variables(cs, Vars2, 0))
     return false;
 
   if (!test_initial_values_values(cs, &err))

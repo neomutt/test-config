@@ -28,6 +28,7 @@
  * -# @subpage config-account
  * -# @subpage config-address
  * -# @subpage config-bool
+ * -# @subpage config-dump
  * -# @subpage config-magic
  * -# @subpage config-mbtable
  * -# @subpage config-number
@@ -45,9 +46,10 @@
 #include "account.h"
 #include "address.h"
 #include "bool.h"
+#include "dump.h"
 #include "inheritance.h"
 #include "magic.h"
-#include "config/mbtable.h"
+#include "mbtable.h"
 #include "number.h"
 #include "path.h"
 #include "quad.h"

@@ -129,7 +129,7 @@ bool set_test(void)
   bool_init(cs);
   bool_init(cs); /* second one should fail */
 
-  if (!cs_register_variables(cs, Vars))
+  if (!cs_register_variables(cs, Vars, 0))
   {
     printf("Expected error\n");
   }

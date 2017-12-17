@@ -25,24 +25,24 @@
  *
  * LONG account
  *
- * | Function     | Description
- * | :----------- | :----------------------------------
- * | ac_create    | Create an Account
- * | ac_free      | Free an Account object
- * | ac_get_value | Get an Account-specific config item
- * | ac_set_value | Set an Account-specific config item
+ * | Function       | Description
+ * | :------------- | :----------------------------------
+ * | ac_create()    | Create an Account
+ * | ac_free()      | Free an Account object
+ * | ac_get_value() | Get an Account-specific config item
+ * | ac_set_value() | Set an Account-specific config item
  */
 
 #include "config.h"
 #include <stddef.h>
 #include <stdio.h>
-#include "account.h"
-#include "inheritance.h"
 #include "mutt/buffer.h"
 #include "mutt/debug.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "account.h"
+#include "inheritance.h"
 #include "set.h"
 #include "types.h"
 
@@ -120,7 +120,7 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   {
     snprintf(child, sizeof(child), "%s:%s", (*ac)->name, (*ac)->var_names[i]);
     mutt_buffer_reset(&err);
-    int result = cs_reset_variable(cs, child, &err);
+    int result = cs_str_reset(cs, child, &err);
     if (CSR_RESULT(result) != CSR_SUCCESS)
       mutt_debug(1, "reset failed for %s: %s\n", child, err.data);
   }
@@ -152,12 +152,12 @@ int ac_set_value(const struct Account *ac, unsigned int vid, intptr_t value, str
 
 /**
  * ac_get_value - Get an Account-specific config item
- * @param ac  Account-specific config items
- * @param vid Value ID (index into Account's HashElem's)
- * @param err Buffer for error messages
+ * @param ac     Account-specific config items
+ * @param vid    Value ID (index into Account's HashElem's)
+ * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-int ac_get_value(const struct Account *ac, unsigned int vid, struct Buffer *err)
+int ac_get_value(const struct Account *ac, unsigned int vid, struct Buffer *result)
 {
   if (!ac)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -172,5 +172,5 @@ int ac_get_value(const struct Account *ac, unsigned int vid, struct Buffer *err)
     he = i->parent;
   }
 
-  return cs_he_native_get(ac->cs, he, err);
+  return cs_he_string_get(ac->cs, he, result);
 }

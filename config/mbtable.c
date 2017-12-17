@@ -25,19 +25,19 @@
  *
  * LONG mbtable
  *
- * | Function           | Description
- * | :----------------- | :-----------------------------------------------
- * | mbtable_create     | Create an MbTable from a string
- * | mbtable_destroy    | Destroy an MbTable object
- * | mbtable_dup        | Create a copy of an MbTable object
- * | mbtable_free       | Free an MbTable object
- * | mbtable_init       | Register the MbTable config type
- * | mbtable_native_get | Get an MbTable object from a MbTable config item
- * | mbtable_native_set | Set a MbTable config item by MbTable object
- * | mbtable_parse      | Parse a multibyte string into a table
- * | mbtable_reset      | Reset an MbTable to its initial value
- * | mbtable_string_get | Get a MbTable as a string
- * | mbtable_string_set | Set a MbTable by string
+ * | Function             | Description
+ * | :------------------- | :-----------------------------------------------
+ * | mbtable_create()     | Create an MbTable from a string
+ * | mbtable_destroy()    | Destroy an MbTable object
+ * | mbtable_dup()        | Create a copy of an MbTable object
+ * | mbtable_free()       | Free an MbTable object
+ * | mbtable_init()       | Register the MbTable config type
+ * | mbtable_native_get() | Get an MbTable object from a MbTable config item
+ * | mbtable_native_set() | Set a MbTable config item by MbTable object
+ * | mbtable_parse()      | Parse a multibyte string into a table
+ * | mbtable_reset()      | Reset an MbTable to its initial value
+ * | mbtable_string_get() | Get a MbTable as a string
+ * | mbtable_string_set() | Set a MbTable by string
  */
 
 #include "config.h"
@@ -46,11 +46,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <wchar.h>
-#include "config/mbtable.h"
 #include "mutt/buffer.h"
 #include "mutt/debug.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "config/mbtable.h"
 #include "set.h"
 #include "types.h"
 
@@ -106,8 +106,7 @@ static struct MbTable *mbtable_parse(const char *s)
  * @param var  Variable to destroy
  * @param cdef Variable definition
  */
-static void mbtable_destroy(const struct ConfigSet *cs, void *var,
-                            const struct ConfigDef *cdef)
+static void mbtable_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
   if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
@@ -142,12 +141,12 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) table, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) table, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
     {
       mbtable_free(&table);
-      return rv | CSR_INV_VALIDATOR;
+      return rc | CSR_INV_VALIDATOR;
     }
   }
 
@@ -168,18 +167,30 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int mbtable_string_get(const struct ConfigSet *cs, void *var,
                               const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  struct MbTable *table = *(struct MbTable **) var;
-  if (!table || !table->orig_str)
-    return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
+  const char *str = NULL;
 
-  mutt_buffer_addstr(result, table->orig_str);
+  if (var)
+  {
+    struct MbTable *table = *(struct MbTable **) var;
+    if (!table || !table->orig_str)
+      return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
+    str = table->orig_str;
+  }
+  else
+  {
+    str = (char *) cdef->initial;
+  }
+
+  mutt_buffer_addstr(result, str);
   return CSR_SUCCESS;
 }
 
@@ -216,10 +227,10 @@ static int mbtable_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   mbtable_free(var);

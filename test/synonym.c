@@ -163,7 +163,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   printf("Set: %s = '%s'\n", name, VarIlama);
 
   mutt_buffer_reset(err);
-  rc = cs_reset_variable(cs, name, err);
+  rc = cs_str_reset(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -194,10 +194,10 @@ bool synonym_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   string_init(cs);
-  if (!cs_register_variables(cs, Vars))
+  if (!cs_register_variables(cs, Vars, 0))
     return false;
 
-  if (!cs_register_variables(cs, Vars2))
+  if (!cs_register_variables(cs, Vars2, 0))
   {
     printf("Expected error\n");
   }

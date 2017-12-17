@@ -25,16 +25,16 @@
  *
  * LONG sort
  *
- * | Function        | Description
- * | :-------------- | :---------------------------------
- * | find_id         | Lookup a sort ID
- * | find_string     | Lookup a sort string
- * | sort_init       | Register the Sort config type
- * | sort_native_get | Get an int from a Sort config item
- * | sort_native_set | Set a Sort config item by int
- * | sort_reset      | Reset a Sort to its initial value
- * | sort_string_get | Get a Sort as a string
- * | sort_string_set | Set a Sort by string
+ * | Function          | Description
+ * | :---------------- | :---------------------------------
+ * | find_id()         | Lookup a sort ID
+ * | find_string()     | Lookup a sort string
+ * | sort_init()       | Register the Sort config type
+ * | sort_native_get() | Get an int from a Sort config item
+ * | sort_native_set() | Set a Sort config item by int
+ * | sort_reset()      | Reset a Sort to its initial value
+ * | sort_string_get() | Get a Sort as a string
+ * | sort_string_set() | Set a Sort by string
  */
 
 #include "config.h"
@@ -42,19 +42,19 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "sort.h"
 #include "mutt/buffer.h"
 #include "mutt/debug.h"
 #include "mutt/mapping.h"
 #include "mutt/string2.h"
+#include "sort.h"
 #include "set.h"
 #include "types.h"
 
-const struct Mapping SortAliasMethods[] = {
+static const struct Mapping SortAliasMethods[] = {
   { "alias", SORT_ALIAS }, { "address", SORT_ADDRESS }, { "unsorted", SORT_ORDER }, { NULL, 0 },
 };
 
-const struct Mapping SortAuxMethods[] = {
+static const struct Mapping SortAuxMethods[] = {
   { "date", SORT_DATE },
   { "date-sent", SORT_DATE },
   { "date-received", SORT_RECEIVED },
@@ -70,19 +70,19 @@ const struct Mapping SortAuxMethods[] = {
   { NULL, 0 },
 };
 
-const struct Mapping SortBrowserMethods[] = {
+static const struct Mapping SortBrowserMethods[] = {
   { "alpha", SORT_SUBJECT },  { "count", SORT_COUNT },
   { "date", SORT_DATE },      { "desc", SORT_DESC },
   { "new", SORT_UNREAD },     { "size", SORT_SIZE },
   { "unsorted", SORT_ORDER }, { NULL, 0 },
 };
 
-const struct Mapping SortKeyMethods[] = {
+static const struct Mapping SortKeyMethods[] = {
   { "address", SORT_ADDRESS }, { "date", SORT_DATE }, { "keyid", SORT_KEYID },
   { "trust", SORT_TRUST },     { NULL, 0 },
 };
 
-const struct Mapping SortMethods[] = {
+static const struct Mapping SortMethods[] = {
   { "date", SORT_DATE },
   { "date-sent", SORT_DATE },
   { "date-received", SORT_RECEIVED },
@@ -98,7 +98,7 @@ const struct Mapping SortMethods[] = {
   { NULL, 0 },
 };
 
-const struct Mapping SortSidebarMethods[] = {
+static const struct Mapping SortSidebarMethods[] = {
   { "alpha", SORT_PATH },
   { "count", SORT_COUNT },
   { "desc", SORT_DESC },
@@ -202,10 +202,10 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) id, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) id, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(short *) var = id;
@@ -219,14 +219,21 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int sort_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  int sort = *(short *) var;
+  int sort;
+
+  if (var)
+    sort = *(short *) var;
+  else
+    sort = (int) cdef->initial;
 
   const char *str = NULL;
 
@@ -277,8 +284,7 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int sort_native_set(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, intptr_t value,
-                           struct Buffer *err)
+                           const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -319,10 +325,10 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(short *) var = value;

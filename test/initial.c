@@ -51,35 +51,39 @@ static struct ConfigDef Vars[] = {
 static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
+  const char *name;
 
-  struct HashElem *he_a = cs_get_elem(cs, "Apple");
+  name = "Apple";
+  struct HashElem *he_a = cs_get_elem(cs, name);
   if (!he_a)
     return false;
 
   const char *aval = "pie";
-  int rc = cs_set_initial_value(cs, he_a, aval, err);
+  int rc = cs_set_initial_value(cs, name, aval, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     printf("Expected error: %s\n", err->data);
 
-  struct HashElem *he_b = cs_get_elem(cs, "Banana");
+  name = "Banana";
+  struct HashElem *he_b = cs_get_elem(cs, name);
   if (!he_b)
     return false;
 
   const char *bval = "split";
-  rc = cs_set_initial_value(cs, he_b, bval, err);
+  rc = cs_set_initial_value(cs, name, bval, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
-  struct HashElem *he_c = cs_get_elem(cs, "Cherry");
+  name = "Cherry";
+  struct HashElem *he_c = cs_get_elem(cs, name);
   if (!he_c)
     return false;
 
   const char *cval = "blossom";
-  rc = cs_set_initial_value(cs, he_c, cval, err);
+  rc = cs_set_initial_value(cs, name, cval, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
-  rc = cs_set_initial_value(cs, he_c, cval, err);
+  rc = cs_set_initial_value(cs, name, cval, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     printf("Expected error: %s\n", err->data);
 
@@ -102,7 +106,7 @@ bool initial_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   string_init(cs);
-  if (!cs_register_variables(cs, Vars))
+  if (!cs_register_variables(cs, Vars, 0))
     return false;
 
   cs_add_listener(cs, log_listener);

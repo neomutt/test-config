@@ -267,7 +267,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   addr = VarKumquat ? VarKumquat->personal : NULL;
   printf("Set: %s = '%s'\n", name, NONULL(addr));
 
-  rc = cs_reset_variable(cs, name, err);
+  rc = cs_str_reset(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -440,7 +440,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset child
   mutt_buffer_reset(err);
-  rc = cs_reset_variable(cs, child, err);
+  rc = cs_str_reset(cs, child, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
@@ -450,7 +450,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
 
   // reset parent
   mutt_buffer_reset(err);
-  rc = cs_reset_variable(cs, parent, err);
+  rc = cs_str_reset(cs, parent, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Error: %s\n", err->data);
@@ -477,7 +477,7 @@ bool address_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   address_init(cs);
-  if (!cs_register_variables(cs, Vars))
+  if (!cs_register_variables(cs, Vars, 0))
     return false;
 
   cs_add_listener(cs, log_listener);

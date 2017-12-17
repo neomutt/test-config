@@ -60,7 +60,7 @@ bool account_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   number_init(cs);
-  if (!cs_register_variables(cs, Vars))
+  if (!cs_register_variables(cs, Vars, 0))
     return false;
 
   set_list(cs);
@@ -191,7 +191,7 @@ bool account_test(void)
     return false;
 
   mutt_buffer_reset(&err);
-  result = cs_set_initial_value(cs, he, "42", &err);
+  result = cs_set_initial_value(cs, name, "42", &err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error\n");

@@ -25,14 +25,14 @@
  *
  * LONG number
  *
- * | Function          | Description
- * | :---------------- | :-----------------------------------
- * | number_init       | Register the Number config type
- * | number_native_get | Get an int from a Number config item
- * | number_native_set | Set a Number config item by int
- * | number_reset      | Reset a Number to its initial value
- * | number_string_get | Get a Number as a string
- * | number_string_set | Set a Number by string
+ * | Function            | Description
+ * | :------------------ | :-----------------------------------
+ * | number_init()       | Register the Number config type
+ * | number_native_get() | Get an int from a Number config item
+ * | number_native_set() | Set a Number config item by int
+ * | number_reset()      | Reset a Number to its initial value
+ * | number_string_get() | Get a Number as a string
+ * | number_string_set() | Set a Number by string
  */
 
 #include "config.h"
@@ -76,10 +76,10 @@ static int number_string_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) num, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(short *) var = num;
@@ -93,14 +93,23 @@ static int number_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int number_string_get(const struct ConfigSet *cs, void *var,
                              const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  mutt_buffer_printf(result, "%d", *(short *) var);
+  int value;
+
+  if (var)
+    value = *(short *) var;
+  else
+    value = (int) cdef->initial;
+
+  mutt_buffer_printf(result, "%d", value);
   return CSR_SUCCESS;
 }
 
@@ -128,10 +137,10 @@ static int number_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(short *) var = value;

@@ -3,7 +3,6 @@
  * Type representing a regular expression
  *
  * @authors
- * Copyright (C) 1996-2000 Michael R. Elkins <me@mutt.org>
  * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
  *
  * @copyright
@@ -31,6 +30,7 @@
 #include <features.h>
 #include <regex.h>
 
+struct Buffer;
 struct ConfigSet;
 
 /* this is a non-standard option supported by Solaris 2.5.x which allows
@@ -50,7 +50,7 @@ struct Regex
 {
   char *pattern;  /**< printable version */
   regex_t *regex; /**< compiled expression */
-  int not;        /**< do not match */
+  bool not;        /**< do not match */
 };
 
 /**
@@ -74,7 +74,7 @@ struct ReplaceList
 };
 
 void regex_init(struct ConfigSet *cs);
-struct Regex *regex_create(const char *str);
+struct Regex *regex_create(const char *str, int flags, struct Buffer *err);
 void regex_free(struct Regex **regex);
 
 #endif /* _CONFIG_REGEX_H */

@@ -25,15 +25,15 @@
  *
  * LONG string
  *
- * | Function          | Description
- * | :---------------- | :-------------------------------------
- * | string_destroy    | Destroy a String
- * | string_init       | Register the String config type
- * | string_native_get | Get a string from a String config item
- * | string_native_set | Set a String config item by string
- * | string_reset      | Reset a String to its initial value
- * | string_string_get | Get a String as a string
- * | string_string_set | Set a String by string
+ * | Function            | Description
+ * | :------------------ | :-------------------------------------
+ * | string_destroy()    | Destroy a String
+ * | string_init()       | Register the String config type
+ * | string_native_get() | Get a string from a String config item
+ * | string_native_set() | Set a String config item by string
+ * | string_reset()      | Reset a String to its initial value
+ * | string_string_get() | Get a String as a string
+ * | string_string_set() | Set a String by string
  */
 
 #include "config.h"
@@ -91,10 +91,10 @@ static int string_string_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) value, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   string_destroy(cs, var, cdef);
@@ -115,14 +115,22 @@ static int string_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int string_string_get(const struct ConfigSet *cs, void *var,
                              const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  const char *str = *(const char **) var;
+  const char *str = NULL;
+
+  if (var)
+    str = *(const char **) var;
+  else
+    str = (char *) cdef->initial;
+
   if (!str)
     return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
 
@@ -154,10 +162,10 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   /* Don't free strings from the var definition */

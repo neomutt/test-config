@@ -25,15 +25,15 @@
  *
  * LONG path
  *
- * | Function        | Description
- * | :-------------- | :-----------------------------------
- * | path_destroy    | Destroy a Path
- * | path_init       | Register the Path config type
- * | path_native_get | Get a string from a Path config item
- * | path_native_set | Set a Path config item by string
- * | path_reset      | Reset a Path to its initial value
- * | path_string_get | Get a Path as a string
- * | path_string_set | Set a Path by string
+ * | Function          | Description
+ * | :---------------- | :-----------------------------------
+ * | path_destroy()    | Destroy a Path
+ * | path_init()       | Register the Path config type
+ * | path_native_get() | Get a string from a Path config item
+ * | path_native_set() | Set a Path config item by string
+ * | path_reset()      | Reset a Path to its initial value
+ * | path_string_get() | Get a Path as a string
+ * | path_string_set() | Set a Path by string
  */
 
 #include "config.h"
@@ -87,10 +87,10 @@ static int path_string_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) value, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   path_destroy(cs, var, cdef);
@@ -111,14 +111,22 @@ static int path_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int path_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  const char *str = *(const char **) var;
+  const char *str = NULL;
+
+  if (var)
+    str = *(const char **) var;
+  else
+    str = (char *) cdef->initial;
+
   if (!str)
     return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
 
@@ -136,8 +144,7 @@ static int path_string_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int path_native_set(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, intptr_t value,
-                           struct Buffer *err)
+                           const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -150,10 +157,10 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   path_destroy(cs, var, cdef);

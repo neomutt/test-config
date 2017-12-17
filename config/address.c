@@ -25,29 +25,29 @@
  *
  * LONG address
  *
- * | Function           | Description
- * | :----------------- | :------------------------------------------------
- * | address_create     | Create an Address from a string
- * | address_destroy    | Destroy an Address object
- * | address_dup        | Create a copy of an Address object
- * | address_free       | Free an Address object
- * | address_init       | Register the Address config type
- * | address_native_get | Get an Address object from an Address config item
- * | address_native_set | Set an Address config item by Address object
- * | address_reset      | Reset an Address to its initial value
- * | address_string_get | Get an Address as a string
- * | address_string_set | Set an Address by string
+ * | Function             | Description
+ * | :------------------- | :------------------------------------------------
+ * | address_create()     | Create an Address from a string
+ * | address_destroy()    | Destroy an Address object
+ * | address_dup()        | Create a copy of an Address object
+ * | address_free()       | Free an Address object
+ * | address_init()       | Register the Address config type
+ * | address_native_get() | Get an Address object from an Address config item
+ * | address_native_set() | Set an Address config item by Address object
+ * | address_reset()      | Reset an Address to its initial value
+ * | address_string_get() | Get an Address as a string
+ * | address_string_set() | Set an Address by string
  */
 
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>
 #include <stdint.h>
-#include "config/lib.h"
 #include "mutt/buffer.h"
 #include "mutt/debug.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "config/lib.h"
 #include "set.h"
 #include "types.h"
 
@@ -57,8 +57,7 @@
  * @param var  Variable to destroy
  * @param cdef Variable definition
  */
-static void address_destroy(const struct ConfigSet *cs, void *var,
-                            const struct ConfigDef *cdef)
+static void address_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
   if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
@@ -94,16 +93,17 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
     addr = mutt_mem_calloc(1, sizeof(*addr));
     addr->personal = mutt_str_strdup((const char *) value);
     addr->mailbox = mutt_str_strdup("dummy1");
+    //QWQ rfc822_parse_adrlist(NULL, p);
   }
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) addr, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) addr, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
     {
       address_destroy(cs, &addr, cdef);
-      return rv | CSR_INV_VALIDATOR;
+      return rc | CSR_INV_VALIDATOR;
     }
   }
 
@@ -124,18 +124,32 @@ static int address_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int address_string_get(const struct ConfigSet *cs, void *var,
                               const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  struct Address *a = *(struct Address **) var;
-  if (!a)
+  const char *str = NULL;
+
+  if (var)
+  {
+    struct Address *a = *(struct Address **) var;
+    if (a)
+      str = a->personal;
+  }
+  else
+  {
+    str = (char *) cdef->initial;
+  }
+
+  if (!str)
     return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
 
-  mutt_buffer_addstr(result, a->personal);
+  mutt_buffer_addstr(result, str);
   return CSR_SUCCESS;
 }
 
@@ -173,10 +187,10 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   address_free(var);

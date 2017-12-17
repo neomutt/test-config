@@ -31,12 +31,14 @@ int mutt_debug_real(const char *function, const char *file, int line, int level,
   return ret;
 }
 
-// clang-format off
 struct Test
 {
   const char *name;
   test_fn function;
-} test[] = {
+};
+
+// clang-format off
+struct Test test[] = {
   { "set",       set_test       },
   { "account",   account_test   },
   { "initial",   initial_test   },

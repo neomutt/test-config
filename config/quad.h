@@ -24,7 +24,9 @@
 #define _CONFIG_QUAD_H
 
 struct ConfigSet;
+struct HashElem;
 
 void quad_init(struct ConfigSet *cs);
+int  quad_he_toggle(struct ConfigSet *cs, struct HashElem *he);
 
 #endif /* _CONFIG_QUAD_H */

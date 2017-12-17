@@ -1,5 +1,6 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
+#define _GNU_SOURCE 1
 #define ALL_TARGETS "all-po all-doc all-contrib"
 #define BINDIR "/usr/bin"
 #define CLEAN_TARGETS "clean-po clean-doc clean-contrib"

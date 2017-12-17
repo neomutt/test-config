@@ -24,7 +24,9 @@
 #define _CONFIG_BOOL_H
 
 struct ConfigSet;
+struct HashElem;
 
 void bool_init(struct ConfigSet *cs);
+int  bool_he_toggle(struct ConfigSet *cs, struct HashElem *he);
 
 #endif /* _CONFIG_BOOL_H */

@@ -25,14 +25,14 @@
  *
  * LONG bool
  *
- * | Function        | Description
- * | :-------------- | :---------------------------------
- * | bool_init       | Register the Bool config type
- * | bool_native_get | Get a bool from a Bool config item
- * | bool_native_set | Set a Bool config item by bool
- * | bool_reset      | Reset a Bool to its initial value
- * | bool_string_get | Get a Bool as a string
- * | bool_string_set | Set a Bool by string
+ * | Function          | Description
+ * | :---------------- | :---------------------------------
+ * | bool_init()       | Register the Bool config type
+ * | bool_native_get() | Get a bool from a Bool config item
+ * | bool_native_set() | Set a Bool config item by bool
+ * | bool_reset()      | Reset a Bool to its initial value
+ * | bool_string_get() | Get a Bool as a string
+ * | bool_string_set() | Set a Bool by string
  */
 
 #include "config.h"
@@ -42,6 +42,7 @@
 #include <stdint.h>
 #include "mutt/buffer.h"
 #include "mutt/debug.h"
+#include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
 #include "set.h"
@@ -85,10 +86,10 @@ static int bool_string_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, (intptr_t) num, err);
+    int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(bool *) var = num;
@@ -102,14 +103,22 @@ static int bool_string_set(const struct ConfigSet *cs, void *var,
  * @param cdef   Variable definition
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the initial value is returned.
  */
 static int bool_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  unsigned int index = *(bool *) var;
+  int index;
+
+  if (var)
+    index = *(bool *) var;
+  else
+    index = (int) cdef->initial;
+
   if (index > 1)
   {
     mutt_debug(1, "Variable has an invalid value: %d\n", index);
@@ -130,8 +139,7 @@ static int bool_string_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int bool_native_set(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, intptr_t value,
-                           struct Buffer *err)
+                           const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -144,10 +152,10 @@ static int bool_native_set(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    int rv = cdef->validator(cs, cdef, value, err);
+    int rc = cdef->validator(cs, cdef, value, err);
 
-    if (CSR_RESULT(rv) != CSR_SUCCESS)
-      return rv | CSR_INV_VALIDATOR;
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return rc | CSR_INV_VALIDATOR;
   }
 
   *(bool *) var = value;
@@ -199,4 +207,24 @@ void bool_init(struct ConfigSet *cs)
     "boolean", bool_string_set, bool_string_get, bool_native_set, bool_native_get, bool_reset, NULL,
   };
   cs_register_type(cs, DT_BOOL, &cst_bool);
+}
+
+int bool_he_toggle(struct ConfigSet *cs, struct HashElem *he)
+{
+  if (!cs || !he)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  if (DTYPE(he->type) != DT_BOOL)
+    return CSR_ERR_CODE;
+
+  const struct ConfigDef *cdef = he->data;
+
+  char *var = cdef->var;
+
+  int oldval = *var;
+  int newval = !oldval;
+  *(char *) var = newval;
+
+  return oldval;
+  //QWQ NOTIFY
 }
