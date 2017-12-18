@@ -34,7 +34,7 @@ struct ConfigSet;
  */
 struct MbTable
 {
-  char *orig_str;
+  char *orig_str;      /**< XXX */
   int len;             /**< number of characters */
   char **chars;        /**< the array of multibyte character strings */
   char *segmented_str; /**< each chars entry points inside this string */

@@ -48,6 +48,7 @@
 #include "types.h"
 
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
+/*XXX enum to match these values, export too */
 
 /**
  * magic_string_set - Set a Mailbox Magic by string

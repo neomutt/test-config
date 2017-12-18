@@ -48,6 +48,9 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * bool_values - XXX
+ */
 const char *bool_values[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",
 };
@@ -209,6 +212,13 @@ void bool_init(struct ConfigSet *cs)
   cs_register_type(cs, DT_BOOL, &cst_bool);
 }
 
+/**
+ * bool_he_toggle - Toggle the value of a bool
+ * @param cs  Config items
+ * @param he  HashElem representing config item
+ * @param err Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
 int bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)

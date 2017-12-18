@@ -25,14 +25,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "common.h"
-#include "config/inheritance.h"
-#include "config/set.h"
-#include "config/types.h"
 #include "mutt/buffer.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "config/inheritance.h"
+#include "config/set.h"
+#include "config/types.h"
+#include "common.h"
 
 struct HashElem;
 

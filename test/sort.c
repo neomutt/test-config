@@ -25,14 +25,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "config/sort.h"
-#include "config/account.h"
-#include "config/set.h"
-#include "config/types.h"
 #include "mutt/buffer.h"
 #include "mutt/mapping.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "config/account.h"
+#include "config/set.h"
+#include "config/sort.h"
+#include "config/types.h"
 #include "mutt_options.h"
 #include "test/common.h"
 
@@ -157,7 +157,7 @@ const struct Mapping *sort_maps[] = {
   SortKeyMethods, SortAuxMethods,   SortSidebarMethods,
 };
 
-static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
+static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   printf("Apple = %d\n", VarApple);
@@ -604,7 +604,7 @@ bool sort_test(void)
   if (!cs_register_variables(cs, Vars2, 0))
     return false;
 
-  if (!test_initial_values_values(cs, &err))
+  if (!test_initial_values(cs, &err))
     return false;
   if (!test_string_set(cs, &err))
     return false;

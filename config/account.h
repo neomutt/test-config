@@ -28,13 +28,16 @@
 struct Buffer;
 struct ConfigSet;
 
+/**
+ * struct Account - XXX
+ */
 struct Account
 {
-  char *name;
-  const struct ConfigSet *cs;
-  const char **var_names;
-  int num_vars;
-  struct HashElem **vars;
+  char *name;                 /**< XXX */
+  const struct ConfigSet *cs; /**< XXX */
+  const char **var_names;     /**< XXX */
+  int num_vars;               /**< XXX */
+  struct HashElem **vars;     /**< XXX */
 };
 
 struct Account *ac_create(const struct ConfigSet *cs, const char *name, const char *var_names[]);

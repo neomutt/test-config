@@ -24,7 +24,7 @@
 #define _CONFIG_TYPES_H
 
 /* Data Types */
-#define DT_MASK      0x0f
+#define DT_MASK      0x0f /**< XXX */
 #define DT_BOOL       1   /**< boolean option */
 #define DT_NUMBER     2   /**< a number */
 #define DT_STRING     3   /**< a string */
@@ -38,31 +38,31 @@
 #define DT_MBTABLE   11   /**< multibyte char table */
 #define DT_HCACHE    12   /**< header cache backend */
 
-#define DTYPE(x) ((x) & DT_MASK)
+#define DTYPE(x) ((x) & DT_MASK) /**< XXX */
 
 /* subtypes for... */
-#define DT_SUBTYPE_MASK 0xff0
+#define DT_SUBTYPE_MASK 0xff0 /**< XXX */
 
 /* ... DT_SORT */
-#define DT_SORT_INDEX   0x000
-#define DT_SORT_ALIAS   0x010
-#define DT_SORT_BROWSER 0x020
-#define DT_SORT_KEYS    0x040
-#define DT_SORT_AUX     0x080
-#define DT_SORT_SIDEBAR 0x100
+#define DT_SORT_INDEX   0x000 /**< XXX */
+#define DT_SORT_ALIAS   0x010 /**< XXX */
+#define DT_SORT_BROWSER 0x020 /**< XXX */
+#define DT_SORT_KEYS    0x040 /**< XXX */
+#define DT_SORT_AUX     0x080 /**< XXX */
+#define DT_SORT_SIDEBAR 0x100 /**< XXX */
 
 /* ... DT_REGEX */
 #define DT_REGEX_MATCH_CASE 0x010 /**< Case-sensitive matching */
 #define DT_REGEX_ALLOW_NOT  0x020 /**< Regex can begin with '!' */
 
 /* Private config flags */
-#define DT_INHERITED    0x0200
-#define DT_INITIAL_SET  0x0400
-#define DT_DISABLED     0x0800
-#define DT_MY_CONFIG    0x1000
+#define DT_INHERITED    0x0200 /**< XXX */
+#define DT_INITIAL_SET  0x0400 /**< XXX */
+#define DT_DISABLED     0x0800 /**< XXX */
+#define DT_MY_CONFIG    0x1000 /**< XXX */
 
 /* forced redraw/resort types + other flags */
-#define R_NONE        0
+#define R_NONE        0 /**< XXX */
 #define R_INDEX       (1 << 0) /**< redraw the index menu (MENU_MAIN) */
 #define R_PAGER       (1 << 1) /**< redraw the pager menu */
 #define R_PAGER_FLOW  (1 << 2) /**< reflow line_info and redraw the pager menu */
@@ -77,6 +77,6 @@
 #define R_RESORT_BOTH (R_RESORT | R_RESORT_SUB)
 
 /* general flags, to be OR'd with the R_ flags above (so keep shifting..) */
-#define F_SENSITIVE   (1 << 9)
+#define F_SENSITIVE   (1 << 9) /**< XXX */
 
 #endif /* _CONFIG_TYPES_H */

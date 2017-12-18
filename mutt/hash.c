@@ -337,7 +337,7 @@ void mutt_hash_set_destructor(struct Hash *hash, hash_destructor fn, intptr_t fn
 }
 
 struct HashElem *mutt_hash_typed_insert(struct Hash *table, const char *strkey,
-                                   int type, void *data)
+                                        int type, void *data)
 {
   union HashKey key;
   key.strkey = table->strdup_keys ? mutt_str_strdup(strkey) : strkey;

@@ -20,10 +20,6 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * A (more) generic interface to regular expression matching
- */
-
 #ifndef _CONFIG_REGEX_H
 #define _CONFIG_REGEX_H
 
@@ -33,9 +29,8 @@
 struct Buffer;
 struct ConfigSet;
 
-/* this is a non-standard option supported by Solaris 2.5.x which allows
- * patterns of the form \<...\>
- */
+/* This is a non-standard option supported by Solaris 2.5.x which allows
+ * patterns of the form \<...\> */
 #ifndef REG_WORDS
 #define REG_WORDS 0
 #endif
@@ -50,7 +45,7 @@ struct Regex
 {
   char *pattern;  /**< printable version */
   regex_t *regex; /**< compiled expression */
-  bool not;        /**< do not match */
+  bool not;       /**< do not match */
 };
 
 /**
@@ -58,8 +53,8 @@ struct Regex
  */
 struct RegexList
 {
-  struct Regex *regex;
-  struct RegexList *next;
+  struct Regex *regex;    /**< XXX */
+  struct RegexList *next; /**< XXX */
 };
 
 /**
@@ -67,10 +62,10 @@ struct RegexList
  */
 struct ReplaceList
 {
-  struct Regex *regex;
-  int nmatch;
-  char *template;
-  struct ReplaceList *next;
+  struct Regex *regex;      /**< XXX */
+  int nmatch;               /**< XXX */
+  char *template;           /**< XXX */
+  struct ReplaceList *next; /**< XXX */
 };
 
 void regex_init(struct ConfigSet *cs);

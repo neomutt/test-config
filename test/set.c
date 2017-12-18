@@ -23,11 +23,11 @@
 #include "config.h"
 #include <limits.h>
 #include <stdbool.h>
-#include "config/bool.h"
-#include "config/types.h"
 #include "mutt/buffer.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "config/bool.h"
+#include "config/types.h"
 #include "mutt_options.h"
 #include "test/common.h"
 
@@ -56,8 +56,7 @@ static int dummy_string_get(const struct ConfigSet *cs, void *var,
 }
 
 static int dummy_native_set(const struct ConfigSet *cs, void *var,
-                            const struct ConfigDef *cdef, intptr_t value,
-                            struct Buffer *err)
+                            const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
 {
   return CSR_ERR_CODE;
 }

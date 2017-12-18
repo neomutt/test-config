@@ -50,10 +50,17 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * SortAliasMethods - XXX
+ * XXX export tables
+ */
 static const struct Mapping SortAliasMethods[] = {
   { "alias", SORT_ALIAS }, { "address", SORT_ADDRESS }, { "unsorted", SORT_ORDER }, { NULL, 0 },
 };
 
+/**
+ * SortAuxMethods - XXX
+ */
 static const struct Mapping SortAuxMethods[] = {
   { "date", SORT_DATE },
   { "date-sent", SORT_DATE },
@@ -70,6 +77,9 @@ static const struct Mapping SortAuxMethods[] = {
   { NULL, 0 },
 };
 
+/**
+ * SortBrowserMethods - XXX
+ */
 static const struct Mapping SortBrowserMethods[] = {
   { "alpha", SORT_SUBJECT },  { "count", SORT_COUNT },
   { "date", SORT_DATE },      { "desc", SORT_DESC },
@@ -77,11 +87,18 @@ static const struct Mapping SortBrowserMethods[] = {
   { "unsorted", SORT_ORDER }, { NULL, 0 },
 };
 
+/**
+ * SortKeyMethods - XXX
+ */
 static const struct Mapping SortKeyMethods[] = {
   { "address", SORT_ADDRESS }, { "date", SORT_DATE }, { "keyid", SORT_KEYID },
   { "trust", SORT_TRUST },     { NULL, 0 },
 };
 
+/**
+ * SortMethods - XXX
+ * XXX RENAME to match others
+ */
 static const struct Mapping SortMethods[] = {
   { "date", SORT_DATE },
   { "date-sent", SORT_DATE },
@@ -98,6 +115,9 @@ static const struct Mapping SortMethods[] = {
   { NULL, 0 },
 };
 
+/**
+ * SortSidebarMethods - XXX
+ */
 static const struct Mapping SortSidebarMethods[] = {
   { "alpha", SORT_PATH },
   { "count", SORT_COUNT },

@@ -25,13 +25,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "mutt/buffer.h"
+#include "mutt/memory.h"
+#include "mutt/string2.h"
 #include "config/account.h"
 #include "config/set.h"
 #include "config/string3.h"
 #include "config/types.h"
-#include "mutt/buffer.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
 
@@ -90,7 +90,8 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple = %s\n", VarApple);
   printf("Banana = %s\n", VarBanana);
 
-  return ((mutt_str_strcmp(VarApple, aval) != 0) && (mutt_str_strcmp(VarBanana, bval) == 0));
+  return ((mutt_str_strcmp(VarApple, aval) != 0) &&
+          (mutt_str_strcmp(VarBanana, bval) == 0));
 }
 
 bool initial_test(void)

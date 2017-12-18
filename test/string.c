@@ -25,13 +25,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "mutt/buffer.h"
+#include "mutt/memory.h"
+#include "mutt/string2.h"
 #include "config/account.h"
 #include "config/set.h"
 #include "config/string3.h"
 #include "config/types.h"
-#include "mutt/buffer.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
 #include "mutt_options.h"
 #include "test/common.h"
 
@@ -72,7 +72,7 @@ static struct ConfigDef Vars[] = {
 };
 // clang-format on
 
-static bool test_initial_values_values(struct ConfigSet *cs, struct Buffer *err)
+static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   printf("Apple = %s\n", VarApple);
@@ -446,7 +446,7 @@ bool string_test(void)
 
   set_list(cs);
 
-  if (!test_initial_values_values(cs, &err))
+  if (!test_initial_values(cs, &err))
     return false;
   if (!test_string_set(cs, &err))
     return false;

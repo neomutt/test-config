@@ -48,7 +48,11 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * quad_values - XXX
+ */
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
+/*XXX enum, exported too */
 
 /**
  * quad_string_set - Set a Quad-option by string
@@ -207,6 +211,9 @@ void quad_init(struct ConfigSet *cs)
   cs_register_type(cs, DT_QUAD, &cst_quad);
 }
 
+/**
+ * toggle_quadoption - XXX
+ */
 static int toggle_quadoption(int opt)
 {
   /* toggle the low bit
@@ -215,6 +222,15 @@ static int toggle_quadoption(int opt)
   return opt ^= 1;
 }
 
+/**
+ * quad_he_toggle - Toggle the value of a quad
+ * @param cs  Config items
+ * @param he  HashElem representing config item
+ * @param err Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * @sa toggle_quadoption0()
+ */
 int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)

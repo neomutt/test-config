@@ -25,12 +25,15 @@
 
 #include <stdint.h>
 
+/**
+ * struct Inheritance - XXX
+ */
 struct Inheritance
 {
-  struct HashElem *parent;
-  const char *name;
-  struct Account *ac;
-  intptr_t var;
+  struct HashElem *parent; /**< XXX */
+  const char *name;        /**< XXX */
+  struct Account *ac;      /**< XXX */
+  intptr_t var;            /**< XXX */
 };
 
 #endif /* _CONFIG_INHERITANCE_H */

@@ -31,10 +31,13 @@ struct ConfigSet;
 struct HashElem;
 struct ConfigDef;
 
+/**
+ * enum ConfigEvent - XXX
+ */
 enum ConfigEvent
 {
-  CE_SET,
-  CE_RESET,
+  CE_SET,   /**< XXX */
+  CE_RESET, /**< XXX */
 };
 
 /* Config Set Results */
@@ -53,10 +56,13 @@ enum ConfigEvent
 #define CSR_RESULT_MASK 0x0F
 #define CSR_RESULT(x) ((x) & CSR_RESULT_MASK)
 
+/**
+ * enum CsListenerAction - XXX
+ */
 enum CsListenerAction
 {
-  CSLA_CONTINUE,
-  CSLA_STOP,
+  CSLA_CONTINUE, /**< XXX */
+  CSLA_STOP,     /**< XXX */
 };
 
 typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
@@ -74,6 +80,9 @@ typedef void    (*cst_destroy)   (const struct ConfigSet *cs, void *var, const s
 
 #define CS_REG_DISABLED (1 << 0)
 
+/**
+ * struct ConfigDef - XXX
+ */
 struct ConfigDef
 {
   const char   *name;      /**< user-visible name */
@@ -84,22 +93,28 @@ struct ConfigDef
   cs_validator  validator; /**< validator callback function */
 };
 
+/**
+ * struct ConfigSetType - XXX
+ */
 struct ConfigSetType
 {
-  const char *name;
-  cst_string_set string_set;
-  cst_string_get string_get;
-  cst_native_set native_set;
-  cst_native_get native_get;
-  cst_reset      reset;
-  cst_destroy    destroy;
+  const char *name;          /**< XXX */
+  cst_string_set string_set; /**< XXX */
+  cst_string_get string_get; /**< XXX */
+  cst_native_set native_set; /**< XXX */
+  cst_native_get native_get; /**< XXX */
+  cst_reset reset;           /**< XXX */
+  cst_destroy destroy;       /**< XXX */
 };
 
+/**
+ * struct ConfigSet - XXX
+ */
 struct ConfigSet
 {
-  struct Hash *hash;
-  struct ConfigSetType types[14];
-  cs_listener listeners[4];
+  struct Hash *hash;              /**< XXX */
+  struct ConfigSetType types[14]; /**< XXX */
+  cs_listener listeners[4];       /**< XXX */
 };
 
 struct ConfigSet *cs_create(int size);

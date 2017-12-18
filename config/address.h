@@ -32,12 +32,12 @@ struct ConfigSet;
  */
 struct Address
 {
-  char *personal; /**< real name of address */
-  char *mailbox;  /**< mailbox and host address */
-  int group;      /**< group mailbox? */
-  struct Address *next;
-  bool is_intl : 1;
-  bool intl_checked : 1;
+  char *personal;        /**< real name of address */
+  char *mailbox;         /**< mailbox and host address */
+  int group;             /**< group mailbox? */
+  struct Address *next;  /**< XXX */
+  bool is_intl : 1;      /**< XXX */
+  bool intl_checked : 1; /**< XXX */
 };
 
 void address_init(struct ConfigSet *cs);
