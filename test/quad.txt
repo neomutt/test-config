@@ -12,9 +12,15 @@ quad Apple = no
 quad Guava = no
 quad Hawthorn = no
 quad Jackfruit = no
----- test_initial_values_values ----------------------------
+---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 3
+Event: Apple has been set to 'ask-yes'
+Event: Banana has been set to 'ask-no'
+Apple = 3
+Apple's initial value is 'no'
+Banana = 2
+Banana's initial value is 'ask-yes'
 ---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'no'
 Cherry = 0, set by 'no'

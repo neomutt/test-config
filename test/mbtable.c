@@ -78,8 +78,62 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple = %s\n", VarApple->orig_str);
   printf("Banana = %s\n", VarBanana->orig_str);
 
-  return ((mutt_str_strcmp(VarApple->orig_str, "apple") == 0) &&
-          (mutt_str_strcmp(VarBanana->orig_str, "banana") == 0));
+  if ((mutt_str_strcmp(VarApple->orig_str, "apple") != 0) ||
+          (mutt_str_strcmp(VarBanana->orig_str, "banana") != 0))
+  {
+    printf("Error: initial values were wrong\n");
+    return false;
+  }
+
+  cs_str_string_set(cs, "Apple", "car", err);
+  cs_str_string_set(cs, "Banana", "train", err);
+
+  struct Buffer value;
+  mutt_buffer_init(&value);
+  value.data = mutt_mem_calloc(1, STRING);
+  value.dsize = STRING;
+  mutt_buffer_reset(&value);
+
+  int rc;
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_default_get(cs, "Apple", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(value.data, "apple") != 0)
+  {
+    printf("Apple's initial value is wrong: '%s'\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+  printf("Apple = '%s'\n", VarApple ? VarApple->orig_str : "");
+  printf("Apple's initial value is %s\n", value.data);
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_default_get(cs, "Banana", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(value.data, "banana") != 0)
+  {
+    printf("Banana's initial value is wrong: %s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+  printf("Banana = '%s'\n", VarBanana ? VarBanana->orig_str : "");
+  printf("Banana's initial value is %s\n", NONULL(value.data));
+
+  FREE(&value.data);
+  return true;
 }
 
 static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)

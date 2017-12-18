@@ -11,9 +11,15 @@ number Apple = -42
 number Guava = 99
 number Hawthorn = 0
 number Jackfruit = 0
----- test_initial_values_values ----------------------------
+---- test_initial_values -----------------------------------
 Apple = -42
 Banana = 99
+Event: Apple has been set to '2001'
+Event: Banana has been set to '1999'
+Apple = 2001
+Apple's initial value is '-42'
+Banana = 1999
+Banana's initial value is '99'
 ---- test_string_set ---------------------------------------
 Event: Cherry has been set to '-123'
 Cherry = -123, set by '-123'

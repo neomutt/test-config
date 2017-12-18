@@ -75,11 +75,68 @@ static struct ConfigDef Vars[] = {
 static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  printf("Apple = %s\n", VarApple->personal);
-  printf("Banana = %s\n", VarBanana->personal);
+  printf("Apple = '%s'\n", VarApple->personal);
+  printf("Banana = '%s'\n", VarBanana->personal);
 
-  return ((mutt_str_strcmp(VarApple->personal, "apple@example.com") == 0) &&
-          (mutt_str_strcmp(VarBanana->personal, "banana@example.com") == 0));
+  const char *apple_orig = "apple@example.com";
+  const char *banana_orig = "banana@example.com";
+
+  if ((mutt_str_strcmp(VarApple->personal, apple_orig) != 0) ||
+      (mutt_str_strcmp(VarBanana->personal, banana_orig) != 0))
+  {
+    printf("Error: initial values were wrong\n");
+    return false;
+  }
+
+  cs_str_string_set(cs, "Apple", "granny@smith.com", err);
+  cs_str_string_set(cs, "Banana", NULL, err);
+
+  struct Buffer value;
+  mutt_buffer_init(&value);
+  value.data = mutt_mem_calloc(1, STRING);
+  value.dsize = STRING;
+  mutt_buffer_reset(&value);
+
+  int rc;
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_default_get(cs, "Apple", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(value.data, apple_orig) != 0)
+  {
+    printf("Apple's initial value is wrong: '%s'\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+  printf("Apple = '%s'\n", VarApple->personal);
+  printf("Apple's initial value is '%s'\n", value.data);
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_default_get(cs, "Banana", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(value.data, banana_orig) != 0)
+  {
+    printf("Banana's initial value is wrong: '%s'\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+  printf("Banana = '%s'\n", VarBanana ? VarBanana->personal : "");
+  printf("Banana's initial value is '%s'\n", NONULL(value.data));
+
+  FREE(&value.data);
+  return true;
 }
 
 static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)

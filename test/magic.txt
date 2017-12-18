@@ -11,9 +11,15 @@ magic Apple = mbox
 magic Guava = mbox
 magic Hawthorn = mbox
 magic Jackfruit = mbox
----- test_initial_values_values ----------------------------
+---- test_initial_values -----------------------------------
 Apple = 1
 Banana = 3
+Event: Apple has been set to 'MMDF'
+Event: Banana has been set to 'Maildir'
+Apple = 2
+Apple's initial value is mbox
+Banana = 4
+Banana's initial value is MH
 ---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'mbox'
 Cherry = 1, set by 'mbox'

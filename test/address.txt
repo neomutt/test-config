@@ -15,9 +15,15 @@ address Mango = mango@example.com
 address Hawthorn = 
 address Jackfruit = 
 address Nectarine = nectarine@example.com
----- test_initial_values_values ----------------------------
-Apple = apple@example.com
-Banana = banana@example.com
+---- test_initial_values -----------------------------------
+Apple = 'apple@example.com'
+Banana = 'banana@example.com'
+Event: Apple has been set to 'granny@smith.com'
+Event: Banana has been set to ''
+Apple = 'granny@smith.com'
+Apple's initial value is 'apple@example.com'
+Banana = ''
+Banana's initial value is 'banana@example.com'
 ---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'hello@example.com'
 Cherry = 'hello@example.com', set by 'hello@example.com'

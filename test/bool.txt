@@ -12,9 +12,15 @@ boolean Apple = no
 boolean Guava = no
 boolean Hawthorn = no
 boolean Jackfruit = no
----- test_initial_values_values ----------------------------
+---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 1
+Event: Apple has been set to 'yes'
+Event: Banana has been set to 'no'
+Apple = 'yes'
+Apple's initial value is 'no'
+Banana = 'no'
+Banana's initial value is 'yes'
 ---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'no'
 Cherry = 0, set by 'no'

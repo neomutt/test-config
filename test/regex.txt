@@ -15,9 +15,15 @@ regex Mango = mango.*
 regex Hawthorn = 
 regex Jackfruit = 
 regex Nectarine = nectarine.*
----- test_initial_values_values ----------------------------
+---- test_initial_values -----------------------------------
 Apple = apple.*
 Banana = banana.*
+Event: Apple has been set to 'car*'
+Event: Banana has been set to 'train*'
+Apple = 'car*'
+Apple's initial value is apple.*
+Banana = 'train*'
+Banana's initial value is banana.*
 ---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'hello.*'
 Cherry = 'hello.*', set by 'hello.*'

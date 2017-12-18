@@ -178,21 +178,6 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
 }
 
 /**
- * cs_get_var_def - XXX
- */
-const struct ConfigDef *cs_get_var_def(const struct ConfigSet *cs, const char *name)
-{
-  if (!cs || !name)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  struct HashElem *he = mutt_hash_find_elem(cs->hash, name);
-  if (!he)
-    return NULL;
-
-  return he->data;
-}
-
-/**
  * cs_get_type_def - Get the definition for a type
  * @param cs   Config items
  * @param type Type to lookup, e.g. #DT_NUMBER
@@ -609,6 +594,28 @@ int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Bu
   }
 
   return cst->string_get(cs, NULL, cdef, result);
+}
+
+/**
+ * cs_str_default_get - XXX
+ * @param cs     Config items
+ * @param name   Name of config item
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
+int cs_str_default_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
+{
+  if (!cs || !name)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+  {
+    mutt_buffer_printf(result, "Unknown var '%s'", name);
+    return CSR_ERR_UNKNOWN;
+  }
+
+  return cs_he_default_get(cs, he, result);
 }
 
 /**

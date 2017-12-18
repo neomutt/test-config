@@ -69,7 +69,62 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   printf("Apple = %d\n", VarApple);
   printf("Banana = %d\n", VarBanana);
-  return ((VarApple == -42) && (VarBanana == 99));
+
+  if ((VarApple != -42) || (VarBanana != 99))
+  {
+    printf("Error: initial values were wrong\n");
+    return false;
+  }
+
+  cs_str_string_set(cs, "Apple", "2001", err);
+  cs_str_string_set(cs, "Banana", "1999", err);
+
+  struct Buffer value;
+  mutt_buffer_init(&value);
+  value.data = mutt_mem_calloc(1, STRING);
+  value.dsize = STRING;
+  mutt_buffer_reset(&value);
+
+  int rc;
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_default_get(cs, "Apple", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(value.data, "-42") != 0)
+  {
+    printf("Apple's initial value is wrong: '%s'\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+  printf("Apple = %d\n", VarApple);
+  printf("Apple's initial value is '%s'\n", value.data);
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_default_get(cs, "Banana", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(value.data, "99") != 0)
+  {
+    printf("Banana's initial value is wrong: '%s'\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+  printf("Banana = %d\n", VarBanana);
+  printf("Banana's initial value is '%s'\n", NONULL(value.data));
+
+  FREE(&value.data);
+  return true;
 }
 
 static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)

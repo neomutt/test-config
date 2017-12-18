@@ -123,7 +123,6 @@ void cs_free(struct ConfigSet **cs);
 
 struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name);
 const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type);
-const struct ConfigDef *cs_get_var_def(const struct ConfigSet *cs, const char *name);
 
 bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct ConfigSetType *cst);
 bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], int flags);
@@ -142,6 +141,7 @@ int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Bu
 
 int cs_str_string_set(const struct ConfigSet *cs, const char *name, const char *value, struct Buffer *err);
 int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffer *result);
+int cs_str_default_get(const struct ConfigSet *cs, const char *name, struct Buffer *result);
 
 int cs_he_string_set(const struct ConfigSet *cs, struct HashElem *he, const char *value, struct Buffer *err);
 

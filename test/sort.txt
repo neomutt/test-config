@@ -16,9 +16,15 @@ sort Hawthorn = flagged
 sort Jackfruit = date
 sort Nectarine = date
 sort Papaya = date
----- test_initial_values_values ----------------------------
+---- test_initial_values -----------------------------------
 Apple = 1
 Banana = 2
+Event: Apple has been set to 'threads'
+Event: Banana has been set to 'score'
+Apple = 6
+Apple's initial value is 'date'
+Banana = 9
+Banana's initial value is 'size'
 ---- test_string_set ---------------------------------------
 Event: Cherry has been set to 'date'
 Cherry = 1, set by 'date'
