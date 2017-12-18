@@ -10,6 +10,7 @@ quad Kumquat = no
 quad Banana = ask-yes
 quad Apple = no
 quad Guava = no
+boolean Mango = no
 quad Hawthorn = no
 quad Jackfruit = no
 ---- test_initial_values -----------------------------------
@@ -90,3 +91,5 @@ test 2
 Event: Lemon has been set to 'ask-yes'
 test 3
 Event: Lemon has been set to 'ask-no'
+Expected error: Invalid quad value: 8
+Expected error: 

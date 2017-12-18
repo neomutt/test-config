@@ -30,6 +30,7 @@
 #include "mutt/string2.h"
 #include "config/account.h"
 #include "config/bool.h"
+#include "config/quad.h"
 #include "config/set.h"
 #include "config/types.h"
 #include "mutt_options.h"
@@ -46,7 +47,8 @@ static bool VarHawthorn;
 static bool VarIlama;
 static bool VarJackfruit;
 static bool VarKumquat;
-static bool VarLemon;
+static char VarLemon;
+static char VarMango;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -62,6 +64,7 @@ static struct ConfigDef Vars[] = {
   { "Jackfruit",  DT_BOOL, 0, &VarJackfruit,  0, validator_fail    },
   { "Kumquat",    DT_BOOL, 0, &VarKumquat,    0, NULL              }, /* test_inherit */
   { "Lemon",      DT_BOOL, 0, &VarLemon,      0, NULL              }, /* test_toggle */
+  { "Mango",      DT_QUAD, 0, &VarMango,      0, NULL              },
   { NULL },
 };
 // clang-format on
@@ -530,6 +533,26 @@ static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
     }
   }
 
+  VarLemon = 8;
+  mutt_buffer_reset(err);
+  rc = bool_he_toggle(cs, he, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+
+  name = "Mango";
+  he = cs_get_elem(cs, name);
+  if (!he)
+    return false;
+
+  mutt_buffer_reset(err);
+  rc = bool_he_toggle(cs, he, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+
   return true;
 }
 
@@ -546,6 +569,7 @@ bool bool_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   bool_init(cs);
+  quad_init(cs);
   if (!cs_register_variables(cs, Vars, 0))
     return false;
 

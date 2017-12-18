@@ -79,7 +79,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Banana = %s\n", VarBanana);
 
   if ((mutt_str_strcmp(VarApple, "apple") != 0) ||
-          (mutt_str_strcmp(VarBanana, "banana") != 0))
+      (mutt_str_strcmp(VarBanana, "banana") != 0))
   {
     printf("Error: initial values were wrong\n");
     return false;

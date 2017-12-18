@@ -10,6 +10,7 @@ boolean Kumquat = no
 boolean Banana = yes
 boolean Apple = no
 boolean Guava = no
+quad Mango = no
 boolean Hawthorn = no
 boolean Jackfruit = no
 ---- test_initial_values -----------------------------------
@@ -96,3 +97,5 @@ test 0
 Event: Lemon has been set to 'yes'
 test 1
 Event: Lemon has been set to 'no'
+Expected error: Invalid boolean value: 8
+Expected error: 
