@@ -35,17 +35,18 @@
 #include "mutt_options.h"
 #include "test/common.h"
 
-static short VarApple;
-static short VarBanana;
-static short VarCherry;
-static short VarDamson;
-static short VarElderberry;
-static short VarFig;
-static short VarGuava;
-static short VarHawthorn;
-static short VarIlama;
-static short VarJackfruit;
-static short VarKumquat;
+static char VarApple;
+static char VarBanana;
+static char VarCherry;
+static char VarDamson;
+static char VarElderberry;
+static char VarFig;
+static char VarGuava;
+static char VarHawthorn;
+static char VarIlama;
+static char VarJackfruit;
+static char VarKumquat;
+static char VarLemon;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -60,6 +61,7 @@ static struct ConfigDef Vars[] = {
   { "Ilama",      DT_QUAD, 0, &VarIlama,      0, validator_warn    },
   { "Jackfruit",  DT_QUAD, 0, &VarJackfruit,  0, validator_fail    },
   { "Kumquat",    DT_QUAD, 0, &VarKumquat,    0, NULL              }, /* test_inherit */
+  { "Lemon",      DT_QUAD, 0, &VarLemon,      0, NULL              }, /* test_toggle */
   { NULL },
 };
 // clang-format on
@@ -160,7 +162,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Elderberry";
-  short value = MUTT_YES;
+  char value = MUTT_YES;
 
   VarElderberry = MUTT_NO;
   mutt_buffer_reset(err);
@@ -409,6 +411,66 @@ ti_out:
   return result;
 }
 
+static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
+{
+  log_line(__func__);
+
+  struct ToggleTest
+  {
+    char before;
+    char after;
+  };
+
+  struct ToggleTest tests[] = {
+    { MUTT_NO, MUTT_YES }, { MUTT_YES, MUTT_NO }, { MUTT_ASKNO, MUTT_ASKYES }, { MUTT_ASKYES, MUTT_ASKNO },
+  };
+
+  char *name = "Lemon";
+  int rc;
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+    return false;
+
+  for (size_t i = 0; i < mutt_array_size(tests); i++)
+  {
+    char before = tests[i].before;
+    char after = tests[i].after;
+    printf("test %zd\n", i);
+
+    VarLemon = before;
+    mutt_buffer_reset(err);
+    intptr_t value = cs_he_native_get(cs, he, err);
+    if (value == INT_MIN)
+    {
+      printf("Get failed: %s\n", err->data);
+      return false;
+    }
+
+    char copy = value;
+    if (copy != before)
+    {
+      printf("Initial value is wrong: %s\n", err->data);
+      return false;
+    }
+
+    rc = quad_he_toggle(cs, he, err);
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    {
+      printf("Toggle failed: %s\n", err->data);
+      return false;
+    }
+
+    if (VarLemon != after)
+    {
+      printf("Toggle value is wrong: %s\n", err->data);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool quad_test(void)
 {
   log_line(__func__);
@@ -444,6 +506,8 @@ bool quad_test(void)
   if (!test_validator(cs, &err))
     return false;
   if (!test_inherit(cs, &err))
+    return false;
+  if (!test_toggle(cs, &err))
     return false;
 
   cs_free(&cs);

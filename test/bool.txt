@@ -1,6 +1,7 @@
 ---- bool_test ---------------------------------------------
 ---- set_list ----------------------------------------------
 boolean Damson = no
+boolean Lemon = no
 boolean Cherry = no
 boolean Fig = no
 boolean Elderberry = no
@@ -84,3 +85,8 @@ Event: fruit:Kumquat has been reset to 'yes'
 Event: Kumquat has been reset to 'no'
         Kumquat = 0
   fruit:Kumquat = 0
+---- test_toggle -------------------------------------------
+test 0
+Event: Lemon has been set to 'yes'
+test 1
+Event: Lemon has been set to 'no'

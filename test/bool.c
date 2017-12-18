@@ -46,6 +46,7 @@ static bool VarHawthorn;
 static bool VarIlama;
 static bool VarJackfruit;
 static bool VarKumquat;
+static bool VarLemon;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -60,6 +61,7 @@ static struct ConfigDef Vars[] = {
   { "Ilama",      DT_BOOL, 0, &VarIlama,      0, validator_warn    },
   { "Jackfruit",  DT_BOOL, 0, &VarJackfruit,  0, validator_fail    },
   { "Kumquat",    DT_BOOL, 0, &VarKumquat,    0, NULL              }, /* test_inherit */
+  { "Lemon",      DT_BOOL, 0, &VarLemon,      0, NULL              }, /* test_toggle */
   { NULL },
 };
 // clang-format on
@@ -418,6 +420,66 @@ ti_out:
   return result;
 }
 
+static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
+{
+  log_line(__func__);
+
+  struct ToggleTest
+  {
+    bool before;
+    bool after;
+  };
+
+  struct ToggleTest tests[] = {
+    { false, true }, { true, false }
+  };
+
+  char *name = "Lemon";
+  int rc;
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+    return false;
+
+  for (size_t i = 0; i < mutt_array_size(tests); i++)
+  {
+    bool before = tests[i].before;
+    bool after = tests[i].after;
+    printf("test %zd\n", i);
+
+    VarLemon = before;
+    mutt_buffer_reset(err);
+    intptr_t value = cs_he_native_get(cs, he, err);
+    if (value == INT_MIN)
+    {
+      printf("Get failed: %s\n", err->data);
+      return false;
+    }
+
+    bool copy = value;
+    if (copy != before)
+    {
+      printf("Initial value is wrong: %s\n", err->data);
+      return false;
+    }
+
+    rc = bool_he_toggle(cs, he, err);
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    {
+      printf("Toggle failed: %s\n", err->data);
+      return false;
+    }
+
+    if (VarLemon != after)
+    {
+      printf("Toggle value is wrong: %s\n", err->data);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool bool_test(void)
 {
   log_line(__func__);
@@ -453,6 +515,8 @@ bool bool_test(void)
   if (!test_validator(cs, &err))
     return false;
   if (!test_inherit(cs, &err))
+    return false;
+  if (!test_toggle(cs, &err))
     return false;
 
   cs_free(&cs);

@@ -209,7 +209,7 @@ void bool_init(struct ConfigSet *cs)
   cs_register_type(cs, DT_BOOL, &cst_bool);
 }
 
-int bool_he_toggle(struct ConfigSet *cs, struct HashElem *he)
+int bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -218,13 +218,20 @@ int bool_he_toggle(struct ConfigSet *cs, struct HashElem *he)
     return CSR_ERR_CODE;
 
   const struct ConfigDef *cdef = he->data;
+  if (!cdef)
+    return CSR_ERR_CODE;
 
   char *var = cdef->var;
 
-  int oldval = *var;
-  int newval = !oldval;
-  *(char *) var = newval;
+  char value = *var;
+  if ((value < 0) || (value > 1))
+  {
+    mutt_buffer_printf(err, "Invalid boolean value: %ld", value);
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
+  }
 
-  return oldval;
-  //QWQ NOTIFY
+  *(char *) var = !value;
+
+  cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
+  return CSR_SUCCESS;
 }

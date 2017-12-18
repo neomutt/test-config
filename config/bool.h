@@ -23,10 +23,11 @@
 #ifndef _CONFIG_BOOL_H
 #define _CONFIG_BOOL_H
 
+struct Buffer;
 struct ConfigSet;
 struct HashElem;
 
 void bool_init(struct ConfigSet *cs);
-int  bool_he_toggle(struct ConfigSet *cs, struct HashElem *he);
+int  bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 
 #endif /* _CONFIG_BOOL_H */

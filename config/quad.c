@@ -215,8 +215,7 @@ static int toggle_quadoption(int opt)
   return opt ^= 1;
 }
 
-//QWQ int or unsigned char?
-int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he)
+int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -225,13 +224,20 @@ int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he)
     return CSR_ERR_CODE;
 
   const struct ConfigDef *cdef = he->data;
+  if (!cdef)
+    return CSR_ERR_CODE;
 
   char *var = cdef->var;
 
-  int oldval = *var;
-  int newval = toggle_quadoption(oldval);
-  *(char *) var = newval;
+  char value = *var;
+  if ((value < 0) || (value >= mutt_array_size(quad_values)))
+  {
+    mutt_buffer_printf(err, "Invalid quad value: %ld", value);
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
+  }
 
-  return oldval;
-  //QWQ NOTIFY
+  *(char *) var = toggle_quadoption(value);
+
+  cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
+  return CSR_SUCCESS;
 }

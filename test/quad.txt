@@ -1,6 +1,7 @@
 ---- quad_test ---------------------------------------------
 ---- set_list ----------------------------------------------
 quad Damson = no
+quad Lemon = no
 quad Cherry = no
 quad Fig = no
 quad Elderberry = no
@@ -74,3 +75,12 @@ Event: fruit:Kumquat has been reset to 'yes'
 Event: Kumquat has been reset to 'no'
         Kumquat = 0
   fruit:Kumquat = 0
+---- test_toggle -------------------------------------------
+test 0
+Event: Lemon has been set to 'yes'
+test 1
+Event: Lemon has been set to 'no'
+test 2
+Event: Lemon has been set to 'ask-yes'
+test 3
+Event: Lemon has been set to 'ask-no'
