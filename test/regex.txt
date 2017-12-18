@@ -31,10 +31,14 @@ Event: Cherry has been set to 'world.*'
 Cherry = 'world.*', set by 'world.*'
 Event: Cherry has been set to ''
 Cherry = '', set by ''
+Event: Cherry has been set to ''
+Cherry = '', set by ''
 Event: Damson has been set to 'hello.*'
 Damson = 'hello.*', set by 'hello.*'
 Event: Damson has been set to 'world.*'
 Damson = 'world.*', set by 'world.*'
+Event: Damson has been set to ''
+Damson = '', set by ''
 Event: Damson has been set to ''
 Damson = '', set by ''
 ---- test_string_get ---------------------------------------
@@ -45,6 +49,8 @@ Guava = 'guava', 'guava'
 ---- test_native_set ---------------------------------------
 Event: Hawthorn has been set to 'hello.*'
 Hawthorn = 'hello.*', set by 'hello.*'
+Event: Hawthorn has been set to '!world.*'
+'!world.*', not flag set to 1
 Event: Ilama has been set to ''
 Ilama = '', set by NULL
 ---- test_native_get ---------------------------------------

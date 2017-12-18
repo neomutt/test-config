@@ -186,7 +186,7 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
 
   if (orig && orig->pattern)
   {
-    r = regex_create(orig->pattern, cdef->type, err);
+    r = regex_create(orig->pattern, cdef->flags, err);
     if (!r)
       result = CSR_ERR_INVALID;
   }

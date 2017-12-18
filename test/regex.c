@@ -53,21 +53,21 @@ static struct Regex *VarOlive;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_REGEX, 0, &VarApple,      IP "apple.*",     NULL              }, /* test_initial_values() */
-  { "Banana",     DT_REGEX, 0, &VarBanana,     IP "banana.*",    NULL              },
-  { "Cherry",     DT_REGEX, 0, &VarCherry,     0,                NULL              }, /* test_regex_set */
-  { "Damson",     DT_REGEX, 0, &VarDamson,     IP "damson.*",    NULL              },
-  { "Elderberry", DT_REGEX, 0, &VarElderberry, 0,                NULL              }, /* test_regex_get */
-  { "Fig",        DT_REGEX, 0, &VarFig,        IP "fig.*",       NULL              },
-  { "Guava",      DT_REGEX, 0, &VarGuava,      0,                NULL              },
-  { "Hawthorn",   DT_REGEX, 0, &VarHawthorn,   0,                NULL              }, /* test_native_set */
-  { "Ilama",      DT_REGEX, 0, &VarIlama,      IP "ilama.*",     NULL              },
-  { "Jackfruit",  DT_REGEX, 0, &VarJackfruit,  0,                NULL              }, /* test_native_get */
-  { "Kumquat",    DT_REGEX, 0, &VarKumquat,    IP "kumquat.*",   NULL              }, /* test_reset */
-  { "Lemon",      DT_REGEX, 0, &VarLemon,      IP "lemon.*",     validator_succeed }, /* test_validator */
-  { "Mango",      DT_REGEX, 0, &VarMango,      IP "mango.*",     validator_warn    },
-  { "Nectarine",  DT_REGEX, 0, &VarNectarine,  IP "nectarine.*", validator_fail    },
-  { "Olive",      DT_REGEX, 0, &VarOlive,      0,                NULL              }, /* test_inherit */
+  { "Apple",      DT_REGEX, 0,                  &VarApple,      IP "apple.*",     NULL              }, /* test_initial_values() */
+  { "Banana",     DT_REGEX, 0,                  &VarBanana,     IP "banana.*",    NULL              },
+  { "Cherry",     DT_REGEX, 0,                  &VarCherry,     0,                NULL              }, /* test_regex_set */
+  { "Damson",     DT_REGEX, 0,                  &VarDamson,     IP "damson.*",    NULL              },
+  { "Elderberry", DT_REGEX, 0,                  &VarElderberry, 0,                NULL              }, /* test_regex_get */
+  { "Fig",        DT_REGEX, 0,                  &VarFig,        IP "fig.*",       NULL              },
+  { "Guava",      DT_REGEX, 0,                  &VarGuava,      0,                NULL              },
+  { "Hawthorn",   DT_REGEX, DT_REGEX_ALLOW_NOT, &VarHawthorn,   0,                NULL              }, /* test_native_set */
+  { "Ilama",      DT_REGEX, 0,                  &VarIlama,      IP "ilama.*",     NULL              },
+  { "Jackfruit",  DT_REGEX, 0,                  &VarJackfruit,  0,                NULL              }, /* test_native_get */
+  { "Kumquat",    DT_REGEX, 0,                  &VarKumquat,    IP "kumquat.*",   NULL              }, /* test_reset */
+  { "Lemon",      DT_REGEX, 0,                  &VarLemon,      IP "lemon.*",     validator_succeed }, /* test_validator */
+  { "Mango",      DT_REGEX, 0,                  &VarMango,      IP "mango.*",     validator_warn    },
+  { "Nectarine",  DT_REGEX, 0,                  &VarNectarine,  IP "nectarine.*", validator_fail    },
+  { "Olive",      DT_REGEX, 0,                  &VarOlive,      0,                NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -140,7 +140,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello.*", "world.*", NULL };
+  const char *valid[] = { "hello.*", "world.*", "", NULL };
   char *name = "Cherry";
   char *regex = NULL;
 
@@ -256,6 +256,19 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     goto tns_out;
   }
   printf("%s = '%s', set by '%s'\n", name, NONULL(regex), r->pattern);
+
+  regex_free(&r);
+  r = regex_create("!world.*", DT_REGEX_ALLOW_NOT, err);
+  name = "Hawthorn";
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, (intptr_t) r, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    goto tns_out;
+  }
+  printf("'%s', not flag set to %d\n", VarHawthorn->pattern, VarHawthorn->not);
 
   name = "Ilama";
   mutt_buffer_reset(err);
