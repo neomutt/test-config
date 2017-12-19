@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-address Some address
+ * @page config-address Email address
  *
- * LONG address
+ * Type representing an email address.
  *
  * | Function             | Description
  * | :------------------- | :------------------------------------------------

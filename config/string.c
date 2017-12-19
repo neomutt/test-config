@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-string Some string
+ * @page config-string String
  *
- * LONG string
+ * Type representing a string
  *
  * | Function            | Description
  * | :------------------ | :-------------------------------------

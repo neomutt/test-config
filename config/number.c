@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-number Some number
+ * @page config-number Number
  *
- * LONG number
+ * Type representing a number.
  *
  * | Function            | Description
  * | :------------------ | :-----------------------------------

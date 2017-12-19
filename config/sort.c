@@ -21,14 +21,21 @@
  */
 
 /**
- * @page config-sort Some sort
+ * @page config-sort Sorting
  *
- * LONG sort
+ * Type representing a sort option
+ *
+ * | Data                | Description
+ * | :------------------ | :-----------------------------------------
+ * | #SortAliasMethods   | Sort methods for email aliases
+ * | #SortAuxMethods     | Sort methods for '$sort_aux' for the index
+ * | #SortBrowserMethods | Sort methods for the folder/dir browser
+ * | #SortKeyMethods     | Sort methods for encryption keys
+ * | #SortMethods        | Sort methods for '$sort' for the index
+ * | #SortSidebarMethods | Sort methods for the sidebar
  *
  * | Function          | Description
  * | :---------------- | :---------------------------------
- * | find_id()         | Lookup a sort ID
- * | find_string()     | Lookup a sort string
  * | sort_init()       | Register the Sort config type
  * | sort_native_get() | Get an int from a Sort config item
  * | sort_native_set() | Set a Sort config item by int
@@ -53,7 +60,7 @@
 /**
  * SortAliasMethods - Sort methods for email aliases
  */
-static const struct Mapping SortAliasMethods[] = {
+const struct Mapping SortAliasMethods[] = {
  { "alias",    SORT_ALIAS },
  { "address",  SORT_ADDRESS },
  { "unsorted", SORT_ORDER },
@@ -63,7 +70,7 @@ static const struct Mapping SortAliasMethods[] = {
 /**
  * SortAuxMethods - Sort methods for '$sort_aux' for the index
  */
-static const struct Mapping SortAuxMethods[] = {
+const struct Mapping SortAuxMethods[] = {
   { "date",          SORT_DATE },
   { "date-sent",     SORT_DATE },
   { "date-received", SORT_RECEIVED },
@@ -82,7 +89,7 @@ static const struct Mapping SortAuxMethods[] = {
 /**
  * SortBrowserMethods - Sort methods for the folder/dir browser
  */
-static const struct Mapping SortBrowserMethods[] = {
+const struct Mapping SortBrowserMethods[] = {
   { "alpha",    SORT_SUBJECT },
   { "count",    SORT_COUNT },
   { "date",     SORT_DATE },
@@ -96,7 +103,7 @@ static const struct Mapping SortBrowserMethods[] = {
 /**
  * SortKeyMethods - Sort methods for encryption keys
  */
-static const struct Mapping SortKeyMethods[] = {
+const struct Mapping SortKeyMethods[] = {
   { "address", SORT_ADDRESS },
   { "date",    SORT_DATE },
   { "keyid",   SORT_KEYID },
@@ -107,7 +114,7 @@ static const struct Mapping SortKeyMethods[] = {
 /**
  * SortMethods - Sort methods for '$sort' for the index
  */
-static const struct Mapping SortMethods[] = {
+const struct Mapping SortMethods[] = {
   { "date",          SORT_DATE },
   { "date-sent",     SORT_DATE },
   { "date-received", SORT_RECEIVED },
@@ -126,7 +133,7 @@ static const struct Mapping SortMethods[] = {
 /**
  * SortSidebarMethods - Sort methods for the sidebar
  */
-static const struct Mapping SortSidebarMethods[] = {
+const struct Mapping SortSidebarMethods[] = {
   { "alpha",         SORT_PATH },
   { "count",         SORT_COUNT },
   { "desc",          SORT_DESC },

@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-mbtable Some mbtable
+ * @page config-mbtable Mulit-byte character table
  *
- * LONG mbtable
+ * Type representing a multibyte character table
  *
  * | Function             | Description
  * | :------------------- | :-----------------------------------------------

@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-regex Some regex
+ * @page config-regex Regular expression
  *
- * LONG regex
+ * Type representing a regular expression
  *
  * | Function           | Description
  * | :----------------- | :------------------------------------------

@@ -42,18 +42,6 @@
 /* subtypes for... */
 #define DT_SUBTYPE_MASK 0xff0 /**< Mask for the Data Subtype */
 
-/* ... DT_SORT */
-#define DT_SORT_INDEX   0x000 /**< Sort id for #SortMethods */
-#define DT_SORT_ALIAS   0x010 /**< Sort id for #SortAliasMethods */
-#define DT_SORT_BROWSER 0x020 /**< Sort id for #SortBrowserMethods */
-#define DT_SORT_KEYS    0x040 /**< Sort id for #SortKeyMethods */
-#define DT_SORT_AUX     0x080 /**< Sort id for #SortAliasMethods */
-#define DT_SORT_SIDEBAR 0x100 /**< Sort id for #SortSidebarMethods */
-
-/* ... DT_REGEX */
-#define DT_REGEX_MATCH_CASE 0x010 /**< Case-sensitive matching */
-#define DT_REGEX_ALLOW_NOT  0x020 /**< Regex can begin with '!' */
-
 /* Private config item flags */
 #define DT_INHERITED    0x0200 /**< Config item is inherited */
 #define DT_INITIAL_SET  0x0400 /**< Config item has had its initial value set */
@@ -77,5 +65,6 @@
 
 /* general flags, to be OR'd with the R_ flags above (so keep shifting..) */
 #define F_SENSITIVE   (1 << 9) /**< Config item contains sensitive value */
+#define IS_SENSITIVE(x) (((x).flags & F_SENSITIVE) == F_SENSITIVE)
 
 #endif /* _CONFIG_TYPES_H */

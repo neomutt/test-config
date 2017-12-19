@@ -23,7 +23,24 @@
 #ifndef _CONFIG_SORT_H
 #define _CONFIG_SORT_H
 
+#include "mutt/mapping.h"
+
 struct ConfigSet;
+
+extern const struct Mapping SortAliasMethods[];
+extern const struct Mapping SortAuxMethods[];
+extern const struct Mapping SortBrowserMethods[];
+extern const struct Mapping SortKeyMethods[];
+extern const struct Mapping SortMethods[];
+extern const struct Mapping SortSidebarMethods[];
+
+/* ... DT_SORT */
+#define DT_SORT_INDEX   0x000 /**< Sort id for #SortMethods */
+#define DT_SORT_ALIAS   0x010 /**< Sort id for #SortAliasMethods */
+#define DT_SORT_BROWSER 0x020 /**< Sort id for #SortBrowserMethods */
+#define DT_SORT_KEYS    0x040 /**< Sort id for #SortKeyMethods */
+#define DT_SORT_AUX     0x080 /**< Sort id for #SortAliasMethods */
+#define DT_SORT_SIDEBAR 0x100 /**< Sort id for #SortSidebarMethods */
 
 #define SORT_DATE      1 /**< Sort by the date the email was sent. */
 #define SORT_SIZE      2 /**< Sort by the size of the email */

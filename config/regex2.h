@@ -30,6 +30,10 @@
 struct Buffer;
 struct ConfigSet;
 
+/* ... DT_REGEX */
+#define DT_REGEX_MATCH_CASE 0x010 /**< Case-sensitive matching */
+#define DT_REGEX_ALLOW_NOT  0x020 /**< Regex can begin with '!' */
+
 /* This is a non-standard option supported by Solaris 2.5.x which allows
  * patterns of the form \<...\> */
 #ifndef REG_WORDS

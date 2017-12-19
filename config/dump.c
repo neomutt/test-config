@@ -23,10 +23,16 @@
 /**
  * @page config-dump Dump all the config
  *
- * LONG dump
+ * Dump all the config items in various formats.
  *
  * | Function                | Description
  * | :---------------------- | :-----------------------------------------------
+ * | dump_config()           | Write all the config to stdout
+ * | elem_list_sort()        | Sort two HashElem pointers to config
+ * | escape_char()           | Write an escaped character to a buffer
+ * | escape_string()         | Write a string to a buffer, escaping special characters
+ * | get_elem_list()         | Create a sorted list of all config items
+ * | pretty_var()            | Write a config option to a buffer
  */
 
 #include "config.h"
@@ -40,9 +46,6 @@
 #include "mutt/string2.h"
 #include "set.h"
 #include "types.h"
-
-#define F_SENSITIVE (1 << 9)
-#define IS_SENSITIVE(x) (((x).flags & F_SENSITIVE) == F_SENSITIVE)
 
 /**
  * escape_char - Write an escaped character to a buffer

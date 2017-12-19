@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-path Some path
+ * @page config-path Path
  *
- * LONG path
+ * Type representing a path.
  *
  * | Function          | Description
  * | :---------------- | :-----------------------------------

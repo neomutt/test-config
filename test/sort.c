@@ -82,68 +82,6 @@ static struct ConfigDef Vars2[] = {
 };
 // clang-format on
 
-static const struct Mapping SortAliasMethods[] = {
-  { "alias", SORT_ALIAS }, { "address", SORT_ADDRESS }, { "unsorted", SORT_ORDER }, { NULL, 0 },
-};
-
-static const struct Mapping SortAuxMethods[] = {
-  { "date", SORT_DATE },
-  { "date-sent", SORT_DATE },
-  { "date-received", SORT_RECEIVED },
-  { "mailbox-order", SORT_ORDER },
-  { "subject", SORT_SUBJECT },
-  { "from", SORT_FROM },
-  { "size", SORT_SIZE },
-  { "threads", SORT_DATE },
-  { "to", SORT_TO },
-  { "score", SORT_SCORE },
-  { "spam", SORT_SPAM },
-  { "label", SORT_LABEL },
-  { NULL, 0 },
-};
-
-static const struct Mapping SortBrowserMethods[] = {
-  { "alpha", SORT_SUBJECT },  { "count", SORT_COUNT },
-  { "date", SORT_DATE },      { "desc", SORT_DESC },
-  { "new", SORT_UNREAD },     { "size", SORT_SIZE },
-  { "unsorted", SORT_ORDER }, { NULL, 0 },
-};
-
-static const struct Mapping SortKeyMethods[] = {
-  { "address", SORT_ADDRESS }, { "date", SORT_DATE }, { "keyid", SORT_KEYID },
-  { "trust", SORT_TRUST },     { NULL, 0 },
-};
-
-static const struct Mapping SortMethods[] = {
-  { "date", SORT_DATE },
-  { "date-sent", SORT_DATE },
-  { "date-received", SORT_RECEIVED },
-  { "mailbox-order", SORT_ORDER },
-  { "subject", SORT_SUBJECT },
-  { "from", SORT_FROM },
-  { "size", SORT_SIZE },
-  { "threads", SORT_THREADS },
-  { "to", SORT_TO },
-  { "score", SORT_SCORE },
-  { "spam", SORT_SPAM },
-  { "label", SORT_LABEL },
-  { NULL, 0 },
-};
-
-static const struct Mapping SortSidebarMethods[] = {
-  { "alpha", SORT_PATH },
-  { "count", SORT_COUNT },
-  { "desc", SORT_DESC },
-  { "flagged", SORT_FLAGGED },
-  { "mailbox-order", SORT_ORDER },
-  { "name", SORT_PATH },
-  { "new", SORT_UNREAD },
-  { "path", SORT_PATH },
-  { "unread", SORT_UNREAD },
-  { "unsorted", SORT_ORDER },
-  { NULL, 0 },
-};
-
 char *name_list[] = {
   "Cherry", "Damson", "Elderberry", "Fig", "Guava", "Hawthorn",
 };

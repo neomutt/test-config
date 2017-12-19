@@ -21,9 +21,13 @@
  */
 
 /**
- * @page config-magic Some magic
+ * @page config-magic Mailbox types
  *
- * LONG magic
+ * Type representing a mailbox.
+ *
+ * | Data             | Description
+ * | :--------------- | :--------------------------------
+ * | #magic_values    | Valid strings for mailbox types
  *
  * | Function           | Description
  * | :----------------- | :------------------------------------------
@@ -46,8 +50,10 @@
 #include "set.h"
 #include "types.h"
 
+/**
+ * magic_values - Valid strings for mailbox types
+ */
 const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
-/*XXX enum to match these values, export too */
 
 /**
  * magic_string_set - Set a Mailbox Magic by string

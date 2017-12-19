@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-set Some set
+ * @page config-set Config Set
  *
- * LONG set
+ * A collection of config items.
  *
  * | Function                | Description
  * | :---------------------- | :-----------------------------------------------
@@ -33,9 +33,12 @@
  * | cs_free()               | Free a Config Set
  * | cs_get_elem()           | Get the HashElem representing a config item
  * | cs_get_type_def()       | Get the definition for a type
+ * | cs_he_default_get()     | Get the initial, or parent, value of a config item
  * | cs_he_native_get()      | Natively get the value of a HashElem config item
  * | cs_he_native_set()      | Natively set the value of a HashElem config item
  * | cs_he_reset()           | Reset a config item to its initial value
+ * | cs_he_string_get()      | Get a config item as a string
+ * | cs_he_string_set()      | Set a config item by string
  * | cs_inherit_variable()   | Create in inherited config item
  * | cs_init()               | Initialise a Config Set
  * | cs_notify_listeners()   | Notify all listeners of an event
@@ -43,13 +46,12 @@
  * | cs_register_variables() | Register a set of config items
  * | cs_remove_listener()    | Remove a listener (callback function)
  * | cs_set_initial_value()  | Override the initial value of a config item
+ * | cs_str_default_get()    | Get the initial, or parent, value of a config item
  * | cs_str_native_get()     | Natively get the value of a string config item
  * | cs_str_native_set()     | Natively set the value of a string config item
  * | cs_str_reset()          | Reset a config item to its initial value
  * | cs_str_string_get()     | Get a config item as a string
  * | cs_str_string_set()     | Set a config item by string
- * | destroy()               | Callback function for the Hash Table
- * | reg_one_var()           | Register one config item
  */
 
 #include "config.h"

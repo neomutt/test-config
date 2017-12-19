@@ -25,6 +25,8 @@
 
 struct ConfigSet;
 
+extern const char *magic_values[];
+
 void magic_init(struct ConfigSet *cs);
 
 #endif /* _CONFIG_MAGIC_H */

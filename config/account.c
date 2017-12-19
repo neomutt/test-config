@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-account Some account
+ * @page config-account Account-specific config items
  *
- * LONG account
+ * A collection of account-specific config items.
  *
  * | Function       | Description
  * | :------------- | :----------------------------------

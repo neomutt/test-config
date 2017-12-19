@@ -27,6 +27,8 @@ struct Buffer;
 struct ConfigSet;
 struct HashElem;
 
+extern const char *quad_values[];
+
 void quad_init(struct ConfigSet *cs);
 int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 

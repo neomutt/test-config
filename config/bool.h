@@ -27,6 +27,8 @@ struct Buffer;
 struct ConfigSet;
 struct HashElem;
 
+extern const char *bool_values[];
+
 void bool_init(struct ConfigSet *cs);
 int  bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 

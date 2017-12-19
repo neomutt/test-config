@@ -21,12 +21,17 @@
  */
 
 /**
- * @page config-bool Some bool
+ * @page config-bool Boolean
  *
- * LONG bool
+ * Type representing a boolean.
+ *
+ * | Data             | Description
+ * | :--------------- | :--------------------------------
+ * | #bool_values     | Valid strings for creating a Bool
  *
  * | Function          | Description
  * | :---------------- | :---------------------------------
+ * | bool_he_toggle()  | Toggle the value of a bool
  * | bool_init()       | Register the Bool config type
  * | bool_native_get() | Get a bool from a Bool config item
  * | bool_native_set() | Set a Bool config item by bool
