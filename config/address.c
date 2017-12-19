@@ -44,10 +44,9 @@
 #include <limits.h>
 #include <stdint.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
-#include "config/lib.h"
+#include "address.h"
 #include "set.h"
 #include "types.h"
 

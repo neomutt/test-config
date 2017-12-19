@@ -25,6 +25,7 @@
 
 #include <features.h>
 #include <regex.h>
+#include <stdbool.h>
 
 struct Buffer;
 struct ConfigSet;

@@ -35,6 +35,7 @@
 
 #include "config.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include "mutt/buffer.h"
 #include "mutt/debug.h"
