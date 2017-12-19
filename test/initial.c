@@ -21,18 +21,14 @@
  */
 
 #include "config.h"
-#include <limits.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include "mutt/buffer.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
-#include "config/account.h"
 #include "config/set.h"
 #include "config/string3.h"
 #include "config/types.h"
-#include "mutt_options.h"
 #include "test/common.h"
 
 static char *VarApple;

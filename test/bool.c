@@ -33,7 +33,6 @@
 #include "config/quad.h"
 #include "config/set.h"
 #include "config/types.h"
-#include "mutt_options.h"
 #include "test/common.h"
 
 static bool VarApple;

@@ -34,8 +34,6 @@
 #include "config/types.h"
 #include "common.h"
 
-struct HashElem;
-
 const char *line = "----------------------------------------"
                    "----------------------------------------";
 

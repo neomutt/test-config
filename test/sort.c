@@ -21,7 +21,6 @@
  */
 
 #include "config.h"
-#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -33,7 +32,6 @@
 #include "config/set.h"
 #include "config/sort.h"
 #include "config/types.h"
-#include "mutt_options.h"
 #include "test/common.h"
 
 static short VarApple;
