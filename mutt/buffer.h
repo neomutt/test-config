@@ -35,7 +35,6 @@ struct Buffer
   char *data;      /**< pointer to data */
   char *dptr;      /**< current read/write position */
   size_t dsize;    /**< length of data */
-  bool fixed_size; /**< Buffer won't be dynamically resized */
 };
 
 #define MoreArgs(p) (*p->dptr && (*p->dptr != ';') && (*p->dptr != '#'))
@@ -48,13 +47,5 @@ struct Buffer *mutt_buffer_init(struct Buffer *b);
 struct Buffer *mutt_buffer_new(void);
 int            mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...);
 void           mutt_buffer_reset(struct Buffer *b);
-
-#define FIXED_BUFFER_INIT(var, size)                                           \
-  char var_data[size] = { 0 };                                                 \
-  struct Buffer var;                                                           \
-  var.data = var_data;                                                         \
-  var.dptr = var_data;                                                         \
-  var.dsize = size;                                                            \
-  var.fixed_size = true;
 
 #endif /* _MUTT_BUFFER_H */

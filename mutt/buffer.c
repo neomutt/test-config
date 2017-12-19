@@ -131,12 +131,6 @@ static void mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
 
   if ((buf->dptr + len + 1) > (buf->data + buf->dsize))
   {
-    if (buf->fixed_size)
-    {
-      mutt_debug(1, "Fixed Buffer isn't big enough\n");
-      return;
-    }
-
     size_t offset = buf->dptr - buf->data;
     buf->dsize += (len < 128) ? 128 : len + 1;
     mutt_mem_realloc(&buf->data, buf->dsize);
@@ -197,11 +191,6 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
   len = vsnprintf(buf->dptr, blen, fmt, ap);
   if (len >= blen)
   {
-    if (buf->fixed_size)
-    {
-      mutt_debug(1, "Fixed Buffer isn't big enough\n");
-      return 0;
-    }
     blen = ++len - blen;
     if (blen < 128)
       blen = 128;
