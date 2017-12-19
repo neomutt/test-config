@@ -29,6 +29,18 @@ struct HashElem;
 
 extern const char *quad_values[];
 
+/**
+ * enum QuadOption - Possible values for a quad-option
+ */
+enum QuadOption
+{
+  MUTT_ABORT = -1,
+  MUTT_NO,
+  MUTT_YES,
+  MUTT_ASKNO,
+  MUTT_ASKYES
+};
+
 void quad_init(struct ConfigSet *cs);
 int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 
