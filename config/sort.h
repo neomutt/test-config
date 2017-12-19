@@ -25,27 +25,27 @@
 
 struct ConfigSet;
 
-#define SORT_DATE      1 /**< the date the mail was sent. */
-#define SORT_SIZE      2 /**< XXX */
-#define SORT_SUBJECT   3 /**< XXX */
-#define SORT_ALPHA     3 /**< makedoc.c requires this */
-#define SORT_FROM      4 /**< XXX */
-#define SORT_ORDER     5 /**< the order the messages appear in the mailbox. */
-#define SORT_THREADS   6 /**< XXX */
-#define SORT_RECEIVED  7 /**< when the message were delivered locally */
-#define SORT_TO        8 /**< XXX */
-#define SORT_SCORE     9 /**< XXX */
-#define SORT_ALIAS    10 /**< XXX */
-#define SORT_ADDRESS  11 /**< XXX */
-#define SORT_KEYID    12 /**< XXX */
-#define SORT_TRUST    13 /**< XXX */
-#define SORT_SPAM     14 /**< XXX */
-#define SORT_COUNT    15 /**< XXX */
-#define SORT_UNREAD   16 /**< XXX */
-#define SORT_FLAGGED  17 /**< XXX */
-#define SORT_PATH     18 /**< XXX */
-#define SORT_LABEL    19 /**< XXX */
-#define SORT_DESC     20 /**< XXX */
+#define SORT_DATE      1 /**< Sort by the date the email was sent. */
+#define SORT_SIZE      2 /**< Sort by the size of the email */
+#define SORT_ALPHA     3 /**< Required by makedoc.c */
+#define SORT_SUBJECT   3 /**< Sort by the email's subject */
+#define SORT_FROM      4 /**< Sort by the email's From field */
+#define SORT_ORDER     5 /**< Sort by the order the messages appear in the mailbox */
+#define SORT_THREADS   6 /**< Sort by email threads */
+#define SORT_RECEIVED  7 /**< Sort by when the message were delivered locally */
+#define SORT_TO        8 /**< Sort by the email's To field */
+#define SORT_SCORE     9 /**< Sort by the email's score */
+#define SORT_ALIAS    10 /**< Sort by email alias */
+#define SORT_ADDRESS  11 /**< Sort by email address */
+#define SORT_KEYID    12 /**< Sort by the encryption key's ID */
+#define SORT_TRUST    13 /**< Sort by encryption key's trust level */
+#define SORT_SPAM     14 /**< Sort by the email's spam score */
+#define SORT_COUNT    15 /**< Sort by number of emails in a folder */
+#define SORT_UNREAD   16 /**< Sort by the number of unread emails */
+#define SORT_FLAGGED  17 /**< Sort by the number of flagged emails */
+#define SORT_PATH     18 /**< Sort by the folder's path */
+#define SORT_LABEL    19 /**< Sort by the emails label */
+#define SORT_DESC     20 /**< Sort by the folder's description */
 
 /* Sort and sort_aux are shorts, and are a composite of a constant sort
  * operation number and a set of compounded bitflags.
@@ -57,9 +57,9 @@ struct ConfigSet;
  * if we need more, so long as we don't collide with the constants above. (Or
  * we can just expand sort and sort_aux to uint32_t.)
  */
-#define SORT_MASK    ((1 << 8) - 1) /**< XXX */
-#define SORT_REVERSE  (1 << 8)      /**< XXX */
-#define SORT_LAST     (1 << 9)      /**< XXX */
+#define SORT_MASK    ((1 << 8) - 1) /**< Mask for the sort id */
+#define SORT_REVERSE  (1 << 8)      /**< Reverse the order of the sort */
+#define SORT_LAST     (1 << 9)      /**< Sort thread by last-X, e.g. received date */
 
 void sort_init(struct ConfigSet *cs);
 

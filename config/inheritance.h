@@ -26,14 +26,14 @@
 #include <stdint.h>
 
 /**
- * struct Inheritance - XXX
+ * struct Inheritance - An inherited config item
  */
 struct Inheritance
 {
-  struct HashElem *parent; /**< XXX */
-  const char *name;        /**< XXX */
-  struct Account *ac;      /**< XXX */
-  intptr_t var;            /**< XXX */
+  struct HashElem *parent; /**< HashElem of parent config item */
+  const char *name;        /**< Name of this config item */
+  struct Account *ac;      /**< Account holding this config item */
+  intptr_t var;            /**< (Pointer to) value, of config item */
 };
 
 #endif /* _CONFIG_INHERITANCE_H */

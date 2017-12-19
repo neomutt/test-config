@@ -24,7 +24,6 @@
 #define _CONFIG_TYPES_H
 
 /* Data Types */
-#define DT_MASK      0x0f /**< XXX */
 #define DT_BOOL       1   /**< boolean option */
 #define DT_NUMBER     2   /**< a number */
 #define DT_STRING     3   /**< a string */
@@ -38,31 +37,31 @@
 #define DT_MBTABLE   11   /**< multibyte char table */
 #define DT_HCACHE    12   /**< header cache backend */
 
-#define DTYPE(x) ((x) & DT_MASK) /**< XXX */
+#define DTYPE(x) ((x) & 0x0f) /**< Mask for the Data Type */
 
 /* subtypes for... */
-#define DT_SUBTYPE_MASK 0xff0 /**< XXX */
+#define DT_SUBTYPE_MASK 0xff0 /**< Mask for the Data Subtype */
 
 /* ... DT_SORT */
-#define DT_SORT_INDEX   0x000 /**< XXX */
-#define DT_SORT_ALIAS   0x010 /**< XXX */
-#define DT_SORT_BROWSER 0x020 /**< XXX */
-#define DT_SORT_KEYS    0x040 /**< XXX */
-#define DT_SORT_AUX     0x080 /**< XXX */
-#define DT_SORT_SIDEBAR 0x100 /**< XXX */
+#define DT_SORT_INDEX   0x000 /**< Sort id for #SortMethods */
+#define DT_SORT_ALIAS   0x010 /**< Sort id for #SortAliasMethods */
+#define DT_SORT_BROWSER 0x020 /**< Sort id for #SortBrowserMethods */
+#define DT_SORT_KEYS    0x040 /**< Sort id for #SortKeyMethods */
+#define DT_SORT_AUX     0x080 /**< Sort id for #SortAliasMethods */
+#define DT_SORT_SIDEBAR 0x100 /**< Sort id for #SortSidebarMethods */
 
 /* ... DT_REGEX */
 #define DT_REGEX_MATCH_CASE 0x010 /**< Case-sensitive matching */
 #define DT_REGEX_ALLOW_NOT  0x020 /**< Regex can begin with '!' */
 
-/* Private config flags */
-#define DT_INHERITED    0x0200 /**< XXX */
-#define DT_INITIAL_SET  0x0400 /**< XXX */
-#define DT_DISABLED     0x0800 /**< XXX */
-#define DT_MY_CONFIG    0x1000 /**< XXX */
+/* Private config item flags */
+#define DT_INHERITED    0x0200 /**< Config item is inherited */
+#define DT_INITIAL_SET  0x0400 /**< Config item has had its initial value set */
+#define DT_DISABLED     0x0800 /**< Config item is disabled */
+#define DT_MY_CONFIG    0x1000 /**< Config item is a "my_" variable */
 
 /* forced redraw/resort types + other flags */
-#define R_NONE        0 /**< XXX */
+#define R_NONE        0        /**< No refresh/resort flags */
 #define R_INDEX       (1 << 0) /**< redraw the index menu (MENU_MAIN) */
 #define R_PAGER       (1 << 1) /**< redraw the pager menu */
 #define R_PAGER_FLOW  (1 << 2) /**< reflow line_info and redraw the pager menu */
@@ -77,6 +76,6 @@
 #define R_RESORT_BOTH (R_RESORT | R_RESORT_SUB)
 
 /* general flags, to be OR'd with the R_ flags above (so keep shifting..) */
-#define F_SENSITIVE   (1 << 9) /**< XXX */
+#define F_SENSITIVE   (1 << 9) /**< Config item contains sensitive value */
 
 #endif /* _CONFIG_TYPES_H */

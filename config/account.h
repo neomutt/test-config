@@ -29,15 +29,15 @@ struct Buffer;
 struct ConfigSet;
 
 /**
- * struct Account - XXX
+ * struct Account - Account-local config items
  */
 struct Account
 {
-  char *name;                 /**< XXX */
-  const struct ConfigSet *cs; /**< XXX */
-  const char **var_names;     /**< XXX */
-  int num_vars;               /**< XXX */
-  struct HashElem **vars;     /**< XXX */
+  char *name;                 /**< Name of account */
+  const struct ConfigSet *cs; /**< Parent ConfigSet */
+  const char **var_names;     /**< Array of the names of local config items */
+  int num_vars;               /**< Number of local config items */
+  struct HashElem **vars;     /**< Array of the HashElems of local config items */
 };
 
 struct Account *ac_create(const struct ConfigSet *cs, const char *name, const char *var_names[]);

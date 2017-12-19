@@ -49,7 +49,9 @@
 #include "types.h"
 
 /**
- * bool_values - XXX
+ * bool_values - Valid strings for creating a Bool
+ *
+ * These strings are case-insensitive.
  */
 const char *bool_values[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on",

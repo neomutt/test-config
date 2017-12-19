@@ -513,7 +513,7 @@ int cs_str_reset(const struct ConfigSet *cs, const char *name, struct Buffer *er
 }
 
 /**
- * cs_he_string_get - XXX
+ * cs_he_string_get - Get a config item as a string
  * @param cs     Config items
  * @param he     HashElem representing config item
  * @param result Buffer for results or error messages
@@ -560,11 +560,14 @@ int cs_he_string_get(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 }
 
 /**
- * cs_he_default_get - XXX
+ * cs_he_default_get - Get the initial, or parent, value of a config item
  * @param cs     Config items
  * @param he     HashElem representing config item
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If a config item is inherited from another, then this will get the parent's
+ * value.  Otherwise, it will get the config item's initial value.
  */
 int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
 {
@@ -597,11 +600,14 @@ int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Bu
 }
 
 /**
- * cs_str_default_get - XXX
+ * cs_str_default_get - Get the initial, or parent, value of a config item
  * @param cs     Config items
  * @param name   Name of config item
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If a config item is inherited from another, then this will get the parent's
+ * value.  Otherwise, it will get the config item's initial value.
  */
 int cs_str_default_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
 {

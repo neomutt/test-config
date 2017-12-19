@@ -32,12 +32,12 @@ struct HashElem;
 struct ConfigDef;
 
 /**
- * enum ConfigEvent - XXX
+ * enum ConfigEvent - Config notification types
  */
 enum ConfigEvent
 {
-  CE_SET,   /**< XXX */
-  CE_RESET, /**< XXX */
+  CE_SET,   /**< Config item has been set */
+  CE_RESET, /**< Config item has been reset to initial, or parent, value */
 };
 
 /* Config Set Results */
@@ -45,10 +45,12 @@ enum ConfigEvent
 #define CSR_ERR_CODE      1 /**< Problem with the code */
 #define CSR_ERR_UNKNOWN   2 /**< Unrecognised config item */
 #define CSR_ERR_INVALID   3 /**< Value hasn't been set */
+
 /* Flags for CSR_SUCCESS */
 #define CSR_SUC_INHERITED (1 << 4) /**< Value is inherited */
 #define CSR_SUC_EMPTY     (1 << 5) /**< Value is empty/unset */
 #define CSR_SUC_WARNING   (1 << 6) /**< Notify the user of a warning */
+
 /* Flags for CSR_INVALID */
 #define CSR_INV_TYPE      (1 << 4) /**< Value is not valid for the type */
 #define CSR_INV_VALIDATOR (1 << 5) /**< Value was rejected by the validator */
@@ -57,12 +59,12 @@ enum ConfigEvent
 #define CSR_RESULT(x) ((x) & CSR_RESULT_MASK)
 
 /**
- * enum CsListenerAction - XXX
+ * enum CsListenerAction - Config Listener responses
  */
 enum CsListenerAction
 {
-  CSLA_CONTINUE, /**< XXX */
-  CSLA_STOP,     /**< XXX */
+  CSLA_CONTINUE, /**< Continue notifying listeners */
+  CSLA_STOP,     /**< Stop notifying listeners */
 };
 
 typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
@@ -81,40 +83,49 @@ typedef void    (*cst_destroy)   (const struct ConfigSet *cs, void *var, const s
 #define CS_REG_DISABLED (1 << 0)
 
 /**
- * struct ConfigDef - XXX
+ * struct ConfigDef - Config item definition
+ *
+ * Every config variable that NeoMutt supports is backed by a ConfigDef.
  */
 struct ConfigDef
 {
-  const char   *name;      /**< user-visible name */
-  unsigned int  type;      /**< variable type, e.g. *DT_STRING */
-  short         flags;     /**< notification flags, e.g. R_PAGER */
-  void         *var;       /**< pointer to the global variable */
-  intptr_t      initial;   /**< initial value */
-  cs_validator  validator; /**< validator callback function */
+  const char   *name;      /**< User-visible name */
+  unsigned int  type;      /**< Variable type, e.g. *DT_STRING */
+  short         flags;     /**< Notification flags, e.g. R_PAGER */
+  void         *var;       /**< Pointer to the global variable */
+  intptr_t      initial;   /**< Initial value */
+  cs_validator  validator; /**< Validator callback function */
 };
 
 /**
- * struct ConfigSetType - XXX
+ * struct ConfigSetType - Type definition for a config item
+ *
+ * Each config item has a type which is defined by a set of callback functions.
  */
 struct ConfigSetType
 {
-  const char *name;          /**< XXX */
-  cst_string_set string_set; /**< XXX */
-  cst_string_get string_get; /**< XXX */
-  cst_native_set native_set; /**< XXX */
-  cst_native_get native_get; /**< XXX */
-  cst_reset reset;           /**< XXX */
-  cst_destroy destroy;       /**< XXX */
+  const char *name;          /**< Name of the type, e.g. "String" */
+  cst_string_set string_set; /**< Convert the variable to a string */
+  cst_string_get string_get; /**< Initialise a variable from a string */
+  cst_native_set native_set; /**< Set the variable using a C-native type */
+  cst_native_get native_get; /**< Get the variable's value as a C-native type */
+  cst_reset reset;           /**< Reset the variable to its initial, or parent, value */
+  cst_destroy destroy;       /**< Free the resources for a variable */
 };
 
 /**
- * struct ConfigSet - XXX
+ * struct ConfigSet - Container for lots of config items
+ *
+ * The config items are stored in a HashTable so that their names can be looked
+ * up efficiently.  Each config item is repesented by a HashElem.  Once
+ * created, this HashElem is static and may be used for the lifetime of the
+ * ConfigSet.
  */
 struct ConfigSet
 {
-  struct Hash *hash;              /**< XXX */
-  struct ConfigSetType types[14]; /**< XXX */
-  cs_listener listeners[4];       /**< XXX */
+  struct Hash *hash;              /**< HashTable storing the config itesm */
+  struct ConfigSetType types[14]; /**< All the defined config types */
+  cs_listener listeners[4];       /**< Listeners for notifications of changes to config items */
 };
 
 struct ConfigSet *cs_create(int size);

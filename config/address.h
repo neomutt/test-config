@@ -32,12 +32,12 @@ struct ConfigSet;
  */
 struct Address
 {
-  char *personal;        /**< real name of address */
-  char *mailbox;         /**< mailbox and host address */
-  int group;             /**< group mailbox? */
-  struct Address *next;  /**< XXX */
-  bool is_intl : 1;      /**< XXX */
-  bool intl_checked : 1; /**< XXX */
+  char *personal;        /**< Real name of address */
+  char *mailbox;         /**< Mailbox and host address */
+  int group;             /**< Group mailbox? */
+  struct Address *next;  /**< Next item in the list */
+  bool is_intl : 1;      /**< Is this an IDN (Internationalised Domain Name) */
+  bool intl_checked : 1; /**< Has the IDN status been checked? */
 };
 
 void address_init(struct ConfigSet *cs);

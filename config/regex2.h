@@ -53,8 +53,8 @@ struct Regex
  */
 struct RegexList
 {
-  struct Regex *regex;    /**< XXX */
-  struct RegexList *next; /**< XXX */
+  struct Regex *regex;    /**< Regex containing a regular expression */
+  struct RegexList *next; /**< Next item in list */
 };
 
 /**
@@ -62,10 +62,10 @@ struct RegexList
  */
 struct ReplaceList
 {
-  struct Regex *regex;      /**< XXX */
-  int nmatch;               /**< XXX */
-  char *template;           /**< XXX */
-  struct ReplaceList *next; /**< XXX */
+  struct Regex *regex;      /**< Regex containing a regular expression */
+  int nmatch;               /**< Match the 'nth' occurrence (0 means the whole expression) */
+  char *template;           /**< Template to match */
+  struct ReplaceList *next; /**< Next item in list */
 };
 
 void regex_init(struct ConfigSet *cs);

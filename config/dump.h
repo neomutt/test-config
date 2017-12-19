@@ -27,17 +27,17 @@
 
 struct ConfigSet;
 
-#define CS_DUMP_STYLE_MUTT   0 /**< QWQ */ 
-#define CS_DUMP_STYLE_CONFIG 1 /**< QWQ */ 
+#define CS_DUMP_STYLE_MUTT   0 /**< XXX */ 
+#define CS_DUMP_STYLE_CONFIG 1 /**< XXX */ 
 
-#define CS_DUMP_CHANGED     (1 << 0) /**< QWQ */
-#define CS_DUMP_DEFAULTS    (1 << 1) /**< QWQ */
-#define CS_DUMP_SENSITIVE   (1 << 2) /**< QWQ */
-#define CS_DUMP_VERBOSE     (1 << 3) /**< QWQ */
-#define CS_DUMP_NO_ESCAPING (1 << 4) /**< QWQ */
+#define CS_DUMP_CHANGED     (1 << 0) /**< XXX */
+#define CS_DUMP_DEFAULTS    (1 << 1) /**< XXX */
+#define CS_DUMP_SENSITIVE   (1 << 2) /**< XXX */
+#define CS_DUMP_VERBOSE     (1 << 3) /**< XXX */
+#define CS_DUMP_NO_ESCAPING (1 << 4) /**< XXX */
 
-#define CS_DUMP_ACTIVE  1 /**< QWQ */
-#define CS_DUMP_DISABLE 1 /**< QWQ */
+#define CS_DUMP_ACTIVE  1 /**< XXX */
+#define CS_DUMP_DISABLE 1 /**< XXX */
 
 
 void              dump_config(struct ConfigSet *cs, int style, int flags);

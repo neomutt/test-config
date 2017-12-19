@@ -50,87 +50,97 @@
 #include "set.h"
 #include "types.h"
 
+// clang-format off
 /**
- * SortAliasMethods - XXX
- * XXX export tables
+ * SortAliasMethods - Sort methods for email aliases
  */
 static const struct Mapping SortAliasMethods[] = {
-  { "alias", SORT_ALIAS }, { "address", SORT_ADDRESS }, { "unsorted", SORT_ORDER }, { NULL, 0 },
+ { "alias",    SORT_ALIAS },
+ { "address",  SORT_ADDRESS },
+ { "unsorted", SORT_ORDER },
+ { NULL,       0 },
 };
 
 /**
- * SortAuxMethods - XXX
+ * SortAuxMethods - Sort methods for '$sort_aux' for the index
  */
 static const struct Mapping SortAuxMethods[] = {
-  { "date", SORT_DATE },
-  { "date-sent", SORT_DATE },
+  { "date",          SORT_DATE },
+  { "date-sent",     SORT_DATE },
   { "date-received", SORT_RECEIVED },
   { "mailbox-order", SORT_ORDER },
-  { "subject", SORT_SUBJECT },
-  { "from", SORT_FROM },
-  { "size", SORT_SIZE },
-  { "threads", SORT_DATE },
-  { "to", SORT_TO },
-  { "score", SORT_SCORE },
-  { "spam", SORT_SPAM },
-  { "label", SORT_LABEL },
-  { NULL, 0 },
+  { "subject",       SORT_SUBJECT },
+  { "from",          SORT_FROM },
+  { "size",          SORT_SIZE },
+  { "threads",       SORT_DATE },
+  { "to",            SORT_TO },
+  { "score",         SORT_SCORE },
+  { "spam",          SORT_SPAM },
+  { "label",         SORT_LABEL },
+  { NULL,            0 },
 };
 
 /**
- * SortBrowserMethods - XXX
+ * SortBrowserMethods - Sort methods for the folder/dir browser
  */
 static const struct Mapping SortBrowserMethods[] = {
-  { "alpha", SORT_SUBJECT },  { "count", SORT_COUNT },
-  { "date", SORT_DATE },      { "desc", SORT_DESC },
-  { "new", SORT_UNREAD },     { "size", SORT_SIZE },
-  { "unsorted", SORT_ORDER }, { NULL, 0 },
+  { "alpha",    SORT_SUBJECT },
+  { "count",    SORT_COUNT },
+  { "date",     SORT_DATE },
+  { "desc",     SORT_DESC },
+  { "new",      SORT_UNREAD },
+  { "size",     SORT_SIZE },
+  { "unsorted", SORT_ORDER },
+  { NULL,       0 },
 };
 
 /**
- * SortKeyMethods - XXX
+ * SortKeyMethods - Sort methods for encryption keys
  */
 static const struct Mapping SortKeyMethods[] = {
-  { "address", SORT_ADDRESS }, { "date", SORT_DATE }, { "keyid", SORT_KEYID },
-  { "trust", SORT_TRUST },     { NULL, 0 },
+  { "address", SORT_ADDRESS },
+  { "date",    SORT_DATE },
+  { "keyid",   SORT_KEYID },
+  { "trust",   SORT_TRUST },
+  { NULL,      0 },
 };
 
 /**
- * SortMethods - XXX
- * XXX RENAME to match others
+ * SortMethods - Sort methods for '$sort' for the index
  */
 static const struct Mapping SortMethods[] = {
-  { "date", SORT_DATE },
-  { "date-sent", SORT_DATE },
+  { "date",          SORT_DATE },
+  { "date-sent",     SORT_DATE },
   { "date-received", SORT_RECEIVED },
   { "mailbox-order", SORT_ORDER },
-  { "subject", SORT_SUBJECT },
-  { "from", SORT_FROM },
-  { "size", SORT_SIZE },
-  { "threads", SORT_THREADS },
-  { "to", SORT_TO },
-  { "score", SORT_SCORE },
-  { "spam", SORT_SPAM },
-  { "label", SORT_LABEL },
-  { NULL, 0 },
+  { "subject",       SORT_SUBJECT },
+  { "from",          SORT_FROM },
+  { "size",          SORT_SIZE },
+  { "threads",       SORT_THREADS },
+  { "to",            SORT_TO },
+  { "score",         SORT_SCORE },
+  { "spam",          SORT_SPAM },
+  { "label",         SORT_LABEL },
+  { NULL,            0 },
 };
 
 /**
- * SortSidebarMethods - XXX
+ * SortSidebarMethods - Sort methods for the sidebar
  */
 static const struct Mapping SortSidebarMethods[] = {
-  { "alpha", SORT_PATH },
-  { "count", SORT_COUNT },
-  { "desc", SORT_DESC },
-  { "flagged", SORT_FLAGGED },
+  { "alpha",         SORT_PATH },
+  { "count",         SORT_COUNT },
+  { "desc",          SORT_DESC },
+  { "flagged",       SORT_FLAGGED },
   { "mailbox-order", SORT_ORDER },
-  { "name", SORT_PATH },
-  { "new", SORT_UNREAD },
-  { "path", SORT_PATH },
-  { "unread", SORT_UNREAD },
-  { "unsorted", SORT_ORDER },
-  { NULL, 0 },
+  { "name",          SORT_PATH },
+  { "new",           SORT_UNREAD },
+  { "path",          SORT_PATH },
+  { "unread",        SORT_UNREAD },
+  { "unsorted",      SORT_ORDER },
+  { NULL,            0 },
 };
+// clang-format on
 
 /**
  * find_string - Lookup a sort string

@@ -34,10 +34,10 @@ struct ConfigSet;
  */
 struct MbTable
 {
-  char *orig_str;      /**< XXX */
-  int len;             /**< number of characters */
-  char **chars;        /**< the array of multibyte character strings */
-  char *segmented_str; /**< each chars entry points inside this string */
+  char *orig_str;      /**< Original string used to generate this object */
+  int len;             /**< Number of characters */
+  char **chars;        /**< The array of multibyte character strings */
+  char *segmented_str; /**< Each chars entry points inside this string */
 };
 
 void mbtable_init(struct ConfigSet *cs);

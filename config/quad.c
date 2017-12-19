@@ -49,10 +49,11 @@
 #include "types.h"
 
 /**
- * quad_values - XXX
+ * quad_values - Valid strings for creating a QuadValue
+ *
+ * These strings are case-insensitive.
  */
 const char *quad_values[] = { "no", "yes", "ask-no", "ask-yes" };
-/*XXX enum, exported too */
 
 /**
  * quad_string_set - Set a Quad-option by string
@@ -212,13 +213,14 @@ void quad_init(struct ConfigSet *cs)
 }
 
 /**
- * toggle_quadoption - XXX
+ * quad_toggle - Toggle (invert) the value of a quad option
+ *
+ * By toggling the low bit, the following are swapped:
+ * - #MUTT_NO    <--> #MUTT_YES
+ * - #MUTT_ASKNO <--> #MUTT_ASKYES
  */
-static int toggle_quadoption(int opt)
+static int quad_toggle(int opt)
 {
-  /* toggle the low bit
-   * MUTT_NO    <--> MUTT_YES
-   * MUTT_ASKNO <--> MUTT_ASKYES */
   return opt ^= 1;
 }
 
@@ -252,7 +254,7 @@ int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  *(char *) var = toggle_quadoption(value);
+  *(char *) var = quad_toggle(value);
 
   cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
   return CSR_SUCCESS;
