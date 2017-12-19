@@ -320,5 +320,6 @@ void regex_free(struct Regex **r)
   FREE(&(*r)->pattern);
   if ((*r)->regex)
     regfree((*r)->regex);
+  FREE(&(*r)->regex);
   FREE(r);
 }
