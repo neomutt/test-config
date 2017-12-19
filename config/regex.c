@@ -28,9 +28,14 @@
  * | Function           | Description
  * | :----------------- | :------------------------------------------
  * | regex_create()     | Create an Regex from a string
- * | regex_destroy()    | Destroy a Regex object
  * | regex_free()       | Free a Regex object
  * | regex_init()       | Register the Regex config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function           | Description
+ * | :----------------- | :------------------------------------------
+ * | regex_destroy()    | Destroy a Regex object
  * | regex_native_get() | Get a Regex object from a Regex config item
  * | regex_native_set() | Set a Regex config item by Regex object
  * | regex_reset()      | Reset a Regex to its initial value

@@ -33,6 +33,11 @@
  * | :---------------- | :---------------------------------
  * | bool_he_toggle()  | Toggle the value of a bool
  * | bool_init()       | Register the Bool config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function          | Description
+ * | :---------------- | :---------------------------------
  * | bool_native_get() | Get a bool from a Bool config item
  * | bool_native_set() | Set a Bool config item by bool
  * | bool_reset()      | Reset a Bool to its initial value

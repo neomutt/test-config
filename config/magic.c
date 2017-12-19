@@ -32,6 +32,11 @@
  * | Function           | Description
  * | :----------------- | :------------------------------------------
  * | magic_init()       | Register the Mailbox Magic config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function           | Description
+ * | :----------------- | :------------------------------------------
  * | magic_native_get() | Get an int from a Mailbox Magic config item
  * | magic_native_set() | Set a Mailbox Magic config item by int
  * | magic_reset()      | Reset a Mailbox Magic to its initial value

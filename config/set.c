@@ -27,7 +27,6 @@
  *
  * | Function                | Description
  * | :---------------------- | :-----------------------------------------------
- * | create_synonym()        | Create an alternative name for a config item
  * | cs_add_listener()       | Add a listener (callback function)
  * | cs_create()             | Create a new Config Set
  * | cs_free()               | Free a Config Set

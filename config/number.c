@@ -28,6 +28,11 @@
  * | Function            | Description
  * | :------------------ | :-----------------------------------
  * | number_init()       | Register the Number config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function            | Description
+ * | :------------------ | :-----------------------------------
  * | number_native_get() | Get an int from a Number config item
  * | number_native_set() | Set a Number config item by int
  * | number_reset()      | Reset a Number to its initial value

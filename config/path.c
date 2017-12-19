@@ -27,8 +27,13 @@
  *
  * | Function          | Description
  * | :---------------- | :-----------------------------------
- * | path_destroy()    | Destroy a Path
  * | path_init()       | Register the Path config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function          | Description
+ * | :---------------- | :-----------------------------------
+ * | path_destroy()    | Destroy a Path
  * | path_native_get() | Get a string from a Path config item
  * | path_native_set() | Set a Path config item by string
  * | path_reset()      | Reset a Path to its initial value

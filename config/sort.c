@@ -37,6 +37,11 @@
  * | Function          | Description
  * | :---------------- | :---------------------------------
  * | sort_init()       | Register the Sort config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function          | Description
+ * | :---------------- | :---------------------------------
  * | sort_native_get() | Get an int from a Sort config item
  * | sort_native_set() | Set a Sort config item by int
  * | sort_reset()      | Reset a Sort to its initial value

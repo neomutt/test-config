@@ -28,10 +28,15 @@
  * | Function             | Description
  * | :------------------- | :-----------------------------------------------
  * | mbtable_create()     | Create an MbTable from a string
- * | mbtable_destroy()    | Destroy an MbTable object
- * | mbtable_dup()        | Create a copy of an MbTable object
  * | mbtable_free()       | Free an MbTable object
  * | mbtable_init()       | Register the MbTable config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function             | Description
+ * | :------------------- | :-----------------------------------------------
+ * | mbtable_destroy()    | Destroy an MbTable object
+ * | mbtable_dup()        | Create a copy of an MbTable object
  * | mbtable_native_get() | Get an MbTable object from a MbTable config item
  * | mbtable_native_set() | Set a MbTable config item by MbTable object
  * | mbtable_parse()      | Parse a multibyte string into a table

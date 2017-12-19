@@ -33,6 +33,11 @@
  * | :---------------- | :-----------------------------------------------
  * | quad_he_toggle()  | Toggle the value of a quad
  * | quad_init()       | Register the Quad-option config type
+ *
+ * These functions are private and used by the config set.
+ *
+ * | Function          | Description
+ * | :---------------- | :-----------------------------------------------
  * | quad_native_get() | Get an int object from a Quad-option config item
  * | quad_native_set() | Set a Quad-option config item by int
  * | quad_reset()      | Reset a Quad-option to its initial value
