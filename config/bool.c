@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-bool Boolean
+ * @page config-bool Type: Boolean
  *
  * Type representing a boolean.
  *

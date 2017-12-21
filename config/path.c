@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-path Path
+ * @page config-path Type: Path
  *
  * Type representing a path.
  *

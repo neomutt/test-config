@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-regex Regular expression
+ * @page config-regex Type: Regular expression
  *
  * Type representing a regular expression
  *

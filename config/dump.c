@@ -25,14 +25,16 @@
  *
  * Dump all the config items in various formats.
  *
- * | Function         | Description
- * | :--------------- | :-----------------------------------------------
- * | dump_config()    | Write all the config to stdout
- * | elem_list_sort() | Sort two HashElem pointers to config
- * | escape_char()    | Write an escaped character to a buffer
- * | escape_string()  | Write a string to a buffer, escaping special characters
- * | get_elem_list()  | Create a sorted list of all config items
- * | pretty_var()     | Escape and stringify a config item value
+ * | Function           | Description
+ * | :----------------- | :-----------------------------------------------
+ * | dump_config()      | Write all the config to stdout
+ * | dump_config_mutt() | Dump the config in the style of Mutt
+ * | dump_config_neo()  | Dump the config in the style of NeoMutt
+ * | elem_list_sort()   | Sort two HashElem pointers to config
+ * | escape_char()      | Write an escaped character to a buffer
+ * | escape_string()    | Write a string to a buffer, escaping special characters
+ * | get_elem_list()    | Create a sorted list of all config items
+ * | pretty_var()       | Escape and stringify a config item value
  */
 
 #include "config.h"
@@ -164,6 +166,14 @@ struct HashElem **get_elem_list(struct ConfigSet *cs)
   return list;
 }
 
+/**
+ * dump_config_mutt - Dump the config in the style of Mutt
+ * @param cs      Config items
+ * @param he      HashElem representing config item
+ * @param value   Current value of the config item
+ * @param initial Initial value of the config item
+ * @param flags   Flags, e.g. #CS_DUMP_ONLY_CHANGED
+ */
 void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags)
 {
   const char *name = he->key.strkey;
@@ -181,6 +191,14 @@ void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, struct Buffer *
   }
 }
 
+/**
+ * dump_config_neo - Dump the config in the style of NeoMutt
+ * @param cs      Config items
+ * @param he      HashElem representing config item
+ * @param value   Current value of the config item
+ * @param initial Initial value of the config item
+ * @param flags   Flags, e.g. #CS_DUMP_ONLY_CHANGED
+ */
 void dump_config_neo(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags)
 {
   const char *name = he->key.strkey;
@@ -221,7 +239,7 @@ void dump_config_neo(struct ConfigSet *cs, struct HashElem *he, struct Buffer *v
  * dump_config - Write all the config to stdout
  * @param cs    ConfigSet to dump
  * @param style Output style, e.g. #CS_DUMP_STYLE_MUTT
- * @param flags Display flags, e.g. #CS_DUMP_CHANGED
+ * @param flags Display flags, e.g. #CS_DUMP_ONLY_CHANGED
  */
 bool dump_config(struct ConfigSet *cs, int style, int flags)
 {
@@ -229,11 +247,6 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
     return false;
 
   struct HashElem *he = NULL;
-
-  struct Buffer buf;
-  buf.data = mutt_mem_malloc(1024);
-  buf.dptr = buf.data;
-  buf.dsize = 0;
 
   struct HashElem **list = get_elem_list(cs);
   if (!list)
@@ -320,7 +333,6 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
   }
 
   FREE(&list);
-  FREE(&buf.data);
   //QWQ mutt_buffer_free_static
   FREE(&value.data);
   FREE(&initial.data);

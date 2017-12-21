@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-magic Mailbox types
+ * @page config-magic Type: Mailbox types
  *
  * Type representing a mailbox.
  *

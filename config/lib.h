@@ -25,17 +25,17 @@
  *
  * User configurable variables.
  *
+ * -# @subpage config-set
  * -# @subpage config-account
+ * -# @subpage config-dump
  * -# @subpage config-address
  * -# @subpage config-bool
- * -# @subpage config-dump
  * -# @subpage config-magic
  * -# @subpage config-mbtable
  * -# @subpage config-number
  * -# @subpage config-path
  * -# @subpage config-quad
  * -# @subpage config-regex
- * -# @subpage config-set
  * -# @subpage config-sort
  * -# @subpage config-string
  */

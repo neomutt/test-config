@@ -340,8 +340,9 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
 
 /**
  * cs_register_variables - Register a set of config items
- * @param cs   Config items
- * @param vars Variable definition
+ * @param cs    Config items
+ * @param vars  Variable definition
+ * @param flags Flags, e.g. #CS_REG_DISABLED
  * @retval bool True, if all variables were registered successfully
  */
 bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], int flags)
@@ -372,7 +373,7 @@ bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], 
 /**
  * cs_he_string_set - Set a config item by string
  * @param cs    Config items
- * @param he   HashElem representing config item
+ * @param he    HashElem representing config item
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
@@ -754,9 +755,9 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
 
 /**
  * cs_he_native_get - Natively get the value of a HashElem config item
- * @param cs     Config items
- * @param he     HashElem representing config item
- * @param result Buffer for results or error messages
+ * @param cs  Config items
+ * @param he  HashElem representing config item
+ * @param err Buffer for results or error messages
  * @retval intptr_t Native pointer/value
  */
 intptr_t cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
