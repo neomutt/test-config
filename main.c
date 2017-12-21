@@ -17,6 +17,7 @@
 #include "test/sort.h"
 #include "test/string4.h"
 #include "test/synonym.h"
+#include "dump/dump.h"
 
 typedef bool (*test_fn)(void);
 
@@ -53,6 +54,7 @@ struct Test test[] = {
   { "regex",     regex_test     },
   { "sort",      sort_test      },
   { "string",    string_test    },
+  { "dump",      dump_test      },
   { NULL },
 };
 // clang-format on
