@@ -276,6 +276,13 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
   else
     sort = (int) cdef->initial;
 
+  if (sort & SORT_REVERSE)
+    mutt_buffer_addstr(result, "reverse-");
+  if (sort & SORT_LAST)
+    mutt_buffer_addstr(result, "last-");
+
+  sort &= SORT_MASK;
+
   const char *str = NULL;
 
   switch (cdef->type & DT_SUBTYPE_MASK)
