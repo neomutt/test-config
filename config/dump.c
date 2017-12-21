@@ -25,14 +25,14 @@
  *
  * Dump all the config items in various formats.
  *
- * | Function                | Description
- * | :---------------------- | :-----------------------------------------------
- * | dump_config()           | Write all the config to stdout
- * | elem_list_sort()        | Sort two HashElem pointers to config
- * | escape_char()           | Write an escaped character to a buffer
- * | escape_string()         | Write a string to a buffer, escaping special characters
- * | get_elem_list()         | Create a sorted list of all config items
- * | pretty_var()            | Write a config option to a buffer
+ * | Function         | Description
+ * | :--------------- | :-----------------------------------------------
+ * | dump_config()    | Write all the config to stdout
+ * | elem_list_sort() | Sort two HashElem pointers to config
+ * | escape_char()    | Write an escaped character to a buffer
+ * | escape_string()  | Write a string to a buffer, escaping special characters
+ * | get_elem_list()  | Create a sorted list of all config items
+ * | pretty_var()     | Escape and stringify a config item value
  */
 
 #include "config.h"
@@ -44,6 +44,7 @@
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "dump.h"
 #include "set.h"
 #include "types.h"
 
@@ -72,7 +73,7 @@ size_t escape_string(char *buf, size_t buflen, const char *src)
 {
   char *p = buf;
 
-  if (!buflen)
+  if (buflen == 0)
     return 0;
   buflen--; /* save room for \0 */
   while (((p - buf) < buflen) && src && *src)
@@ -100,31 +101,25 @@ size_t escape_string(char *buf, size_t buflen, const char *src)
 }
 
 /**
- * pretty_var - Write a config option to a buffer
+ * pretty_var - Escape and stringify a config item value
  * @param buf    Buffer to write to
- * @param buflen Length of buffer
- * @param name   Name of config name
- * @param val    Value of config name
+ * @param str    String to escape
+ * @retval num Number of bytes written to buffer
  */
-void pretty_var(char *buf, size_t buflen, const char *name, const char *val)
+size_t pretty_var(struct Buffer *buf, const char *str)
 {
-  char *p = NULL;
+  if (!buf || !str)
+    return 0;
 
-  if (buflen == 0)
-    return;
+  int len = 0;
 
-  mutt_str_strfcpy(buf, name, buflen);
-  buflen--; /* save room for \0 */
-  p = buf + mutt_str_strlen(buf);
+  mutt_buffer_addch(buf, '"');
+  len += escape_string(buf->dptr, buf->dsize - (buf->dptr - buf->data + 1), str);
+  buf->dptr += len;
+  //QWQ check for success/buffer full
+  mutt_buffer_addch(buf, '"');
 
-  if ((p - buf) < buflen)
-    *p++ = '=';
-  if ((p - buf) < buflen)
-    *p++ = '"';
-  p += escape_string(p, buflen - (p - buf) + 1, val);
-  if ((p - buf) < buflen)
-    *p++ = '"';
-  *p = '\0';
+  return len + 2;
 }
 
 /**
@@ -169,13 +164,80 @@ struct HashElem **get_elem_list(struct ConfigSet *cs)
   return list;
 }
 
-bool config_has_been_set(struct ConfigSet *cs, struct HashElem *he)
+void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags)
 {
-  if (!cs || !he)
-    return true;
+  const char *name = he->key.strkey;
 
-  bool result = false;
-  int rc;
+  if (DTYPE(he->type) == DT_BOOL)
+  {
+    if (value->data[0] == 'y')
+      printf("%s is set\n", name);
+    else
+      printf("%s is unset\n", name);
+  }
+  else
+  {
+    printf("%s=%s\n", name, value->data);
+  }
+}
+
+void dump_config_neo(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags)
+{
+  const char *name = he->key.strkey;
+
+  if ((flags & CS_DUMP_ONLY_CHANGED) && (mutt_str_strcmp(value->data, initial->data) == 0))
+    return;
+
+  if (he->type == DT_SYNONYM)
+  {
+    const struct ConfigDef *cdef = he->data;
+    const char *syn = (const char *) cdef->initial;
+    printf("# synonym: %s -> %s\n", name, syn);
+    return;
+  }
+
+  bool show_name = !(flags & CS_DUMP_HIDE_NAME);
+  bool show_value = !(flags & CS_DUMP_HIDE_VALUE);
+
+  if (show_name && show_value)
+    printf("set ");
+  if (show_name)
+    printf("%s", name);
+  if (show_name && show_value)
+    printf(" = ");
+  if (show_value)
+    printf("%s", value->data);
+  if (show_name || show_value)
+    printf("\n");
+
+  if (flags & CS_DUMP_SHOW_DEFAULTS)
+  {
+    const struct ConfigSetType *cst = cs_get_type_def(cs, he->type);
+    printf("# %s %s %s\n", cst->name, name, value->data);
+  }
+}
+
+/**
+ * dump_config - Write all the config to stdout
+ * @param cs    ConfigSet to dump
+ * @param style Output style, e.g. #CS_DUMP_STYLE_MUTT
+ * @param flags Display flags, e.g. #CS_DUMP_CHANGED
+ */
+bool dump_config(struct ConfigSet *cs, int style, int flags)
+{
+  if (!cs)
+    return false;
+
+  struct HashElem *he = NULL;
+
+  struct Buffer buf;
+  buf.data = mutt_mem_malloc(1024);
+  buf.dptr = buf.data;
+  buf.dsize = 0;
+
+  struct HashElem **list = get_elem_list(cs);
+  if (!list)
+    return false;
 
   struct Buffer value;
   value.data = mutt_mem_malloc(1024);
@@ -187,109 +249,82 @@ bool config_has_been_set(struct ConfigSet *cs, struct HashElem *he)
   initial.dptr = initial.data;
   initial.dsize = 1024;
 
-  mutt_buffer_reset(&value);
-  rc = cs_he_string_get(cs, he, &value);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
-    goto uout;
-
-  mutt_buffer_reset(&initial);
-  rc = cs_he_default_get(cs, he, &initial);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
-    goto uout;
-
-  result = (mutt_str_strcmp(value.data, initial.data) != 0);
-
-uout:
-  FREE(&value.data);
-  FREE(&initial.data);
-  return result;
-}
-
-void dump_config_item(struct ConfigSet *cs, struct HashElem *he)
-{
-  if (!cs || !he)
-    return;
-
-  // if (!config_has_been_set(cs, he))
-  //   return;
-
-  if (config_has_been_set(cs, he))
-    printf (">> ");
-
-  char disp[1024];
-
-  struct Buffer buf;
-  buf.data = mutt_mem_malloc(1024);
-  buf.dptr = buf.data;
-  buf.dsize = 1024;
-
-  mutt_buffer_reset(&buf);
-  cs_he_string_get(cs, he, &buf);
-
-  pretty_var(disp, sizeof(disp), he->key.strkey, buf.data);
-  printf("%s\n", disp);
-
-  FREE(&buf.data);
-}
-
-/**
- * dump_config - Write all the config to stdout
- * @param cs    ConfigSet to dump
- * @param style Output style, e.g. #CS_DUMP_STYLE_MUTT
- * @param flags Display flags, e.g. #CS_DUMP_CHANGED
- */
-void dump_config(struct ConfigSet *cs, int style, int flags)
-{
-  if (!cs)
-    return;
-
-  // char disp[1024];
-  struct HashElem *he = NULL;
-  bool hide_sensitive = true;
-  // bool defaults = true;
-
-  struct Buffer buf;
-  buf.data = mutt_mem_malloc(1024);
-  buf.dptr = buf.data;
-  buf.dsize = 0;
-
-  struct HashElem **list = get_elem_list(cs);
-  if (!list)
-    return;
+  struct Buffer tmp;
+  tmp.data = mutt_mem_malloc(1024);
+  tmp.dptr = tmp.data;
+  tmp.dsize = 1024;
 
   for (size_t i = 0; list[i]; i++)
   {
+    mutt_buffer_reset(&value);
+    mutt_buffer_reset(&initial);
     he = list[i];
-    if (he->type == DT_SYNONYM)
+
+    if ((he->type == DT_SYNONYM) && !(flags & CS_DUMP_SHOW_SYNONYMS))
       continue;
 
-    const struct ConfigDef *cdef = he->data;
-    if (hide_sensitive && IS_SENSITIVE(*cdef))
-    {
-      printf("%s='***'\n", he->key.strkey);
+    if ((he->type == DT_DISABLED) && !(flags & CS_DUMP_SHOW_DISABLED))
       continue;
+
+    // const char *name = he->key.strkey;
+    int type = he->type;
+    int rc;
+
+    if (he->type != DT_SYNONYM)
+    {
+      // get value
+      if ((flags & CS_DUMP_ONLY_CHANGED) || !(flags & CS_DUMP_HIDE_VALUE) || (flags & CS_DUMP_SHOW_DEFAULTS))
+      {
+        rc = cs_he_string_get(cs, he, &value);
+        if (CSR_RESULT(rc) != CSR_SUCCESS)
+          return false;
+
+        const struct ConfigDef *cdef = he->data;
+        //QWQ mutt_buffer_empty()
+        if (IS_SENSITIVE(*cdef) && (value.data[0] != '\0'))
+        {
+          mutt_buffer_reset(&value);
+          mutt_buffer_addstr(&value, "***");
+        }
+
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) && !(flags & CS_DUMP_NO_ESCAPING))
+        {
+          mutt_buffer_reset(&tmp);
+          size_t len = pretty_var(&tmp, value.data);
+          mutt_str_strfcpy(value.data, tmp.data, len + 1);
+          //QWQ mutt_buffer_copy?
+        }
+      }
+
+      // get default
+      if (flags & (CS_DUMP_ONLY_CHANGED || CS_DUMP_SHOW_DEFAULTS))
+      {
+        rc = cs_he_default_get(cs, he, &initial);
+        if (CSR_RESULT(rc) != CSR_SUCCESS)
+          return false;
+
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) && !(flags & CS_DUMP_NO_ESCAPING))
+        {
+          mutt_buffer_reset(&tmp);
+          size_t len = pretty_var(&tmp, initial.data);
+          mutt_str_strfcpy(value.data, tmp.data, len + 1);
+          //QWQ mutt_buffer_copy?
+        }
+      }
     }
 
-    // mutt_buffer_reset(&buf);
-    // cs_he_string_get(cs, he, &buf);
-
-    // if (defaults)
-    // {
-    //   char b[1024];
-    //   struct Buffer def = { b, b, sizeof(b), 0 };
-    //   cs_he_default_get(cs, he, &def);
-    //   char esc[1024];
-    //   escape_string(esc, sizeof(esc), def.data);
-    //   const struct ConfigSetType *cst = NULL;
-    //   cst = cs_get_type_def(cs, he->type);
-    //   printf("# %s\t%s\t%s\n", he->key.strkey, cst->name, esc);
-    // }
-
-    // pretty_var(disp, sizeof(disp), he->key.strkey, buf.data);
-    // printf("%s\n", disp);
-    dump_config_item(cs, he);
+    if (style == CS_DUMP_STYLE_MUTT)
+      dump_config_mutt(cs, he, &value, &initial, flags);
+    else
+      dump_config_neo(cs, he, &value, &initial, flags);
   }
 
   FREE(&list);
   FREE(&buf.data);
+  //QWQ mutt_buffer_free_static
+  FREE(&value.data);
+  FREE(&initial.data);
+  FREE(&tmp.data);
+
+  return true;
 }

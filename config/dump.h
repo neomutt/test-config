@@ -28,22 +28,24 @@
 struct ConfigSet;
 
 #define CS_DUMP_STYLE_MUTT   0 /**< XXX */ 
-#define CS_DUMP_STYLE_CONFIG 1 /**< XXX */ 
+#define CS_DUMP_STYLE_NEO    1 /**< XXX */ 
 
 #define CS_DUMP_ONLY_CHANGED   (1 << 0) /**< XXX */
 #define CS_DUMP_HIDE_SENSITIVE (1 << 1) /**< XXX */
-#define CS_DUMP_VERBOSE        (1 << 2) /**< XXX */
-#define CS_DUMP_NO_ESCAPING    (1 << 3) /**< XXX */
-#define CS_DUMP_HIDE_NAME      (1 << 4) /**< XXX */
-#define CS_DUMP_HIDE_VALUE     (1 << 5) /**< XXX */
-#define CS_DUMP_SHOW_DEFAULTS  (1 << 6) /**< XXX */
-#define CS_DUMP_SHOW_DISABLED  (1 << 7) /**< XXX */
+#define CS_DUMP_NO_ESCAPING    (1 << 2) /**< XXX */
+#define CS_DUMP_HIDE_NAME      (1 << 3) /**< XXX */
+#define CS_DUMP_HIDE_VALUE     (1 << 4) /**< XXX */
+#define CS_DUMP_SHOW_DEFAULTS  (1 << 5) /**< XXX */
+#define CS_DUMP_SHOW_DISABLED  (1 << 6) /**< XXX */
+#define CS_DUMP_SHOW_SYNONYMS  (1 << 7) /**< XXX */
 
-void              dump_config(struct ConfigSet *cs, int style, int flags);
+void              dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags);
+void              dump_config_neo(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags);
+bool              dump_config(struct ConfigSet *cs, int style, int flags);
 int               elem_list_sort(const void *a, const void *b);
 void              escape_char(char *buf, size_t buflen, char c, char *p);
 size_t            escape_string(char *buf, size_t buflen, const char *src);
 struct HashElem **get_elem_list(struct ConfigSet *cs);
-void              pretty_var(char *buf, size_t buflen, const char *name, const char *val);
+size_t            pretty_var(struct Buffer *buf, const char *str);
 
 #endif /* _CONFIG_DUMP_H */
