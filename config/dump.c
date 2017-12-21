@@ -174,7 +174,8 @@ struct HashElem **get_elem_list(struct ConfigSet *cs)
  * @param initial Initial value of the config item
  * @param flags   Flags, e.g. #CS_DUMP_ONLY_CHANGED
  */
-void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags)
+void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he,
+                      struct Buffer *value, struct Buffer *initial, int flags)
 {
   const char *name = he->key.strkey;
 
@@ -199,7 +200,8 @@ void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, struct Buffer *
  * @param initial Initial value of the config item
  * @param flags   Flags, e.g. #CS_DUMP_ONLY_CHANGED
  */
-void dump_config_neo(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags)
+void dump_config_neo(struct ConfigSet *cs, struct HashElem *he,
+                     struct Buffer *value, struct Buffer *initial, int flags)
 {
   const char *name = he->key.strkey;
 
@@ -286,7 +288,8 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
     if (he->type != DT_SYNONYM)
     {
       // get value
-      if ((flags & CS_DUMP_ONLY_CHANGED) || !(flags & CS_DUMP_HIDE_VALUE) || (flags & CS_DUMP_SHOW_DEFAULTS))
+      if ((flags & CS_DUMP_ONLY_CHANGED) || !(flags & CS_DUMP_HIDE_VALUE) ||
+          (flags & CS_DUMP_SHOW_DEFAULTS))
       {
         rc = cs_he_string_get(cs, he, &value);
         if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -300,7 +303,8 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
           mutt_buffer_addstr(&value, "***");
         }
 
-        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) && !(flags & CS_DUMP_NO_ESCAPING))
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
+            !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(&tmp);
           size_t len = pretty_var(&tmp, value.data);
@@ -316,7 +320,8 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
         if (CSR_RESULT(rc) != CSR_SUCCESS)
           return false;
 
-        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) && !(flags & CS_DUMP_NO_ESCAPING))
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
+            !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(&tmp);
           size_t len = pretty_var(&tmp, initial.data);

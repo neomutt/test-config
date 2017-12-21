@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "dump/dump.h"
 #include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
@@ -17,7 +18,6 @@
 #include "test/sort.h"
 #include "test/string4.h"
 #include "test/synonym.h"
-#include "dump/dump.h"
 
 typedef bool (*test_fn)(void);
 

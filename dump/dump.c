@@ -26,8 +26,8 @@
 #include "mutt/memory.h"
 #include "mutt/string2.h"
 #include "config/lib.h"
-#include "test/common.h"
 #include "data.h"
+#include "test/common.h"
 
 bool dump_test(void)
 {
@@ -57,7 +57,8 @@ bool dump_test(void)
 
   cs_add_listener(cs, log_listener);
 
-  dump_config(cs, CS_DUMP_STYLE_NEO, CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS);
+  dump_config(cs, CS_DUMP_STYLE_NEO,
+              CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS);
 
   cs_free(&cs);
   FREE(&err.data);

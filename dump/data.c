@@ -1058,7 +1058,6 @@ struct ConfigDef MuttVars[] = {
   ** Header caching can greatly improve speed when opening POP, IMAP
   ** MH or Maildir folders, see ``$caching'' for details.
   */
-  //QWQ { "header_cache_backend", DT_HCACHE, R_NONE, &HeaderCacheBackend, 0 },
   { "header_cache_backend", DT_STRING, R_NONE, &HeaderCacheBackend, 0 },
   /*
   ** .pp

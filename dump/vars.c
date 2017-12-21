@@ -430,7 +430,7 @@ unsigned char SmimeEncryptSelf;
 unsigned char SslStarttls;
 
 char *AssumedCharset;
-char *Charset;      
+char *Charset;
 
 short ConnectTimeout;
 const char *CertificateFile;
