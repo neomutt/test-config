@@ -22,9 +22,45 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include "mutt/buffer.h"
+#include "mutt/memory.h"
+#include "mutt/string2.h"
+#include "config/lib.h"
+#include "test/common.h"
+#include "data.h"
 
 bool dump_test(void)
 {
-  printf("hello\n");
+  log_line(__func__);
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = mutt_mem_calloc(1, STRING);
+  err.dsize = STRING;
+  mutt_buffer_reset(&err);
+
+  struct ConfigSet *cs = cs_create(500);
+
+  address_init(cs);
+  bool_init(cs);
+  magic_init(cs);
+  mbtable_init(cs);
+  number_init(cs);
+  path_init(cs);
+  quad_init(cs);
+  regex_init(cs);
+  sort_init(cs);
+  string_init(cs);
+
+  if (!cs_register_variables(cs, MuttVars, 0))
+    return false;
+
+  cs_add_listener(cs, log_listener);
+
+  dump_config(cs, 0, 0);
+
+  cs_free(&cs);
+  FREE(&err.data);
+
   return true;
 }

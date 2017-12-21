@@ -64,7 +64,7 @@
 #define R_RESORT_BOTH (R_RESORT | R_RESORT_SUB)
 
 /* general flags, to be OR'd with the R_ flags above (so keep shifting..) */
-#define F_SENSITIVE   (1 << 9) /**< Config item contains sensitive value */
+#define F_SENSITIVE   (1 << 10) /**< Config item contains sensitive value */
 #define IS_SENSITIVE(x) (((x).flags & F_SENSITIVE) == F_SENSITIVE)
 
 #endif /* _CONFIG_TYPES_H */

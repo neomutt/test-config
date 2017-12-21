@@ -6,3 +6,4 @@ config/config
 lib/lib
 test/test
 lcov*
+dump/dump.txt
