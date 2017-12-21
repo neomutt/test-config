@@ -33,8 +33,8 @@ set attach_format = "%u%D%I %t%4n %T%.40d%> [%.7m/%.10M, %.6e%?C?, %C?, %s] "
 # string attach_format "%u%D%I %t%4n %T%.40d%> [%.7m/%.10M, %.6e%?C?, %C?, %s] "
 set attach_keyword = "\\<(attach|attached|attachments?)\\>"
 # regex attach_keyword "\\<(attach|attached|attachments?)\\>"
-set attach_sep = ""
-# string attach_sep ""
+set attach_sep = "\n"
+# string attach_sep "\n"
 set attach_split = yes
 # boolean attach_split yes
 set attribution = "On %d, %n wrote:"
@@ -509,8 +509,8 @@ set pgp_verify_key_command = ""
 # synonym: pgp_verify_sig -> crypt_verify_sig
 set pipe_decode = no
 # boolean pipe_decode no
-set pipe_sep = ""
-# string pipe_sep ""
+set pipe_sep = "\n"
+# string pipe_sep "\n"
 set pipe_split = no
 # boolean pipe_split no
 set pop_auth_try_all = yes
@@ -563,8 +563,8 @@ set query_format = "%4c %t %-25.25a %-25.25n %?e?(%e)?"
 # string query_format "%4c %t %-25.25a %-25.25n %?e?(%e)?"
 set quit = yes
 # quad quit yes
-set quote_regexp = "^([ ]*[|>:}#])+"
-# regex quote_regexp "^([ ]*[|>:}#])+"
+set quote_regexp = "^([ \t]*[|>:}#])+"
+# regex quote_regexp "^([ \t]*[|>:}#])+"
 set read_inc = 10
 # number read_inc 10
 set read_only = no
@@ -581,8 +581,8 @@ set reflow_text = yes
 # boolean reflow_text yes
 set reflow_wrap = 78
 # number reflow_wrap 78
-set reply_regexp = "^(re([\\[0-9\\]+])*|aw):[ ]*"
-# regex reply_regexp "^(re([\\[0-9\\]+])*|aw):[ ]*"
+set reply_regexp = "^(re([\\[0-9\\]+])*|aw):[ \t]*"
+# regex reply_regexp "^(re([\\[0-9\\]+])*|aw):[ \t]*"
 set reply_self = no
 # boolean reply_self no
 set reply_to = ask-yes

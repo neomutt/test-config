@@ -31,7 +31,6 @@
  * | dump_config_mutt() | Dump the config in the style of Mutt
  * | dump_config_neo()  | Dump the config in the style of NeoMutt
  * | elem_list_sort()   | Sort two HashElem pointers to config
- * | escape_char()      | Write an escaped character to a buffer
  * | escape_string()    | Write a string to a buffer, escaping special characters
  * | get_elem_list()    | Create a sorted list of all config items
  * | pretty_var()       | Escape and stringify a config item value
@@ -51,55 +50,37 @@
 #include "types.h"
 
 /**
- * escape_char - Write an escaped character to a buffer
- * @param buf    Buffer to write to
- * @param buflen Length of buffer
- * @param c      Character to write
- * @param p      Where to write the character (pointer into buf)
- */
-void escape_char(char *buf, size_t buflen, char c, char *p)
-{
-  *p++ = '\\';
-  if ((p - buf) < buflen)
-    *p++ = c;
-}
-
-/**
  * escape_string - Write a string to a buffer, escaping special characters
- * @param buf    Buffer to write to
- * @param buflen Length of buffer
- * @param src    String to write
- * @retval num Number of bytes written to buffer
+ * @param buf Buffer to write to
+ * @param src String to write
+ * @retval num Bytes written to buffer
  */
-size_t escape_string(char *buf, size_t buflen, const char *src)
+size_t escape_string(struct Buffer *buf, const char *src)
 {
-  char *p = buf;
-
-  if (buflen == 0)
+  if (!buf || !src)
     return 0;
-  buflen--; /* save room for \0 */
-  while (((p - buf) < buflen) && src && *src)
+
+  size_t len = 0;
+  for (; *src; src++)
   {
     switch (*src)
     {
       case '\n':
-        escape_char(buf, buflen, 'n', p);
+        len += mutt_buffer_addstr(buf, "\\n");
         break;
       case '\r':
-        escape_char(buf, buflen, 'r', p);
+        len += mutt_buffer_addstr(buf, "\\r");
         break;
       case '\t':
-        escape_char(buf, buflen, 't', p);
+        len += mutt_buffer_addstr(buf, "\\t");
         break;
       default:
-        if (((*src == '\\') || (*src == '"')) && ((p - buf) < (buflen - 1)))
-          *p++ = '\\';
-        *p++ = *src;
+        if ((*src == '\\') || (*src == '"'))
+          len += mutt_buffer_addch(buf, '\\');
+        len += mutt_buffer_addch(buf, src[0]);
     }
-    src++;
   }
-  *p = '\0';
-  return (p - buf);
+  return len;
 }
 
 /**
@@ -115,13 +96,11 @@ size_t pretty_var(struct Buffer *buf, const char *str)
 
   int len = 0;
 
-  mutt_buffer_addch(buf, '"');
-  len += escape_string(buf->dptr, buf->dsize - (buf->dptr - buf->data + 1), str);
-  buf->dptr += len;
-  //QWQ check for success/buffer full
-  mutt_buffer_addch(buf, '"');
+  len += mutt_buffer_addch(buf, '"');
+  len += escape_string(buf, str);
+  len += mutt_buffer_addch(buf, '"');
 
-  return len + 2;
+  return len;
 }
 
 /**

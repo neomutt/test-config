@@ -43,8 +43,7 @@ void              dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, st
 void              dump_config_neo(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value, struct Buffer *initial, int flags);
 bool              dump_config(struct ConfigSet *cs, int style, int flags);
 int               elem_list_sort(const void *a, const void *b);
-void              escape_char(char *buf, size_t buflen, char c, char *p);
-size_t            escape_string(char *buf, size_t buflen, const char *src);
+size_t            escape_string(struct Buffer *buf, const char *src);
 struct HashElem **get_elem_list(struct ConfigSet *cs);
 size_t            pretty_var(struct Buffer *buf, const char *str);
 

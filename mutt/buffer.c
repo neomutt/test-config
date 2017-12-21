@@ -119,15 +119,16 @@ struct Buffer *mutt_buffer_from(char *seed)
  * @param buf Buffer to add to
  * @param s   String to add
  * @param len Length of the string
+ * @retval num Bytes written to Buffer
  *
  * Dynamically grow a Buffer to accommodate s, in increments of 128 bytes.
  * Always one byte bigger than necessary for the null terminator, and the
  * buffer is always NUL-terminated
  */
-static void mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
+size_t mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
 {
   if (!buf || !s)
-    return;
+    return 0;
 
   if ((buf->dptr + len + 1) > (buf->data + buf->dsize))
   {
@@ -137,10 +138,11 @@ static void mutt_buffer_add(struct Buffer *buf, const char *s, size_t len)
     buf->dptr = buf->data + offset;
   }
   if (!buf->dptr)
-    return;
+    return 0;
   memcpy(buf->dptr, s, len);
   buf->dptr += len;
   *(buf->dptr) = '\0';
+  return len;
 }
 
 /**
@@ -212,26 +214,28 @@ int mutt_buffer_printf(struct Buffer *buf, const char *fmt, ...)
  * mutt_buffer_addstr - Add a string to a Buffer
  * @param buf Buffer to add to
  * @param s   String to add
+ * @retval num Bytes written to Buffer
  *
  * If necessary, the Buffer will be expanded.
  */
-void mutt_buffer_addstr(struct Buffer *buf, const char *s)
+size_t mutt_buffer_addstr(struct Buffer *buf, const char *s)
 {
   if (!buf || !s)
-    return;
-  mutt_buffer_add(buf, s, mutt_str_strlen(s));
+    return 0;
+  return mutt_buffer_add(buf, s, mutt_str_strlen(s));
 }
 
 /**
  * mutt_buffer_addch - Add a single character to a Buffer
  * @param buf Buffer to add to
  * @param c   Character to add
+ * @retval num Bytes written to Buffer
  *
  * If necessary, the Buffer will be expanded.
  */
-void mutt_buffer_addch(struct Buffer *buf, char c)
+size_t mutt_buffer_addch(struct Buffer *buf, char c)
 {
   if (!buf)
-    return;
-  mutt_buffer_add(buf, &c, 1);
+    return 0;
+  return mutt_buffer_add(buf, &c, 1);
 }
