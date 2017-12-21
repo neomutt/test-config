@@ -66,7 +66,7 @@ void escape_char(char *buf, size_t buflen, char c, char *p)
  * @param buf    Buffer to write to
  * @param buflen Length of buffer
  * @param src    String to write
- * @retval num Number of bytes left in buffer
+ * @retval num Number of bytes written to buffer
  */
 size_t escape_string(char *buf, size_t buflen, const char *src)
 {
@@ -121,7 +121,7 @@ void pretty_var(char *buf, size_t buflen, const char *name, const char *val)
     *p++ = '=';
   if ((p - buf) < buflen)
     *p++ = '"';
-  p += escape_string(p, buflen - (p - buf) + 1, val); /* \0 terminate it */
+  p += escape_string(p, buflen - (p - buf) + 1, val);
   if ((p - buf) < buflen)
     *p++ = '"';
   *p = '\0';
@@ -159,14 +159,77 @@ struct HashElem **get_elem_list(struct ConfigSet *cs)
   struct HashWalkState walk;
   memset(&walk, 0, sizeof(walk));
 
-  struct HashElem *elem = NULL;
-  while ((elem = mutt_hash_walk(cs->hash, &walk)))
-    list[index++] = elem;
+  struct HashElem *he = NULL;
+  while ((he = mutt_hash_walk(cs->hash, &walk)))
+    list[index++] = he;
   //XXX not range checked
 
   qsort(list, index, sizeof(struct HashElem *), elem_list_sort);
 
   return list;
+}
+
+bool config_has_been_set(struct ConfigSet *cs, struct HashElem *he)
+{
+  if (!cs || !he)
+    return true;
+
+  bool result = false;
+  int rc;
+
+  struct Buffer value;
+  value.data = mutt_mem_malloc(1024);
+  value.dptr = value.data;
+  value.dsize = 1024;
+
+  struct Buffer initial;
+  initial.data = mutt_mem_malloc(1024);
+  initial.dptr = initial.data;
+  initial.dsize = 1024;
+
+  mutt_buffer_reset(&value);
+  rc = cs_he_string_get(cs, he, &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    goto uout;
+
+  mutt_buffer_reset(&initial);
+  rc = cs_he_default_get(cs, he, &initial);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    goto uout;
+
+  result = (mutt_str_strcmp(value.data, initial.data) != 0);
+
+uout:
+  FREE(&value.data);
+  FREE(&initial.data);
+  return result;
+}
+
+void dump_config_item(struct ConfigSet *cs, struct HashElem *he)
+{
+  if (!cs || !he)
+    return;
+
+  // if (!config_has_been_set(cs, he))
+  //   return;
+
+  if (config_has_been_set(cs, he))
+    printf (">> ");
+
+  char disp[1024];
+
+  struct Buffer buf;
+  buf.data = mutt_mem_malloc(1024);
+  buf.dptr = buf.data;
+  buf.dsize = 1024;
+
+  mutt_buffer_reset(&buf);
+  cs_he_string_get(cs, he, &buf);
+
+  pretty_var(disp, sizeof(disp), he->key.strkey, buf.data);
+  printf("%s\n", disp);
+
+  FREE(&buf.data);
 }
 
 /**
@@ -180,10 +243,10 @@ void dump_config(struct ConfigSet *cs, int style, int flags)
   if (!cs)
     return;
 
-  char disp[1024];
-  struct HashElem *elem = NULL;
+  // char disp[1024];
+  struct HashElem *he = NULL;
   bool hide_sensitive = true;
-  bool defaults = true;
+  // bool defaults = true;
 
   struct Buffer buf;
   buf.data = mutt_mem_malloc(1024);
@@ -196,34 +259,35 @@ void dump_config(struct ConfigSet *cs, int style, int flags)
 
   for (size_t i = 0; list[i]; i++)
   {
-    elem = list[i];
-    if (elem->type == DT_SYNONYM)
+    he = list[i];
+    if (he->type == DT_SYNONYM)
       continue;
 
-    const struct ConfigDef *cdef = elem->data;
+    const struct ConfigDef *cdef = he->data;
     if (hide_sensitive && IS_SENSITIVE(*cdef))
     {
-      printf("%s='***'\n", elem->key.strkey);
+      printf("%s='***'\n", he->key.strkey);
       continue;
     }
 
-    mutt_buffer_reset(&buf);
-    cs_he_string_get(cs, elem, &buf);
+    // mutt_buffer_reset(&buf);
+    // cs_he_string_get(cs, he, &buf);
 
-    if (defaults)
-    {
-      char b[1024];
-      struct Buffer def = { b, b, sizeof(b), 0 };
-      cs_he_default_get(cs, elem, &def);
-      char esc[1024];
-      escape_string(esc, sizeof(esc), def.data);
-      const struct ConfigSetType *cst = NULL;
-      cst = cs_get_type_def(cs, elem->type);
-      printf("# %s\t%s\t%s\n", elem->key.strkey, cst->name, esc);
-    }
+    // if (defaults)
+    // {
+    //   char b[1024];
+    //   struct Buffer def = { b, b, sizeof(b), 0 };
+    //   cs_he_default_get(cs, he, &def);
+    //   char esc[1024];
+    //   escape_string(esc, sizeof(esc), def.data);
+    //   const struct ConfigSetType *cst = NULL;
+    //   cst = cs_get_type_def(cs, he->type);
+    //   printf("# %s\t%s\t%s\n", he->key.strkey, cst->name, esc);
+    // }
 
-    pretty_var(disp, sizeof(disp), elem->key.strkey, buf.data);
-    printf("%s\n", disp);
+    // pretty_var(disp, sizeof(disp), he->key.strkey, buf.data);
+    // printf("%s\n", disp);
+    dump_config_item(cs, he);
   }
 
   FREE(&list);

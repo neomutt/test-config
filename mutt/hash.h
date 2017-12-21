@@ -71,7 +71,6 @@ struct Hash
 struct Hash *    mutt_hash_create(int nelem, int flags);
 void             mutt_hash_delete(struct Hash *table, const char *strkey, const void *data);
 void             mutt_hash_destroy(struct Hash **ptr);
-void             mutt_hash_dump(struct Hash *table);
 struct HashElem *mutt_hash_find_bucket(const struct Hash *table, const char *strkey);
 void *           mutt_hash_find(const struct Hash *table, const char *strkey);
 struct HashElem *mutt_hash_find_elem(const struct Hash *table, const char *strkey);

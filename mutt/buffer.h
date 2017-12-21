@@ -25,16 +25,16 @@
 #define _MUTT_BUFFER_H
 
 #include <stddef.h>
-#include <stdbool.h>
 
 /**
  * struct Buffer - String manipulation buffer
  */
 struct Buffer
 {
-  char *data;      /**< pointer to data */
-  char *dptr;      /**< current read/write position */
-  size_t dsize;    /**< length of data */
+  char *data;   /**< pointer to data */
+  char *dptr;   /**< current read/write position */
+  size_t dsize; /**< length of data */
+  int destroy;  /**< destroy 'data' when done? */
 };
 
 #define MoreArgs(p) (*p->dptr && (*p->dptr != ';') && (*p->dptr != '#'))
