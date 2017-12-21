@@ -239,3 +239,32 @@ size_t mutt_buffer_addch(struct Buffer *buf, char c)
     return 0;
   return mutt_buffer_add(buf, &c, 1);
 }
+
+/**
+ * mutt_buffer_is_empty - Is the Buffer empty?
+ * @param buf Buffer to inspect
+ * @retval bool True, if Buffer is empty
+ */
+bool mutt_buffer_is_empty(const struct Buffer *buf)
+{
+  if (!buf)
+    return true;
+
+  return (buf->data && (buf->data[0] == '\0'));
+}
+
+/**
+ * mutt_buffer_alloc - Create a new Buffer
+ * @param size Size of Buffer to create
+ * @retval ptr Newly allocated Buffer
+ */
+struct Buffer *mutt_buffer_alloc(size_t size)
+{
+  struct Buffer *b = mutt_mem_calloc(1, sizeof(struct Buffer));
+
+  b->data = mutt_mem_calloc(1, size);
+  b->dptr = b->data;
+  b->dsize = size;
+
+  return b;
+}

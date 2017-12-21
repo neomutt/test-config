@@ -233,94 +233,85 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
   if (!list)
     return false;
 
-  struct Buffer value;
-  value.data = mutt_mem_malloc(1024);
-  value.dptr = value.data;
-  value.dsize = 1024;
+  bool result = true;
 
-  struct Buffer initial;
-  initial.data = mutt_mem_malloc(1024);
-  initial.dptr = initial.data;
-  initial.dsize = 1024;
-
-  struct Buffer tmp;
-  tmp.data = mutt_mem_malloc(1024);
-  tmp.dptr = tmp.data;
-  tmp.dsize = 1024;
+  struct Buffer *value = mutt_buffer_alloc(1024);
+  struct Buffer *initial = mutt_buffer_alloc(1024);
+  struct Buffer *tmp = mutt_buffer_alloc(1024);
 
   for (size_t i = 0; list[i]; i++)
   {
-    mutt_buffer_reset(&value);
-    mutt_buffer_reset(&initial);
+    mutt_buffer_reset(value);
+    mutt_buffer_reset(initial);
     he = list[i];
-
-    if ((he->type == DT_SYNONYM) && !(flags & CS_DUMP_SHOW_SYNONYMS))
-      continue;
-
-    if ((he->type == DT_DISABLED) && !(flags & CS_DUMP_SHOW_DISABLED))
-      continue;
-
-    // const char *name = he->key.strkey;
     int type = he->type;
     int rc;
 
-    if (he->type != DT_SYNONYM)
+    if ((type == DT_SYNONYM) && !(flags & CS_DUMP_SHOW_SYNONYMS))
+      continue;
+
+    if ((type == DT_DISABLED) && !(flags & CS_DUMP_SHOW_DISABLED))
+      continue;
+
+    if (type != DT_SYNONYM)
     {
-      // get value
+      /* If necessary, get the current value */
       if ((flags & CS_DUMP_ONLY_CHANGED) || !(flags & CS_DUMP_HIDE_VALUE) ||
           (flags & CS_DUMP_SHOW_DEFAULTS))
       {
-        rc = cs_he_string_get(cs, he, &value);
+        rc = cs_he_string_get(cs, he, value);
         if (CSR_RESULT(rc) != CSR_SUCCESS)
-          return false;
+        {
+          result = false;
+          break;
+        }
 
         const struct ConfigDef *cdef = he->data;
-        //QWQ mutt_buffer_empty()
-        if (IS_SENSITIVE(*cdef) && (value.data[0] != '\0'))
+        if (IS_SENSITIVE(*cdef) && !mutt_buffer_is_empty(value))
         {
-          mutt_buffer_reset(&value);
-          mutt_buffer_addstr(&value, "***");
+          mutt_buffer_reset(value);
+          mutt_buffer_addstr(value, "***");
         }
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))
         {
-          mutt_buffer_reset(&tmp);
-          size_t len = pretty_var(&tmp, value.data);
-          mutt_str_strfcpy(value.data, tmp.data, len + 1);
-          //QWQ mutt_buffer_copy?
+          mutt_buffer_reset(tmp);
+          size_t len = pretty_var(tmp, value->data);
+          mutt_str_strfcpy(value->data, tmp->data, len + 1);
         }
       }
 
-      // get default
+      /* If necessary, get the default value */
       if (flags & (CS_DUMP_ONLY_CHANGED || CS_DUMP_SHOW_DEFAULTS))
       {
-        rc = cs_he_default_get(cs, he, &initial);
+        rc = cs_he_default_get(cs, he, initial);
         if (CSR_RESULT(rc) != CSR_SUCCESS)
-          return false;
+        {
+          result = false;
+          break;
+        }
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))
         {
-          mutt_buffer_reset(&tmp);
-          size_t len = pretty_var(&tmp, initial.data);
-          mutt_str_strfcpy(value.data, tmp.data, len + 1);
-          //QWQ mutt_buffer_copy?
+          mutt_buffer_reset(tmp);
+          size_t len = pretty_var(tmp, initial->data);
+          mutt_str_strfcpy(value->data, tmp->data, len + 1);
         }
       }
     }
 
     if (style == CS_DUMP_STYLE_MUTT)
-      dump_config_mutt(cs, he, &value, &initial, flags);
+      dump_config_mutt(cs, he, value, initial, flags);
     else
-      dump_config_neo(cs, he, &value, &initial, flags);
+      dump_config_neo(cs, he, value, initial, flags);
   }
 
   FREE(&list);
-  //QWQ mutt_buffer_free_static
-  FREE(&value.data);
-  FREE(&initial.data);
-  FREE(&tmp.data);
+  mutt_buffer_free(&value);
+  mutt_buffer_free(&initial);
+  mutt_buffer_free(&tmp);
 
-  return true;
+  return result;
 }
