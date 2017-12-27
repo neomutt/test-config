@@ -150,7 +150,7 @@ Expected error:
 Ilama = 3, subject
 Ilama = 6, threads
 Expect error for next test
-Variable has an invalid value: 0/-1
+Variable has an invalid value: 0/255
 Expect error for next test
 Invalid sort type: 144
 ---- test_native_set ---------------------------------------

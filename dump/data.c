@@ -21,6 +21,7 @@
  */
 
 #include "config.h"
+#include "mutt/regex3.h"
 #include "config/magic.h"
 #include "config/quad.h"
 #include "config/regex2.h"
