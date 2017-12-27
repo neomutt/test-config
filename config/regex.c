@@ -53,6 +53,7 @@
 #include "mutt/mbyte.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "mutt/regex3.h"
 #include "regex2.h"
 #include "set.h"
 #include "types.h"

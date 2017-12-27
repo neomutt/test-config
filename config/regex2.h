@@ -30,49 +30,6 @@
 struct Buffer;
 struct ConfigSet;
 
-/* ... DT_REGEX */
-#define DT_REGEX_MATCH_CASE 0x010 /**< Case-sensitive matching */
-#define DT_REGEX_ALLOW_NOT  0x020 /**< Regex can begin with '!' */
-
-/* This is a non-standard option supported by Solaris 2.5.x which allows
- * patterns of the form \<...\> */
-#ifndef REG_WORDS
-#define REG_WORDS 0
-#endif
-
-#define REGCOMP(X, Y, Z) regcomp(X, Y, REG_WORDS | REG_EXTENDED | (Z))
-#define REGEXEC(X, Y) regexec(&X, Y, (size_t) 0, (regmatch_t *) 0, (int) 0)
-
-/**
- * struct Regex - Cached regular expression
- */
-struct Regex
-{
-  char *pattern;  /**< printable version */
-  regex_t *regex; /**< compiled expression */
-  bool not;       /**< do not match */
-};
-
-/**
- * struct RegexList - List of regular expressions
- */
-struct RegexList
-{
-  struct Regex *regex;    /**< Regex containing a regular expression */
-  struct RegexList *next; /**< Next item in list */
-};
-
-/**
- * struct ReplaceList - List of regular expressions
- */
-struct ReplaceList
-{
-  struct Regex *regex;      /**< Regex containing a regular expression */
-  int nmatch;               /**< Match the 'nth' occurrence (0 means the whole expression) */
-  char *template;           /**< Template to match */
-  struct ReplaceList *next; /**< Next item in list */
-};
-
 void regex_init(struct ConfigSet *cs);
 struct Regex *regex_create(const char *str, int flags, struct Buffer *err);
 void regex_free(struct Regex **regex);

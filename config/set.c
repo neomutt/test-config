@@ -373,7 +373,7 @@ bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], 
 /**
  * cs_he_string_set - Set a config item by string
  * @param cs    Config items
- * @param he    HashElem representing config item
+ * @param he   HashElem representing config item
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
