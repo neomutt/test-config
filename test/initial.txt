@@ -4,3 +4,9 @@ string Cherry =
 string Banana = 
 string Apple = apple
 ---- test_set_initial --------------------------------------
+Event: Apple has been initial-set to 'pie'
+Event: Banana has been initial-set to 'split'
+Event: Cherry has been initial-set to 'blossom'
+Apple = apple
+Banana = (null)
+Cherry = (null)

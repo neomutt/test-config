@@ -47,7 +47,6 @@ static struct ConfigDef Vars[] = {
 static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-#if 0
   const char *name;
 
   name = "Apple";
@@ -56,7 +55,7 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
     return false;
 
   const char *aval = "pie";
-  int rc = cs_set_initial_value(cs, name, aval, err);
+  int rc = cs_he_initial_set(cs, he_a, aval, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     printf("Expected error: %s\n", err->data);
 
@@ -66,7 +65,7 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
     return false;
 
   const char *bval = "split";
-  rc = cs_set_initial_value(cs, name, bval, err);
+  rc = cs_he_initial_set(cs, he_b, bval, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
@@ -76,21 +75,17 @@ static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
     return false;
 
   const char *cval = "blossom";
-  rc = cs_set_initial_value(cs, name, cval, err);
+  rc = cs_str_initial_set(cs, name, cval, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
-  rc = cs_set_initial_value(cs, name, cval, err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
-    printf("Expected error: %s\n", err->data);
-
   printf("Apple = %s\n", VarApple);
   printf("Banana = %s\n", VarBanana);
+  printf("Cherry = %s\n", VarCherry);
 
   return ((mutt_str_strcmp(VarApple, aval) != 0) &&
-          (mutt_str_strcmp(VarBanana, bval) == 0));
-#endif
-  return true;
+          (mutt_str_strcmp(VarBanana, bval) != 0) &&
+          (mutt_str_strcmp(VarCherry, cval) != 0));
 }
 
 bool initial_test(void)
