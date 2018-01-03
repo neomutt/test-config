@@ -143,13 +143,15 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
 
   struct MbTable *table = NULL;
   
+  int rc;
+
   if (var)
   {
     table = mbtable_parse(value);
 
     if (cdef->validator)
     {
-      int rc = cdef->validator(cs, cdef, (intptr_t) table, err);
+      rc = cdef->validator(cs, cdef, (intptr_t) table, err);
 
       if (CSR_RESULT(rc) != CSR_SUCCESS)
       {
@@ -159,7 +161,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
     }
   }
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
 
   if (var)
   {
@@ -169,7 +171,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
     *(struct MbTable **) var = table;
 
     if (!table)
-      result |= CSR_SUC_EMPTY;
+      rc |= CSR_SUC_EMPTY;
   }
   else
   {
@@ -181,7 +183,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
     cdef->initial = IP mutt_str_strdup(value);
   }
 
-  return result;
+  return rc;
 }
 
 /**
@@ -249,9 +251,11 @@ static int mbtable_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  int rc;
+
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, value, err);
+    rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return rc | CSR_INV_VALIDATOR;
@@ -261,12 +265,12 @@ static int mbtable_native_set(const struct ConfigSet *cs, void *var,
 
   struct MbTable *table = mbtable_dup((struct MbTable *) value);
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
   if (!table)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
 
   *(struct MbTable **) var = table;
-  return result;
+  return rc;
 }
 
 /**

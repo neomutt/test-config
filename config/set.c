@@ -303,19 +303,19 @@ bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], 
   err.data = calloc(1, STRING);
   err.dsize = STRING;
 
-  bool result = true;
+  bool rc = true;
 
   for (int i = 0; vars[i].name; i++)
   {
     if (!reg_one_var(cs, &vars[i], &err))
     {
       mutt_debug(1, "%s\n", err.data);
-      result = false;
+      rc = false;
     }
   }
 
   FREE(&err.data);
-  return result;
+  return rc;
 }
 
 /**
@@ -524,9 +524,9 @@ int cs_he_initial_set(const struct ConfigSet *cs, struct HashElem *he,
     return CSR_ERR_CODE;
   }
 
-  int result = cst->string_set(cs, NULL, cdef, value, err);
-  if (CSR_RESULT(result) != CSR_SUCCESS)
-    return result;
+  int rc = cst->string_set(cs, NULL, cdef, value, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return rc;
 
   cs_notify_listeners(cs, he, he->key.strkey, CE_INITIAL_SET);
   return CSR_SUCCESS;
@@ -662,9 +662,9 @@ int cs_he_string_set(const struct ConfigSet *cs, struct HashElem *he,
   if (!var)
     return CSR_ERR_CODE;
 
-  int result = cst->string_set(cs, var, cdef, value, err);
-  if (CSR_RESULT(result) != CSR_SUCCESS)
-    return result;
+  int rc = cst->string_set(cs, var, cdef, value, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return rc;
 
   if (he->type & DT_INHERITED)
   {
@@ -806,15 +806,15 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
     return CSR_ERR_CODE;
   }
 
-  int result = cst->native_set(cs, var, cdef, value, err);
-  if (CSR_RESULT(result) == CSR_SUCCESS)
+  int rc = cst->native_set(cs, var, cdef, value, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
       he->type = cdef->type | DT_INHERITED;
     cs_notify_listeners(cs, he, cdef->name, CE_SET);
   }
 
-  return result;
+  return rc;
 }
 
 /**
@@ -862,15 +862,15 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
     return CSR_ERR_CODE;
   }
 
-  int result = cst->native_set(cs, var, cdef, value, err);
-  if (CSR_RESULT(result) == CSR_SUCCESS)
+  int rc = cst->native_set(cs, var, cdef, value, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     if (he->type & DT_INHERITED)
       he->type = cdef->type | DT_INHERITED;
     cs_notify_listeners(cs, he, cdef->name, CE_SET);
   }
 
-  return result;
+  return rc;
 }
 
 /**

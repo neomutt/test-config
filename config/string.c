@@ -95,15 +95,17 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
   if (value && (value[0] == '\0'))
     value = NULL;
 
+  int rc;
+
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, (intptr_t) value, err);
+    rc = cdef->validator(cs, cdef, (intptr_t) value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return rc | CSR_INV_VALIDATOR;
   }
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
 
   if (var)
   {
@@ -112,7 +114,7 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
 
     const char *str = mutt_str_strdup(value);
     if (!str)
-      result |= CSR_SUC_EMPTY;
+      rc |= CSR_SUC_EMPTY;
 
     *(const char **) var = str;
   }
@@ -130,7 +132,7 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
     cdef->initial = IP mutt_str_strdup(value);
   }
 
-  return result;
+  return rc;
 }
 
 /**
@@ -185,9 +187,11 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
   if (str && (str[0] == '\0'))
     value = 0;
 
+  int rc;
+
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, value, err);
+    rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return rc | CSR_INV_VALIDATOR;
@@ -196,12 +200,12 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
   string_destroy(cs, var, cdef);
 
   str = mutt_str_strdup(str);
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
   if (!str)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
 
   *(const char **) var = str;
-  return result;
+  return rc;
 }
 
 /**
@@ -241,12 +245,12 @@ static int string_reset(const struct ConfigSet *cs, void *var,
 
   const char *str = (const char *) cdef->initial;
 
-  int result = CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
   if (!str)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
 
   *(const char **) var = str;
-  return result;
+  return rc;
 }
 
 /**

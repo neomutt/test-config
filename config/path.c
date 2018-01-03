@@ -95,15 +95,17 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   if (value && (value[0] == '\0'))
     value = NULL;
 
+  int rc;
+
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, (intptr_t) value, err);
+    rc = cdef->validator(cs, cdef, (intptr_t) value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return rc | CSR_INV_VALIDATOR;
   }
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
 
   if (var)
   {
@@ -112,7 +114,7 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
 
     const char *str = mutt_str_strdup(value);
     if (!str)
-      result |= CSR_SUC_EMPTY;
+      rc |= CSR_SUC_EMPTY;
 
     *(const char **) var = str;
   }
@@ -130,7 +132,7 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
     cdef->initial = IP mutt_str_strdup(value);
   }
 
-  return result;
+  return rc;
 }
 
 /**
@@ -184,9 +186,11 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
   if (str && (str[0] == '\0'))
     value = 0;
 
+  int rc;
+
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, value, err);
+    rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return rc | CSR_INV_VALIDATOR;
@@ -195,12 +199,12 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
   path_destroy(cs, var, cdef);
 
   str = mutt_str_strdup((const char *) value);
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
   if (!str)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
 
   *(const char **) var = str;
-  return result;
+  return rc;
 }
 
 /**
@@ -240,12 +244,12 @@ static int path_reset(const struct ConfigSet *cs, void *var,
 
   const char *path = (const char *) cdef->initial;
 
-  int result = CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
   if (!path)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
 
   *(const char **) var = path;
-  return result;
+  return rc;
 }
 
 /**

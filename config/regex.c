@@ -97,6 +97,8 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
 
   struct Regex *r = NULL;
 
+  int rc;
+
   if (var)
   {
     if (value)
@@ -108,7 +110,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
 
     if (cdef->validator)
     {
-      int rc = cdef->validator(cs, cdef, (intptr_t) r, err);
+      rc = cdef->validator(cs, cdef, (intptr_t) r, err);
 
       if (CSR_RESULT(rc) != CSR_SUCCESS)
       {
@@ -118,7 +120,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
     }
   }
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
 
   if (var)
   {
@@ -128,7 +130,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
     *(struct Regex **) var = r;
 
     if (!r)
-      result |= CSR_SUC_EMPTY;
+      rc |= CSR_SUC_EMPTY;
   }
   else
   {
@@ -140,7 +142,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
     cdef->initial = IP mutt_str_strdup(value);
   }
 
-  return result;
+  return rc;
 }
 
 /**
@@ -194,15 +196,17 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  int rc;
+
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, value, err);
+    rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return rc | CSR_INV_VALIDATOR;
   }
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
   struct Regex *orig = (struct Regex *) value;
   struct Regex *r = NULL;
 
@@ -210,20 +214,20 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
   {
     r = regex_create(orig->pattern, cdef->flags, err);
     if (!r)
-      result = CSR_ERR_INVALID;
+      rc = CSR_ERR_INVALID;
   }
   else
   {
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
   }
 
-  if (CSR_RESULT(result) == CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     regex_free(var);
     *(struct Regex **) var = r;
   }
 
-  return result;
+  return rc;
 }
 
 /**
@@ -264,21 +268,21 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   struct Regex *r = NULL;
   const char *initial = (const char *) cdef->initial;
 
-  int result = CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
 
   if (initial)
   {
     r = regex_create(initial, cdef->type, err);
     if (!r)
-      result = CSR_ERR_INVALID;
+      rc = CSR_ERR_INVALID;
   }
   else
   {
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
   }
 
   *(struct Regex **) var = r;
-  return result;
+  return rc;
 }
 
 /**

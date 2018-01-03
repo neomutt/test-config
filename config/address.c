@@ -103,9 +103,11 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     //XXX rfc822_parse_adrlist(NULL, p);
   }
 
+  int rc;
+
   if (var && cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, (intptr_t) addr, err);
+    rc = cdef->validator(cs, cdef, (intptr_t) addr, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
     {
@@ -114,7 +116,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     }
   }
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
 
   if (var)
   {
@@ -124,7 +126,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     *(struct Address **) var = addr;
 
     if (!addr)
-      result |= CSR_SUC_EMPTY;
+      rc |= CSR_SUC_EMPTY;
   }
   else
   {
@@ -136,7 +138,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     cdef->initial = IP mutt_str_strdup(value);
   }
 
-  return result;
+  return rc;
 }
 
 /**
@@ -211,9 +213,11 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  int rc;
+
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, value, err);
+    rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return rc | CSR_INV_VALIDATOR;
@@ -223,12 +227,12 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
 
   struct Address *addr = address_dup((struct Address *) value);
 
-  int result = CSR_SUCCESS;
+  rc = CSR_SUCCESS;
   if (!addr)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
 
   *(struct Address **) var = addr;
-  return result;
+  return rc;
 }
 
 /**
@@ -272,12 +276,12 @@ static int address_reset(const struct ConfigSet *cs, void *var,
   if (initial)
     a = address_create(initial);
 
-  int result = CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
   if (!a)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
 
   *(struct Address **) var = a;
-  return result;
+  return rc;
 }
 
 /**
