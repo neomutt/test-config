@@ -199,8 +199,6 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
       return rc | CSR_INV_VALIDATOR;
   }
 
-  regex_free(var);
-
   int result = CSR_SUCCESS;
   struct Regex *orig = (struct Regex *) value;
   struct Regex *r = NULL;
@@ -216,7 +214,12 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
     result |= CSR_SUC_EMPTY;
   }
 
-  *(struct Regex **) var = r;
+  if (CSR_RESULT(result) == CSR_SUCCESS)
+  {
+    regex_free(var);
+    *(struct Regex **) var = r;
+  }
+
   return result;
 }
 
@@ -299,7 +302,7 @@ void regex_init(struct ConfigSet *cs)
 struct Regex *regex_create(const char *str, int flags, struct Buffer *err)
 {
   if (!str)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   int rflags = 0;
   struct Regex *reg = mutt_mem_calloc(1, sizeof(struct Regex));

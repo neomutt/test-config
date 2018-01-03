@@ -1,21 +1,22 @@
 ---- regex_test --------------------------------------------
 ---- set_list ----------------------------------------------
 regex Damson = 
-regex Lemon = lemon.*
+regex Lemon = 
 regex Cherry = cherry.*
 regex Olive = olive.*
 regex Fig = 
 regex Elderberry = elderberry.*
 regex Ilama = 
-regex Kumquat = 
+regex Kumquat = kumquat.*
 regex Banana = banana.*
 regex Apple = apple.*
 regex Guava = guava.*
-regex Mango = 
-regex Quince = 
+regex Mango = mango.*
+regex Quince = quince.*
 regex Hawthorn = 
+regex Raspberry = 
 regex Jackfruit = jackfruit.*
-regex Nectarine = nectarine.*
+regex Nectarine = 
 regex Papaya = papaya.*
 ---- test_initial_values -----------------------------------
 Apple = apple.*
@@ -60,43 +61,44 @@ Event: Ilama has been set to '!world.*'
 '!world.*', not flag set to 1
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by NULL
+Expected error: Invalid back reference
 ---- test_native_get ---------------------------------------
-Event: Kumquat has been set to 'kumquat.*'
-Kumquat = 'kumquat.*', 'kumquat.*'
+Event: Lemon has been set to 'lemon.*'
+Lemon = 'lemon.*', 'lemon.*'
 ---- test_reset --------------------------------------------
-Initial: Lemon = 'lemon.*'
-Event: Lemon has been set to 'hello.*'
-Set: Lemon = 'hello.*'
-Event: Lemon has been reset to 'lemon.*'
-Reset: Lemon = 'lemon.*'
+Initial: Mango = 'mango.*'
+Event: Mango has been set to 'hello.*'
+Set: Mango = 'hello.*'
+Event: Mango has been reset to 'mango.*'
+Reset: Mango = 'mango.*'
 Expected error: Invalid back reference
 ---- test_validator ----------------------------------------
-Event: Nectarine has been set to 'hello.*'
-validator_succeed: Nectarine, (ptr)
-Regex: Nectarine = hello.*
-Event: Nectarine has been set to 'world.*'
-validator_succeed: Nectarine, (ptr)
-Native: Nectarine = world.*
 Event: Olive has been set to 'hello.*'
-validator_warn: Olive, (ptr)
+validator_succeed: Olive, (ptr)
 Regex: Olive = hello.*
 Event: Olive has been set to 'world.*'
-validator_warn: Olive, (ptr)
+validator_succeed: Olive, (ptr)
 Native: Olive = world.*
-Expected error: validator_fail: Papaya, (ptr)
-Regex: Papaya = papaya.*
-Expected error: validator_fail: Papaya, (ptr)
-Native: Papaya = papaya.*
+Event: Papaya has been set to 'hello.*'
+validator_warn: Papaya, (ptr)
+Regex: Papaya = hello.*
+Event: Papaya has been set to 'world.*'
+validator_warn: Papaya, (ptr)
+Native: Papaya = world.*
+Expected error: validator_fail: Quince, (ptr)
+Regex: Quince = quince.*
+Expected error: validator_fail: Quince, (ptr)
+Native: Quince = quince.*
 ---- test_inherit ------------------------------------------
-Event: Quince has been set to 'hello.*'
-         Quince = hello.*
-   fruit:Quince = hello.*
-Event: fruit:Quince has been set to 'world.*'
-         Quince = hello.*
-   fruit:Quince = world.*
-Event: fruit:Quince has been reset to 'hello.*'
-         Quince = hello.*
-   fruit:Quince = hello.*
-Event: Quince has been reset to ''
-         Quince = 
-   fruit:Quince = 
+Event: Raspberry has been set to 'hello.*'
+      Raspberry = hello.*
+fruit:Raspberry = hello.*
+Event: fruit:Raspberry has been set to 'world.*'
+      Raspberry = hello.*
+fruit:Raspberry = world.*
+Event: fruit:Raspberry has been reset to 'hello.*'
+      Raspberry = hello.*
+fruit:Raspberry = hello.*
+Event: Raspberry has been reset to ''
+      Raspberry = 
+fruit:Raspberry = 

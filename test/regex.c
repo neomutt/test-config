@@ -51,6 +51,7 @@ static struct Regex *VarNectarine;
 static struct Regex *VarOlive;
 static struct Regex *VarPapaya;
 static struct Regex *VarQuince;
+static struct Regex *VarRaspberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -64,13 +65,14 @@ static struct ConfigDef Vars[] = {
   { "Hawthorn",   DT_REGEX, 0,                  &VarHawthorn,   0,                 NULL              },
   { "Ilama",      DT_REGEX, DT_REGEX_ALLOW_NOT, &VarIlama,      0,                 NULL              }, /* test_native_set */
   { "Jackfruit",  DT_REGEX, 0,                  &VarJackfruit,  IP "jackfruit.*",  NULL              },
-  { "Kumquat",    DT_REGEX, 0,                  &VarKumquat,    0,                 NULL              }, /* test_native_get */
-  { "Lemon",      DT_REGEX, 0,                  &VarLemon,      IP "lemon.*",      NULL              }, /* test_reset */
-  { "Mango",      DT_REGEX, 0,                  &VarMango,      IP "\\1",          NULL              },
-  { "Nectarine",  DT_REGEX, 0,                  &VarNectarine,  IP "nectarine.*",  validator_succeed }, /* test_validator */
-  { "Olive",      DT_REGEX, 0,                  &VarOlive,      IP "olive.*",      validator_warn    },
-  { "Papaya",     DT_REGEX, 0,                  &VarPapaya,     IP "papaya.*",     validator_fail    },
-  { "Quince",     DT_REGEX, 0,                  &VarQuince,     0,                 NULL              }, /* test_inherit */
+  { "Kumquat",    DT_REGEX, 0,                  &VarKumquat,    IP "kumquat.*",    NULL              },
+  { "Lemon",      DT_REGEX, 0,                  &VarLemon,      0,                 NULL              }, /* test_native_get */
+  { "Mango",      DT_REGEX, 0,                  &VarMango,      IP "mango.*",      NULL              }, /* test_reset */
+  { "Nectarine",  DT_REGEX, 0,                  &VarNectarine,  IP "\\1",          NULL              },
+  { "Olive",      DT_REGEX, 0,                  &VarOlive,      IP "olive.*",      validator_succeed }, /* test_validator */
+  { "Papaya",     DT_REGEX, 0,                  &VarPapaya,     IP "papaya.*",     validator_warn    },
+  { "Quince",     DT_REGEX, 0,                  &VarQuince,     IP "quince.*",     validator_fail    },
+  { "Raspberry",  DT_REGEX, 0,                  &VarRaspberry,  0,                 NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -332,6 +334,24 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   regex = VarJackfruit ? VarJackfruit->pattern : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(regex));
 
+  regex_free(&r);
+  r = regex_create("world.*", 0, err);
+  r->pattern[0] = '\\';
+  r->pattern[1] = '1';
+  name = "Kumquat";
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, (intptr_t) r, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tns_out;
+  }
+
   result = true;
 tns_out:
   regex_free(&r);
@@ -341,9 +361,9 @@ tns_out:
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Kumquat";
+  char *name = "Lemon";
 
-  int rc = cs_str_string_set(cs, name, "kumquat.*", err);
+  int rc = cs_str_string_set(cs, name, "lemon.*", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
@@ -351,12 +371,12 @@ static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
   intptr_t value = cs_str_native_get(cs, name, err);
   struct Regex *r = (struct Regex *) value;
 
-  if (VarKumquat != r)
+  if (VarLemon != r)
   {
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  char *regex1 = VarKumquat ? VarKumquat->pattern : NULL;
+  char *regex1 = VarLemon ? VarLemon->pattern : NULL;
   char *regex2 = r ? r->pattern : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(regex1), NONULL(regex2));
 
@@ -367,17 +387,17 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Lemon";
+  char *name = "Mango";
   char *regex = NULL;
 
   mutt_buffer_reset(err);
 
-  regex = VarLemon ? VarLemon->pattern : NULL;
+  regex = VarMango ? VarMango->pattern : NULL;
   printf("Initial: %s = '%s'\n", name, NONULL(regex));
   int rc = cs_str_string_set(cs, name, "hello.*", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
-  regex = VarLemon ? VarLemon->pattern : NULL;
+  regex = VarMango ? VarMango->pattern : NULL;
   printf("Set: %s = '%s'\n", name, NONULL(regex));
 
   rc = cs_str_reset(cs, name, err);
@@ -387,8 +407,8 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  regex = VarLemon ? VarLemon->pattern : NULL;
-  if (mutt_str_strcmp(regex, "lemon.*") != 0)
+  regex = VarMango ? VarMango->pattern : NULL;
+  if (mutt_str_strcmp(regex, "mango.*") != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
@@ -396,7 +416,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   printf("Reset: %s = '%s'\n", name, NONULL(regex));
 
-  rc = cs_str_reset(cs, "Mango", err);
+  rc = cs_str_reset(cs, "Nectarine", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -418,38 +438,9 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   struct Regex *r = regex_create("world.*", 0, err);
   bool result = false;
 
-  char *name = "Nectarine";
+  char *name = "Olive";
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello.*", err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    goto tv_out;
-  }
-  regex = VarNectarine ? VarNectarine->pattern : NULL;
-  printf("Regex: %s = %s\n", name, NONULL(regex));
-
-  mutt_buffer_reset(err);
-  rc = cs_str_native_set(cs, name, IP r, err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    goto tv_out;
-  }
-  regex = VarNectarine ? VarNectarine->pattern : NULL;
-  printf("Native: %s = %s\n", name, NONULL(regex));
-
-  name = "Olive";
-  mutt_buffer_reset(err);
-  rc = cs_str_string_set(cs, name, "hello.*", err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -479,6 +470,35 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Papaya";
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "hello.*", err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  regex = VarPapaya ? VarPapaya->pattern : NULL;
+  printf("Regex: %s = %s\n", name, NONULL(regex));
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, IP r, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  regex = VarPapaya ? VarPapaya->pattern : NULL;
+  printf("Native: %s = %s\n", name, NONULL(regex));
+
+  name = "Quince";
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "hello.*", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -488,7 +508,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  regex = VarPapaya ? VarPapaya->pattern : NULL;
+  regex = VarQuince ? VarQuince->pattern : NULL;
   printf("Regex: %s = %s\n", name, NONULL(regex));
 
   mutt_buffer_reset(err);
@@ -502,7 +522,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  regex = VarPapaya ? VarPapaya->pattern : NULL;
+  regex = VarQuince ? VarQuince->pattern : NULL;
   printf("Native: %s = %s\n", name, NONULL(regex));
 
   result = true;
@@ -532,7 +552,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Quince";
+  const char *parent = "Raspberry";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
