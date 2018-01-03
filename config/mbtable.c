@@ -141,16 +141,21 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
   if (value && (value[0] == '\0'))
     value = NULL;
 
-  struct MbTable *table = mbtable_parse(value);
-
-  if (cdef->validator)
+  struct MbTable *table = NULL;
+  
+  if (var)
   {
-    int rc = cdef->validator(cs, cdef, (intptr_t) table, err);
+    table = mbtable_parse(value);
 
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    if (cdef->validator)
     {
-      mbtable_free(&table);
-      return rc | CSR_INV_VALIDATOR;
+      int rc = cdef->validator(cs, cdef, (intptr_t) table, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+      {
+        mbtable_free(&table);
+        return rc | CSR_INV_VALIDATOR;
+      }
     }
   }
 

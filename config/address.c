@@ -95,7 +95,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
   struct Address *addr = NULL;
 
   // An empty address "" will be stored as NULL
-  if (value && (value[0] != '\0'))
+  if (value && (value[0] != '\0') && var)
   {
     addr = mutt_mem_calloc(1, sizeof(*addr));
     addr->personal = mutt_str_strdup((const char *) value);
@@ -103,7 +103,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     //XXX rfc822_parse_adrlist(NULL, p);
   }
 
-  if (cdef->validator)
+  if (var && cdef->validator)
   {
     int rc = cdef->validator(cs, cdef, (intptr_t) addr, err);
 

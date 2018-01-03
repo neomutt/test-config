@@ -97,21 +97,24 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
 
   struct Regex *r = NULL;
 
-  if (value)
+  if (var)
   {
-    r = regex_create(value, cdef->type, err);
-    if (!r)
-      return CSR_ERR_INVALID;
-  }
-
-  if (cdef->validator)
-  {
-    int rc = cdef->validator(cs, cdef, (intptr_t) r, err);
-
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    if (value)
     {
-      regex_free(&r);
-      return rc | CSR_INV_VALIDATOR;
+      r = regex_create(value, cdef->type, err);
+      if (!r)
+        return CSR_ERR_INVALID;
+    }
+
+    if (cdef->validator)
+    {
+      int rc = cdef->validator(cs, cdef, (intptr_t) r, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+      {
+        regex_free(&r);
+        return rc | CSR_INV_VALIDATOR;
+      }
     }
   }
 
