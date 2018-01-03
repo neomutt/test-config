@@ -444,6 +444,8 @@ int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *
   const struct ConfigSetType *cst = NULL;
   const struct ConfigDef *cdef = NULL;
 
+  int rc = CSR_SUCCESS;
+
   if (he->type & DT_INHERITED)
   {
     struct Inheritance *i = he->data;
@@ -461,11 +463,12 @@ int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *
     cdef = he->data;
 
     if (cst)
-      cst->reset(cs, cdef->var, cdef, err);
+      rc = cst->reset(cs, cdef->var, cdef, err);
   }
 
-  cs_notify_listeners(cs, he, he->key.strkey, CE_RESET);
-  return CSR_SUCCESS;
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+    cs_notify_listeners(cs, he, he->key.strkey, CE_RESET);
+  return rc;
 }
 
 /**

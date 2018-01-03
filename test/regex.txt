@@ -11,11 +11,12 @@ regex Kumquat =
 regex Banana = banana.*
 regex Apple = apple.*
 regex Guava = guava.*
-regex Mango = mango.*
+regex Mango = 
+regex Quince = 
 regex Hawthorn = 
 regex Jackfruit = jackfruit.*
 regex Nectarine = nectarine.*
-regex Papaya = 
+regex Papaya = papaya.*
 ---- test_initial_values -----------------------------------
 Apple = apple.*
 Banana = banana.*
@@ -46,6 +47,7 @@ Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
+Expected error: Invalid back reference
 ---- test_string_get ---------------------------------------
 Fig = '', ''
 Guava = 'guava.*', 'guava.*'
@@ -67,33 +69,34 @@ Event: Lemon has been set to 'hello.*'
 Set: Lemon = 'hello.*'
 Event: Lemon has been reset to 'lemon.*'
 Reset: Lemon = 'lemon.*'
+Expected error: Invalid back reference
 ---- test_validator ----------------------------------------
-Event: Mango has been set to 'hello.*'
-validator_succeed: Mango, (ptr)
-Regex: Mango = hello.*
-Event: Mango has been set to 'world.*'
-validator_succeed: Mango, (ptr)
-Native: Mango = world.*
 Event: Nectarine has been set to 'hello.*'
-validator_warn: Nectarine, (ptr)
+validator_succeed: Nectarine, (ptr)
 Regex: Nectarine = hello.*
 Event: Nectarine has been set to 'world.*'
-validator_warn: Nectarine, (ptr)
+validator_succeed: Nectarine, (ptr)
 Native: Nectarine = world.*
-Expected error: validator_fail: Olive, (ptr)
-Regex: Olive = olive.*
-Expected error: validator_fail: Olive, (ptr)
-Native: Olive = olive.*
+Event: Olive has been set to 'hello.*'
+validator_warn: Olive, (ptr)
+Regex: Olive = hello.*
+Event: Olive has been set to 'world.*'
+validator_warn: Olive, (ptr)
+Native: Olive = world.*
+Expected error: validator_fail: Papaya, (ptr)
+Regex: Papaya = papaya.*
+Expected error: validator_fail: Papaya, (ptr)
+Native: Papaya = papaya.*
 ---- test_inherit ------------------------------------------
-Event: Papaya has been set to 'hello.*'
-         Papaya = hello.*
-   fruit:Papaya = hello.*
-Event: fruit:Papaya has been set to 'world.*'
-         Papaya = hello.*
-   fruit:Papaya = world.*
-Event: fruit:Papaya has been reset to 'hello.*'
-         Papaya = hello.*
-   fruit:Papaya = hello.*
-Event: Papaya has been reset to ''
-         Papaya = 
-   fruit:Papaya = 
+Event: Quince has been set to 'hello.*'
+         Quince = hello.*
+   fruit:Quince = hello.*
+Event: fruit:Quince has been set to 'world.*'
+         Quince = hello.*
+   fruit:Quince = world.*
+Event: fruit:Quince has been reset to 'hello.*'
+         Quince = hello.*
+   fruit:Quince = hello.*
+Event: Quince has been reset to ''
+         Quince = 
+   fruit:Quince = 
