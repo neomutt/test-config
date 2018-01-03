@@ -62,9 +62,16 @@ static void path_destroy(const struct ConfigSet *cs, void *var, const struct Con
   if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
 
+  const char **str = (const char **) var;
+  if (!*str)
+    return;
+
   /* Don't free strings from the var definition */
   if (*(char **) var == (char *) cdef->initial)
+  {
+    *(char **) var = NULL;
     return;
+  }
 
   FREE(var);
 }
@@ -78,9 +85,8 @@ static void path_destroy(const struct ConfigSet *cs, void *var, const struct Con
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int path_string_set(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, const char *value,
-                           struct Buffer *err)
+static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                           const char *value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -97,14 +103,32 @@ static int path_string_set(const struct ConfigSet *cs, void *var,
       return rc | CSR_INV_VALIDATOR;
   }
 
-  path_destroy(cs, var, cdef);
-
-  const char *str = mutt_str_strdup(value);
   int result = CSR_SUCCESS;
-  if (!str)
-    result |= CSR_SUC_EMPTY;
 
-  *(const char **) var = str;
+  if (var)
+  {
+    // ordinary variable setting
+    path_destroy(cs, var, cdef);
+
+    const char *str = mutt_str_strdup(value);
+    if (!str)
+      result |= CSR_SUC_EMPTY;
+
+    *(const char **) var = str;
+  }
+  else
+  {
+    // we're already using the initial value
+    if (*(char **) var == (char *) cdef->initial)
+      var = mutt_str_strdup((char *) cdef->initial);
+
+    // already set default/initial value
+    if (cdef->type & DT_INITIAL_SET)
+      FREE(&cdef->initial);
+
+    cdef->initial = IP mutt_str_strdup(value);
+  }
+
   return result;
 }
 

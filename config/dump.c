@@ -271,7 +271,8 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
         }
 
         const struct ConfigDef *cdef = he->data;
-        if (IS_SENSITIVE(*cdef) && (flags & CS_DUMP_HIDE_SENSITIVE) && !mutt_buffer_is_empty(value))
+        if (IS_SENSITIVE(*cdef) && (flags & CS_DUMP_HIDE_SENSITIVE) &&
+            !mutt_buffer_is_empty(value))
         {
           mutt_buffer_reset(value);
           mutt_buffer_addstr(value, "***");

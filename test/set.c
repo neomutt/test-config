@@ -44,9 +44,8 @@ static struct ConfigDef Vars[] = {
 };
 // clang-format on
 
-static int dummy_string_set(const struct ConfigSet *cs, void *var,
-                            const struct ConfigDef *cdef, const char *value,
-                            struct Buffer *err)
+static int dummy_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                            const char *value, struct Buffer *err)
 {
   return CSR_ERR_CODE;
 }

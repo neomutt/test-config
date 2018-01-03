@@ -86,9 +86,8 @@ static void address_destroy(const struct ConfigSet *cs, void *var, const struct 
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int address_string_set(const struct ConfigSet *cs, void *var,
-                              const struct ConfigDef *cdef, const char *value,
-                              struct Buffer *err)
+static int address_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                              const char *value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */

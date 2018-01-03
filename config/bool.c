@@ -76,9 +76,8 @@ const char *bool_values[] = {
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int bool_string_set(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, const char *value,
-                           struct Buffer *err)
+static int bool_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                           const char *value, struct Buffer *err)
 {
   if (!cs || !var || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -107,7 +106,15 @@ static int bool_string_set(const struct ConfigSet *cs, void *var,
       return rc | CSR_INV_VALIDATOR;
   }
 
-  *(bool *) var = num;
+  if (var)
+  {
+    *(bool *) var = num;
+  }
+  else
+  {
+    cdef->initial = num;
+  }
+
   return CSR_SUCCESS;
 }
 

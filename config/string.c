@@ -23,7 +23,7 @@
 /**
  * @page config-string Type: String
  *
- * Type representing a string
+ * Type representing a string.
  *
  * | Function            | Description
  * | :------------------ | :-------------------------------------
@@ -68,7 +68,10 @@ static void string_destroy(const struct ConfigSet *cs, void *var, const struct C
 
   /* Don't free strings from the var definition */
   if (*(char **) var == (char *) cdef->initial)
+  {
+    *(char **) var = NULL;
     return;
+  }
 
   FREE(var);
 }
@@ -82,11 +85,10 @@ static void string_destroy(const struct ConfigSet *cs, void *var, const struct C
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int string_string_set(const struct ConfigSet *cs, void *var,
-                             const struct ConfigDef *cdef, const char *value,
-                             struct Buffer *err)
+static int string_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                             const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   /* Store empty strings as NULL */
@@ -101,14 +103,32 @@ static int string_string_set(const struct ConfigSet *cs, void *var,
       return rc | CSR_INV_VALIDATOR;
   }
 
-  string_destroy(cs, var, cdef);
-
-  const char *str = mutt_str_strdup(value);
   int result = CSR_SUCCESS;
-  if (!str)
-    result |= CSR_SUC_EMPTY;
 
-  *(const char **) var = str;
+  if (var)
+  {
+    // ordinary variable setting
+    string_destroy(cs, var, cdef);
+
+    const char *str = mutt_str_strdup(value);
+    if (!str)
+      result |= CSR_SUC_EMPTY;
+
+    *(const char **) var = str;
+  }
+  else
+  {
+    // we're already using the initial value
+    if (*(char **) var == (char *) cdef->initial)
+      var = mutt_str_strdup((char *) cdef->initial);
+
+    // already set default/initial value
+    if (cdef->type & DT_INITIAL_SET)
+      FREE(&cdef->initial);
+
+    cdef->initial = IP mutt_str_strdup(value);
+  }
+
   return result;
 }
 
@@ -172,9 +192,7 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
       return rc | CSR_INV_VALIDATOR;
   }
 
-  /* Don't free strings from the var definition */
-  if (*(char **) var != (char *) cdef->initial)
-    FREE(var);
+  string_destroy(cs, var, cdef);
 
   str = mutt_str_strdup(str);
   int result = CSR_SUCCESS;
@@ -221,6 +239,7 @@ static int string_reset(const struct ConfigSet *cs, void *var,
   string_destroy(cs, var, cdef);
 
   const char *str = (const char *) cdef->initial;
+
   int result = CSR_SUCCESS;
   if (!str)
     result |= CSR_SUC_EMPTY;

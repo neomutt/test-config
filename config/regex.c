@@ -23,7 +23,7 @@
 /**
  * @page config-regex Type: Regular expression
  *
- * Type representing a regular expression
+ * Type representing a regular expression.
  *
  * | Function           | Description
  * | :----------------- | :------------------------------------------
@@ -52,8 +52,8 @@
 #include "mutt/buffer.h"
 #include "mutt/mbyte.h"
 #include "mutt/memory.h"
-#include "mutt/string2.h"
 #include "mutt/regex3.h"
+#include "mutt/string2.h"
 #include "regex2.h"
 #include "set.h"
 #include "types.h"
@@ -85,9 +85,8 @@ static void regex_destroy(const struct ConfigSet *cs, void *var, const struct Co
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int regex_string_set(const struct ConfigSet *cs, void *var,
-                            const struct ConfigDef *cdef, const char *value,
-                            struct Buffer *err)
+static int regex_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                            const char *value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */

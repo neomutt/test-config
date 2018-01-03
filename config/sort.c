@@ -23,7 +23,7 @@
 /**
  * @page config-sort Type: Sorting
  *
- * Type representing a sort option
+ * Type representing a sort option.
  *
  * | Data                | Description
  * | :------------------ | :-----------------------------------------
@@ -200,9 +200,8 @@ static int find_id(const struct Mapping *map, const char *str)
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int sort_string_set(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, const char *value,
-                           struct Buffer *err)
+static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                           const char *value, struct Buffer *err)
 {
   if (!cs || !var || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -249,7 +248,15 @@ static int sort_string_set(const struct ConfigSet *cs, void *var,
       return rc | CSR_INV_VALIDATOR;
   }
 
-  *(short *) var = id;
+  if (var)
+  {
+    *(short *) var = id;
+  }
+  else
+  {
+    cdef->initial = id;
+  }
+
   return CSR_SUCCESS;
 }
 

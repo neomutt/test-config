@@ -23,7 +23,7 @@
 /**
  * @page config-mbtable Type: Multi-byte character table
  *
- * Type representing a multibyte character table
+ * Type representing a multibyte character table.
  *
  * | Function             | Description
  * | :------------------- | :-----------------------------------------------
@@ -131,9 +131,8 @@ static void mbtable_destroy(const struct ConfigSet *cs, void *var, const struct 
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int mbtable_string_set(const struct ConfigSet *cs, void *var,
-                              const struct ConfigDef *cdef, const char *value,
-                              struct Buffer *err)
+static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                              const char *value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -154,13 +153,27 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var,
     }
   }
 
-  mbtable_destroy(cs, var, cdef);
-
   int result = CSR_SUCCESS;
-  if (!table)
-    result |= CSR_SUC_EMPTY;
 
-  *(struct MbTable **) var = table;
+  if (var)
+  {
+    // ordinary variable setting
+    mbtable_destroy(cs, var, cdef);
+
+    *(struct MbTable **) var = table;
+
+    if (!table)
+      result |= CSR_SUC_EMPTY;
+  }
+  else
+  {
+    // already set default/initial value
+    if (cdef->type & DT_INITIAL_SET)
+      FREE(&cdef->initial);
+
+    cdef->initial = IP mutt_str_strdup(value);
+  }
+
   return result;
 }
 

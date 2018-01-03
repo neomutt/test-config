@@ -26,8 +26,8 @@
 #include <stdio.h>
 #include "mutt/buffer.h"
 #include "mutt/memory.h"
-#include "mutt/string2.h"
 #include "mutt/regex3.h"
+#include "mutt/string2.h"
 #include "config/account.h"
 #include "config/regex2.h"
 #include "config/set.h"

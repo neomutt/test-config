@@ -58,15 +58,14 @@
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int number_string_set(const struct ConfigSet *cs, void *var,
-                             const struct ConfigDef *cdef, const char *value,
-                             struct Buffer *err)
+static int number_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+                             const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = 0;
-  if (!value || !value[0] || mutt_str_atoi(value, &num) < 0)
+  if (!value || !value[0] || (mutt_str_atoi(value, &num) < 0))
   {
     mutt_buffer_printf(err, "Invalid number: %s", value);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
@@ -86,7 +85,15 @@ static int number_string_set(const struct ConfigSet *cs, void *var,
       return rc | CSR_INV_VALIDATOR;
   }
 
-  *(short *) var = num;
+  if (var)
+  {
+    *(short *) var = num;
+  }
+  else
+  {
+    cdef->initial = num;
+  }
+
   return CSR_SUCCESS;
 }
 
