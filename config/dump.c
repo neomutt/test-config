@@ -293,7 +293,7 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
       /* If necessary, get the default value */
       if (flags & (CS_DUMP_ONLY_CHANGED || CS_DUMP_SHOW_DEFAULTS))
       {
-        rc = cs_he_default_get(cs, he, initial);
+        rc = cs_he_initial_get(cs, he, initial);
         if (CSR_RESULT(rc) != CSR_SUCCESS)
         {
           result = false;

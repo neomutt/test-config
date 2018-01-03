@@ -32,7 +32,7 @@
  * | cs_free()               | Free a Config Set
  * | cs_get_elem()           | Get the HashElem representing a config item
  * | cs_get_type_def()       | Get the definition for a type
- * | cs_he_default_get()     | Get the initial, or parent, value of a config item
+ * | cs_he_initial_get()     | Get the initial, or parent, value of a config item
  * | cs_he_native_get()      | Natively get the value of a HashElem config item
  * | cs_he_native_set()      | Natively set the value of a HashElem config item
  * | cs_he_reset()           | Reset a config item to its initial value
@@ -45,7 +45,7 @@
  * | cs_register_variables() | Register a set of config items
  * | cs_remove_listener()    | Remove a listener (callback function)
  * | cs_set_initial_value()  | Override the initial value of a config item
- * | cs_str_default_get()    | Get the initial, or parent, value of a config item
+ * | cs_str_initial_get()    | Get the initial, or parent, value of a config item
  * | cs_str_native_get()     | Natively get the value of a string config item
  * | cs_str_native_set()     | Natively set the value of a string config item
  * | cs_str_reset()          | Reset a config item to its initial value
@@ -493,14 +493,14 @@ int cs_str_reset(const struct ConfigSet *cs, const char *name, struct Buffer *er
 }
 
 /**
- * cs_he_default_set - Set the initial value of a config item
+ * cs_he_initial_set - Set the initial value of a config item
  * @param cs    Config items
  * @param he    HashElem representing config item
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-int cs_he_default_set(const struct ConfigSet *cs, struct HashElem *he,
+int cs_he_initial_set(const struct ConfigSet *cs, struct HashElem *he,
                       const char *value, struct Buffer *err)
 {
   if (!cs || !he)
@@ -530,19 +530,19 @@ int cs_he_default_set(const struct ConfigSet *cs, struct HashElem *he,
   he->type |= DT_INITIAL_SET;
   cdef->type |= DT_INITIAL_SET;
 
-  cs_notify_listeners(cs, he, he->key.strkey, CE_DEFAULT_SET);
+  cs_notify_listeners(cs, he, he->key.strkey, CE_INITIAL_SET);
   return CSR_SUCCESS;
 }
 
 /**
- * cs_str_default_set - Set the initial value of a config item
+ * cs_str_initial_set - Set the initial value of a config item
  * @param cs    Config items
  * @param name  Name of config item
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-int cs_str_default_set(const struct ConfigSet *cs, const char *name,
+int cs_str_initial_set(const struct ConfigSet *cs, const char *name,
                        const char *value, struct Buffer *err)
 {
   if (!cs || !name)
@@ -555,11 +555,11 @@ int cs_str_default_set(const struct ConfigSet *cs, const char *name,
     return CSR_ERR_UNKNOWN;
   }
 
-  return cs_he_default_set(cs, he, value, err);
+  return cs_he_initial_set(cs, he, value, err);
 }
 
 /**
- * cs_he_default_get - Get the initial, or parent, value of a config item
+ * cs_he_initial_get - Get the initial, or parent, value of a config item
  * @param cs     Config items
  * @param he     HashElem representing config item
  * @param result Buffer for results or error messages
@@ -568,7 +568,7 @@ int cs_str_default_set(const struct ConfigSet *cs, const char *name,
  * If a config item is inherited from another, then this will get the parent's
  * value.  Otherwise, it will get the config item's initial value.
  */
-int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
+int cs_he_initial_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
 {
   if (!cs || !he)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -599,7 +599,7 @@ int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Bu
 }
 
 /**
- * cs_str_default_get - Get the initial, or parent, value of a config item
+ * cs_str_initial_get - Get the initial, or parent, value of a config item
  * @param cs     Config items
  * @param name   Name of config item
  * @param result Buffer for results or error messages
@@ -608,7 +608,7 @@ int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Bu
  * If a config item is inherited from another, then this will get the parent's
  * value.  Otherwise, it will get the config item's initial value.
  */
-int cs_str_default_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
+int cs_str_initial_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
 {
   if (!cs || !name)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -620,7 +620,7 @@ int cs_str_default_get(const struct ConfigSet *cs, const char *name, struct Buff
     return CSR_ERR_UNKNOWN;
   }
 
-  return cs_he_default_get(cs, he, result);
+  return cs_he_initial_get(cs, he, result);
 }
 
 /**

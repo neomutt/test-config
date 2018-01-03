@@ -117,7 +117,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   int rc;
 
   mutt_buffer_reset(&value);
-  rc = cs_str_default_get(cs, "Apple", &value);
+  rc = cs_str_initial_get(cs, "Apple", &value);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", value.data);
@@ -135,7 +135,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple's initial value is '%s'\n", value.data);
 
   mutt_buffer_reset(&value);
-  rc = cs_str_default_get(cs, "Banana", &value);
+  rc = cs_str_initial_get(cs, "Banana", &value);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", value.data);
