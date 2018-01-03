@@ -79,12 +79,10 @@ struct ConfigSetType RegisteredTypes[16] = {
  */
 static void destroy(int type, void *obj, intptr_t data)
 {
-  if (!obj)
+  if (!obj || (data == 0))
     return; /* LCOV_EXCL_LINE */
 
   struct ConfigSet *cs = (struct ConfigSet *) data;
-  if (!cs)
-    return;
 
   const struct ConfigSetType *cst = NULL;
 

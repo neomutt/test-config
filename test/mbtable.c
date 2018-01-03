@@ -48,24 +48,26 @@ static struct MbTable *VarLemon;
 static struct MbTable *VarMango;
 static struct MbTable *VarNectarine;
 static struct MbTable *VarOlive;
+static struct MbTable *VarPapaya;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_MBTABLE, 0, &VarApple,      IP "apple",     NULL              }, /* test_initial_values() */
-  { "Banana",     DT_MBTABLE, 0, &VarBanana,     IP "banana",    NULL              },
-  { "Cherry",     DT_MBTABLE, 0, &VarCherry,     0,              NULL              }, /* test_mbtable_set */
-  { "Damson",     DT_MBTABLE, 0, &VarDamson,     IP "damson",    NULL              },
-  { "Elderberry", DT_MBTABLE, 0, &VarElderberry, 0,              NULL              }, /* test_mbtable_get */
-  { "Fig",        DT_MBTABLE, 0, &VarFig,        IP "fig",       NULL              },
-  { "Guava",      DT_MBTABLE, 0, &VarGuava,      0,              NULL              },
-  { "Hawthorn",   DT_MBTABLE, 0, &VarHawthorn,   0,              NULL              }, /* test_native_set */
-  { "Ilama",      DT_MBTABLE, 0, &VarIlama,      IP "ilama",     NULL              },
-  { "Jackfruit",  DT_MBTABLE, 0, &VarJackfruit,  0,              NULL              }, /* test_native_get */
-  { "Kumquat",    DT_MBTABLE, 0, &VarKumquat,    IP "kumquat",   NULL              }, /* test_reset */
-  { "Lemon",      DT_MBTABLE, 0, &VarLemon,      IP "lemon",     validator_succeed }, /* test_validator */
-  { "Mango",      DT_MBTABLE, 0, &VarMango,      IP "mango",     validator_warn    },
-  { "Nectarine",  DT_MBTABLE, 0, &VarNectarine,  IP "nectarine", validator_fail    },
-  { "Olive",      DT_MBTABLE, 0, &VarOlive,      0,              NULL              }, /* test_inherit */
+  { "Apple",      DT_MBTABLE, 0, &VarApple,      IP "apple",      NULL              }, /* test_initial_values() */
+  { "Banana",     DT_MBTABLE, 0, &VarBanana,     IP "banana",     NULL              },
+  { "Cherry",     DT_MBTABLE, 0, &VarCherry,     IP "cherry",     NULL              },
+  { "Damson",     DT_MBTABLE, 0, &VarDamson,     0,               NULL              }, /* test_mbtable_set */
+  { "Elderberry", DT_MBTABLE, 0, &VarElderberry, IP "elderberry", NULL              },
+  { "Fig",        DT_MBTABLE, 0, &VarFig,        0,               NULL              }, /* test_mbtable_get */
+  { "Guava",      DT_MBTABLE, 0, &VarGuava,      IP "guava",      NULL              },
+  { "Hawthorn",   DT_MBTABLE, 0, &VarHawthorn,   0,               NULL              },
+  { "Ilama",      DT_MBTABLE, 0, &VarIlama,      0,               NULL              }, /* test_native_set */
+  { "Jackfruit",  DT_MBTABLE, 0, &VarJackfruit,  IP "jackfruit",  NULL              },
+  { "Kumquat",    DT_MBTABLE, 0, &VarKumquat,    0,               NULL              }, /* test_native_get */
+  { "Lemon",      DT_MBTABLE, 0, &VarLemon,      IP "lemon",      NULL              }, /* test_reset */
+  { "Mango",      DT_MBTABLE, 0, &VarMango,      IP "mango",      validator_succeed }, /* test_validator */
+  { "Nectarine",  DT_MBTABLE, 0, &VarNectarine,  IP "nectarine",  validator_warn    },
+  { "Olive",      DT_MBTABLE, 0, &VarOlive,      IP "olive",      validator_fail    },
+  { "Papaya",     DT_MBTABLE, 0, &VarPapaya,     0,               NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -130,6 +132,36 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Banana = '%s'\n", VarBanana ? VarBanana->orig_str : "");
   printf("Banana's initial value is %s\n", NONULL(value.data));
 
+  mutt_buffer_reset(&value);
+  rc = cs_str_initial_set(cs, "Cherry", "config.*", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_initial_set(cs, "Cherry", "file.*", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_initial_get(cs, "Cherry", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  printf("Cherry = '%s'\n", VarCherry->orig_str);
+  printf("Cherry's initial value is '%s'\n", NONULL(value.data));
+
   FREE(&value.data);
   return true;
 }
@@ -139,7 +171,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   const char *valid[] = { "hello", "world", "", NULL };
-  char *name = "Cherry";
+  char *name = "Damson";
   char *mb = NULL;
 
   int rc;
@@ -153,7 +185,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    mb = VarCherry ? VarCherry->orig_str : NULL;
+    mb = VarDamson ? VarDamson->orig_str : NULL;
     if (mutt_str_strcmp(mb, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
@@ -162,7 +194,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     printf("%s = '%s', set by '%s'\n", name, NONULL(mb), NONULL(valid[i]));
   }
 
-  name = "Damson";
+  name = "Elderberry";
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
@@ -173,7 +205,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    const char *orig_str = VarDamson ? VarDamson->orig_str : NULL;
+    const char *orig_str = VarElderberry ? VarElderberry->orig_str : NULL;
     if (mutt_str_strcmp(orig_str, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
@@ -182,13 +214,21 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     printf("%s = '%s', set by '%s'\n", name, NONULL(orig_str), NONULL(valid[i]));
   }
 
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "\377", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
   return true;
 }
 
 static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  const char *name = "Elderberry";
+  const char *name = "Fig";
   char *mb = NULL;
 
   mutt_buffer_reset(err);
@@ -198,25 +238,10 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  mb = VarElderberry ? VarElderberry->orig_str : NULL;
-  printf("%s = '%s', '%s'\n", name, NONULL(mb), err->data);
-
-  name = "Fig";
-  mutt_buffer_reset(err);
-  rc = cs_str_string_get(cs, name, err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
-  {
-    printf("Get failed: %s\n", err->data);
-    return false;
-  }
   mb = VarFig ? VarFig->orig_str : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(mb), err->data);
 
   name = "Guava";
-  rc = cs_str_string_set(cs, name, "guava", err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
-    return false;
-
   mutt_buffer_reset(err);
   rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -227,6 +252,21 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
   mb = VarGuava ? VarGuava->orig_str : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(mb), err->data);
 
+  name = "Hawthorn";
+  rc = cs_str_string_set(cs, name, "hawthorn", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+
+  mutt_buffer_reset(err);
+  rc = cs_str_string_get(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Get failed: %s\n", err->data);
+    return false;
+  }
+  mb = VarHawthorn ? VarHawthorn->orig_str : NULL;
+  printf("%s = '%s', '%s'\n", name, NONULL(mb), err->data);
+
   return true;
 }
 
@@ -235,7 +275,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   struct MbTable *t = mbtable_create("hello");
-  char *name = "Hawthorn";
+  char *name = "Ilama";
   char *mb = NULL;
   bool result = false;
 
@@ -247,7 +287,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     goto tns_out;
   }
 
-  mb = VarHawthorn ? VarHawthorn->orig_str : NULL;
+  mb = VarIlama ? VarIlama->orig_str : NULL;
   if (mutt_str_strcmp(mb, t->orig_str) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
@@ -255,7 +295,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   }
   printf("%s = '%s', set by '%s'\n", name, NONULL(mb), t->orig_str);
 
-  name = "Ilama";
+  name = "Jackfruit";
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, 0, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -264,12 +304,12 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     goto tns_out;
   }
 
-  if (VarIlama != NULL)
+  if (VarJackfruit != NULL)
   {
     printf("Value of %s wasn't changed\n", name);
     goto tns_out;
   }
-  mb = VarIlama ? VarIlama->orig_str : NULL;
+  mb = VarJackfruit ? VarJackfruit->orig_str : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(mb));
 
   result = true;
@@ -281,9 +321,9 @@ tns_out:
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Jackfruit";
+  char *name = "Kumquat";
 
-  int rc = cs_str_string_set(cs, name, "jackfruit", err);
+  int rc = cs_str_string_set(cs, name, "kumquat", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
 
@@ -291,12 +331,12 @@ static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
   intptr_t value = cs_str_native_get(cs, name, err);
   struct MbTable *t = (struct MbTable *) value;
 
-  if (VarJackfruit != t)
+  if (VarKumquat != t)
   {
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  char *mb1 = VarJackfruit ? VarJackfruit->orig_str : NULL;
+  char *mb1 = VarKumquat ? VarKumquat->orig_str : NULL;
   char *mb2 = t ? t->orig_str : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(mb1), NONULL(mb2));
 
@@ -307,17 +347,17 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Kumquat";
+  char *name = "Lemon";
   char *mb = NULL;
 
   mutt_buffer_reset(err);
 
-  mb = VarKumquat ? VarKumquat->orig_str : NULL;
+  mb = VarLemon ? VarLemon->orig_str : NULL;
   printf("Initial: %s = '%s'\n", name, NONULL(mb));
   int rc = cs_str_string_set(cs, name, "hello", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
-  mb = VarKumquat ? VarKumquat->orig_str : NULL;
+  mb = VarLemon ? VarLemon->orig_str : NULL;
   printf("Set: %s = '%s'\n", name, NONULL(mb));
 
   rc = cs_str_reset(cs, name, err);
@@ -327,8 +367,8 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  mb = VarKumquat ? VarKumquat->orig_str : NULL;
-  if (mutt_str_strcmp(mb, "kumquat") != 0)
+  mb = VarLemon ? VarLemon->orig_str : NULL;
+  if (mutt_str_strcmp(mb, "lemon") != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
@@ -346,39 +386,10 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   struct MbTable *t = mbtable_create("world");
   bool result = false;
 
-  char *name = "Lemon";
+  char *name = "Mango";
   char *mb = NULL;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello", err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    goto tv_out;
-  }
-  mb = VarLemon ? VarLemon->orig_str : NULL;
-  printf("MbTable: %s = %s\n", name, NONULL(mb));
-
-  mutt_buffer_reset(err);
-  rc = cs_str_native_set(cs, name, IP t, err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    goto tv_out;
-  }
-  mb = VarLemon ? VarLemon->orig_str : NULL;
-  printf("Native: %s = %s\n", name, NONULL(mb));
-
-  name = "Mango";
-  mutt_buffer_reset(err);
-  rc = cs_str_string_set(cs, name, "hello", err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -408,6 +419,35 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Nectarine";
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "hello", err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  mb = VarNectarine ? VarNectarine->orig_str : NULL;
+  printf("MbTable: %s = %s\n", name, NONULL(mb));
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, IP t, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  mb = VarNectarine ? VarNectarine->orig_str : NULL;
+  printf("Native: %s = %s\n", name, NONULL(mb));
+
+  name = "Olive";
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "hello", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -417,7 +457,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  mb = VarNectarine ? VarNectarine->orig_str : NULL;
+  mb = VarOlive ? VarOlive->orig_str : NULL;
   printf("MbTable: %s = %s\n", name, NONULL(mb));
 
   mutt_buffer_reset(err);
@@ -431,7 +471,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  mb = VarNectarine ? VarNectarine->orig_str : NULL;
+  mb = VarOlive ? VarOlive->orig_str : NULL;
   printf("Native: %s = %s\n", name, NONULL(mb));
 
   result = true;
@@ -461,7 +501,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Olive";
+  const char *parent = "Papaya";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 

@@ -87,6 +87,7 @@ static struct MbTable *mbtable_parse(const char *s)
   {
     if (k == (size_t)(-1) || k == (size_t)(-2))
     {
+      //QWQ put message in err; fail? warning?
       mutt_debug(1, "mbtable_parse: mbrtowc returned %d converting %s in %s\n",
                  (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
       if (k == (size_t)(-1))
@@ -333,9 +334,8 @@ void mbtable_init(struct ConfigSet *cs)
  */
 struct MbTable *mbtable_create(const char *str)
 {
-  struct MbTable *m = mutt_mem_calloc(1, sizeof(*m));
-  m->orig_str = mutt_str_strdup(str);
-  return m;
+  //QWQ DROP this function
+  return mbtable_parse(str);
 }
 
 /**

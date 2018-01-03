@@ -59,6 +59,12 @@ bool dump_test(void)
 
   dump_config(cs, CS_DUMP_STYLE_NEO,
               CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS);
+  printf("\n");
+
+  dump_config(cs, CS_DUMP_STYLE_NEO, CS_DUMP_ONLY_CHANGED);
+  printf("\n");
+
+  dump_config(cs, CS_DUMP_STYLE_MUTT, 0);
 
   cs_free(&cs);
   FREE(&err.data);
