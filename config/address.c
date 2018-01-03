@@ -54,6 +54,11 @@
 #include "set.h"
 #include "types.h"
 
+size_t mutt_addr_write(char *buf, size_t buflen, struct Address *addr, bool display)
+{
+  return 0;
+}
+
 /**
  * address_destroy - Destroy an Address object
  * @param cs   Config items
@@ -136,13 +141,17 @@ static int address_string_get(const struct ConfigSet *cs, void *var,
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  char tmp[HUGE_STRING] = "";
   const char *str = NULL;
 
   if (var)
   {
     struct Address *a = *(struct Address **) var;
     if (a)
-      str = a->personal;
+    {
+      mutt_addr_write(tmp, sizeof(tmp), a, false);
+      str = tmp;
+    }
   }
   else
   {

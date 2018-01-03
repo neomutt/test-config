@@ -179,24 +179,15 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
 }
 
 /**
- * cs_get_type_def - Get the definition for a type
- * @param cs   Config items
- * @param type Type to lookup, e.g. #DT_NUMBER
- * @retval ptr ConfigSetType representing the type
+ * cs_create - Create a new Config Set
+ * @param size Number of expected config items
+ * @retval ptr New ConfigSet object
  */
-const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type)
+struct ConfigSet *cs_create(int size)
 {
-  if (!cs)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  type = DTYPE(type);
-  if ((type < 1) || (type >= mutt_array_size(cs->types)))
-    return NULL;
-
-  if (!cs->types[type].name)
-    return NULL;
-
-  return &cs->types[type];
+  struct ConfigSet *cs = mutt_mem_malloc(sizeof(*cs));
+  cs_init(cs, size);
+  return cs;
 }
 
 /**
@@ -215,69 +206,6 @@ void cs_init(struct ConfigSet *cs, int size)
 }
 
 /**
- * cs_create - Create a new Config Set
- * @param size Number of expected config items
- * @retval ptr New ConfigSet object
- */
-struct ConfigSet *cs_create(int size)
-{
-  struct ConfigSet *cs = mutt_mem_malloc(sizeof(*cs));
-  cs_init(cs, size);
-  return cs;
-}
-
-/**
- * cs_add_listener - Add a listener (callback function)
- * @param cs Config items
- * @param fn Listener callback function 
- */
-void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
-{
-  if (!cs || !fn)
-    return; /* LCOV_EXCL_LINE */
-
-  // check for dupes
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
-  {
-    if (cs->listeners[i] == fn)
-    {
-      mutt_debug(1, "Listener was already registered\n");
-      return;
-    }
-  }
-
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
-  {
-    if (!cs->listeners[i])
-    {
-      cs->listeners[i] = fn;
-      return;
-    }
-  }
-}
-
-/**
- * cs_remove_listener - Remove a listener (callback function)
- * @param cs Config items
- * @param fn Listener callback function 
- */
-void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
-{
-  if (!cs || !fn)
-    return; /* LCOV_EXCL_LINE */
-
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
-  {
-    if (cs->listeners[i] == fn)
-    {
-      cs->listeners[i] = NULL;
-      return;
-    }
-  }
-  mutt_debug(1, "Listener wasn't registered\n");
-}
-
-/**
  * cs_free - Free a Config Set
  * @param cs Config items
  */
@@ -291,25 +219,47 @@ void cs_free(struct ConfigSet **cs)
 }
 
 /**
- * cs_notify_listeners - Notify all listeners of an event
+ * cs_get_elem - Get the HashElem representing a config item
  * @param cs   Config items
- * @param he   HashElem representing config item
- * @param name Name of config item 
- * @param ev   Type of event
+ * @param name Name of config item
+ * @retval ptr HashElem representing the config item
  */
-void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
-                         const char *name, enum ConfigEvent ev)
+struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 {
-  if (!cs || !he || !name)
-    return; /* LCOV_EXCL_LINE */
+  if (!cs || !name)
+    return NULL; /* LCOV_EXCL_LINE */
 
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
-  {
-    if (!cs->listeners[i])
-      return;
+  struct HashElem *he = mutt_hash_find_elem(cs->hash, name);
+  if (!he)
+    return NULL;
 
-    cs->listeners[i](cs, he, name, ev);
-  }
+  if (he->type != DT_SYNONYM)
+    return he;
+
+  const struct ConfigDef *cdef = he->data;
+
+  return cdef->var;
+}
+
+/**
+ * cs_get_type_def - Get the definition for a type
+ * @param cs   Config items
+ * @param type Type to lookup, e.g. #DT_NUMBER
+ * @retval ptr ConfigSetType representing the type
+ */
+const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type)
+{
+  if (!cs)
+    return NULL; /* LCOV_EXCL_LINE */
+
+  type = DTYPE(type);
+  if ((type < 1) || (type >= mutt_array_size(cs->types)))
+    return NULL;
+
+  if (!cs->types[type].name)
+    return NULL;
+
+  return &cs->types[type];
 }
 
 /**
@@ -371,9 +321,314 @@ bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], 
 }
 
 /**
+ * cs_inherit_variable - Create in inherited config item
+ * @param cs     Config items
+ * @param parent HashElem of parent config item
+ * @param name   Name of account-specific config item
+ * @retval ptr New HashElem representing the inherited config item
+ */
+struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
+                                     struct HashElem *parent, const char *name)
+{
+  if (!cs || !parent)
+    return NULL; /* LCOV_EXCL_LINE */
+
+  struct Buffer err;
+  mutt_buffer_init(&err);
+  err.data = calloc(1, STRING);
+  err.dsize = STRING;
+
+  struct Inheritance *i = mutt_mem_calloc(1, sizeof(*i));
+  i->parent = parent;
+  i->name = mutt_str_strdup(name);
+
+  struct HashElem *he = mutt_hash_typed_insert(cs->hash, i->name, DT_INHERITED, i);
+  if (!he)
+  {
+    FREE(&i->name);
+    FREE(&i);
+  }
+
+  FREE(&err.data);
+  return he;
+}
+
+/**
+ * cs_add_listener - Add a listener (callback function)
+ * @param cs Config items
+ * @param fn Listener callback function 
+ */
+void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
+{
+  if (!cs || !fn)
+    return; /* LCOV_EXCL_LINE */
+
+  // check for dupes
+  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  {
+    if (cs->listeners[i] == fn)
+    {
+      mutt_debug(1, "Listener was already registered\n");
+      return;
+    }
+  }
+
+  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  {
+    if (!cs->listeners[i])
+    {
+      cs->listeners[i] = fn;
+      return;
+    }
+  }
+}
+
+/**
+ * cs_remove_listener - Remove a listener (callback function)
+ * @param cs Config items
+ * @param fn Listener callback function 
+ */
+void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
+{
+  if (!cs || !fn)
+    return; /* LCOV_EXCL_LINE */
+
+  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  {
+    if (cs->listeners[i] == fn)
+    {
+      cs->listeners[i] = NULL;
+      return;
+    }
+  }
+  mutt_debug(1, "Listener wasn't registered\n");
+}
+
+/**
+ * cs_notify_listeners - Notify all listeners of an event
+ * @param cs   Config items
+ * @param he   HashElem representing config item
+ * @param name Name of config item 
+ * @param ev   Type of event
+ */
+void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
+                         const char *name, enum ConfigEvent ev)
+{
+  if (!cs || !he || !name)
+    return; /* LCOV_EXCL_LINE */
+
+  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  {
+    if (!cs->listeners[i])
+      return;
+
+    cs->listeners[i](cs, he, name, ev);
+  }
+}
+
+/**
+ * cs_he_reset - Reset a config item to its initial value
+ * @param cs   Config items
+ * @param he   HashElem representing config item
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
+int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
+{
+  if (!cs || !he)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  /* An inherited var that's already pointing to its parent.
+   * Return 'success', but don't send a notification. */
+  if ((he->type & DT_INHERITED) && (DTYPE(he->type) == 0))
+    return CSR_SUCCESS;
+
+  const struct ConfigSetType *cst = NULL;
+  const struct ConfigDef *cdef = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    cst = cs_get_type_def(cs, i->parent->type);
+    cdef = i->parent->data;
+
+    if (cst && cst->destroy)
+      cst->destroy(cs, (void **) &i->var, cdef);
+
+    he->type = DT_INHERITED;
+  }
+  else
+  {
+    cst = cs_get_type_def(cs, he->type);
+    cdef = he->data;
+
+    if (cst)
+      cst->reset(cs, cdef->var, cdef, err);
+  }
+
+  cs_notify_listeners(cs, he, he->key.strkey, CE_RESET);
+  return CSR_SUCCESS;
+}
+
+/**
+ * cs_str_reset - Reset a config item to its initial value
+ * @param cs   Config items
+ * @param name Name of config item
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
+int cs_str_reset(const struct ConfigSet *cs, const char *name, struct Buffer *err)
+{
+  if (!cs || !name)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+  {
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
+    return CSR_ERR_UNKNOWN;
+  }
+
+  return cs_he_reset(cs, he, err);
+}
+
+/**
+ * cs_he_default_set - Set the initial value of a config item
+ * @param cs    Config items
+ * @param he    HashElem representing config item
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
+int cs_he_default_set(const struct ConfigSet *cs, struct HashElem *he,
+                      const char *value, struct Buffer *err)
+{
+  if (!cs || !he)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct ConfigDef *cdef = NULL;
+  const struct ConfigSetType *cst = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    mutt_debug(1, "Variable '%s' is inherited type.\n", cdef->name);
+    return CSR_ERR_CODE;
+  }
+
+  cdef = he->data;
+  cst = cs_get_type_def(cs, he->type);
+  if (!cst)
+  {
+    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, he->type);
+    return CSR_ERR_CODE;
+  }
+
+  int result = cst->string_set(cs, NULL, cdef, value, err);
+  if (CSR_RESULT(result) != CSR_SUCCESS)
+    return result;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    he->type = i->parent->type | DT_INHERITED;
+  }
+  cs_notify_listeners(cs, he, he->key.strkey, CE_DEFAULT_SET);
+  return CSR_SUCCESS;
+}
+
+/**
+ * cs_str_default_set - Set the initial value of a config item
+ * @param cs    Config items
+ * @param name  Name of config item
+ * @param value Value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
+int cs_str_default_set(const struct ConfigSet *cs, const char *name,
+                       const char *value, struct Buffer *err)
+{
+  if (!cs || !name)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+  {
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
+    return CSR_ERR_UNKNOWN;
+  }
+
+  return cs_he_default_set(cs, he, value, err);
+}
+
+/**
+ * cs_he_default_get - Get the initial, or parent, value of a config item
+ * @param cs     Config items
+ * @param he     HashElem representing config item
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If a config item is inherited from another, then this will get the parent's
+ * value.  Otherwise, it will get the config item's initial value.
+ */
+int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
+{
+  if (!cs || !he)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct Inheritance *i = NULL;
+  const struct ConfigDef *cdef = NULL;
+  const struct ConfigSetType *cst = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    i = he->data;
+    cdef = i->parent->data;
+    cst = cs_get_type_def(cs, i->parent->type);
+  }
+  else
+  {
+    cdef = he->data;
+    cst = cs_get_type_def(cs, he->type);
+  }
+
+  if (!cst)
+  {
+    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, DTYPE(he->type));
+    return CSR_ERR_CODE;
+  }
+
+  return cst->string_get(cs, NULL, cdef, result);
+}
+
+/**
+ * cs_str_default_get - Get the initial, or parent, value of a config item
+ * @param cs     Config items
+ * @param name   Name of config item
+ * @param result Buffer for results or error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If a config item is inherited from another, then this will get the parent's
+ * value.  Otherwise, it will get the config item's initial value.
+ */
+int cs_str_default_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
+{
+  if (!cs || !name)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+  {
+    mutt_buffer_printf(result, "Unknown var '%s'", name);
+    return CSR_ERR_UNKNOWN;
+  }
+
+  return cs_he_default_get(cs, he, result);
+}
+
+/**
  * cs_he_string_set - Set a config item by string
  * @param cs    Config items
- * @param he   HashElem representing config item
+ * @param he    HashElem representing config item
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
@@ -449,72 +704,6 @@ int cs_str_string_set(const struct ConfigSet *cs, const char *name,
 }
 
 /**
- * cs_he_reset - Reset a config item to its initial value
- * @param cs   Config items
- * @param he   HashElem representing config item
- * @param err  Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
- */
-int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
-{
-  if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-
-  /* An inherited var that's already pointing to its parent.
-   * Return 'success', but don't send a notification. */
-  if ((he->type & DT_INHERITED) && (DTYPE(he->type) == 0))
-    return CSR_SUCCESS;
-
-  const struct ConfigSetType *cst = NULL;
-  const struct ConfigDef *cdef = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    struct Inheritance *i = he->data;
-    cst = cs_get_type_def(cs, i->parent->type);
-    cdef = i->parent->data;
-
-    if (cst && cst->destroy)
-      cst->destroy(cs, (void **) &i->var, cdef);
-
-    he->type = DT_INHERITED;
-  }
-  else
-  {
-    cst = cs_get_type_def(cs, he->type);
-    cdef = he->data;
-
-    if (cst)
-      cst->reset(cs, cdef->var, cdef, err);
-  }
-
-  cs_notify_listeners(cs, he, he->key.strkey, CE_RESET);
-  return CSR_SUCCESS;
-}
-
-/**
- * cs_str_reset - Reset a config item to its initial value
- * @param cs   Config items
- * @param name Name of config item
- * @param err  Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
- */
-int cs_str_reset(const struct ConfigSet *cs, const char *name, struct Buffer *err)
-{
-  if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-
-  struct HashElem *he = cs_get_elem(cs, name);
-  if (!he)
-  {
-    mutt_buffer_printf(err, "Unknown var '%s'", name);
-    return CSR_ERR_UNKNOWN;
-  }
-
-  return cs_he_reset(cs, he, err);
-}
-
-/**
  * cs_he_string_get - Get a config item as a string
  * @param cs     Config items
  * @param he     HashElem representing config item
@@ -562,71 +751,6 @@ int cs_he_string_get(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 }
 
 /**
- * cs_he_default_get - Get the initial, or parent, value of a config item
- * @param cs     Config items
- * @param he     HashElem representing config item
- * @param result Buffer for results or error messages
- * @retval int Result, e.g. #CSR_SUCCESS
- *
- * If a config item is inherited from another, then this will get the parent's
- * value.  Otherwise, it will get the config item's initial value.
- */
-int cs_he_default_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
-{
-  if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-
-  struct Inheritance *i = NULL;
-  const struct ConfigDef *cdef = NULL;
-  const struct ConfigSetType *cst = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    i = he->data;
-    cdef = i->parent->data;
-    cst = cs_get_type_def(cs, i->parent->type);
-  }
-  else
-  {
-    cdef = he->data;
-    cst = cs_get_type_def(cs, he->type);
-  }
-
-  if (!cst)
-  {
-    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, DTYPE(he->type));
-    return CSR_ERR_CODE;
-  }
-
-  return cst->string_get(cs, NULL, cdef, result);
-}
-
-/**
- * cs_str_default_get - Get the initial, or parent, value of a config item
- * @param cs     Config items
- * @param name   Name of config item
- * @param result Buffer for results or error messages
- * @retval int Result, e.g. #CSR_SUCCESS
- *
- * If a config item is inherited from another, then this will get the parent's
- * value.  Otherwise, it will get the config item's initial value.
- */
-int cs_str_default_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
-{
-  if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-
-  struct HashElem *he = cs_get_elem(cs, name);
-  if (!he)
-  {
-    mutt_buffer_printf(result, "Unknown var '%s'", name);
-    return CSR_ERR_UNKNOWN;
-  }
-
-  return cs_he_default_get(cs, he, result);
-}
-
-/**
  * cs_str_string_get - Get a config item as a string
  * @param cs     Config items
  * @param name   Name of config item
@@ -649,62 +773,6 @@ int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffe
 }
 
 /**
- * cs_get_elem - Get the HashElem representing a config item
- * @param cs   Config items
- * @param name Name of config item
- * @retval ptr HashElem representing the config item
- */
-struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
-{
-  if (!cs || !name)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  struct HashElem *he = mutt_hash_find_elem(cs->hash, name);
-  if (!he)
-    return NULL;
-
-  if (he->type != DT_SYNONYM)
-    return he;
-
-  const struct ConfigDef *cdef = he->data;
-
-  return cdef->var;
-}
-
-/**
- * cs_inherit_variable - Create in inherited config item
- * @param cs     Config items
- * @param parent HashElem of parent config item
- * @param name   Name of account-specific config item
- * @retval ptr New HashElem representing the inherited config item
- */
-struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
-                                     struct HashElem *parent, const char *name)
-{
-  if (!cs || !parent)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  struct Buffer err;
-  mutt_buffer_init(&err);
-  err.data = calloc(1, STRING);
-  err.dsize = STRING;
-
-  struct Inheritance *i = mutt_mem_calloc(1, sizeof(*i));
-  i->parent = parent;
-  i->name = mutt_str_strdup(name);
-
-  struct HashElem *he = mutt_hash_typed_insert(cs->hash, i->name, DT_INHERITED, i);
-  if (!he)
-  {
-    FREE(&i->name);
-    FREE(&i);
-  }
-
-  FREE(&err.data);
-  return he;
-}
-
-/**
  * cs_he_native_set - Natively set the value of a HashElem config item
  * @param cs    Config items
  * @param he    HashElem representing config item
@@ -717,6 +785,62 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
 {
   if (!cs || !he)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  const struct ConfigDef *cdef = NULL;
+  const struct ConfigSetType *cst = NULL;
+  void *var = NULL;
+
+  if (he->type & DT_INHERITED)
+  {
+    struct Inheritance *i = he->data;
+    cdef = i->parent->data;
+    var = &i->var;
+    cst = cs_get_type_def(cs, i->parent->type);
+  }
+  else
+  {
+    cdef = he->data;
+    var = cdef->var;
+    cst = cs_get_type_def(cs, he->type);
+  }
+
+  if (!cst)
+  {
+    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, he->type);
+    return CSR_ERR_CODE;
+  }
+
+  int result = cst->native_set(cs, var, cdef, value, err);
+  if (CSR_RESULT(result) == CSR_SUCCESS)
+  {
+    if (he->type & DT_INHERITED)
+      he->type = DT_INHERITED | cdef->type;
+    cs_notify_listeners(cs, he, cdef->name, CE_SET);
+  }
+
+  return result;
+}
+
+/**
+ * cs_str_native_set - Natively set the value of a string config item
+ * @param cs    Config items
+ * @param name  Name of config item
+ * @param value Native pointer/value to set
+ * @param err   Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
+int cs_str_native_set(const struct ConfigSet *cs, const char *name,
+                      intptr_t value, struct Buffer *err)
+{
+  if (!cs || !name)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+  {
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
+    return CSR_ERR_UNKNOWN;
+  }
 
   const struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
@@ -801,62 +925,6 @@ intptr_t cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struc
 }
 
 /**
- * cs_str_native_set - Natively set the value of a string config item
- * @param cs    Config items
- * @param name  Name of config item
- * @param value Native pointer/value to set
- * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
- */
-int cs_str_native_set(const struct ConfigSet *cs, const char *name,
-                      intptr_t value, struct Buffer *err)
-{
-  if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-
-  struct HashElem *he = cs_get_elem(cs, name);
-  if (!he)
-  {
-    mutt_buffer_printf(err, "Unknown var '%s'", name);
-    return CSR_ERR_UNKNOWN;
-  }
-
-  const struct ConfigDef *cdef = NULL;
-  const struct ConfigSetType *cst = NULL;
-  void *var = NULL;
-
-  if (he->type & DT_INHERITED)
-  {
-    struct Inheritance *i = he->data;
-    cdef = i->parent->data;
-    var = &i->var;
-    cst = cs_get_type_def(cs, i->parent->type);
-  }
-  else
-  {
-    cdef = he->data;
-    var = cdef->var;
-    cst = cs_get_type_def(cs, he->type);
-  }
-
-  if (!cst)
-  {
-    mutt_debug(1, "Variable '%s' has an invalid type %d\n", cdef->name, he->type);
-    return CSR_ERR_CODE;
-  }
-
-  int result = cst->native_set(cs, var, cdef, value, err);
-  if (CSR_RESULT(result) == CSR_SUCCESS)
-  {
-    if (he->type & DT_INHERITED)
-      he->type = DT_INHERITED | cdef->type;
-    cs_notify_listeners(cs, he, cdef->name, CE_SET);
-  }
-
-  return result;
-}
-
-/**
  * cs_str_native_get - Natively get the value of a string config item
  * @param cs   Config items
  * @param name Name of config item
@@ -870,51 +938,4 @@ intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct 
 
   struct HashElem *he = cs_get_elem(cs, name);
   return cs_he_native_get(cs, he, err);
-}
-
-/**
- * cs_set_initial_value - Override the initial value of a config item
- * @param cs    Config items
- * @param name  Config item
- * @param value Value to set
- * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
- */
-int cs_set_initial_value(const struct ConfigSet *cs, const char *name,
-                         const char *value, struct Buffer *err)
-{
-  if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
-
-  struct HashElem *he = cs_get_elem(cs, name);
-  if (!he)
-    return CSR_ERR_CODE;
-
-  if (he->type & DT_INHERITED)
-  {
-    mutt_debug(1, "Config item %d is inherited\n", he->type);
-    return CSR_ERR_CODE;
-  }
-
-  /* We've been here before */
-  if (he->type & DT_INITIAL_SET)
-  {
-    mutt_debug(1, "Config item has already had its initial value set\n");
-    return CSR_ERR_CODE;
-  }
-
-  struct ConfigDef *cdef = he->data;
-  if (!cdef)
-    return CSR_ERR_CODE;
-
-  if (cdef->initial != 0)
-  {
-    mutt_debug(1, "Config item was defined with an initial value\n");
-    return CSR_ERR_CODE;
-  }
-
-  cdef->initial = IP mutt_str_strdup(value);
-  he->type |= DT_INITIAL_SET;
-
-  return cs_he_reset(cs, he, err);
 }

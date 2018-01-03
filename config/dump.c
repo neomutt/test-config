@@ -49,6 +49,10 @@
 #include "set.h"
 #include "types.h"
 
+void mutt_pretty_mailbox(char *s, size_t buflen)
+{
+}
+
 /**
  * escape_string - Write a string to a buffer, escaping special characters
  * @param buf Buffer to write to
@@ -267,11 +271,14 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
         }
 
         const struct ConfigDef *cdef = he->data;
-        if (IS_SENSITIVE(*cdef) && !mutt_buffer_is_empty(value))
+        if (IS_SENSITIVE(*cdef) && (flags & CS_DUMP_HIDE_SENSITIVE) && !mutt_buffer_is_empty(value))
         {
           mutt_buffer_reset(value);
           mutt_buffer_addstr(value, "***");
         }
+
+        if (type == DT_PATH)
+          mutt_pretty_mailbox(value->data, value->dsize);
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))
@@ -291,6 +298,9 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
           result = false;
           break;
         }
+
+        if (type == DT_PATH)
+          mutt_pretty_mailbox(value->data, value->dsize);
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))

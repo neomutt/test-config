@@ -16,8 +16,6 @@ Expected error
 fruit:Apple = '42'
 Event: Apple has been set to '42'
 Set fruit:Apple
-Config item 514 is inherited
-Expected error
 Event: Apple has been set to '42'
 Set Apple
 Event: fruit:Apple has been reset to '42'
