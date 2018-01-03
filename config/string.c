@@ -119,13 +119,14 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
   else
   {
     // we're already using the initial value
-    if (*(char **) var == (char *) cdef->initial)
-      var = mutt_str_strdup((char *) cdef->initial);
+    if (*(char **) cdef->var == (char *) cdef->initial)
+      *(char **) cdef->var = mutt_str_strdup((char *) cdef->initial);
 
     // already set default/initial value
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 
+    cdef->type |= DT_INITIAL_SET;
     cdef->initial = IP mutt_str_strdup(value);
   }
 

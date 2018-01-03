@@ -88,7 +88,7 @@ static void regex_destroy(const struct ConfigSet *cs, void *var, const struct Co
 static int regex_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                             const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   /* Store empty strings as NULL */
@@ -115,13 +115,28 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
     }
   }
 
-  regex_destroy(cs, var, cdef);
-
   int result = CSR_SUCCESS;
-  if (!r)
-    result |= CSR_SUC_EMPTY;
 
-  *(struct Regex **) var = r;
+  if (var)
+  {
+    // ordinary variable setting
+    regex_destroy(cs, var, cdef);
+
+    *(struct Regex **) var = r;
+
+    if (!r)
+      result |= CSR_SUC_EMPTY;
+  }
+  else
+  {
+    // already set default/initial value
+    if (cdef->type & DT_INITIAL_SET)
+      FREE(&cdef->initial);
+
+    cdef->type |= DT_INITIAL_SET;
+    cdef->initial = IP mutt_str_strdup(value);
+  }
+
   return result;
 }
 

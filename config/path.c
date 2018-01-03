@@ -88,7 +88,7 @@ static void path_destroy(const struct ConfigSet *cs, void *var, const struct Con
 static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                            const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   /* Store empty strings as NULL */
@@ -119,13 +119,14 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   else
   {
     // we're already using the initial value
-    if (*(char **) var == (char *) cdef->initial)
-      var = mutt_str_strdup((char *) cdef->initial);
+    if (*(char **) cdef->var == (char *) cdef->initial)
+      *(char **) cdef->var = mutt_str_strdup((char *) cdef->initial);
 
     // already set default/initial value
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 
+    cdef->type |= DT_INITIAL_SET;
     cdef->initial = IP mutt_str_strdup(value);
   }
 

@@ -1,6 +1,7 @@
 ---- magic_test --------------------------------------------
 ---- set_list ----------------------------------------------
 magic Damson = mbox
+magic Lemon = mbox
 magic Cherry = mbox
 magic Fig = mbox
 magic Elderberry = mbox
@@ -20,63 +21,66 @@ Apple = 2
 Apple's initial value is mbox
 Banana = 4
 Banana's initial value is MH
+Event: Cherry has been initial-set to 'MMDF'
+Cherry = mbox
+Cherry's initial value is MMDF
 ---- test_string_set ---------------------------------------
-Event: Cherry has been set to 'mbox'
-Cherry = 1, set by 'mbox'
-Event: Cherry has been set to 'MMDF'
-Cherry = 2, set by 'mmdf'
-Event: Cherry has been set to 'MH'
-Cherry = 3, set by 'mh'
-Event: Cherry has been set to 'Maildir'
-Cherry = 4, set by 'maildir'
+Event: Damson has been set to 'mbox'
+Damson = 1, set by 'mbox'
+Event: Damson has been set to 'MMDF'
+Damson = 2, set by 'mmdf'
+Event: Damson has been set to 'MH'
+Damson = 3, set by 'mh'
+Event: Damson has been set to 'Maildir'
+Damson = 4, set by 'maildir'
 Expected error: Invalid magic value: mbox2
 Expected error: Invalid magic value: mm
 Expected error: Invalid magic value: 
 Expected error: 
 ---- test_string_get ---------------------------------------
-Damson = 1, mbox
-Damson = 2, MMDF
-Damson = 3, MH
-Damson = 4, Maildir
+Elderberry = 1, mbox
+Elderberry = 2, MMDF
+Elderberry = 3, MH
+Elderberry = 4, Maildir
 Expect error for next test
 Variable has an invalid value: 5
 ---- test_native_set ---------------------------------------
-Event: Elderberry has been set to 'Maildir'
-Elderberry = 4, set to '4'
+Event: Fig has been set to 'Maildir'
+Fig = 4, set to '4'
 Expected error: Invalid magic value: 0
 Expected error: Invalid magic value: 5
 ---- test_native_get ---------------------------------------
-Fig = 4
+Guava = 4
 ---- test_reset --------------------------------------------
-Event: Guava has been reset to 'mbox'
-Reset: Guava = 1
+Event: Hawthorn has been reset to 'mbox'
+Reset: Hawthorn = 1
 ---- test_validator ----------------------------------------
-Event: Hawthorn has been set to 'Maildir'
-validator_succeed: Hawthorn, 4
-String: Hawthorn = 4
-Event: Hawthorn has been set to 'Maildir'
-validator_succeed: Hawthorn, 4
-Native: Hawthorn = 4
 Event: Ilama has been set to 'Maildir'
-validator_warn: Ilama, 4
+validator_succeed: Ilama, 4
 String: Ilama = 4
 Event: Ilama has been set to 'Maildir'
-validator_warn: Ilama, 4
+validator_succeed: Ilama, 4
 Native: Ilama = 4
-Expected error: validator_fail: Jackfruit, 4
-String: Jackfruit = 1
-Expected error: validator_fail: Jackfruit, 4
-Native: Jackfruit = 1
+Event: Jackfruit has been set to 'Maildir'
+validator_warn: Jackfruit, 4
+String: Jackfruit = 4
+Event: Jackfruit has been set to 'Maildir'
+validator_warn: Jackfruit, 4
+Native: Jackfruit = 4
+Expected error: validator_fail: Kumquat, 4
+String: Kumquat = 1
+Expected error: validator_fail: Kumquat, 4
+Native: Kumquat = 1
 ---- test_inherit ------------------------------------------
-Event: Kumquat has been set to 'Maildir'
-        Kumquat = 4
-  fruit:Kumquat = 4
-Event: fruit:Kumquat has been set to 'MH'
-        Kumquat = 4
-  fruit:Kumquat = 3
-Event: fruit:Kumquat has been reset to 'Maildir'
-        Kumquat = 4
-  fruit:Kumquat = 4
-Event: Kumquat has been reset to 'mbox'
-        Kumquat = 1
-  fruit:Kumquat = 1
+Event: Lemon has been set to 'Maildir'
+          Lemon = 4
+    fruit:Lemon = 4
+Event: fruit:Lemon has been set to 'MH'
+          Lemon = 4
+    fruit:Lemon = 3
+Event: fruit:Lemon has been reset to 'Maildir'
+          Lemon = 4
+    fruit:Lemon = 4
+Event: Lemon has been reset to 'mbox'
+          Lemon = 1
+    fruit:Lemon = 1

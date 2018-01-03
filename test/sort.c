@@ -43,7 +43,7 @@ static short VarFig;
 static short VarGuava;
 static short VarHawthorn;
 static short VarIlama;
-static short VarIlama;
+static short VarJackfruit;
 static short VarJackfruit;
 static short VarKumquat;
 static short VarLemon;
@@ -52,40 +52,42 @@ static short VarNectarine;
 static short VarOlive;
 static short VarPapaya;
 static short VarQuince;
+static short VarRaspberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_SORT,                 0, &VarApple,       1, NULL              }, /* test_initial_values() */
-  { "Banana",     DT_SORT,                 0, &VarBanana,      2, NULL              },
-  { "Cherry",     DT_SORT|DT_SORT_INDEX,   0, &VarCherry,      1, NULL              }, /* test_string_set */
-  { "Damson",     DT_SORT|DT_SORT_ALIAS,   0, &VarDamson,     11, NULL              },
-  { "Elderberry", DT_SORT|DT_SORT_BROWSER, 0, &VarElderberry,  1, NULL              },
-  { "Fig",        DT_SORT|DT_SORT_KEYS,    0, &VarFig,         1, NULL              },
-  { "Guava",      DT_SORT|DT_SORT_AUX,     0, &VarGuava,       1, NULL              },
-  { "Hawthorn",   DT_SORT|DT_SORT_SIDEBAR, 0, &VarHawthorn,   17, NULL              },
-  { "Ilama",      DT_SORT,                 0, &VarIlama,       1, NULL              }, /* test_string_get */
-  { "Jackfruit",  DT_SORT,                 0, &VarJackfruit,   1, NULL              }, /* test_native_set */
-  { "Kumquat",    DT_SORT,                 0, &VarKumquat,     1, NULL              }, /* test_native_get */
-  { "Lemon",      DT_SORT,                 0, &VarLemon,       1, NULL              }, /* test_reset */
-  { "Mango",      DT_SORT,                 0, &VarMango,       1, validator_succeed }, /* test_validator */
-  { "Nectarine",  DT_SORT,                 0, &VarNectarine,   1, validator_warn    },
-  { "Olive",      DT_SORT,                 0, &VarOlive,       1, validator_fail    },
-  { "Papaya",     DT_SORT,                 0, &VarPapaya,      1, NULL              }, /* test_inherit */
+  { "Apple",      DT_SORT,                 0, &VarApple,      1,  NULL              }, /* test_initial_values() */
+  { "Banana",     DT_SORT,                 0, &VarBanana,     2,  NULL              },
+  { "Cherry",     DT_SORT,                 0, &VarCherry,     1,  NULL              },
+  { "Damson",     DT_SORT|DT_SORT_INDEX,   0, &VarDamson,     1,  NULL              }, /* test_string_set */
+  { "Elderberry", DT_SORT|DT_SORT_ALIAS,   0, &VarElderberry, 11, NULL              },
+  { "Fig",        DT_SORT|DT_SORT_BROWSER, 0, &VarFig,        1,  NULL              },
+  { "Guava",      DT_SORT|DT_SORT_KEYS,    0, &VarGuava,      1,  NULL              },
+  { "Hawthorn",   DT_SORT|DT_SORT_AUX,     0, &VarHawthorn,   1,  NULL              },
+  { "Ilama",      DT_SORT|DT_SORT_SIDEBAR, 0, &VarIlama,      17, NULL              },
+  { "Jackfruit",  DT_SORT,                 0, &VarJackfruit,  1,  NULL              }, /* test_string_get */
+  { "Kumquat",    DT_SORT,                 0, &VarKumquat,    1,  NULL              }, /* test_native_set */
+  { "Lemon",      DT_SORT,                 0, &VarLemon,      1,  NULL              }, /* test_native_get */
+  { "Mango",      DT_SORT,                 0, &VarMango,      1,  NULL              }, /* test_reset */
+  { "Nectarine",  DT_SORT,                 0, &VarNectarine,  1,  validator_succeed }, /* test_validator */
+  { "Olive",      DT_SORT,                 0, &VarOlive,      1,  validator_warn    },
+  { "Papaya",     DT_SORT,                 0, &VarPapaya,     1,  validator_fail    },
+  { "Quince",     DT_SORT,                 0, &VarQuince,     1,  NULL              }, /* test_inherit */
   { NULL },
 };
 
 static struct ConfigDef Vars2[] = {
-  { "Quince", DT_SORT|DT_SORT_AUX|DT_SORT_ALIAS, 0, &VarQuince, 1, NULL }, /* test_sort_type */
+  { "Raspberry", DT_SORT|DT_SORT_AUX|DT_SORT_ALIAS, 0, &VarRaspberry, 1, NULL }, /* test_sort_type */
   { NULL },
 };
 // clang-format on
 
 char *name_list[] = {
-  "Cherry", "Damson", "Elderberry", "Fig", "Guava", "Hawthorn",
+  "Damson", "Elderberry", "Fig", "Guava", "Hawthorn", "Ilama",
 };
 
 short *var_list[] = {
-  &VarCherry, &VarDamson, &VarElderberry, &VarFig, &VarGuava, &VarHawthorn,
+  &VarDamson, &VarElderberry, &VarFig, &VarGuava, &VarHawthorn, &VarIlama,
 };
 
 const struct Mapping *sort_maps[] = {
@@ -152,6 +154,27 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Banana = %d\n", VarBanana);
   printf("Banana's initial value is '%s'\n", NONULL(value.data));
 
+  mutt_buffer_reset(&value);
+  rc = cs_str_initial_set(cs, "Cherry", "size", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  mutt_buffer_reset(&value);
+  rc = cs_str_initial_get(cs, "Cherry", &value);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", value.data);
+    FREE(&value.data);
+    return false;
+  }
+
+  printf("Cherry = %s\n", mutt_map_get_name(VarCherry, SortMethods));
+  printf("Cherry's initial value is %s\n", value.data);
+
   FREE(&value.data);
   return true;
 }
@@ -214,9 +237,9 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  const char *name = "Ilama";
+  const char *name = "Jackfruit";
 
-  VarIlama = SORT_SUBJECT;
+  VarJackfruit = SORT_SUBJECT;
   mutt_buffer_reset(err);
   int rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -224,9 +247,9 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  printf("%s = %d, %s\n", name, VarIlama, err->data);
+  printf("%s = %d, %s\n", name, VarJackfruit, err->data);
 
-  VarIlama = SORT_THREADS;
+  VarJackfruit = SORT_THREADS;
   mutt_buffer_reset(err);
   rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -234,9 +257,9 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  printf("%s = %d, %s\n", name, VarIlama, err->data);
+  printf("%s = %d, %s\n", name, VarJackfruit, err->data);
 
-  VarIlama = -1;
+  VarJackfruit = -1;
   mutt_buffer_reset(err);
   printf("Expect error for next test\n");
   rc = cs_str_string_get(cs, name, err);
@@ -247,7 +270,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
   }
 
   mutt_buffer_reset(err);
-  name = "Quince";
+  name = "Raspberry";
   printf("Expect error for next test\n");
   rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
@@ -291,9 +314,9 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     }
   }
 
-  char *name = "Jackfruit";
+  char *name = "Kumquat";
   short value = SORT_THREADS;
-  VarJackfruit = -1;
+  VarKumquat = -1;
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, value, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -302,18 +325,18 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (VarJackfruit != value)
+  if (VarKumquat != value)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
 
-  printf("%s = %d, set to '%d'\n", name, VarJackfruit, value);
+  printf("%s = %d, set to '%d'\n", name, VarKumquat, value);
 
   int invalid[] = { -1, 999 };
   for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
-    VarJackfruit = -1;
+    VarKumquat = -1;
     mutt_buffer_reset(err);
     rc = cs_str_native_set(cs, name, invalid[i], err);
     if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -322,7 +345,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     }
     else
     {
-      printf("%s = %d, set by '%d'\n", name, VarJackfruit, invalid[i]);
+      printf("%s = %d, set by '%d'\n", name, VarKumquat, invalid[i]);
       printf("This test should have failed\n");
       return false;
     }
@@ -334,9 +357,9 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Kumquat";
+  char *name = "Lemon";
 
-  VarKumquat = SORT_THREADS;
+  VarLemon = SORT_THREADS;
   mutt_buffer_reset(err);
   intptr_t value = cs_str_native_get(cs, name, err);
   if (value != SORT_THREADS)
@@ -353,8 +376,8 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Lemon";
-  VarLemon = SORT_SUBJECT;
+  char *name = "Mango";
+  VarMango = SORT_SUBJECT;
   mutt_buffer_reset(err);
 
   int rc = cs_str_reset(cs, name, err);
@@ -364,13 +387,13 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (VarLemon == SORT_SUBJECT)
+  if (VarMango == SORT_SUBJECT)
   {
     printf("Value of %s wasn't changed\n", name);
     return false;
   }
 
-  printf("Reset: %s = %d\n", name, VarLemon);
+  printf("Reset: %s = %d\n", name, VarMango);
 
   return true;
 }
@@ -379,39 +402,10 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Mango";
-  VarMango = SORT_SUBJECT;
-  mutt_buffer_reset(err);
-  int rc = cs_str_string_set(cs, name, "threads", err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    return false;
-  }
-  printf("String: %s = %d\n", name, VarMango);
-
-  VarMango = SORT_SUBJECT;
-  mutt_buffer_reset(err);
-  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    return false;
-  }
-  printf("Native: %s = %d\n", name, VarMango);
-
-  name = "Nectarine";
+  char *name = "Nectarine";
   VarNectarine = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  rc = cs_str_string_set(cs, name, "threads", err);
+  int rc = cs_str_string_set(cs, name, "threads", err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -441,9 +435,9 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarOlive = SORT_SUBJECT;
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "threads", err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
-    printf("Expected error: %s\n", err->data);
+    printf("%s\n", err->data);
   }
   else
   {
@@ -455,6 +449,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarOlive = SORT_SUBJECT;
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarOlive);
+
+  name = "Papaya";
+  VarPapaya = SORT_SUBJECT;
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "threads", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -464,7 +473,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarOlive);
+  printf("String: %s = %d\n", name, VarPapaya);
+
+  VarPapaya = SORT_SUBJECT;
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarPapaya);
 
   return true;
 }
@@ -484,7 +507,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Papaya";
+  const char *parent = "Quince";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
@@ -495,7 +518,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   struct Account *ac = ac_create(cs, account, AccountVarStr);
 
   // set parent
-  VarPapaya = SORT_SUBJECT;
+  VarQuince = SORT_SUBJECT;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, parent, "threads", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -545,7 +568,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *name = "Quince";
+  const char *name = "Raspberry";
   char *value = "alpha";
 
   mutt_buffer_reset(err);
@@ -553,7 +576,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   int rc = cs_str_string_set(cs, name, value, err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
-    printf("%s = %d, set by '%s'\n", name, VarQuince, value);
+    printf("%s = %d, set by '%s'\n", name, VarRaspberry, value);
     printf("This test should have failed\n");
     return false;
   }
@@ -563,7 +586,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   rc = cs_str_native_set(cs, name, SORT_THREADS, err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
-    printf("%s = %d, set by %d\n", name, VarQuince, SORT_THREADS);
+    printf("%s = %d, set by %d\n", name, VarRaspberry, SORT_THREADS);
     printf("This test should have failed\n");
     return false;
   }

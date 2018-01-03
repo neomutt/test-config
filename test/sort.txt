@@ -1,18 +1,19 @@
 ---- sort_test ---------------------------------------------
 ---- set_list ----------------------------------------------
-sort Damson = address
+sort Damson = date
 sort Lemon = date
 sort Cherry = date
 sort Olive = date
 sort Fig = date
-sort Elderberry = date
-sort Ilama = date
+sort Elderberry = address
+sort Ilama = flagged
 sort Kumquat = date
 sort Banana = size
 sort Apple = date
 sort Guava = date
 sort Mango = date
-sort Hawthorn = flagged
+sort Quince = date
+sort Hawthorn = date
 sort Jackfruit = date
 sort Nectarine = date
 sort Papaya = date
@@ -25,270 +26,273 @@ Apple = 6
 Apple's initial value is 'date'
 Banana = 9
 Banana's initial value is 'size'
+Event: Cherry has been initial-set to 'size'
+Cherry = date
+Cherry's initial value is size
 ---- test_string_set ---------------------------------------
-Event: Cherry has been set to 'date'
-Cherry = 1, set by 'date'
-Event: Cherry has been set to 'date'
-Cherry = 1, set by 'date-sent'
-Event: Cherry has been set to 'date-received'
-Cherry = 7, set by 'date-received'
-Event: Cherry has been set to 'mailbox-order'
-Cherry = 5, set by 'mailbox-order'
-Event: Cherry has been set to 'subject'
-Cherry = 3, set by 'subject'
-Event: Cherry has been set to 'from'
-Cherry = 4, set by 'from'
-Event: Cherry has been set to 'size'
-Cherry = 2, set by 'size'
-Event: Cherry has been set to 'threads'
-Cherry = 6, set by 'threads'
-Event: Cherry has been set to 'to'
-Cherry = 8, set by 'to'
-Event: Cherry has been set to 'score'
-Cherry = 9, set by 'score'
-Event: Cherry has been set to 'spam'
-Cherry = 14, set by 'spam'
-Event: Cherry has been set to 'label'
-Cherry = 19, set by 'label'
+Event: Damson has been set to 'date'
+Damson = 1, set by 'date'
+Event: Damson has been set to 'date'
+Damson = 1, set by 'date-sent'
+Event: Damson has been set to 'date-received'
+Damson = 7, set by 'date-received'
+Event: Damson has been set to 'mailbox-order'
+Damson = 5, set by 'mailbox-order'
+Event: Damson has been set to 'subject'
+Damson = 3, set by 'subject'
+Event: Damson has been set to 'from'
+Damson = 4, set by 'from'
+Event: Damson has been set to 'size'
+Damson = 2, set by 'size'
+Event: Damson has been set to 'threads'
+Damson = 6, set by 'threads'
+Event: Damson has been set to 'to'
+Damson = 8, set by 'to'
+Event: Damson has been set to 'score'
+Damson = 9, set by 'score'
+Event: Damson has been set to 'spam'
+Damson = 14, set by 'spam'
+Event: Damson has been set to 'label'
+Damson = 19, set by 'label'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
 Expected error: 
-Event: Damson has been set to 'alias'
-Damson = 10, set by 'alias'
-Event: Damson has been set to 'address'
-Damson = 11, set by 'address'
-Event: Damson has been set to 'unsorted'
-Damson = 5, set by 'unsorted'
-Expected error: Invalid sort name: -1
-Expected error: Invalid sort name: 999
-Expected error: Invalid sort name: junk
-Expected error: 
-Event: Elderberry has been set to 'alpha'
-Elderberry = 3, set by 'alpha'
-Event: Elderberry has been set to 'count'
-Elderberry = 15, set by 'count'
-Event: Elderberry has been set to 'date'
-Elderberry = 1, set by 'date'
-Event: Elderberry has been set to 'desc'
-Elderberry = 20, set by 'desc'
-Event: Elderberry has been set to 'new'
-Elderberry = 16, set by 'new'
-Event: Elderberry has been set to 'size'
-Elderberry = 2, set by 'size'
+Event: Elderberry has been set to 'alias'
+Elderberry = 10, set by 'alias'
+Event: Elderberry has been set to 'address'
+Elderberry = 11, set by 'address'
 Event: Elderberry has been set to 'unsorted'
 Elderberry = 5, set by 'unsorted'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
 Expected error: 
-Event: Fig has been set to 'address'
-Fig = 11, set by 'address'
+Event: Fig has been set to 'alpha'
+Fig = 3, set by 'alpha'
+Event: Fig has been set to 'count'
+Fig = 15, set by 'count'
 Event: Fig has been set to 'date'
 Fig = 1, set by 'date'
-Event: Fig has been set to 'keyid'
-Fig = 12, set by 'keyid'
-Event: Fig has been set to 'trust'
-Fig = 13, set by 'trust'
+Event: Fig has been set to 'desc'
+Fig = 20, set by 'desc'
+Event: Fig has been set to 'new'
+Fig = 16, set by 'new'
+Event: Fig has been set to 'size'
+Fig = 2, set by 'size'
+Event: Fig has been set to 'unsorted'
+Fig = 5, set by 'unsorted'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
 Expected error: 
+Event: Guava has been set to 'address'
+Guava = 11, set by 'address'
 Event: Guava has been set to 'date'
 Guava = 1, set by 'date'
-Event: Guava has been set to 'date'
-Guava = 1, set by 'date-sent'
-Event: Guava has been set to 'date-received'
-Guava = 7, set by 'date-received'
-Event: Guava has been set to 'mailbox-order'
-Guava = 5, set by 'mailbox-order'
-Event: Guava has been set to 'subject'
-Guava = 3, set by 'subject'
-Event: Guava has been set to 'from'
-Guava = 4, set by 'from'
-Event: Guava has been set to 'size'
-Guava = 2, set by 'size'
-Event: Guava has been set to 'date'
-Guava = 1, set by 'threads'
-Event: Guava has been set to 'to'
-Guava = 8, set by 'to'
-Event: Guava has been set to 'score'
-Guava = 9, set by 'score'
-Event: Guava has been set to 'spam'
-Guava = 14, set by 'spam'
-Event: Guava has been set to 'label'
-Guava = 19, set by 'label'
+Event: Guava has been set to 'keyid'
+Guava = 12, set by 'keyid'
+Event: Guava has been set to 'trust'
+Guava = 13, set by 'trust'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
 Expected error: 
-Event: Hawthorn has been set to 'alpha'
-Hawthorn = 18, set by 'alpha'
-Event: Hawthorn has been set to 'count'
-Hawthorn = 15, set by 'count'
-Event: Hawthorn has been set to 'desc'
-Hawthorn = 20, set by 'desc'
-Event: Hawthorn has been set to 'flagged'
-Hawthorn = 17, set by 'flagged'
+Event: Hawthorn has been set to 'date'
+Hawthorn = 1, set by 'date'
+Event: Hawthorn has been set to 'date'
+Hawthorn = 1, set by 'date-sent'
+Event: Hawthorn has been set to 'date-received'
+Hawthorn = 7, set by 'date-received'
 Event: Hawthorn has been set to 'mailbox-order'
 Hawthorn = 5, set by 'mailbox-order'
-Event: Hawthorn has been set to 'alpha'
-Hawthorn = 18, set by 'name'
-Event: Hawthorn has been set to 'new'
-Hawthorn = 16, set by 'new'
-Event: Hawthorn has been set to 'alpha'
-Hawthorn = 18, set by 'path'
-Event: Hawthorn has been set to 'new'
-Hawthorn = 16, set by 'unread'
-Event: Hawthorn has been set to 'mailbox-order'
-Hawthorn = 5, set by 'unsorted'
+Event: Hawthorn has been set to 'subject'
+Hawthorn = 3, set by 'subject'
+Event: Hawthorn has been set to 'from'
+Hawthorn = 4, set by 'from'
+Event: Hawthorn has been set to 'size'
+Hawthorn = 2, set by 'size'
+Event: Hawthorn has been set to 'date'
+Hawthorn = 1, set by 'threads'
+Event: Hawthorn has been set to 'to'
+Hawthorn = 8, set by 'to'
+Event: Hawthorn has been set to 'score'
+Hawthorn = 9, set by 'score'
+Event: Hawthorn has been set to 'spam'
+Hawthorn = 14, set by 'spam'
+Event: Hawthorn has been set to 'label'
+Hawthorn = 19, set by 'label'
+Expected error: Invalid sort name: -1
+Expected error: Invalid sort name: 999
+Expected error: Invalid sort name: junk
+Expected error: 
+Event: Ilama has been set to 'alpha'
+Ilama = 18, set by 'alpha'
+Event: Ilama has been set to 'count'
+Ilama = 15, set by 'count'
+Event: Ilama has been set to 'desc'
+Ilama = 20, set by 'desc'
+Event: Ilama has been set to 'flagged'
+Ilama = 17, set by 'flagged'
+Event: Ilama has been set to 'mailbox-order'
+Ilama = 5, set by 'mailbox-order'
+Event: Ilama has been set to 'alpha'
+Ilama = 18, set by 'name'
+Event: Ilama has been set to 'new'
+Ilama = 16, set by 'new'
+Event: Ilama has been set to 'alpha'
+Ilama = 18, set by 'path'
+Event: Ilama has been set to 'new'
+Ilama = 16, set by 'unread'
+Event: Ilama has been set to 'mailbox-order'
+Ilama = 5, set by 'unsorted'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
 Expected error: 
 ---- test_string_get ---------------------------------------
-Ilama = 3, subject
-Ilama = 6, threads
+Jackfruit = 3, subject
+Jackfruit = 6, threads
 Expect error for next test
 Variable has an invalid value: 0/255
 Expect error for next test
 Invalid sort type: 144
 ---- test_native_set ---------------------------------------
-Event: Cherry has been set to 'date'
-Cherry = 1, set by 'date'
-Event: Cherry has been set to 'date'
-Cherry = 1, set by 'date-sent'
-Event: Cherry has been set to 'date-received'
-Cherry = 7, set by 'date-received'
-Event: Cherry has been set to 'mailbox-order'
-Cherry = 5, set by 'mailbox-order'
-Event: Cherry has been set to 'subject'
-Cherry = 3, set by 'subject'
-Event: Cherry has been set to 'from'
-Cherry = 4, set by 'from'
-Event: Cherry has been set to 'size'
-Cherry = 2, set by 'size'
-Event: Cherry has been set to 'threads'
-Cherry = 6, set by 'threads'
-Event: Cherry has been set to 'to'
-Cherry = 8, set by 'to'
-Event: Cherry has been set to 'score'
-Cherry = 9, set by 'score'
-Event: Cherry has been set to 'spam'
-Cherry = 14, set by 'spam'
-Event: Cherry has been set to 'label'
-Cherry = 19, set by 'label'
-Event: Damson has been set to 'alias'
-Damson = 10, set by 'alias'
-Event: Damson has been set to 'address'
-Damson = 11, set by 'address'
-Event: Damson has been set to 'unsorted'
-Damson = 5, set by 'unsorted'
-Event: Elderberry has been set to 'alpha'
-Elderberry = 3, set by 'alpha'
-Event: Elderberry has been set to 'count'
-Elderberry = 15, set by 'count'
-Event: Elderberry has been set to 'date'
-Elderberry = 1, set by 'date'
-Event: Elderberry has been set to 'desc'
-Elderberry = 20, set by 'desc'
-Event: Elderberry has been set to 'new'
-Elderberry = 16, set by 'new'
-Event: Elderberry has been set to 'size'
-Elderberry = 2, set by 'size'
+Event: Damson has been set to 'date'
+Damson = 1, set by 'date'
+Event: Damson has been set to 'date'
+Damson = 1, set by 'date-sent'
+Event: Damson has been set to 'date-received'
+Damson = 7, set by 'date-received'
+Event: Damson has been set to 'mailbox-order'
+Damson = 5, set by 'mailbox-order'
+Event: Damson has been set to 'subject'
+Damson = 3, set by 'subject'
+Event: Damson has been set to 'from'
+Damson = 4, set by 'from'
+Event: Damson has been set to 'size'
+Damson = 2, set by 'size'
+Event: Damson has been set to 'threads'
+Damson = 6, set by 'threads'
+Event: Damson has been set to 'to'
+Damson = 8, set by 'to'
+Event: Damson has been set to 'score'
+Damson = 9, set by 'score'
+Event: Damson has been set to 'spam'
+Damson = 14, set by 'spam'
+Event: Damson has been set to 'label'
+Damson = 19, set by 'label'
+Event: Elderberry has been set to 'alias'
+Elderberry = 10, set by 'alias'
+Event: Elderberry has been set to 'address'
+Elderberry = 11, set by 'address'
 Event: Elderberry has been set to 'unsorted'
 Elderberry = 5, set by 'unsorted'
-Event: Fig has been set to 'address'
-Fig = 11, set by 'address'
+Event: Fig has been set to 'alpha'
+Fig = 3, set by 'alpha'
+Event: Fig has been set to 'count'
+Fig = 15, set by 'count'
 Event: Fig has been set to 'date'
 Fig = 1, set by 'date'
-Event: Fig has been set to 'keyid'
-Fig = 12, set by 'keyid'
-Event: Fig has been set to 'trust'
-Fig = 13, set by 'trust'
+Event: Fig has been set to 'desc'
+Fig = 20, set by 'desc'
+Event: Fig has been set to 'new'
+Fig = 16, set by 'new'
+Event: Fig has been set to 'size'
+Fig = 2, set by 'size'
+Event: Fig has been set to 'unsorted'
+Fig = 5, set by 'unsorted'
+Event: Guava has been set to 'address'
+Guava = 11, set by 'address'
 Event: Guava has been set to 'date'
 Guava = 1, set by 'date'
-Event: Guava has been set to 'date'
-Guava = 1, set by 'date-sent'
-Event: Guava has been set to 'date-received'
-Guava = 7, set by 'date-received'
-Event: Guava has been set to 'mailbox-order'
-Guava = 5, set by 'mailbox-order'
-Event: Guava has been set to 'subject'
-Guava = 3, set by 'subject'
-Event: Guava has been set to 'from'
-Guava = 4, set by 'from'
-Event: Guava has been set to 'size'
-Guava = 2, set by 'size'
-Event: Guava has been set to 'date'
-Guava = 1, set by 'threads'
-Event: Guava has been set to 'to'
-Guava = 8, set by 'to'
-Event: Guava has been set to 'score'
-Guava = 9, set by 'score'
-Event: Guava has been set to 'spam'
-Guava = 14, set by 'spam'
-Event: Guava has been set to 'label'
-Guava = 19, set by 'label'
-Event: Hawthorn has been set to 'alpha'
-Hawthorn = 18, set by 'alpha'
-Event: Hawthorn has been set to 'count'
-Hawthorn = 15, set by 'count'
-Event: Hawthorn has been set to 'desc'
-Hawthorn = 20, set by 'desc'
-Event: Hawthorn has been set to 'flagged'
-Hawthorn = 17, set by 'flagged'
+Event: Guava has been set to 'keyid'
+Guava = 12, set by 'keyid'
+Event: Guava has been set to 'trust'
+Guava = 13, set by 'trust'
+Event: Hawthorn has been set to 'date'
+Hawthorn = 1, set by 'date'
+Event: Hawthorn has been set to 'date'
+Hawthorn = 1, set by 'date-sent'
+Event: Hawthorn has been set to 'date-received'
+Hawthorn = 7, set by 'date-received'
 Event: Hawthorn has been set to 'mailbox-order'
 Hawthorn = 5, set by 'mailbox-order'
-Event: Hawthorn has been set to 'alpha'
-Hawthorn = 18, set by 'name'
-Event: Hawthorn has been set to 'new'
-Hawthorn = 16, set by 'new'
-Event: Hawthorn has been set to 'alpha'
-Hawthorn = 18, set by 'path'
-Event: Hawthorn has been set to 'new'
-Hawthorn = 16, set by 'unread'
-Event: Hawthorn has been set to 'mailbox-order'
-Hawthorn = 5, set by 'unsorted'
-Event: Jackfruit has been set to 'threads'
-Jackfruit = 6, set to '6'
+Event: Hawthorn has been set to 'subject'
+Hawthorn = 3, set by 'subject'
+Event: Hawthorn has been set to 'from'
+Hawthorn = 4, set by 'from'
+Event: Hawthorn has been set to 'size'
+Hawthorn = 2, set by 'size'
+Event: Hawthorn has been set to 'date'
+Hawthorn = 1, set by 'threads'
+Event: Hawthorn has been set to 'to'
+Hawthorn = 8, set by 'to'
+Event: Hawthorn has been set to 'score'
+Hawthorn = 9, set by 'score'
+Event: Hawthorn has been set to 'spam'
+Hawthorn = 14, set by 'spam'
+Event: Hawthorn has been set to 'label'
+Hawthorn = 19, set by 'label'
+Event: Ilama has been set to 'alpha'
+Ilama = 18, set by 'alpha'
+Event: Ilama has been set to 'count'
+Ilama = 15, set by 'count'
+Event: Ilama has been set to 'desc'
+Ilama = 20, set by 'desc'
+Event: Ilama has been set to 'flagged'
+Ilama = 17, set by 'flagged'
+Event: Ilama has been set to 'mailbox-order'
+Ilama = 5, set by 'mailbox-order'
+Event: Ilama has been set to 'alpha'
+Ilama = 18, set by 'name'
+Event: Ilama has been set to 'new'
+Ilama = 16, set by 'new'
+Event: Ilama has been set to 'alpha'
+Ilama = 18, set by 'path'
+Event: Ilama has been set to 'new'
+Ilama = 16, set by 'unread'
+Event: Ilama has been set to 'mailbox-order'
+Ilama = 5, set by 'unsorted'
+Event: Kumquat has been set to 'threads'
+Kumquat = 6, set to '6'
 Expected error: Invalid sort type: -1
 Expected error: Invalid sort type: 999
 ---- test_native_get ---------------------------------------
-Kumquat = 6
+Lemon = 6
 ---- test_reset --------------------------------------------
-Event: Lemon has been reset to 'date'
-Reset: Lemon = 1
+Event: Mango has been reset to 'date'
+Reset: Mango = 1
 ---- test_validator ----------------------------------------
-Event: Mango has been set to 'threads'
-validator_succeed: Mango, 6
-String: Mango = 6
-Event: Mango has been set to 'threads'
-validator_succeed: Mango, 6
-Native: Mango = 6
 Event: Nectarine has been set to 'threads'
-validator_warn: Nectarine, 6
+validator_succeed: Nectarine, 6
 String: Nectarine = 6
 Event: Nectarine has been set to 'threads'
-validator_warn: Nectarine, 6
+validator_succeed: Nectarine, 6
 Native: Nectarine = 6
-Expected error: validator_fail: Olive, 6
-String: Olive = 3
-Expected error: validator_fail: Olive, 6
-Native: Olive = 3
+Event: Olive has been set to 'threads'
+validator_warn: Olive, 6
+String: Olive = 6
+Event: Olive has been set to 'threads'
+validator_warn: Olive, 6
+Native: Olive = 6
+Expected error: validator_fail: Papaya, 6
+String: Papaya = 3
+Expected error: validator_fail: Papaya, 6
+Native: Papaya = 3
 ---- test_inherit ------------------------------------------
-Event: Papaya has been set to 'threads'
-         Papaya = 6
-   fruit:Papaya = 6
-Event: fruit:Papaya has been set to 'score'
-         Papaya = 6
-   fruit:Papaya = 9
-Event: fruit:Papaya has been reset to 'threads'
-         Papaya = 6
-   fruit:Papaya = 6
-Event: Papaya has been reset to 'date'
-         Papaya = 1
-   fruit:Papaya = 1
+Event: Quince has been set to 'threads'
+         Quince = 6
+   fruit:Quince = 6
+Event: fruit:Quince has been set to 'score'
+         Quince = 6
+   fruit:Quince = 9
+Event: fruit:Quince has been reset to 'threads'
+         Quince = 6
+   fruit:Quince = 6
+Event: Quince has been reset to 'date'
+         Quince = 1
+   fruit:Quince = 1
 ---- test_sort_type ----------------------------------------
 Expect error for next test
 Invalid sort type: 144

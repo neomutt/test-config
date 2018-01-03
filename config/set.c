@@ -108,8 +108,8 @@ static void destroy(int type, void *obj, intptr_t data)
     if (cst && cst->destroy)
       cst->destroy(cs, cdef->var, cdef);
 
-    /* If we allocated the initial value, clean it up */
-    if (type & DT_INITIAL_SET)
+    /* QWQ If we allocated the initial value, clean it up */
+    if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
   }
 }
@@ -526,9 +526,6 @@ int cs_he_initial_set(const struct ConfigSet *cs, struct HashElem *he,
   int result = cst->string_set(cs, NULL, cdef, value, err);
   if (CSR_RESULT(result) != CSR_SUCCESS)
     return result;
-
-  he->type |= DT_INITIAL_SET;
-  cdef->type |= DT_INITIAL_SET;
 
   cs_notify_listeners(cs, he, he->key.strkey, CE_INITIAL_SET);
   return CSR_SUCCESS;

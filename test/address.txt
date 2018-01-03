@@ -15,6 +15,7 @@ address Mango =
 address Hawthorn = 
 address Jackfruit = 
 address Nectarine = 
+address Papaya = 
 ---- test_initial_values -----------------------------------
 Apple = 'apple@example.com'
 Banana = 'banana@example.com'
@@ -24,65 +25,69 @@ Apple = 'granny@smith.com'
 Apple's initial value is 'apple@example.com'
 Banana = ''
 Banana's initial value is 'banana@example.com'
+Event: Cherry has been initial-set to 'john@doe.com'
+Event: Cherry has been initial-set to 'jane@doe.com'
+Cherry = 'dummy3'
+Cherry's initial value is 'jane@doe.com'
 ---- test_string_set ---------------------------------------
-Event: Cherry has been set to ''
-Cherry = 'hello@example.com', set by 'hello@example.com'
-Event: Cherry has been set to ''
-Cherry = 'world@example.com', set by 'world@example.com'
-Event: Cherry has been set to ''
-Cherry = '', set by ''
 Event: Damson has been set to ''
 Damson = 'hello@example.com', set by 'hello@example.com'
 Event: Damson has been set to ''
 Damson = 'world@example.com', set by 'world@example.com'
 Event: Damson has been set to ''
 Damson = '', set by ''
+Event: Elderberry has been set to ''
+Elderberry = 'hello@example.com', set by 'hello@example.com'
+Event: Elderberry has been set to ''
+Elderberry = 'world@example.com', set by 'world@example.com'
+Event: Elderberry has been set to ''
+Elderberry = '', set by ''
 ---- test_string_get ---------------------------------------
-Elderberry = '', ''
-Fig = 'fig@example.com', ''
-Event: Guava has been set to ''
-Guava = 'guava', ''
----- test_native_set ---------------------------------------
+Fig = '', ''
+Guava = 'guava@example.com', ''
 Event: Hawthorn has been set to ''
-Hawthorn = 'hello@example.com', set by 'hello@example.com'
+Hawthorn = 'hawthorn', ''
+---- test_native_set ---------------------------------------
 Event: Ilama has been set to ''
-Ilama = '', set by NULL
----- test_native_get ---------------------------------------
+Ilama = 'hello@example.com', set by 'hello@example.com'
 Event: Jackfruit has been set to ''
-Jackfruit = 'jackfruit@example.com', 'jackfruit@example.com'
----- test_reset --------------------------------------------
-Initial: Kumquat = 'kumquat@example.com'
+Jackfruit = '', set by NULL
+---- test_native_get ---------------------------------------
 Event: Kumquat has been set to ''
-Set: Kumquat = 'hello@example.com'
-Event: Kumquat has been reset to ''
-Reset: Kumquat = 'kumquat@example.com'
+Kumquat = 'kumquat@example.com', 'kumquat@example.com'
+---- test_reset --------------------------------------------
+Initial: Lemon = 'lemon@example.com'
+Event: Lemon has been set to ''
+Set: Lemon = 'hello@example.com'
+Event: Lemon has been reset to ''
+Reset: Lemon = 'lemon@example.com'
 ---- test_validator ----------------------------------------
-Event: Lemon has been set to ''
-validator_succeed: Lemon, (ptr)
-Address: Lemon = hello@example.com
-Event: Lemon has been set to ''
-validator_succeed: Lemon, (ptr)
-Native: Lemon = world@example.com
 Event: Mango has been set to ''
-validator_warn: Mango, (ptr)
+validator_succeed: Mango, (ptr)
 Address: Mango = hello@example.com
 Event: Mango has been set to ''
-validator_warn: Mango, (ptr)
+validator_succeed: Mango, (ptr)
 Native: Mango = world@example.com
-Expected error: validator_fail: Nectarine, (ptr)
-Address: Nectarine = nectarine@example.com
-Expected error: validator_fail: Nectarine, (ptr)
-Native: Nectarine = nectarine@example.com
+Event: Nectarine has been set to ''
+validator_warn: Nectarine, (ptr)
+Address: Nectarine = hello@example.com
+Event: Nectarine has been set to ''
+validator_warn: Nectarine, (ptr)
+Native: Nectarine = world@example.com
+Expected error: validator_fail: Olive, (ptr)
+Address: Olive = olive@example.com
+Expected error: validator_fail: Olive, (ptr)
+Native: Olive = olive@example.com
 ---- test_inherit ------------------------------------------
-Event: Olive has been set to ''
-          Olive = hello@example.com
-    fruit:Olive = hello@example.com
-Event: fruit:Olive has been set to ''
-          Olive = hello@example.com
-    fruit:Olive = world@example.com
-Event: fruit:Olive has been reset to ''
-          Olive = hello@example.com
-    fruit:Olive = hello@example.com
-Event: Olive has been reset to ''
-          Olive = 
-    fruit:Olive = 
+Event: Papaya has been set to ''
+         Papaya = hello@example.com
+   fruit:Papaya = hello@example.com
+Event: fruit:Papaya has been set to ''
+         Papaya = hello@example.com
+   fruit:Papaya = world@example.com
+Event: fruit:Papaya has been reset to ''
+         Papaya = hello@example.com
+   fruit:Papaya = hello@example.com
+Event: Papaya has been reset to ''
+         Papaya = 
+   fruit:Papaya = 

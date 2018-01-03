@@ -81,10 +81,14 @@ bool log_listener(const struct ConfigSet *cs, struct HashElem *he,
   result.data = mutt_mem_calloc(1, STRING);
   result.dsize = STRING;
 
-  const char *events[] = { "set", "reset" };
+  const char *events[] = { "set", "reset", "initial-set" };
 
   mutt_buffer_reset(&result);
-  cs_he_string_get(cs, he, &result);
+
+  if (ev != CE_INITIAL_SET)
+    cs_he_string_get(cs, he, &result);
+  else
+    cs_he_initial_get(cs, he, &result);
 
   printf("Event: %s has been %s to '%s'\n", name, events[ev], result.data);
 

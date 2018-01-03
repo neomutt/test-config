@@ -1,20 +1,21 @@
 ---- path_test ---------------------------------------------
 ---- set_list ----------------------------------------------
-path Damson = /damson
+path Damson = 
 path Lemon = /lemon
-path Cherry = 
-path Olive = 
-path Fig = /fig
-path Elderberry = 
-path Ilama = /ilama
-path Kumquat = /kumquat
+path Cherry = /cherry
+path Olive = /olive
+path Fig = 
+path Elderberry = /elderberry
+path Ilama = 
+path Kumquat = 
 path Banana = /banana
 path Apple = /apple
-path Guava = 
+path Guava = /guava
 path Mango = /mango
 path Hawthorn = 
-path Jackfruit = 
+path Jackfruit = /jackfruit
 path Nectarine = /nectarine
+path Papaya = 
 ---- test_initial_values -----------------------------------
 Apple = /apple
 Banana = /banana
@@ -24,15 +25,11 @@ Apple = '/etc'
 Apple's initial value is '/apple'
 Banana = '(null)'
 Banana's initial value is '/banana'
+Event: Cherry has been initial-set to '/tmp'
+Event: Cherry has been initial-set to '/usr'
+Cherry = '/cherry'
+Cherry's initial value is '/usr'
 ---- test_string_set ---------------------------------------
-Event: Cherry has been set to 'hello'
-Cherry = hello, set by 'hello'
-Event: Cherry has been set to 'world'
-Cherry = world, set by 'world'
-Event: Cherry has been set to ''
-Cherry = , set by ''
-Event: Cherry has been set to ''
-Cherry = , set by ''
 Event: Damson has been set to 'hello'
 Damson = hello, set by 'hello'
 Event: Damson has been set to 'world'
@@ -41,20 +38,20 @@ Event: Damson has been set to ''
 Damson = , set by ''
 Event: Damson has been set to ''
 Damson = , set by ''
+Event: Elderberry has been set to 'hello'
+Elderberry = hello, set by 'hello'
+Event: Elderberry has been set to 'world'
+Elderberry = world, set by 'world'
+Event: Elderberry has been set to ''
+Elderberry = , set by ''
+Event: Elderberry has been set to ''
+Elderberry = , set by ''
 ---- test_string_get ---------------------------------------
-Elderberry = '', ''
-Fig = '/fig', '/fig'
-Event: Guava has been set to 'guava'
-Guava = 'guava', 'guava'
+Fig = '', ''
+Guava = '/guava', '/guava'
+Event: Hawthorn has been set to 'hawthorn'
+Hawthorn = 'hawthorn', 'hawthorn'
 ---- test_native_set ---------------------------------------
-Event: Hawthorn has been set to 'hello'
-Hawthorn = hello, set by 'hello'
-Event: Hawthorn has been set to 'world'
-Hawthorn = world, set by 'world'
-Event: Hawthorn has been set to ''
-Hawthorn = , set by ''
-Event: Hawthorn has been set to ''
-Hawthorn = , set by ''
 Event: Ilama has been set to 'hello'
 Ilama = hello, set by 'hello'
 Event: Ilama has been set to 'world'
@@ -63,42 +60,50 @@ Event: Ilama has been set to ''
 Ilama = , set by ''
 Event: Ilama has been set to ''
 Ilama = , set by ''
+Event: Jackfruit has been set to 'hello'
+Jackfruit = hello, set by 'hello'
+Event: Jackfruit has been set to 'world'
+Jackfruit = world, set by 'world'
+Event: Jackfruit has been set to ''
+Jackfruit = , set by ''
+Event: Jackfruit has been set to ''
+Jackfruit = , set by ''
 ---- test_native_get ---------------------------------------
-Event: Jackfruit has been set to 'jackfruit'
-Jackfruit = 'jackfruit', 'jackfruit'
+Event: Kumquat has been set to 'kumquat'
+Kumquat = 'kumquat', 'kumquat'
 ---- test_reset --------------------------------------------
-Initial: Kumquat = '/kumquat'
-Event: Kumquat has been set to 'hello'
-Set: Kumquat = 'hello'
-Event: Kumquat has been reset to '/kumquat'
-Reset: Kumquat = '/kumquat'
----- test_validator ----------------------------------------
+Initial: Lemon = '/lemon'
 Event: Lemon has been set to 'hello'
-validator_succeed: Lemon, (ptr)
-Path: Lemon = hello
-Event: Lemon has been set to 'world'
-validator_succeed: Lemon, (ptr)
-Native: Lemon = world
+Set: Lemon = 'hello'
+Event: Lemon has been reset to '/lemon'
+Reset: Lemon = '/lemon'
+---- test_validator ----------------------------------------
 Event: Mango has been set to 'hello'
-validator_warn: Mango, (ptr)
+validator_succeed: Mango, (ptr)
 Path: Mango = hello
 Event: Mango has been set to 'world'
-validator_warn: Mango, (ptr)
+validator_succeed: Mango, (ptr)
 Native: Mango = world
-Expected error: validator_fail: Nectarine, (ptr)
-Path: Nectarine = /nectarine
-Expected error: validator_fail: Nectarine, (ptr)
-Native: Nectarine = /nectarine
+Event: Nectarine has been set to 'hello'
+validator_warn: Nectarine, (ptr)
+Path: Nectarine = hello
+Event: Nectarine has been set to 'world'
+validator_warn: Nectarine, (ptr)
+Native: Nectarine = world
+Expected error: validator_fail: Olive, (ptr)
+Path: Olive = /olive
+Expected error: validator_fail: Olive, (ptr)
+Native: Olive = /olive
 ---- test_inherit ------------------------------------------
-Event: Olive has been set to 'hello'
-          Olive = hello
-    fruit:Olive = hello
-Event: fruit:Olive has been set to 'world'
-          Olive = hello
-    fruit:Olive = world
-Event: fruit:Olive has been reset to 'hello'
-          Olive = hello
-    fruit:Olive = hello
-Event: Olive has been reset to ''
-          Olive = (null)
-    fruit:Olive = (null)
+Event: Papaya has been set to 'hello'
+         Papaya = hello
+   fruit:Papaya = hello
+Event: fruit:Papaya has been set to 'world'
+         Papaya = hello
+   fruit:Papaya = world
+Event: fruit:Papaya has been reset to 'hello'
+         Papaya = hello
+   fruit:Papaya = hello
+Event: Papaya has been reset to ''
+         Papaya = (null)
+   fruit:Papaya = (null)

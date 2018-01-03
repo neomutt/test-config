@@ -72,7 +72,7 @@ const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
 static int magic_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                             const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !cdef || !value)
+  if (!cs || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;

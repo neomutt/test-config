@@ -1,15 +1,16 @@
 ---- number_test -------------------------------------------
 ---- set_list ----------------------------------------------
 number Damson = 0
-number Cherry = 0
+number Lemon = 0
+number Cherry = 33
 number Fig = 0
 number Elderberry = 0
 number Ilama = 0
 number Kumquat = 0
 number Banana = 99
 number Apple = -42
-number Guava = 99
-number Hawthorn = 0
+number Guava = 0
+number Hawthorn = 99
 number Jackfruit = 0
 ---- test_initial_values -----------------------------------
 Apple = -42
@@ -20,13 +21,16 @@ Apple = 2001
 Apple's initial value is '-42'
 Banana = 1999
 Banana's initial value is '99'
+Event: Cherry has been initial-set to '123'
+Cherry = 33
+Cherry's initial value is 123
 ---- test_string_set ---------------------------------------
-Event: Cherry has been set to '-123'
-Cherry = -123, set by '-123'
-Event: Cherry has been set to '0'
-Cherry = 0, set by '0'
-Event: Cherry has been set to '456'
-Cherry = 456, set by '456'
+Event: Damson has been set to '-123'
+Damson = -123, set by '-123'
+Event: Damson has been set to '0'
+Damson = 0, set by '0'
+Event: Damson has been set to '456'
+Damson = 456, set by '456'
 
 Expected error: Number is too big: -32769
 Expected error: Number is too big: 32768
@@ -35,45 +39,45 @@ Expected error: Invalid number:
 Expected error: Invalid number: (null)
 
 ---- test_string_get ---------------------------------------
-Damson = 123, 123
-Damson = -789, -789
+Elderberry = 123, 123
+Elderberry = -789, -789
 ---- test_native_set ---------------------------------------
-Event: Elderberry has been set to '12345'
-Elderberry = 12345, set to '12345'
+Event: Fig has been set to '12345'
+Fig = 12345, set to '12345'
 Expected error: Invalid number: -32769
 Expected error: Invalid number: 32768
 ---- test_native_get ---------------------------------------
-Fig = 3456
+Guava = 3456
 ---- test_reset --------------------------------------------
-Event: Guava has been reset to '99'
-Reset: Guava = 99
+Event: Hawthorn has been reset to '99'
+Reset: Hawthorn = 99
 ---- test_validator ----------------------------------------
-Event: Hawthorn has been set to '456'
-validator_succeed: Hawthorn, 456
-String: Hawthorn = 456
-Event: Hawthorn has been set to '123'
-validator_succeed: Hawthorn, 123
-Native: Hawthorn = 123
 Event: Ilama has been set to '456'
-validator_warn: Ilama, 456
+validator_succeed: Ilama, 456
 String: Ilama = 456
 Event: Ilama has been set to '123'
-validator_warn: Ilama, 123
+validator_succeed: Ilama, 123
 Native: Ilama = 123
-Expected error: validator_fail: Jackfruit, 456
-String: Jackfruit = 123
-Expected error: validator_fail: Jackfruit, 123
-Native: Jackfruit = 456
+Event: Jackfruit has been set to '456'
+validator_warn: Jackfruit, 456
+String: Jackfruit = 456
+Event: Jackfruit has been set to '123'
+validator_warn: Jackfruit, 123
+Native: Jackfruit = 123
+Expected error: validator_fail: Kumquat, 456
+String: Kumquat = 123
+Expected error: validator_fail: Kumquat, 123
+Native: Kumquat = 456
 ---- test_inherit ------------------------------------------
-Event: Kumquat has been set to '456'
-        Kumquat = 456
-  fruit:Kumquat = 456
-Event: fruit:Kumquat has been set to '-99'
-        Kumquat = 456
-  fruit:Kumquat = -99
-Event: fruit:Kumquat has been reset to '456'
-        Kumquat = 456
-  fruit:Kumquat = 456
-Event: Kumquat has been reset to '0'
-        Kumquat = 0
-  fruit:Kumquat = 0
+Event: Lemon has been set to '456'
+          Lemon = 456
+    fruit:Lemon = 456
+Event: fruit:Lemon has been set to '-99'
+          Lemon = 456
+    fruit:Lemon = -99
+Event: fruit:Lemon has been reset to '456'
+          Lemon = 456
+    fruit:Lemon = 456
+Event: Lemon has been reset to '0'
+          Lemon = 0
+    fruit:Lemon = 0

@@ -79,7 +79,7 @@ const char *bool_values[] = {
 static int bool_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                            const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !cdef || !value)
+  if (!cs || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
@@ -240,16 +240,13 @@ void bool_init(struct ConfigSet *cs)
  */
 int bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
-  if (!cs || !he)
+  if (!cs || !he || !he->data)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if (DTYPE(he->type) != DT_BOOL)
     return CSR_ERR_CODE;
 
   const struct ConfigDef *cdef = he->data;
-  if (!cdef)
-    return CSR_ERR_CODE;
-
   char *var = cdef->var;
 
   char value = *var;

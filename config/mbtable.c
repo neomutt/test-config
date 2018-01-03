@@ -134,7 +134,7 @@ static void mbtable_destroy(const struct ConfigSet *cs, void *var, const struct 
 static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                               const char *value, struct Buffer *err)
 {
-  if (!cs || !var || !cdef)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   if (value && (value[0] == '\0'))
@@ -171,6 +171,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 
+    cdef->type |= DT_INITIAL_SET;
     cdef->initial = IP mutt_str_strdup(value);
   }
 
