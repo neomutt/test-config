@@ -188,17 +188,17 @@ bool account_test(void)
   if (!he)
     return false;
 
-  // mutt_buffer_reset(&err);
-  // result = cs_set_initial_value(cs, name, "42", &err);
-  // if (CSR_RESULT(rc) != CSR_SUCCESS)
-  // {
-  //   printf("Expected error\n");
-  // }
-  // else
-  // {
-  //   printf("This test should have failed\n");
-  //   return false;
-  // }
+  mutt_buffer_reset(&err);
+  result = cs_str_initial_set(cs, name, "42", &err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error\n");
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
 
   name = "Apple";
   he = cs_get_elem(cs, name);
