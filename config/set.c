@@ -90,12 +90,6 @@ static void destroy(int type, void *obj, intptr_t data)
   if (type & DT_INHERITED)
   {
     struct Inheritance *i = obj;
-    // struct ConfigDef *cdef = i->parent->data;
-    // cst = cs_get_type_def(cs, i->parent->type);
-
-    // if (cst->destroy)
-    //   cst->destroy(cs, &i->var, cdef);
-
     FREE(&i->name);
     FREE(&i);
   }
@@ -107,7 +101,7 @@ static void destroy(int type, void *obj, intptr_t data)
     if (cst && cst->destroy)
       cst->destroy(cs, cdef->var, cdef);
 
-    /* QWQ If we allocated the initial value, clean it up */
+    /* If we allocated the initial value, clean it up */
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
   }
@@ -281,7 +275,7 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
     return false;
 
   if (cs->types[type].name)
-    return false; // already registered?
+    return false; /* already registered */
 
   cs->types[type] = *cst;
   return true;
@@ -362,7 +356,6 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
   if (!cs || !fn)
     return; /* LCOV_EXCL_LINE */
 
-  // check for dupes
   for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (cs->listeners[i] == fn)
@@ -733,11 +726,11 @@ int cs_he_string_get(const struct ConfigSet *cs, struct HashElem *he, struct Buf
 
   if ((he->type & DT_INHERITED) && (DTYPE(he->type) != 0))
   {
-    var = &i->var; // Local value
+    var = &i->var; /* Local value */
   }
   else
   {
-    var = cdef->var; // Normal var
+    var = cdef->var; /* Normal var */
   }
 
   if (!cst)

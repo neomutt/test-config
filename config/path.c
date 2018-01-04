@@ -84,6 +84,8 @@ static void path_destroy(const struct ConfigSet *cs, void *var, const struct Con
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the config item's initial value will be set.
  */
 static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                            const char *value, struct Buffer *err)
@@ -109,7 +111,6 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
 
   if (var)
   {
-    // ordinary variable setting
     path_destroy(cs, var, cdef);
 
     const char *str = mutt_str_strdup(value);
@@ -120,11 +121,10 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   }
   else
   {
-    // we're already using the initial value
+    /* we're already using the initial value */
     if (*(char **) cdef->var == (char *) cdef->initial)
       *(char **) cdef->var = mutt_str_strdup((char *) cdef->initial);
 
-    // already set default/initial value
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 
@@ -143,7 +143,7 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  *
- * If var is NULL, then the initial value is returned.
+ * If var is NULL, then the config item's initial value will be returned.
  */
 static int path_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)

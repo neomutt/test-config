@@ -75,6 +75,8 @@ const char *bool_values[] = {
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the config item's initial value will be set.
  */
 static int bool_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                            const char *value, struct Buffer *err)
@@ -126,7 +128,7 @@ static int bool_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  *
- * If var is NULL, then the initial value is returned.
+ * If var is NULL, then the config item's initial value will be returned.
  */
 static int bool_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)

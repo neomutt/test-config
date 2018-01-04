@@ -102,7 +102,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     addr = mutt_mem_calloc(1, sizeof(*addr));
     addr->personal = mutt_str_strdup((const char *) value);
     addr->mailbox = mutt_str_strdup("dummy1");
-    //XXX rfc822_parse_adrlist(NULL, p);
+    /* XXX rfc822_parse_adrlist(NULL, p); */
   }
 
   int rc;
@@ -151,7 +151,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  *
- * If var is NULL, then the initial value is returned.
+ * If var is NULL, then the config item's initial value will be returned.
  */
 static int address_string_get(const struct ConfigSet *cs, void *var,
                               const struct ConfigDef *cdef, struct Buffer *result)

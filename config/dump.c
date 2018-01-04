@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mutt/buffer.h"
+#include "mutt/debug.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
@@ -141,8 +142,14 @@ struct HashElem **get_elem_list(struct ConfigSet *cs)
 
   struct HashElem *he = NULL;
   while ((he = mutt_hash_walk(cs->hash, &walk)))
+  {
     list[index++] = he;
-  //XXX not range checked
+    if (index == 1022)
+    {
+      mutt_debug(1, "Too many config items to sort\n");
+      break;
+    }
+  }
 
   qsort(list, index, sizeof(struct HashElem *), elem_list_sort);
 

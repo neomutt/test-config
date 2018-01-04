@@ -84,6 +84,8 @@ static void string_destroy(const struct ConfigSet *cs, void *var, const struct C
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the config item's initial value will be set.
  */
 static int string_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                              const char *value, struct Buffer *err)
@@ -109,7 +111,6 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
 
   if (var)
   {
-    // ordinary variable setting
     string_destroy(cs, var, cdef);
 
     const char *str = mutt_str_strdup(value);
@@ -120,11 +121,10 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
   }
   else
   {
-    // we're already using the initial value
+    /* we're already using the initial value */
     if (*(char **) cdef->var == (char *) cdef->initial)
       *(char **) cdef->var = mutt_str_strdup((char *) cdef->initial);
 
-    // already set default/initial value
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 
@@ -143,7 +143,7 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  *
- * If var is NULL, then the initial value is returned.
+ * If var is NULL, then the config item's initial value will be returned.
  */
 static int string_string_get(const struct ConfigSet *cs, void *var,
                              const struct ConfigDef *cdef, struct Buffer *result)

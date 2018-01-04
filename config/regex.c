@@ -84,6 +84,8 @@ static void regex_destroy(const struct ConfigSet *cs, void *var, const struct Co
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the config item's initial value will be set.
  */
 static int regex_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                             const char *value, struct Buffer *err)
@@ -124,7 +126,6 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
 
   if (var)
   {
-    // ordinary variable setting
     regex_destroy(cs, var, cdef);
 
     *(struct Regex **) var = r;
@@ -134,7 +135,6 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
   }
   else
   {
-    // already set default/initial value
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 
@@ -153,7 +153,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  *
- * If var is NULL, then the initial value is returned.
+ * If var is NULL, then the config item's initial value will be returned.
  */
 static int regex_string_get(const struct ConfigSet *cs, void *var,
                             const struct ConfigDef *cdef, struct Buffer *result)

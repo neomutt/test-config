@@ -87,7 +87,7 @@ struct MbTable *mbtable_parse(const char *s)
   {
     if (k == (size_t)(-1) || k == (size_t)(-2))
     {
-      //QWQ put message in err; fail? warning?
+      /* XXX put message in err buffer; fail? warning? */
       mutt_debug(1, "mbtable_parse: mbrtowc returned %d converting %s in %s\n",
                  (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
       if (k == (size_t)(-1))
@@ -131,6 +131,8 @@ static void mbtable_destroy(const struct ConfigSet *cs, void *var, const struct 
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the config item's initial value will be set.
  */
 static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                               const char *value, struct Buffer *err)
@@ -165,7 +167,6 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
 
   if (var)
   {
-    // ordinary variable setting
     mbtable_destroy(cs, var, cdef);
 
     *(struct MbTable **) var = table;
@@ -175,7 +176,6 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
   }
   else
   {
-    // already set default/initial value
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 
@@ -194,7 +194,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  *
- * If var is NULL, then the initial value is returned.
+ * If var is NULL, then the config item's initial value will be returned.
  */
 static int mbtable_string_get(const struct ConfigSet *cs, void *var,
                               const struct ConfigDef *cdef, struct Buffer *result)
@@ -334,17 +334,6 @@ void mbtable_init(struct ConfigSet *cs)
     mbtable_destroy,
   };
   cs_register_type(cs, DT_MBTABLE, &cst_mbtable);
-}
-
-/**
- * mbtable_create - Create an MbTable from a string
- * @param str String of multibyte characters
- * @retval ptr New MbTable object
- */
-struct MbTable *mbtable_create(const char *str)
-{
-  //QWQ DROP this function
-  return mbtable_parse(str);
 }
 
 /**
