@@ -75,7 +75,7 @@ dummy_dirs:
 	(cd test   && rm -f test   && ln -s . test)
 
 coveralls: dummy_dirs all test force
-	coveralls -e mutt -e test -e main.c
+	coveralls -e mutt -e test -e dump -e main.c -e config/dump.c
 
 lcov: all test force
 	$(RM) lcov
