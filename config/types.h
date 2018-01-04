@@ -44,7 +44,7 @@
 
 /* Private config item flags */
 #define DT_INHERITED    0x0200 /**< Config item is inherited */
-#define DT_INITIAL_SET  0x0400 /**< QWQ Config item has had its initial value set */
+#define DT_INITIAL_SET  0x0400 /**< Config item must have its initial value freed */
 #define DT_DISABLED     0x0800 /**< Config item is disabled */
 #define DT_MY_CONFIG    0x1000 /**< Config item is a "my_" variable */
 

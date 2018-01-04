@@ -81,7 +81,7 @@ static int quad_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
-  for (unsigned int i = 0; i < mutt_array_size(quad_values); i++)
+  for (size_t i = 0; i < mutt_array_size(quad_values); i++)
   {
     if (mutt_str_strcasecmp(quad_values[i], value) == 0)
     {
@@ -105,13 +105,9 @@ static int quad_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   }
 
   if (var)
-  {
     *(char *) var = num;
-  }
   else
-  {
     cdef->initial = num;
-  }
 
   return CSR_SUCCESS;
 }
@@ -248,7 +244,7 @@ static int quad_toggle(int opt)
  * @param err Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  *
- * @sa toggle_quadoption0()
+ * @sa quad_toggle()
  */
 int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {

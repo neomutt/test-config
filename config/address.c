@@ -85,6 +85,8 @@ static void address_destroy(const struct ConfigSet *cs, void *var, const struct 
  * @param value Value to set
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
+ *
+ * If var is NULL, then the config item's initial value will be set.
  */
 static int address_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                               const char *value, struct Buffer *err)
@@ -94,8 +96,8 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
 
   struct Address *addr = NULL;
 
-  // An empty address "" will be stored as NULL
-  if (value && (value[0] != '\0') && var)
+  /* An empty address "" will be stored as NULL */
+  if (var && value && (value[0] != '\0'))
   {
     addr = mutt_mem_calloc(1, sizeof(*addr));
     addr->personal = mutt_str_strdup((const char *) value);
@@ -120,7 +122,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
 
   if (var)
   {
-    // ordinary variable setting
+    /* ordinary variable setting */
     address_destroy(cs, var, cdef);
 
     *(struct Address **) var = addr;
@@ -130,7 +132,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
   }
   else
   {
-    // already set default/initial value
+    /* set the default/initial value */
     if (cdef->type & DT_INITIAL_SET)
       FREE(&cdef->initial);
 

@@ -76,7 +76,7 @@ static int magic_string_set(const struct ConfigSet *cs, void *var, struct Config
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
-  for (unsigned int i = 0; i < mutt_array_size(magic_values); i++)
+  for (size_t i = 0; i < mutt_array_size(magic_values); i++)
   {
     if (mutt_str_strcasecmp(magic_values[i], value) == 0)
     {
@@ -100,13 +100,9 @@ static int magic_string_set(const struct ConfigSet *cs, void *var, struct Config
   }
 
   if (var)
-  {
     *(short *) var = num;
-  }
   else
-  {
     cdef->initial = num;
-  }
 
   return CSR_SUCCESS;
 }

@@ -34,19 +34,19 @@
  * | #SortMethods        | Sort methods for '$sort' for the index
  * | #SortSidebarMethods | Sort methods for the sidebar
  *
- * | Function          | Description
- * | :---------------- | :---------------------------------
- * | sort_init()       | Register the Sort config type
+ * | Function             | Description
+ * | :------------------- | :---------------------------------
+ * | sort_init()          | Register the Sort config type
  *
  * These functions are private and used by the config set.
  *
- * | Function          | Description
- * | :---------------- | :---------------------------------
- * | sort_native_get() | Get an int from a Sort config item
- * | sort_native_set() | Set a Sort config item by int
- * | sort_reset()      | Reset a Sort to its initial value
- * | sort_string_get() | Get a Sort as a string
- * | sort_string_set() | Set a Sort by string
+ * | Function             | Description
+ * | :------------------- | :---------------------------------
+ * | sort_native_get()    | Get an int from a Sort config item
+ * | sort_native_set()    | Set a Sort config item by int
+ * | sort_reset()         | Reset a Sort to its initial value
+ * | sort_string_get()    | Get a Sort as a string
+ * | sort_string_set()    | Set a Sort by string
  */
 
 #include "config.h"
@@ -154,44 +154,6 @@ const struct Mapping SortSidebarMethods[] = {
 // clang-format on
 
 /**
- * find_string - Lookup a sort string
- * @param map   Mapping between strings and constants
- * @param value Sort code to lookup, e.g. #SORT_ADDRESS
- * @retval ptr String for sort ID
- * @retval NULL No match
- */
-static const char *find_string(const struct Mapping *map, int value)
-{
-  if (!map)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  for (int i = 0; map[i].name; i++)
-    if (map[i].value == value)
-      return map[i].name;
-
-  return NULL;
-}
-
-/**
- * find_id - Lookup a sort ID
- * @param map Mapping between strings and constants
- * @param str Sort string to find, e.g. "alpha"
- * @retval int ID matching string, e.g. #SORT_ADDRESS
- * @retval int -1 No match
- */
-static int find_id(const struct Mapping *map, const char *str)
-{
-  if (!map || !str)
-    return -1; /* LCOV_EXCL_LINE */
-
-  for (int i = 0; map[i].name; i++)
-    if (mutt_str_strcasecmp(map[i].name, str) == 0)
-      return map[i].value;
-
-  return -1;
-}
-
-/**
  * sort_string_set - Set a Sort by string
  * @param cs    Config items
  * @param var   Variable to set
@@ -211,22 +173,22 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   switch (cdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
-      id = find_id(SortMethods, value);
+      id = mutt_map_get_value(value, SortMethods);
       break;
     case DT_SORT_ALIAS:
-      id = find_id(SortAliasMethods, value);
+      id = mutt_map_get_value(value, SortAliasMethods);
       break;
     case DT_SORT_AUX:
-      id = find_id(SortAuxMethods, value);
+      id = mutt_map_get_value(value, SortAuxMethods);
       break;
     case DT_SORT_BROWSER:
-      id = find_id(SortBrowserMethods, value);
+      id = mutt_map_get_value(value, SortBrowserMethods);
       break;
     case DT_SORT_KEYS:
-      id = find_id(SortKeyMethods, value);
+      id = mutt_map_get_value(value, SortKeyMethods);
       break;
     case DT_SORT_SIDEBAR:
-      id = find_id(SortSidebarMethods, value);
+      id = mutt_map_get_value(value, SortSidebarMethods);
       break;
     default:
       mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
@@ -249,13 +211,9 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   }
 
   if (var)
-  {
     *(short *) var = id;
-  }
   else
-  {
     cdef->initial = id;
-  }
 
   return CSR_SUCCESS;
 }
@@ -295,22 +253,22 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
   switch (cdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
-      str = find_string(SortMethods, sort);
+      str = mutt_map_get_name(sort, SortMethods);
       break;
     case DT_SORT_ALIAS:
-      str = find_string(SortAliasMethods, sort);
+      str = mutt_map_get_name(sort, SortAliasMethods);
       break;
     case DT_SORT_AUX:
-      str = find_string(SortAuxMethods, sort);
+      str = mutt_map_get_name(sort, SortAuxMethods);
       break;
     case DT_SORT_BROWSER:
-      str = find_string(SortBrowserMethods, sort);
+      str = mutt_map_get_name(sort, SortBrowserMethods);
       break;
     case DT_SORT_KEYS:
-      str = find_string(SortKeyMethods, sort);
+      str = mutt_map_get_name(sort, SortKeyMethods);
       break;
     case DT_SORT_SIDEBAR:
-      str = find_string(SortSidebarMethods, sort);
+      str = mutt_map_get_name(sort, SortSidebarMethods);
       break;
     default:
       mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
@@ -349,22 +307,22 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
   switch (cdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
-      str = find_string(SortMethods, value);
+      str = mutt_map_get_name(value, SortMethods);
       break;
     case DT_SORT_ALIAS:
-      str = find_string(SortAliasMethods, value);
+      str = mutt_map_get_name(value, SortAliasMethods);
       break;
     case DT_SORT_AUX:
-      str = find_string(SortAuxMethods, value);
+      str = mutt_map_get_name(value, SortAuxMethods);
       break;
     case DT_SORT_BROWSER:
-      str = find_string(SortBrowserMethods, value);
+      str = mutt_map_get_name(value, SortBrowserMethods);
       break;
     case DT_SORT_KEYS:
-      str = find_string(SortKeyMethods, value);
+      str = mutt_map_get_name(value, SortKeyMethods);
       break;
     case DT_SORT_SIDEBAR:
-      str = find_string(SortSidebarMethods, value);
+      str = mutt_map_get_name(value, SortSidebarMethods);
       break;
     default:
       mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);

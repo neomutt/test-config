@@ -33,6 +33,7 @@
  * | cs_get_elem()           | Get the HashElem representing a config item
  * | cs_get_type_def()       | Get the definition for a type
  * | cs_he_initial_get()     | Get the initial, or parent, value of a config item
+ * | cs_he_initial_set()     | Set the initial value of a config item
  * | cs_he_native_get()      | Natively get the value of a HashElem config item
  * | cs_he_native_set()      | Natively set the value of a HashElem config item
  * | cs_he_reset()           | Reset a config item to its initial value
@@ -44,8 +45,8 @@
  * | cs_register_type()      | Register a type of config item
  * | cs_register_variables() | Register a set of config items
  * | cs_remove_listener()    | Remove a listener (callback function)
- * | cs_set_initial_value()  | Override the initial value of a config item
  * | cs_str_initial_get()    | Get the initial, or parent, value of a config item
+ * | cs_str_initial_set()    | Set the initial value of a config item
  * | cs_str_native_get()     | Natively get the value of a string config item
  * | cs_str_native_set()     | Natively set the value of a string config item
  * | cs_str_reset()          | Reset a config item to its initial value
@@ -305,7 +306,7 @@ bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], 
 
   bool rc = true;
 
-  for (int i = 0; vars[i].name; i++)
+  for (size_t i = 0; vars[i].name; i++)
   {
     if (!reg_one_var(cs, &vars[i], &err))
     {
@@ -362,7 +363,7 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
     return; /* LCOV_EXCL_LINE */
 
   // check for dupes
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (cs->listeners[i] == fn)
     {
@@ -371,7 +372,7 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
     }
   }
 
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (!cs->listeners[i])
     {
@@ -391,7 +392,7 @@ void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
   if (!cs || !fn)
     return; /* LCOV_EXCL_LINE */
 
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (cs->listeners[i] == fn)
     {
@@ -415,7 +416,7 @@ void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
   if (!cs || !he || !name)
     return; /* LCOV_EXCL_LINE */
 
-  for (unsigned int i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
   {
     if (!cs->listeners[i])
       return;

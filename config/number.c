@@ -86,13 +86,9 @@ static int number_string_set(const struct ConfigSet *cs, void *var, struct Confi
   }
 
   if (var)
-  {
     *(short *) var = num;
-  }
   else
-  {
     cdef->initial = num;
-  }
 
   return CSR_SUCCESS;
 }

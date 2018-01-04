@@ -33,7 +33,7 @@ struct ConfigSet;
  */
 struct Account
 {
-  char *name;                 /**< Name of account */
+  char *name;                 /**< Name of Account */
   const struct ConfigSet *cs; /**< Parent ConfigSet */
   const char **var_names;     /**< Array of the names of local config items */
   int num_vars;               /**< Number of local config items */

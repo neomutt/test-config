@@ -41,7 +41,7 @@ struct MbTable
 };
 
 void mbtable_init(struct ConfigSet *cs);
-struct MbTable *mbtable_create(const char *str);
+struct MbTable *mbtable_parse(const char *str);
 void mbtable_free(struct MbTable **table);
 
 #endif /* _CONFIG_MBTABLE_H */

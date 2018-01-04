@@ -74,7 +74,7 @@ struct Account *ac_create(const struct ConfigSet *cs, const char *name,
   bool success = true;
   char acname[64];
 
-  for (int i = 0; i < ac->num_vars; i++)
+  for (size_t i = 0; i < ac->num_vars; i++)
   {
     struct HashElem *parent = cs_get_elem(cs, ac->var_names[i]);
     if (!parent)
@@ -117,7 +117,7 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
 
-  for (int i = 0; i < (*ac)->num_vars; i++)
+  for (size_t i = 0; i < (*ac)->num_vars; i++)
   {
     snprintf(child, sizeof(child), "%s:%s", (*ac)->name, (*ac)->var_names[i]);
     mutt_buffer_reset(&err);

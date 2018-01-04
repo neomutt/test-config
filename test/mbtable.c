@@ -274,7 +274,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct MbTable *t = mbtable_create("hello");
+  struct MbTable *t = mbtable_parse("hello");
   char *name = "Ilama";
   char *mb = NULL;
   bool result = false;
@@ -383,7 +383,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct MbTable *t = mbtable_create("world");
+  struct MbTable *t = mbtable_parse("world");
   bool result = false;
 
   char *name = "Mango";
