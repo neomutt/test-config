@@ -58,7 +58,9 @@
 /**
  * magic_values - Valid strings for mailbox types
  */
-const char *magic_values[] = { NULL, "mbox", "MMDF", "MH", "Maildir" };
+const char *magic_values[] = {
+  NULL, "mbox", "MMDF", "MH", "Maildir", NULL,
+};
 
 /**
  * magic_string_set - Set a Mailbox Magic by string
@@ -76,7 +78,7 @@ static int magic_string_set(const struct ConfigSet *cs, void *var, struct Config
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
-  for (size_t i = 0; i < mutt_array_size(magic_values); i++)
+  for (size_t i = 1; magic_values[i]; i++)
   {
     if (mutt_str_strcasecmp(magic_values[i], value) == 0)
     {
@@ -123,20 +125,20 @@ static int magic_string_get(const struct ConfigSet *cs, void *var,
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  unsigned int index;
+  unsigned int value;
 
   if (var)
-    index = *(short *) var;
+    value = *(short *) var;
   else
-    index = (int) cdef->initial;
+    value = (int) cdef->initial;
 
-  if ((index < 1) || (index >= mutt_array_size(magic_values)))
+  if ((value < 1) || (value >= (mutt_array_size(magic_values) - 1)))
   {
-    mutt_debug(1, "Variable has an invalid value: %d\n", index);
+    mutt_debug(1, "Variable has an invalid value: %d\n", value);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  mutt_buffer_addstr(result, magic_values[index]);
+  mutt_buffer_addstr(result, magic_values[value]);
   return CSR_SUCCESS;
 }
 
@@ -155,7 +157,7 @@ static int magic_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if ((value < 1) || (value >= mutt_array_size(magic_values)))
+  if ((value < 1) || (value >= (mutt_array_size(magic_values) - 1)))
   {
     mutt_buffer_printf(err, "Invalid magic value: %ld", value);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
