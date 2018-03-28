@@ -256,7 +256,6 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
     mutt_buffer_reset(initial);
     he = list[i];
     int type = he->type;
-    int rc;
 
     if ((type == DT_SYNONYM) && !(flags & CS_DUMP_SHOW_SYNONYMS))
       continue;
@@ -270,7 +269,7 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
       if ((flags & CS_DUMP_ONLY_CHANGED) || !(flags & CS_DUMP_HIDE_VALUE) ||
           (flags & CS_DUMP_SHOW_DEFAULTS))
       {
-        rc = cs_he_string_get(cs, he, value);
+        int rc = cs_he_string_get(cs, he, value);
         if (CSR_RESULT(rc) != CSR_SUCCESS)
         {
           result = false;
@@ -300,7 +299,7 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
       /* If necessary, get the default value */
       if (flags & (CS_DUMP_ONLY_CHANGED || CS_DUMP_SHOW_DEFAULTS))
       {
-        rc = cs_he_initial_get(cs, he, initial);
+        int rc = cs_he_initial_get(cs, he, initial);
         if (CSR_RESULT(rc) != CSR_SUCCESS)
         {
           result = false;

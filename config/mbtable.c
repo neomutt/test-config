@@ -319,7 +319,7 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
     result |= CSR_SUC_EMPTY;
 
   *(struct MbTable **) var = table;
-  return CSR_SUCCESS;
+  return result;
 }
 
 /**

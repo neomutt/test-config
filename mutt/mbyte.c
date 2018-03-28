@@ -307,11 +307,8 @@ size_t mutt_mb_mbstowcs(wchar_t **pwbuf, size_t *pwbuflen, size_t i, char *buf)
   wchar_t wc;
   mbstate_t st;
   size_t k;
-  wchar_t *wbuf = NULL;
-  size_t wbuflen;
-
-  wbuf = *pwbuf;
-  wbuflen = *pwbuflen;
+  wchar_t *wbuf = *pwbuf;
+  size_t wbuflen = *pwbuflen;
 
   while (*buf)
   {
