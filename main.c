@@ -1,9 +1,11 @@
 #include "config.h"
+#include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include "dump/dump.h"
+#include "mutt/logging.h"
 #include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
@@ -21,14 +23,20 @@
 
 typedef bool (*test_fn)(void);
 
-/* stdout override */
-int mutt_debug_real(const char *function, const char *file, int line, int level, ...)
+int log_disp_stdout(time_t stamp, const char *file, int line,
+                   const char *function, int level, ...)
 {
+  int err = errno;
+
   va_list ap;
   va_start(ap, level);
   const char *fmt = va_arg(ap, const char *);
-  int ret = vfprintf(stdout, fmt, ap);
+  int ret = vprintf(fmt, ap);
   va_end(ap);
+
+  if (level == LL_PERROR)
+    ret += printf("%s", strerror(err));
+
   return ret;
 }
 
@@ -70,6 +78,8 @@ int main(int argc, char *argv[])
       printf("    %s\n", test[i].name);
     return 1;
   }
+
+  MuttLogger = log_disp_stdout;
 
   for (; --argc > 0; argv++)
   {

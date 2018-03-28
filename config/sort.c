@@ -24,29 +24,6 @@
  * @page config-sort Type: Sorting
  *
  * Type representing a sort option.
- *
- * | Data                | Description
- * | :------------------ | :-----------------------------------------
- * | #SortAliasMethods   | Sort methods for email aliases
- * | #SortAuxMethods     | Sort methods for '$sort_aux' for the index
- * | #SortBrowserMethods | Sort methods for the folder/dir browser
- * | #SortKeyMethods     | Sort methods for encryption keys
- * | #SortMethods        | Sort methods for '$sort' for the index
- * | #SortSidebarMethods | Sort methods for the sidebar
- *
- * | Function             | Description
- * | :------------------- | :---------------------------------
- * | sort_init()          | Register the Sort config type
- *
- * These functions are private and used by the config set.
- *
- * | Function             | Description
- * | :------------------- | :---------------------------------
- * | sort_native_get()    | Get an int from a Sort config item
- * | sort_native_set()    | Set a Sort config item by int
- * | sort_reset()         | Reset a Sort to its initial value
- * | sort_string_get()    | Get a Sort as a string
- * | sort_string_set()    | Set a Sort by string
  */
 
 #include "config.h"
@@ -54,7 +31,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
+#include "mutt/logging.h"
 #include "mutt/mapping.h"
 #include "mutt/string2.h"
 #include "sort.h"

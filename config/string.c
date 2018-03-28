@@ -24,21 +24,6 @@
  * @page config-string Type: String
  *
  * Type representing a string.
- *
- * | Function            | Description
- * | :------------------ | :-------------------------------------
- * | string_init()       | Register the String config type
- *
- * These functions are private and used by the config set.
- *
- * | Function            | Description
- * | :------------------ | :-------------------------------------
- * | string_destroy()    | Destroy a String
- * | string_native_get() | Get a string from a String config item
- * | string_native_set() | Set a String config item by string
- * | string_reset()      | Reset a String to its initial value
- * | string_string_get() | Get a String as a string
- * | string_string_set() | Set a String by string
  */
 
 #include "config.h"

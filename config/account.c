@@ -24,13 +24,6 @@
  * @page config-account Account-specific config items
  *
  * A collection of account-specific config items.
- *
- * | Function       | Description
- * | :------------- | :----------------------------------
- * | ac_create()    | Create an Account
- * | ac_free()      | Free an Account object
- * | ac_get_value() | Get an Account-specific config item
- * | ac_set_value() | Set an Account-specific config item
  */
 
 #include "config.h"
@@ -38,7 +31,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
+#include "mutt/logging.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"

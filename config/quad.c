@@ -24,26 +24,6 @@
  * @page config-quad Type: Quad-option
  *
  * Type representing a quad-option.
- *
- * | Data             | Description
- * | :--------------- | :-------------------------------------
- * | #quad_values     | Valid strings for creating a QuadValue
- *
- * | Function          | Description
- * | :---------------- | :-----------------------------------------------
- * | quad_he_toggle()  | Toggle the value of a quad
- * | quad_init()       | Register the Quad-option config type
- *
- * These functions are private and used by the config set.
- *
- * | Function          | Description
- * | :---------------- | :-----------------------------------------------
- * | quad_native_get() | Get an int object from a Quad-option config item
- * | quad_native_set() | Set a Quad-option config item by int
- * | quad_reset()      | Reset a Quad-option to its initial value
- * | quad_string_get() | Get a Quad-option as a string
- * | quad_string_set() | Set a Quad-option by string
- * | quad_toggle()     | Toggle (invert) the value of a quad option
  */
 
 #include "config.h"
@@ -51,7 +31,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
+#include "mutt/logging.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"

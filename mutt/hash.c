@@ -25,21 +25,6 @@
  * @page hash Hash table data structure
  *
  * Hash table data structure.
- *
- * | Function                | Description
- * | :---------------------- | :---------------------------------------------------------
- * | mutt_hash_create()      | Create a new Hash table (with string keys)
- * | mutt_hash_delete()      | Remove an element from a Hash table
- * | mutt_hash_destroy()     | Destroy a hash table
- * | mutt_hash_find()        | Find the HashElem data in a Hash table element using a key
- * | mutt_hash_find_bucket() | Find the HashElem in a Hash table element using a key
- * | mutt_hash_find_elem()   | Find the HashElem in a Hash table element using a key
- * | mutt_hash_insert()      | Add a new element to the Hash table (with string keys)
- * | mutt_hash_int_create()  | Create a new Hash table (with integer keys)
- * | mutt_hash_int_delete()  | Remove an element from a Hash table
- * | mutt_hash_int_find()    | Find the HashElem data in a Hash table element using a key
- * | mutt_hash_int_insert()  | Add a new element to the Hash table (with integer keys)
- * | mutt_hash_walk()        | Iterate through all the HashElem's in a Hash table
  */
 
 #include "config.h"
@@ -161,18 +146,17 @@ static struct Hash *new_hash(int nelem)
 
 /**
  * union_hash_insert - Insert into a hash table using a union as a key
- * @param table     Hash table to update
- * @param key       Key to hash on
- * @param type      Data type
- * @param data      Data to associate with `key'
- * @retval -1 on error
- * @retval >=0 on success, index into the hash table
+ * @param table Hash table to update
+ * @param key   Key to hash on
+ * @param type  Data type
+ * @param data  Data to associate with key
+ * @retval ptr Newly inserted HashElem
  */
 static struct HashElem *union_hash_insert(struct Hash *table, union HashKey key,
                                           int type, void *data)
 {
   struct HashElem *ptr = mutt_mem_malloc(sizeof(struct HashElem));
-  int h = table->gen_hash(key, table->nelem);
+  unsigned int h = table->gen_hash(key, table->nelem);
   ptr->key = key;
   ptr->data = data;
   ptr->type = type;
@@ -326,12 +310,26 @@ struct Hash *mutt_hash_int_create(int nelem, int flags)
   return table;
 }
 
-void mutt_hash_set_destructor(struct Hash *hash, hash_destructor fn, intptr_t fn_data)
+/**
+ * mutt_hash_set_destructor - Set the destructor for a Hash Table
+ * @param table   Hash table to use
+ * @param fn      Callback function to free Hash Table's resources
+ * @param fn_data Data to pass to the callback function
+ */
+void mutt_hash_set_destructor(struct Hash *table, hash_destructor fn, intptr_t fn_data)
 {
-  hash->destroy = fn;
-  hash->dest_data = fn_data;
+  table->destroy = fn;
+  table->dest_data = fn_data;
 }
 
+/**
+ * mutt_hash_typed_insert - Insert a string with type info into a Hash Table
+ * @param table  Hash table to use
+ * @param strkey String key
+ * @param type   Type to associate with the key
+ * @param data   Private data associated with the key
+ * @retval ptr Newly inserted HashElem
+ */
 struct HashElem *mutt_hash_typed_insert(struct Hash *table, const char *strkey,
                                         int type, void *data)
 {
@@ -345,8 +343,7 @@ struct HashElem *mutt_hash_typed_insert(struct Hash *table, const char *strkey,
  * @param table  Hash table (with string keys)
  * @param strkey String key
  * @param data   Private data associated with the key
- * @retval -1 on error
- * @retval >=0 on success, index into the hash table
+ * @retval ptr Newly inserted HashElem
  */
 struct HashElem *mutt_hash_insert(struct Hash *table, const char *strkey, void *data)
 {
@@ -358,8 +355,7 @@ struct HashElem *mutt_hash_insert(struct Hash *table, const char *strkey, void *
  * @param table  Hash table (with integer keys)
  * @param intkey Integer key
  * @param data   Private data associated with the key
- * @retval -1 on error
- * @retval >=0 on success, index into the hash table
+ * @retval ptr Newly inserted HashElem
  */
 struct HashElem *mutt_hash_int_insert(struct Hash *table, unsigned int intkey, void *data)
 {
@@ -456,7 +452,7 @@ void mutt_hash_int_delete(struct Hash *table, unsigned int intkey, const void *d
 
 /**
  * mutt_hash_destroy - Destroy a hash table
- * @param ptr     Pointer to the hash table to be freed
+ * @param ptr Hash Table to be freed
  */
 void mutt_hash_destroy(struct Hash **ptr)
 {

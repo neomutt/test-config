@@ -24,16 +24,6 @@
  * @page config-dump Dump all the config
  *
  * Dump all the config items in various formats.
- *
- * | Function           | Description
- * | :----------------- | :-----------------------------------------------
- * | dump_config()      | Write all the config to stdout
- * | dump_config_mutt() | Dump the config in the style of Mutt
- * | dump_config_neo()  | Dump the config in the style of NeoMutt
- * | elem_list_sort()   | Sort two HashElem pointers to config
- * | escape_string()    | Write a string to a buffer, escaping special characters
- * | get_elem_list()    | Create a sorted list of all config items
- * | pretty_var()       | Escape and stringify a config item value
  */
 
 #include "config.h"
@@ -42,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
+#include "mutt/logging.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"

@@ -24,25 +24,6 @@
  * @page config-bool Type: Boolean
  *
  * Type representing a boolean.
- *
- * | Data             | Description
- * | :--------------- | :--------------------------------
- * | #bool_values     | Valid strings for creating a Bool
- *
- * | Function          | Description
- * | :---------------- | :---------------------------------
- * | bool_he_toggle()  | Toggle the value of a bool
- * | bool_init()       | Register the Bool config type
- *
- * These functions are private and used by the config set.
- *
- * | Function          | Description
- * | :---------------- | :---------------------------------
- * | bool_native_get() | Get a bool from a Bool config item
- * | bool_native_set() | Set a Bool config item by bool
- * | bool_reset()      | Reset a Bool to its initial value
- * | bool_string_get() | Get a Bool as a string
- * | bool_string_set() | Set a Bool by string
  */
 
 #include "config.h"
@@ -51,7 +32,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
+#include "mutt/logging.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"

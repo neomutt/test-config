@@ -24,23 +24,6 @@
  * @page config-address Type: Email address
  *
  * Type representing an email address.
- *
- * | Function             | Description
- * | :------------------- | :------------------------------------------------
- * | address_create()     | Create an Address from a string
- * | address_free()       | Free an Address object
- * | address_init()       | Register the Address config type
- *
- * These functions are private and used by the config set.
- *
- * | Function             | Description
- * | :------------------- | :------------------------------------------------
- * | address_destroy()    | Destroy an Address object
- * | address_native_get() | Get an Address object from an Address config item
- * | address_native_set() | Set an Address config item by Address object
- * | address_reset()      | Reset an Address to its initial value
- * | address_string_get() | Get an Address as a string
- * | address_string_set() | Set an Address by string
  */
 
 #include "config.h"

@@ -24,34 +24,6 @@
  * @page config-set Config Set
  *
  * A collection of config items.
- *
- * | Function                | Description
- * | :---------------------- | :-----------------------------------------------
- * | cs_add_listener()       | Add a listener (callback function)
- * | cs_create()             | Create a new Config Set
- * | cs_free()               | Free a Config Set
- * | cs_get_elem()           | Get the HashElem representing a config item
- * | cs_get_type_def()       | Get the definition for a type
- * | cs_he_initial_get()     | Get the initial, or parent, value of a config item
- * | cs_he_initial_set()     | Set the initial value of a config item
- * | cs_he_native_get()      | Natively get the value of a HashElem config item
- * | cs_he_native_set()      | Natively set the value of a HashElem config item
- * | cs_he_reset()           | Reset a config item to its initial value
- * | cs_he_string_get()      | Get a config item as a string
- * | cs_he_string_set()      | Set a config item by string
- * | cs_inherit_variable()   | Create in inherited config item
- * | cs_init()               | Initialise a Config Set
- * | cs_notify_listeners()   | Notify all listeners of an event
- * | cs_register_type()      | Register a type of config item
- * | cs_register_variables() | Register a set of config items
- * | cs_remove_listener()    | Remove a listener (callback function)
- * | cs_str_initial_get()    | Get the initial, or parent, value of a config item
- * | cs_str_initial_set()    | Set the initial value of a config item
- * | cs_str_native_get()     | Natively get the value of a string config item
- * | cs_str_native_set()     | Natively set the value of a string config item
- * | cs_str_reset()          | Reset a config item to its initial value
- * | cs_str_string_get()     | Get a config item as a string
- * | cs_str_string_set()     | Set a config item by string
  */
 
 #include "config.h"
@@ -60,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
+#include "mutt/logging.h"
 #include "mutt/hash.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"

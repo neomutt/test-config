@@ -24,23 +24,6 @@
  * @page regex Manage regular expressions
  *
  * Manage regular expressions.
- *
- * | Function                  | Description
- * | :------------------------ | :------------------------------------------
- * | mutt_regexlist_add()      | Compile a regex string and add it to a list
- * | mutt_regexlist_free()     | Free a RegexList object
- * | mutt_regexlist_match()    | Does a string match any Regex in the list?
- * | mutt_regexlist_new()      | Create a new RegexList
- * | mutt_regexlist_remove()   | Remove a Regex from a list
- * | mutt_regex_compile()      | Create an Regex from a string
- * | mutt_regex_create()       | Create an Regex from a string
- * | mutt_regex_free()         | Free a Regex object
- * | mutt_replacelist_add()    | Add a pattern and a template to a list
- * | mutt_replacelist_apply()  | Apply replacements to a buffer
- * | mutt_replacelist_free()   | Free a ReplaceList object
- * | mutt_replacelist_match()  | Does a string match a pattern?
- * | mutt_replacelist_new()    | Create a new ReplaceList
- * | mutt_replacelist_remove() | Remove a pattern from a list
  */
 
 #include "config.h"
@@ -51,7 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "buffer.h"
-#include "debug.h"
+#include "logging.h"
 #include "mbyte.h"
 #include "memory.h"
 #include "message.h"
@@ -175,12 +158,9 @@ int mutt_regexlist_add(struct RegexList **rl, const char *str, int flags, struct
     t = mutt_regexlist_new();
     t->regex = rx;
     if (last)
-    {
       last->next = t;
-      last = last->next;
-    }
     else
-      *rl = last = t;
+      *rl = t;
   }
   else /* duplicate */
     mutt_regex_free(&rx);
@@ -220,6 +200,8 @@ bool mutt_regexlist_match(struct RegexList *rl, const char *str)
 
   for (; rl; rl = rl->next)
   {
+    if (!rl->regex || !rl->regex->regex)
+      continue;
     if (regexec(rl->regex->regex, str, (size_t) 0, (regmatch_t *) 0, (int) 0) == 0)
     {
       mutt_debug(5, "%s matches %s\n", str, rl->regex->pattern);
@@ -367,8 +349,9 @@ int mutt_replacelist_add(struct ReplaceList **rl, const char *pat,
 
   if (t->nmatch > t->regex->regex->re_nsub)
   {
-    snprintf(err->data, err->dsize, "%s", _("Not enough subexpressions for "
-                                            "template"));
+    snprintf(err->data, err->dsize, "%s",
+             _("Not enough subexpressions for "
+               "template"));
     mutt_replacelist_remove(rl, pat);
     return -1;
   }
@@ -462,7 +445,9 @@ char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, c
                 p++;
               for (int i = pmatch[n].rm_so;
                    (i < pmatch[n].rm_eo) && (tlen < LONG_STRING - 1); i++)
+              {
                 dst[tlen++] = src[i];
+              }
             }
           }
           else
@@ -562,7 +547,9 @@ bool mutt_replacelist_match(struct ReplaceList *rl, char *buf, size_t buflen, co
             int idx;
             for (idx = pmatch[n].rm_so;
                  (idx < pmatch[n].rm_eo) && (tlen < buflen - 1); ++idx)
+            {
               buf[tlen++] = str[idx];
+            }
           }
           p = e; /* skip over the parsed integer */
         }

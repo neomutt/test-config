@@ -24,25 +24,6 @@
  * @page config-mbtable Type: Multi-byte character table
  *
  * Type representing a multibyte character table.
- *
- * | Function             | Description
- * | :------------------- | :-----------------------------------------------
- * | mbtable_parse()      | Parse a multibyte string into a table
- * | mbtable_free()       | Free an MbTable object
- * | mbtable_init()       | Register the MbTable config type
- *
- * These functions are private and used by the config set.
- *
- * | Function             | Description
- * | :------------------- | :-----------------------------------------------
- * | mbtable_create()     | Create an MbTable from a string
- * | mbtable_destroy()    | Destroy an MbTable object
- * | mbtable_dup()        | Create a copy of an MbTable object
- * | mbtable_native_get() | Get an MbTable object from a MbTable config item
- * | mbtable_native_set() | Set a MbTable config item by MbTable object
- * | mbtable_reset()      | Reset an MbTable to its initial value
- * | mbtable_string_get() | Get a MbTable as a string
- * | mbtable_string_set() | Set a MbTable by string
  */
 
 #include "config.h"
@@ -51,7 +32,7 @@
 #include <string.h>
 #include <wchar.h>
 #include "mutt/buffer.h"
-#include "mutt/debug.h"
+#include "mutt/logging.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
 #include "config/mbtable.h"
