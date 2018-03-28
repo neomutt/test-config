@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include "dump/dump.h"
 #include "mutt/logging.h"
+#include "dump/dump.h"
 #include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
@@ -24,7 +24,7 @@
 typedef bool (*test_fn)(void);
 
 int log_disp_stdout(time_t stamp, const char *file, int line,
-                   const char *function, int level, ...)
+                    const char *function, int level, ...)
 {
   int err = errno;
 

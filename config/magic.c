@@ -201,7 +201,13 @@ static int magic_reset(const struct ConfigSet *cs, void *var,
 void magic_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_magic = {
-    "magic", magic_string_set, magic_string_get, magic_native_set, magic_native_get, magic_reset, NULL,
+    "magic",
+    magic_string_set,
+    magic_string_get,
+    magic_native_set,
+    magic_native_get,
+    magic_reset,
+    NULL,
   };
   cs_register_type(cs, DT_MAGIC, &cst_magic);
 }

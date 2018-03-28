@@ -184,7 +184,13 @@ static int number_reset(const struct ConfigSet *cs, void *var,
 void number_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_number = {
-    "number", number_string_set, number_string_get, number_native_set, number_native_get, number_reset, NULL,
+    "number",
+    number_string_set,
+    number_string_get,
+    number_native_set,
+    number_native_get,
+    number_reset,
+    NULL,
   };
   cs_register_type(cs, DT_NUMBER, &cst_number);
 }

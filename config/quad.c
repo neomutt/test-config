@@ -31,8 +31,8 @@
 #include <limits.h>
 #include <stdint.h>
 #include "mutt/buffer.h"
-#include "mutt/logging.h"
 #include "mutt/hash.h"
+#include "mutt/logging.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
 #include "set.h"
@@ -204,7 +204,13 @@ static int quad_reset(const struct ConfigSet *cs, void *var,
 void quad_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_quad = {
-    "quad", quad_string_set, quad_string_get, quad_native_set, quad_native_get, quad_reset, NULL,
+    "quad",
+    quad_string_set,
+    quad_string_get,
+    quad_native_set,
+    quad_native_get,
+    quad_reset,
+    NULL,
   };
   cs_register_type(cs, DT_QUAD, &cst_quad);
 }

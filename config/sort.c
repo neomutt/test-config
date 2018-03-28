@@ -369,7 +369,13 @@ static int sort_reset(const struct ConfigSet *cs, void *var,
 void sort_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_sort = {
-    "sort", sort_string_set, sort_string_get, sort_native_set, sort_native_get, sort_reset, NULL,
+    "sort",
+    sort_string_set,
+    sort_string_get,
+    sort_native_set,
+    sort_native_get,
+    sort_reset,
+    NULL,
   };
   cs_register_type(cs, DT_SORT, &cst_sort);
 }

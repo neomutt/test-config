@@ -32,8 +32,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "mutt/buffer.h"
-#include "mutt/logging.h"
 #include "mutt/hash.h"
+#include "mutt/logging.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
 #include "set.h"
@@ -209,7 +209,13 @@ static int bool_reset(const struct ConfigSet *cs, void *var,
 void bool_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_bool = {
-    "boolean", bool_string_set, bool_string_get, bool_native_set, bool_native_get, bool_reset, NULL,
+    "boolean",
+    bool_string_set,
+    bool_string_get,
+    bool_native_set,
+    bool_native_get,
+    bool_reset,
+    NULL,
   };
   cs_register_type(cs, DT_BOOL, &cst_bool);
 }
