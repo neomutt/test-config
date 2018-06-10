@@ -43,10 +43,10 @@
  * SortAliasMethods - Sort methods for email aliases
  */
 const struct Mapping SortAliasMethods[] = {
- { "alias",    SORT_ALIAS },
- { "address",  SORT_ADDRESS },
- { "unsorted", SORT_ORDER },
- { NULL,       0 },
+  { "address",  SORT_ADDRESS },
+  { "alias",    SORT_ALIAS },
+  { "unsorted", SORT_ORDER },
+  { NULL,       0 },
 };
 
 /**
@@ -54,17 +54,17 @@ const struct Mapping SortAliasMethods[] = {
  */
 const struct Mapping SortAuxMethods[] = {
   { "date",          SORT_DATE },
-  { "date-sent",     SORT_DATE },
   { "date-received", SORT_RECEIVED },
-  { "mailbox-order", SORT_ORDER },
-  { "subject",       SORT_SUBJECT },
+  { "date-sent",     SORT_DATE },
   { "from",          SORT_FROM },
+  { "label",         SORT_LABEL },
+  { "mailbox-order", SORT_ORDER },
+  { "score",         SORT_SCORE },
   { "size",          SORT_SIZE },
+  { "spam",          SORT_SPAM },
+  { "subject",       SORT_SUBJECT },
   { "threads",       SORT_DATE },
   { "to",            SORT_TO },
-  { "score",         SORT_SCORE },
-  { "spam",          SORT_SPAM },
-  { "label",         SORT_LABEL },
   { NULL,            0 },
 };
 
@@ -77,6 +77,7 @@ const struct Mapping SortBrowserMethods[] = {
   { "date",     SORT_DATE },
   { "desc",     SORT_DESC },
   { "new",      SORT_UNREAD },
+  { "unread",   SORT_UNREAD },
   { "size",     SORT_SIZE },
   { "unsorted", SORT_ORDER },
   { NULL,       0 },
@@ -98,17 +99,17 @@ const struct Mapping SortKeyMethods[] = {
  */
 const struct Mapping SortMethods[] = {
   { "date",          SORT_DATE },
-  { "date-sent",     SORT_DATE },
   { "date-received", SORT_RECEIVED },
-  { "mailbox-order", SORT_ORDER },
-  { "subject",       SORT_SUBJECT },
+  { "date-sent",     SORT_DATE },
   { "from",          SORT_FROM },
+  { "label",         SORT_LABEL },
+  { "mailbox-order", SORT_ORDER },
+  { "score",         SORT_SCORE },
   { "size",          SORT_SIZE },
+  { "spam",          SORT_SPAM },
+  { "subject",       SORT_SUBJECT },
   { "threads",       SORT_THREADS },
   { "to",            SORT_TO },
-  { "score",         SORT_SCORE },
-  { "spam",          SORT_SPAM },
-  { "label",         SORT_LABEL },
   { NULL,            0 },
 };
 
@@ -148,6 +149,19 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   intptr_t id = -1;
+  int flags = 0;
+
+  if (mutt_str_strncmp("reverse-", value, 8) == 0)
+  {
+    flags |= SORT_REVERSE;
+    value += 8;
+  }
+
+  if (mutt_str_strncmp("last-", value, 5) == 0)
+  {
+    flags |= SORT_LAST;
+    value += 5;
+  }
 
   switch (cdef->type & DT_SUBTYPE_MASK)
   {
@@ -170,7 +184,7 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
       id = mutt_map_get_value(value, SortSidebarMethods);
       break;
     default:
-      mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
+      mutt_debug(1, "Invalid sort type: %u\n", cdef->type & DT_SUBTYPE_MASK);
       return CSR_ERR_CODE;
       break;
   }
@@ -178,15 +192,16 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   if (id < 0)
   {
     mutt_buffer_printf(err, "Invalid sort name: %s", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
+  id |= flags;
   if (cdef->validator)
   {
     int rc = cdef->validator(cs, cdef, (intptr_t) id, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   if (var)
@@ -250,7 +265,7 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
       str = mutt_map_get_name(sort, SortSidebarMethods);
       break;
     default:
-      mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
+      mutt_debug(1, "Invalid sort type: %u\n", cdef->type & DT_SUBTYPE_MASK);
       return CSR_ERR_CODE;
       break;
   }
@@ -259,7 +274,7 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
   {
     mutt_debug(1, "Variable has an invalid value: %d/%d\n",
                cdef->type & DT_SUBTYPE_MASK, sort);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   mutt_buffer_addstr(result, str);
@@ -304,7 +319,7 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
       str = mutt_map_get_name(value, SortSidebarMethods);
       break;
     default:
-      mutt_debug(1, "Invalid sort type: %ld\n", cdef->type & DT_SUBTYPE_MASK);
+      mutt_debug(1, "Invalid sort type: %u\n", cdef->type & DT_SUBTYPE_MASK);
       return CSR_ERR_CODE;
       break;
   }
@@ -312,7 +327,7 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
   if (!str)
   {
     mutt_buffer_printf(err, "Invalid sort type: %ld", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   if (cdef->validator)
@@ -320,7 +335,7 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
     int rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   *(short *) var = value;

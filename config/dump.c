@@ -161,10 +161,14 @@ void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he,
 
   if (DTYPE(he->type) == DT_BOOL)
   {
-    if (value->data[0] == 'y')
+    if ((value->data[0] == 'y') || ((value->data[0] == '"') && (value->data[1] == 'y')))
+    {
       printf("%s is set\n", name);
+    }
     else
+    {
       printf("%s is unset\n", name);
+    }
   }
   else
   {
@@ -287,7 +291,7 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
       }
 
       /* If necessary, get the default value */
-      if (flags & (CS_DUMP_ONLY_CHANGED || CS_DUMP_SHOW_DEFAULTS))
+      if (flags & (CS_DUMP_ONLY_CHANGED | CS_DUMP_SHOW_DEFAULTS))
       {
         int rc = cs_he_initial_get(cs, he, initial);
         if (CSR_RESULT(rc) != CSR_SUCCESS)

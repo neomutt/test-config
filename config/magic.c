@@ -74,7 +74,7 @@ static int magic_string_set(const struct ConfigSet *cs, void *var, struct Config
   if (num < 1)
   {
     mutt_buffer_printf(err, "Invalid magic value: %s", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   if (cdef->validator)
@@ -82,7 +82,7 @@ static int magic_string_set(const struct ConfigSet *cs, void *var, struct Config
     int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   if (var)
@@ -119,7 +119,7 @@ static int magic_string_get(const struct ConfigSet *cs, void *var,
   if ((value < 1) || (value >= (mutt_array_size(magic_values) - 1)))
   {
     mutt_debug(1, "Variable has an invalid value: %d\n", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   mutt_buffer_addstr(result, magic_values[value]);
@@ -144,7 +144,7 @@ static int magic_native_set(const struct ConfigSet *cs, void *var,
   if ((value < 1) || (value >= (mutt_array_size(magic_values) - 1)))
   {
     mutt_buffer_printf(err, "Invalid magic value: %ld", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   if (cdef->validator)
@@ -152,7 +152,7 @@ static int magic_native_set(const struct ConfigSet *cs, void *var,
     int rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   *(short *) var = value;

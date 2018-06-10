@@ -148,7 +148,7 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
  * @param size Number of expected config items
  * @retval ptr New ConfigSet object
  */
-struct ConfigSet *cs_create(int size)
+struct ConfigSet *cs_create(size_t size)
 {
   struct ConfigSet *cs = mutt_mem_malloc(sizeof(*cs));
   cs_init(cs, size);
@@ -160,7 +160,7 @@ struct ConfigSet *cs_create(int size)
  * @param cs   Config items
  * @param size Number of expected config items
  */
-void cs_init(struct ConfigSet *cs, int size)
+void cs_init(struct ConfigSet *cs, size_t size)
 {
   if (!cs)
     return; /* LCOV_EXCL_LINE */

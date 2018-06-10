@@ -97,7 +97,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     if (CSR_RESULT(rc) != CSR_SUCCESS)
     {
       address_destroy(cs, &addr, cdef);
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
     }
   }
 
@@ -160,7 +160,7 @@ static int address_string_get(const struct ConfigSet *cs, void *var,
   }
 
   if (!str)
-    return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
+    return (CSR_SUCCESS | CSR_SUC_EMPTY); /* empty string */
 
   mutt_buffer_addstr(result, str);
   return CSR_SUCCESS;
@@ -205,7 +205,7 @@ static int address_native_set(const struct ConfigSet *cs, void *var,
     rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   address_free(var);

@@ -89,7 +89,7 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
     rc = cdef->validator(cs, cdef, (intptr_t) value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   rc = CSR_SUCCESS;
@@ -144,7 +144,7 @@ static int string_string_get(const struct ConfigSet *cs, void *var,
     str = (char *) cdef->initial;
 
   if (!str)
-    return CSR_SUCCESS | CSR_SUC_EMPTY; /* empty string */
+    return (CSR_SUCCESS | CSR_SUC_EMPTY); /* empty string */
 
   mutt_buffer_addstr(result, str);
   return CSR_SUCCESS;
@@ -179,7 +179,7 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
     rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   string_destroy(cs, var, cdef);

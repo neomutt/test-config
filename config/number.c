@@ -56,13 +56,13 @@ static int number_string_set(const struct ConfigSet *cs, void *var, struct Confi
   if (!value || !value[0] || (mutt_str_atoi(value, &num) < 0))
   {
     mutt_buffer_printf(err, "Invalid number: %s", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   if ((num < SHRT_MIN) || (num > SHRT_MAX))
   {
     mutt_buffer_printf(err, "Number is too big: %s", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   if (cdef->validator)
@@ -70,7 +70,7 @@ static int number_string_set(const struct ConfigSet *cs, void *var, struct Confi
     int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   if (var)
@@ -127,7 +127,7 @@ static int number_native_set(const struct ConfigSet *cs, void *var,
   if ((value < SHRT_MIN) || (value > SHRT_MAX))
   {
     mutt_buffer_printf(err, "Invalid number: %ld", value);
-    return CSR_ERR_INVALID | CSR_INV_TYPE;
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
   if (cdef->validator)
@@ -135,7 +135,7 @@ static int number_native_set(const struct ConfigSet *cs, void *var,
     int rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return rc | CSR_INV_VALIDATOR;
+      return (rc | CSR_INV_VALIDATOR);
   }
 
   *(short *) var = value;

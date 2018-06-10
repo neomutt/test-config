@@ -1,4 +1,5 @@
 CC	= gcc
+# CC	= clang
 RM	= rm -fr
 MKDIR	= mkdir -p
 
@@ -22,12 +23,14 @@ CFLAGS	+= -ggdb3
 CFLAGS	+= -O0
 CFLAGS	+= -I.
 CFLAGS	+= -fprofile-arcs -ftest-coverage
+# CFLAGS	+= -fsanitize=address -fsanitize-recover=address
 
 CFLAGS	+= -std=c99
 
 LDFLAGS	+= -pthread
 LDFLAGS	+= -rdynamic
 LDFLAGS	+= -fprofile-arcs -ftest-coverage
+# LDFLAGS	+= -fsanitize=address -fsanitize-recover=address
 
 CFLAGS	+= -fno-omit-frame-pointer
 

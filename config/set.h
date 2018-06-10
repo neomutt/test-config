@@ -129,8 +129,8 @@ struct ConfigSet
   cs_listener listeners[4];       /**< Listeners for notifications of changes to config items */
 };
 
-struct ConfigSet *cs_create(int size);
-void              cs_init(struct ConfigSet *cs, int size);
+struct ConfigSet *cs_create(size_t size);
+void              cs_init(struct ConfigSet *cs, size_t size);
 void              cs_free(struct ConfigSet **cs);
 
 struct HashElem *           cs_get_elem(const struct ConfigSet *cs, const char *name);

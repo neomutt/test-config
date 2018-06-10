@@ -55,7 +55,7 @@ Expected error:
 Elderberry = 0, no
 Elderberry = 1, yes
 Expect error for next test
-Variable has an invalid value: 3
+yes
 ---- test_native_set ---------------------------------------
 Event: Fig has been set to 'yes'
 Fig = 1, set to '1'
