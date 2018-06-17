@@ -37,9 +37,14 @@
 const char *line = "----------------------------------------"
                    "----------------------------------------";
 
+bool dont_fail = false;
+
 int validator_fail(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                    intptr_t value, struct Buffer *result)
 {
+  if (dont_fail)
+    return CSR_SUCCESS;
+
   if (value > 1000000)
     mutt_buffer_printf(result, "%s: %s, (ptr)", __func__, cdef->name);
   else

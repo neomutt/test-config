@@ -12,7 +12,7 @@ address Lemon = lemon@example.com
 address Cherry = cherry@example.com
 address Mango = mango@example.com
 address Hawthorn = 
-address Olive = 
+address Olive = olive@example.com
 address Guava = guava@example.com
 address Ilama = 
 address Apple = apple@example.com
@@ -75,9 +75,9 @@ Event: Nectarine has been set to 'world@example.com'
 validator_warn: Nectarine, (ptr)
 Native: Nectarine = world@example.com
 Expected error: validator_fail: Olive, (ptr)
-Address: Olive = 
+Address: Olive = olive@example.com
 Expected error: validator_fail: Olive, (ptr)
-Native: Olive = 
+Native: Olive = olive@example.com
 ---- test_inherit ------------------------------------------
 Event: Papaya has been set to 'hello@example.com'
          Papaya = hello@example.com

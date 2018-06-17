@@ -591,8 +591,10 @@ bool bool_test(void)
 
   bool_init(cs);
   quad_init(cs);
+  dont_fail = true;
   if (!cs_register_variables(cs, Vars, 0))
     return false;
+  dont_fail = false;
 
   cs_add_listener(cs, log_listener);
 

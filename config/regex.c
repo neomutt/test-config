@@ -252,7 +252,11 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   const char *initial = (const char *) cdef->initial;
 
   if (initial)
+  {
     r = regex_create(initial, cdef->type, err);
+    if (!r)
+      return CSR_ERR_CODE;
+  }
 
   int rc = CSR_SUCCESS;
 

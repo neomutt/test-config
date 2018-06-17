@@ -60,7 +60,7 @@ test:	$(OUT) force
 	-./$(OUT) string  > test/string.txt
 	-./$(OUT) dump    > dump/dump.txt
 
-tags:	$(SRC) $(HDR)
+tags:	$(SRC) $(HDR) force
 	ctags -R .
 
 clean:

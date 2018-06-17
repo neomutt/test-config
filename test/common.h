@@ -32,6 +32,7 @@ struct Hash;
 struct HashElem;
 
 extern const char *line;
+extern bool dont_fail;
 
 int validator_succeed(const struct ConfigSet *cs, const struct ConfigDef *cdef,
                       intptr_t value, struct Buffer *result);
