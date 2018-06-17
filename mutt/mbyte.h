@@ -29,7 +29,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
-extern bool OPT_LOCALES;
+extern bool OptLocales;
 
 #ifdef LOCALES_HACK
 #define IsPrint(c) (isprint((unsigned char) (c)) || ((unsigned char) (c) >= 0xa0))
@@ -37,12 +37,12 @@ extern bool OPT_LOCALES;
 #else
 #define IsPrint(c)                                                             \
   (isprint((unsigned char) (c)) ||                                             \
-   (OPT_LOCALES ? 0 : ((unsigned char) (c) >= 0xa0)))
-#define IsWPrint(wc) (iswprint(wc) || (OPT_LOCALES ? 0 : (wc >= 0xa0)))
+   (OptLocales ? 0 : ((unsigned char) (c) >= 0xa0)))
+#define IsWPrint(wc) (iswprint(wc) || (OptLocales ? 0 : (wc >= 0xa0)))
 #endif
 
 int    mutt_mb_charlen(const char *s, int *width);
-bool   mutt_mb_get_initials(const char *name, char *buf, int buflen);
+bool   mutt_mb_get_initials(const char *name, char *buf, size_t buflen);
 bool   mutt_mb_is_lower(const char *s);
 bool   mutt_mb_is_shell_char(wchar_t ch);
 size_t mutt_mb_mbstowcs(wchar_t **pwbuf, size_t *pwbuflen, size_t i, char *buf);

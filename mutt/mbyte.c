@@ -40,16 +40,16 @@
 #include "memory.h"
 #include "string2.h"
 
-bool OPT_LOCALES; /**< (pseudo) set if user has valid locale definition */
+bool OptLocales; /**< (pseudo) set if user has valid locale definition */
 
 /**
  * mutt_mb_charlen - Count the bytes in a (multibyte) character
  * @param[in]  s     String to be examined
  * @param[out] width Number of screen columns the character would use
- * @retval n  Number of bytes in the first (multibyte) character of input consumes
- * @retval <0 Conversion error
- * @retval =0 End of input
- * @retval >0 Length (bytes)
+ * @retval num Bytes in the first (multibyte) character of input consumes
+ * @retval <0  Conversion error
+ * @retval =0  End of input
+ * @retval >0  Length (bytes)
  */
 int mutt_mb_charlen(const char *s, int *width)
 {
@@ -73,14 +73,14 @@ int mutt_mb_charlen(const char *s, int *width)
  * @param name   String to be converted
  * @param buf    Buffer for the result
  * @param buflen Size of the buffer
- * @retval 1 on Success
- * @retval 0 on Failure
+ * @retval 1 Success
+ * @retval 0 Failure
  *
  * Take a name, e.g. "John F. Kennedy" and reduce it to initials "JFK".
  * The function saves the first character from each word.  Words are delimited
  * by whitespace, or hyphens (so "Jean-Pierre" becomes "JP").
  */
-bool mutt_mb_get_initials(const char *name, char *buf, int buflen)
+bool mutt_mb_get_initials(const char *name, char *buf, size_t buflen)
 {
   if (!name || !buf)
     return false;
@@ -131,7 +131,7 @@ bool mutt_mb_get_initials(const char *name, char *buf, int buflen)
  * @param str     String to measure
  * @param col     Display column (used for expanding tabs)
  * @param display will this be displayed to the user?
- * @retval int Strings width in screen columns
+ * @retval num Strings width in screen columns
  *
  * This is like wcwidth(), but gets const char* not wchar_t*.
  */
@@ -172,7 +172,7 @@ int mutt_mb_width(const char *str, int col, bool display)
 /**
  * mutt_mb_wcwidth - Measure the screen width of a character
  * @param wc Character to examine
- * @retval int Width in screen columns
+ * @retval num Width in screen columns
  */
 int mutt_mb_wcwidth(wchar_t wc)
 {
@@ -190,7 +190,7 @@ int mutt_mb_wcwidth(wchar_t wc)
  * mutt_mb_wcswidth - Measure the screen width of a string
  * @param s String to measure
  * @param n Length of string in characters
- * @retval int Width in screen columns
+ * @retval num Width in screen columns
  */
 int mutt_mb_wcswidth(const wchar_t *s, size_t n)
 {
@@ -205,7 +205,7 @@ int mutt_mb_wcswidth(const wchar_t *s, size_t n)
  * @param s String being displayed
  * @param n Length of string in characters
  * @param w1 Width limit
- * @retval size_t Number of chars to skip
+ * @retval num Chars to skip
  *
  * Given a string and a width, determine how many characters from the
  * beginning of the string should be skipped so that the string fits.
@@ -217,7 +217,7 @@ size_t mutt_mb_width_ceiling(const wchar_t *s, size_t n, int w1)
   for (; n; s++, n--)
     if ((w += mutt_mb_wcwidth(*s)) > w1)
       break;
-  return s - s0;
+  return (s - s0);
 }
 
 /**
@@ -280,7 +280,7 @@ void mutt_mb_wcstombs(char *dest, size_t dlen, const wchar_t *src, size_t slen)
  * @param pwbuflen Length of the result buffer
  * @param i        Starting index into the result buffer
  * @param buf      String to convert
- * @retval size_t First character after the result
+ * @retval num First character after the result
  */
 size_t mutt_mb_mbstowcs(wchar_t **pwbuf, size_t *pwbuflen, size_t i, char *buf)
 {
@@ -331,7 +331,7 @@ size_t mutt_mb_mbstowcs(wchar_t **pwbuf, size_t *pwbuflen, size_t i, char *buf)
 bool mutt_mb_is_shell_char(wchar_t ch)
 {
   static const wchar_t shell_chars[] = L"<>&()$?*;{}| "; /* ! not included because it can be part of a pathname in NeoMutt */
-  return wcschr(shell_chars, ch) != NULL;
+  return (wcschr(shell_chars, ch) != NULL);
 }
 
 /**
@@ -414,8 +414,6 @@ int mutt_mb_filter_unprintable(char **s)
   mbstate_t mbstate1, mbstate2;
 
   struct Buffer *b = mutt_buffer_new();
-  if (!b)
-    return -1;
   memset(&mbstate1, 0, sizeof(mbstate1));
   memset(&mbstate2, 0, sizeof(mbstate2));
   for (; (k = mbrtowc(&wc, p, MB_LEN_MAX, &mbstate1)); p += k)
