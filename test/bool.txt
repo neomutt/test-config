@@ -1,19 +1,19 @@
 ---- bool_test ---------------------------------------------
 ---- set_list ----------------------------------------------
+quad Nectarine = no
 boolean Damson = no
+boolean Banana = yes
+boolean Elderberry = no
+boolean Fig = no
+boolean Kumquat = no
+boolean Jackfruit = no
 boolean Lemon = no
 boolean Cherry = no
-boolean Fig = no
-boolean Elderberry = no
-boolean Ilama = no
-boolean Kumquat = no
-boolean Banana = yes
-boolean Apple = no
-boolean Guava = no
 boolean Mango = no
 boolean Hawthorn = no
-boolean Jackfruit = no
-quad Nectarine = no
+boolean Guava = no
+boolean Ilama = no
+boolean Apple = no
 ---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 1
@@ -55,7 +55,7 @@ Expected error:
 Elderberry = 0, no
 Elderberry = 1, yes
 Expect error for next test
-yes
+Variable has an invalid value: 3
 ---- test_native_set ---------------------------------------
 Event: Fig has been set to 'yes'
 Fig = 1, set to '1'

@@ -1,17 +1,17 @@
 ---- magic_test --------------------------------------------
 ---- set_list ----------------------------------------------
 magic Damson = mbox
+magic Banana = MH
+magic Elderberry = mbox
+magic Fig = mbox
+magic Kumquat = mbox
+magic Jackfruit = mbox
 magic Lemon = mbox
 magic Cherry = mbox
-magic Fig = mbox
-magic Elderberry = mbox
-magic Ilama = mbox
-magic Kumquat = mbox
-magic Banana = MH
-magic Apple = mbox
-magic Guava = mbox
 magic Hawthorn = mbox
-magic Jackfruit = mbox
+magic Guava = mbox
+magic Ilama = mbox
+magic Apple = mbox
 ---- test_initial_values -----------------------------------
 Apple = 1
 Banana = 3

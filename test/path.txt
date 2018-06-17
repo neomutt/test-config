@@ -1,21 +1,21 @@
 ---- path_test ---------------------------------------------
 ---- set_list ----------------------------------------------
+path Nectarine = /nectarine
 path Damson = 
+path Banana = /banana
+path Elderberry = /elderberry
+path Fig = 
+path Kumquat = 
+path Papaya = 
+path Jackfruit = /jackfruit
 path Lemon = /lemon
 path Cherry = /cherry
-path Olive = /olive
-path Fig = 
-path Elderberry = /elderberry
-path Ilama = 
-path Kumquat = 
-path Banana = /banana
-path Apple = /apple
-path Guava = /guava
 path Mango = /mango
 path Hawthorn = 
-path Jackfruit = /jackfruit
-path Nectarine = /nectarine
-path Papaya = 
+path Olive = /olive
+path Guava = /guava
+path Ilama = 
+path Apple = /apple
 ---- test_initial_values -----------------------------------
 Apple = /apple
 Banana = /banana

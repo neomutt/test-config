@@ -76,14 +76,14 @@ static struct ConfigDef Vars[] = {
 static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  printf("Apple = '%s'\n", VarApple->personal);
-  printf("Banana = '%s'\n", VarBanana->personal);
+  printf("Apple = '%s'\n", VarApple->mailbox);
+  printf("Banana = '%s'\n", VarBanana->mailbox);
 
   const char *apple_orig = "apple@example.com";
   const char *banana_orig = "banana@example.com";
 
-  if ((mutt_str_strcmp(VarApple->personal, apple_orig) != 0) ||
-      (mutt_str_strcmp(VarBanana->personal, banana_orig) != 0))
+  if ((mutt_str_strcmp(VarApple->mailbox, apple_orig) != 0) ||
+      (mutt_str_strcmp(VarBanana->mailbox, banana_orig) != 0))
   {
     printf("Error: initial values were wrong\n");
     return false;
@@ -115,7 +115,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     FREE(&value.data);
     return false;
   }
-  printf("Apple = '%s'\n", VarApple->personal);
+  printf("Apple = '%s'\n", VarApple->mailbox);
   printf("Apple's initial value is '%s'\n", value.data);
 
   mutt_buffer_reset(&value);
@@ -133,7 +133,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     FREE(&value.data);
     return false;
   }
-  printf("Banana = '%s'\n", VarBanana ? VarBanana->personal : "");
+  printf("Banana = '%s'\n", VarBanana ? VarBanana->mailbox : "");
   printf("Banana's initial value is '%s'\n", NONULL(value.data));
 
   mutt_buffer_reset(&value);
@@ -189,7 +189,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    addr = VarDamson ? VarDamson->personal : NULL;
+    addr = VarDamson ? VarDamson->mailbox : NULL;
     if (mutt_str_strcmp(addr, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
@@ -209,7 +209,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    addr = VarElderberry ? VarElderberry->personal : NULL;
+    addr = VarElderberry ? VarElderberry->mailbox : NULL;
     if (mutt_str_strcmp(addr, valid[i]) != 0)
     {
       printf("Value of %s wasn't changed\n", name);
@@ -234,7 +234,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  addr = VarFig ? VarFig->personal : NULL;
+  addr = VarFig ? VarFig->mailbox : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(addr), err->data);
 
   name = "Guava";
@@ -245,7 +245,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  addr = VarGuava ? VarGuava->personal : NULL;
+  addr = VarGuava ? VarGuava->mailbox : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(addr), err->data);
 
   name = "Hawthorn";
@@ -260,7 +260,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  addr = VarHawthorn ? VarHawthorn->personal : NULL;
+  addr = VarHawthorn ? VarHawthorn->mailbox : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(addr), err->data);
 
   return true;
@@ -283,13 +283,13 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     goto tbns_out;
   }
 
-  addr = VarIlama ? VarIlama->personal : NULL;
-  if (mutt_str_strcmp(addr, a->personal) != 0)
+  addr = VarIlama ? VarIlama->mailbox : NULL;
+  if (mutt_str_strcmp(addr, a->mailbox) != 0)
   {
     printf("Value of %s wasn't changed\n", name);
     goto tbns_out;
   }
-  printf("%s = '%s', set by '%s'\n", name, NONULL(addr), a->personal);
+  printf("%s = '%s', set by '%s'\n", name, NONULL(addr), a->mailbox);
 
   name = "Jackfruit";
   mutt_buffer_reset(err);
@@ -305,7 +305,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     printf("Value of %s wasn't changed\n", name);
     goto tbns_out;
   }
-  addr = VarJackfruit ? VarJackfruit->personal : NULL;
+  addr = VarJackfruit ? VarJackfruit->mailbox : NULL;
   printf("%s = '%s', set by NULL\n", name, NONULL(addr));
 
   result = true;
@@ -331,8 +331,8 @@ static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  char *addr1 = VarKumquat ? VarKumquat->personal : NULL;
-  char *addr2 = a ? a->personal : NULL;
+  char *addr1 = VarKumquat ? VarKumquat->mailbox : NULL;
+  char *addr2 = a ? a->mailbox : NULL;
   printf("%s = '%s', '%s'\n", name, NONULL(addr1), NONULL(addr2));
 
   return true;
@@ -347,12 +347,12 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   mutt_buffer_reset(err);
 
-  addr = VarLemon ? VarLemon->personal : NULL;
+  addr = VarLemon ? VarLemon->mailbox : NULL;
   printf("Initial: %s = '%s'\n", name, NONULL(addr));
   int rc = cs_str_string_set(cs, name, "hello@example.com", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
-  addr = VarLemon ? VarLemon->personal : NULL;
+  addr = VarLemon ? VarLemon->mailbox : NULL;
   printf("Set: %s = '%s'\n", name, NONULL(addr));
 
   rc = cs_str_reset(cs, name, err);
@@ -362,7 +362,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  addr = VarLemon ? VarLemon->personal : NULL;
+  addr = VarLemon ? VarLemon->mailbox : NULL;
   if (mutt_str_strcmp(addr, "lemon@example.com") != 0)
   {
     printf("Value of %s wasn't changed\n", name);
@@ -394,7 +394,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarMango ? VarMango->personal : NULL;
+  addr = VarMango ? VarMango->mailbox : NULL;
   printf("Address: %s = %s\n", name, NONULL(addr));
 
   mutt_buffer_reset(err);
@@ -408,7 +408,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarMango ? VarMango->personal : NULL;
+  addr = VarMango ? VarMango->mailbox : NULL;
   printf("Native: %s = %s\n", name, NONULL(addr));
 
   name = "Nectarine";
@@ -423,7 +423,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarNectarine ? VarNectarine->personal : NULL;
+  addr = VarNectarine ? VarNectarine->mailbox : NULL;
   printf("Address: %s = %s\n", name, NONULL(addr));
 
   mutt_buffer_reset(err);
@@ -437,7 +437,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarNectarine ? VarNectarine->personal : NULL;
+  addr = VarNectarine ? VarNectarine->mailbox : NULL;
   printf("Native: %s = %s\n", name, NONULL(addr));
 
   name = "Olive";
@@ -452,7 +452,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarOlive ? VarOlive->personal : NULL;
+  addr = VarOlive ? VarOlive->mailbox : NULL;
   printf("Address: %s = %s\n", name, NONULL(addr));
 
   mutt_buffer_reset(err);
@@ -466,7 +466,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarOlive ? VarOlive->personal : NULL;
+  addr = VarOlive ? VarOlive->mailbox : NULL;
   printf("Native: %s = %s\n", name, NONULL(addr));
 
   result = true;
@@ -483,8 +483,8 @@ static void dump_native(struct ConfigSet *cs, const char *parent, const char *ch
   struct Address *pa = (struct Address *) pval;
   struct Address *ca = (struct Address *) cval;
 
-  char *pstr = pa ? pa->personal : NULL;
-  char *cstr = ca ? ca->personal : NULL;
+  char *pstr = pa ? pa->mailbox : NULL;
+  char *cstr = ca ? ca->mailbox : NULL;
 
   printf("%15s = %s\n", parent, NONULL(pstr));
   printf("%15s = %s\n", child, NONULL(cstr));

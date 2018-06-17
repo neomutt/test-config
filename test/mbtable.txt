@@ -1,21 +1,21 @@
 ---- mbtable_test ------------------------------------------
 ---- set_list ----------------------------------------------
+mbtable Nectarine = nectarine
 mbtable Damson = 
+mbtable Banana = banana
+mbtable Elderberry = elderberry
+mbtable Fig = 
+mbtable Kumquat = 
+mbtable Papaya = 
+mbtable Jackfruit = jackfruit
 mbtable Lemon = lemon
 mbtable Cherry = cherry
-mbtable Olive = olive
-mbtable Fig = 
-mbtable Elderberry = elderberry
-mbtable Ilama = 
-mbtable Kumquat = 
-mbtable Banana = banana
-mbtable Apple = apple
-mbtable Guava = guava
 mbtable Mango = mango
 mbtable Hawthorn = 
-mbtable Jackfruit = jackfruit
-mbtable Nectarine = nectarine
-mbtable Papaya = 
+mbtable Olive = olive
+mbtable Guava = guava
+mbtable Ilama = 
+mbtable Apple = apple
 ---- test_initial_values -----------------------------------
 Apple = apple
 Banana = banana

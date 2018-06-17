@@ -1,23 +1,23 @@
 ---- regex_test --------------------------------------------
 ---- set_list ----------------------------------------------
-regex Damson = 
-regex Lemon = 
-regex Cherry = cherry.*
-regex Olive = olive.*
-regex Fig = 
-regex Elderberry = elderberry.*
-regex Ilama = 
-regex Kumquat = kumquat.*
-regex Banana = banana.*
-regex Apple = apple.*
-regex Guava = guava.*
-regex Mango = mango.*
-regex Quince = quince.*
-regex Hawthorn = 
-regex Raspberry = 
-regex Jackfruit = jackfruit.*
 regex Nectarine = 
+regex Damson = 
+regex Banana = banana.*
+regex Elderberry = elderberry.*
+regex Fig = 
+regex Kumquat = kumquat.*
 regex Papaya = papaya.*
+regex Jackfruit = jackfruit.*
+regex Lemon = 
+regex Quince = quince.*
+regex Raspberry = 
+regex Cherry = cherry.*
+regex Mango = mango.*
+regex Hawthorn = 
+regex Olive = olive.*
+regex Guava = guava.*
+regex Ilama = 
+regex Apple = apple.*
 ---- test_initial_values -----------------------------------
 Apple = apple.*
 Banana = banana.*

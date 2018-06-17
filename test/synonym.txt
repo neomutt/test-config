@@ -2,11 +2,11 @@
 No such variable: Broken
 Expected error
 ---- set_list ----------------------------------------------
-string Cherry = cherry
 string Elderberry = 
+string Cherry = cherry
+string Guava = 
 string Ilama = iguana
 string Apple = 
-string Guava = 
 ---- test_string_set ---------------------------------------
 Event: Apple has been set to 'pudding'
 Banana = pudding, set by 'pudding'

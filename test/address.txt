@@ -1,25 +1,25 @@
 ---- address_test ------------------------------------------
 ---- set_list ----------------------------------------------
+address Nectarine = nectarine@example.com
 address Damson = 
-address Lemon = 
-address Cherry = 
-address Olive = 
+address Banana = banana@example.com
+address Elderberry = elderberry@example.com
 address Fig = 
-address Elderberry = 
-address Ilama = 
 address Kumquat = 
-address Banana = 
-address Apple = 
-address Guava = 
-address Mango = 
-address Hawthorn = 
-address Jackfruit = 
-address Nectarine = 
 address Papaya = 
+address Jackfruit = jackfruit@example.com
+address Lemon = lemon@example.com
+address Cherry = cherry@example.com
+address Mango = mango@example.com
+address Hawthorn = 
+address Olive = 
+address Guava = guava@example.com
+address Ilama = 
+address Apple = apple@example.com
 ---- test_initial_values -----------------------------------
 Apple = 'apple@example.com'
 Banana = 'banana@example.com'
-Event: Apple has been set to ''
+Event: Apple has been set to 'granny@smith.com'
 Event: Banana has been set to ''
 Apple = 'granny@smith.com'
 Apple's initial value is 'apple@example.com'
@@ -27,65 +27,65 @@ Banana = ''
 Banana's initial value is 'banana@example.com'
 Event: Cherry has been initial-set to 'john@doe.com'
 Event: Cherry has been initial-set to 'jane@doe.com'
-Cherry = 'dummy3'
+Cherry = 'cherry@example.com'
 Cherry's initial value is 'jane@doe.com'
 ---- test_string_set ---------------------------------------
-Event: Damson has been set to ''
+Event: Damson has been set to 'hello@example.com'
 Damson = 'hello@example.com', set by 'hello@example.com'
-Event: Damson has been set to ''
+Event: Damson has been set to 'world@example.com'
 Damson = 'world@example.com', set by 'world@example.com'
 Event: Damson has been set to ''
 Damson = '', set by ''
-Event: Elderberry has been set to ''
+Event: Elderberry has been set to 'hello@example.com'
 Elderberry = 'hello@example.com', set by 'hello@example.com'
-Event: Elderberry has been set to ''
+Event: Elderberry has been set to 'world@example.com'
 Elderberry = 'world@example.com', set by 'world@example.com'
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 ---- test_string_get ---------------------------------------
 Fig = '', ''
-Guava = 'guava@example.com', ''
-Event: Hawthorn has been set to ''
-Hawthorn = 'hawthorn', ''
+Guava = 'guava@example.com', 'guava@example.com'
+Event: Hawthorn has been set to 'hawthorn'
+Hawthorn = 'hawthorn', 'hawthorn'
 ---- test_native_set ---------------------------------------
-Event: Ilama has been set to ''
+Event: Ilama has been set to 'hello@example.com'
 Ilama = 'hello@example.com', set by 'hello@example.com'
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by NULL
 ---- test_native_get ---------------------------------------
-Event: Kumquat has been set to ''
+Event: Kumquat has been set to 'kumquat@example.com'
 Kumquat = 'kumquat@example.com', 'kumquat@example.com'
 ---- test_reset --------------------------------------------
 Initial: Lemon = 'lemon@example.com'
-Event: Lemon has been set to ''
+Event: Lemon has been set to 'hello@example.com'
 Set: Lemon = 'hello@example.com'
-Event: Lemon has been reset to ''
+Event: Lemon has been reset to 'lemon@example.com'
 Reset: Lemon = 'lemon@example.com'
 ---- test_validator ----------------------------------------
-Event: Mango has been set to ''
+Event: Mango has been set to 'hello@example.com'
 validator_succeed: Mango, (ptr)
 Address: Mango = hello@example.com
-Event: Mango has been set to ''
+Event: Mango has been set to 'world@example.com'
 validator_succeed: Mango, (ptr)
 Native: Mango = world@example.com
-Event: Nectarine has been set to ''
+Event: Nectarine has been set to 'hello@example.com'
 validator_warn: Nectarine, (ptr)
 Address: Nectarine = hello@example.com
-Event: Nectarine has been set to ''
+Event: Nectarine has been set to 'world@example.com'
 validator_warn: Nectarine, (ptr)
 Native: Nectarine = world@example.com
 Expected error: validator_fail: Olive, (ptr)
-Address: Olive = olive@example.com
+Address: Olive = 
 Expected error: validator_fail: Olive, (ptr)
-Native: Olive = olive@example.com
+Native: Olive = 
 ---- test_inherit ------------------------------------------
-Event: Papaya has been set to ''
+Event: Papaya has been set to 'hello@example.com'
          Papaya = hello@example.com
    fruit:Papaya = hello@example.com
-Event: fruit:Papaya has been set to ''
+Event: fruit:Papaya has been set to 'world@example.com'
          Papaya = hello@example.com
    fruit:Papaya = world@example.com
-Event: fruit:Papaya has been reset to ''
+Event: fruit:Papaya has been reset to 'hello@example.com'
          Papaya = hello@example.com
    fruit:Papaya = hello@example.com
 Event: Papaya has been reset to ''

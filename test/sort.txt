@@ -1,22 +1,22 @@
 ---- sort_test ---------------------------------------------
 ---- set_list ----------------------------------------------
-sort Damson = date
-sort Lemon = date
-sort Cherry = date
-sort Olive = date
-sort Fig = date
-sort Elderberry = address
-sort Ilama = flagged
-sort Kumquat = date
-sort Banana = size
-sort Apple = date
-sort Guava = date
-sort Mango = date
-sort Quince = date
-sort Hawthorn = date
-sort Jackfruit = date
 sort Nectarine = date
+sort Damson = date
+sort Banana = size
+sort Elderberry = address
+sort Fig = date
+sort Kumquat = date
 sort Papaya = date
+sort Jackfruit = date
+sort Lemon = date
+sort Quince = date
+sort Cherry = date
+sort Mango = date
+sort Hawthorn = date
+sort Olive = date
+sort Guava = date
+sort Ilama = flagged
+sort Apple = date
 ---- test_initial_values -----------------------------------
 Apple = 1
 Banana = 2

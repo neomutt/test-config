@@ -1,19 +1,19 @@
 ---- quad_test ---------------------------------------------
 ---- set_list ----------------------------------------------
+boolean Nectarine = no
 quad Damson = no
+quad Banana = ask-yes
+quad Elderberry = no
+quad Fig = no
+quad Kumquat = no
+quad Jackfruit = no
 quad Lemon = no
 quad Cherry = no
-quad Fig = no
-quad Elderberry = no
-quad Ilama = no
-quad Kumquat = no
-quad Banana = ask-yes
-quad Apple = no
-quad Guava = no
 quad Mango = no
 quad Hawthorn = no
-quad Jackfruit = no
-boolean Nectarine = no
+quad Guava = no
+quad Ilama = no
+quad Apple = no
 ---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 3
