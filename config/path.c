@@ -227,9 +227,17 @@ static int path_reset(const struct ConfigSet *cs, void *var,
 
   path_destroy(cs, var, cdef);
 
+  int rc = CSR_SUCCESS;
+  if (cdef->validator)
+  {
+    rc = cdef->validator(cs, cdef, cdef->initial, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return (rc | CSR_INV_VALIDATOR);
+  }
+
   const char *path = (const char *) cdef->initial;
 
-  int rc = CSR_SUCCESS;
   if (!path)
     rc |= CSR_SUC_EMPTY;
 

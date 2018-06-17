@@ -40,9 +40,7 @@
 #include "set.h"
 #include "types.h"
 
-void mutt_pretty_mailbox(char *s, size_t buflen)
-{
-}
+void mutt_pretty_mailbox(char *s, size_t buflen);
 
 /**
  * escape_string - Write a string to a buffer, escaping special characters
@@ -80,11 +78,11 @@ size_t escape_string(struct Buffer *buf, const char *src)
 
 /**
  * pretty_var - Escape and stringify a config item value
- * @param buf    Buffer to write to
  * @param str    String to escape
+ * @param buf    Buffer to write to
  * @retval num Number of bytes written to buffer
  */
-size_t pretty_var(struct Buffer *buf, const char *str)
+size_t pretty_var(const char *str, struct Buffer *buf)
 {
   if (!buf || !str)
     return 0;
@@ -285,7 +283,7 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
             !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(tmp);
-          size_t len = pretty_var(tmp, value->data);
+          size_t len = pretty_var(value->data, tmp);
           mutt_str_strfcpy(value->data, tmp->data, len + 1);
         }
       }
@@ -307,7 +305,7 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
             !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(tmp);
-          size_t len = pretty_var(tmp, initial->data);
+          size_t len = pretty_var(initial->data, tmp);
           mutt_str_strfcpy(value->data, tmp->data, len + 1);
         }
       }

@@ -295,6 +295,18 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
   if (initial)
     table = mbtable_parse(initial);
 
+  int rc = CSR_SUCCESS;
+  if (cdef->validator)
+  {
+    rc = cdef->validator(cs, cdef, (intptr_t) table, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    {
+      mbtable_destroy(cs, &table, cdef);
+      return (rc | CSR_INV_VALIDATOR);
+    }
+  }
+
   int result = CSR_SUCCESS;
   if (!table)
     result |= CSR_SUC_EMPTY;

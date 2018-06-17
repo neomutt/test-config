@@ -65,6 +65,12 @@ static int number_string_set(const struct ConfigSet *cs, void *var, struct Confi
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
+  if ((num < 0) && (cdef->type & DT_NOT_NEGATIVE))
+  {
+    mutt_buffer_printf(err, "Option %s may not be negative", cdef->name);
+    return (CSR_ERR_INVALID | CSR_INV_VALIDATOR);
+  }
+
   if (cdef->validator)
   {
     int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
@@ -130,6 +136,12 @@ static int number_native_set(const struct ConfigSet *cs, void *var,
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
+  if ((value < 0) && (cdef->type & DT_NOT_NEGATIVE))
+  {
+    mutt_buffer_printf(err, "Option %s may not be negative", cdef->name);
+    return (CSR_ERR_INVALID | CSR_INV_VALIDATOR);
+  }
+
   if (cdef->validator)
   {
     int rc = cdef->validator(cs, cdef, value, err);
@@ -172,6 +184,14 @@ static int number_reset(const struct ConfigSet *cs, void *var,
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  if (cdef->validator)
+  {
+    int rc = cdef->validator(cs, cdef, cdef->initial, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return (rc | CSR_INV_VALIDATOR);
+  }
 
   *(short *) var = cdef->initial;
   return CSR_SUCCESS;

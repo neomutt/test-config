@@ -45,6 +45,6 @@ bool              dump_config(struct ConfigSet *cs, int style, int flags);
 int               elem_list_sort(const void *a, const void *b);
 size_t            escape_string(struct Buffer *buf, const char *src);
 struct HashElem **get_elem_list(struct ConfigSet *cs);
-size_t            pretty_var(struct Buffer *buf, const char *str);
+size_t            pretty_var(const char *str, struct Buffer *buf);
 
 #endif /* _CONFIG_DUMP_H */

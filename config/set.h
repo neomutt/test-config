@@ -69,7 +69,7 @@ enum CsListenerAction
 };
 
 typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
-typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct ConfigDef *cdef, intptr_t value, struct Buffer *result);
+typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct ConfigDef *cdef, intptr_t value, struct Buffer *err);
 
 typedef int     (*cst_string_set)(const struct ConfigSet *cs, void *var,       struct ConfigDef *cdef, const char *value, struct Buffer *err);
 typedef int     (*cst_string_get)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef,                    struct Buffer *result);

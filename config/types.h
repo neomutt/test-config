@@ -39,14 +39,17 @@
 
 #define DTYPE(x) ((x) & 0x0f) /**< Mask for the Data Type */
 
+#define DT_NOT_EMPTY    0x10  /**< Empty string are not allowed */
+#define DT_NOT_NEGATIVE 0x20  /**< Negative numbers are not allowed */
+
 /* subtypes for... */
 #define DT_SUBTYPE_MASK 0xff0 /**< Mask for the Data Subtype */
 
 /* Private config item flags */
-#define DT_INHERITED    0x0200 /**< Config item is inherited */
-#define DT_INITIAL_SET  0x0400 /**< Config item must have its initial value freed */
-#define DT_DISABLED     0x0800 /**< Config item is disabled */
-#define DT_MY_CONFIG    0x1000 /**< Config item is a "my_" variable */
+#define DT_INHERITED    0x1000 /**< Config item is inherited */
+#define DT_INITIAL_SET  0x2000 /**< Config item must have its initial value freed */
+#define DT_DISABLED     0x4000 /**< Config item is disabled */
+#define DT_MY_CONFIG    0x8000 /**< Config item is a "my_" variable */
 
 /* forced redraw/resort types + other flags */
 #define R_NONE        0        /**< No refresh/resort flags */

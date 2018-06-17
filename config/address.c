@@ -30,17 +30,13 @@
 #include <stddef.h>
 #include <limits.h>
 #include <stdint.h>
+#include "mutt/address.h"
 #include "mutt/buffer.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
 #include "address.h"
 #include "set.h"
 #include "types.h"
-
-size_t mutt_addr_write(char *buf, size_t buflen, struct Address *addr, bool display)
-{
-  return 0;
-}
 
 /**
  * address_destroy - Destroy an Address object
@@ -82,10 +78,7 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
   /* An empty address "" will be stored as NULL */
   if (var && value && (value[0] != '\0'))
   {
-    addr = mutt_mem_calloc(1, sizeof(*addr));
-    addr->personal = mutt_str_strdup((const char *) value);
-    addr->mailbox = mutt_str_strdup("dummy1");
-    /* XXX rfc822_parse_adrlist(NULL, p); */
+    addr = mutt_addr_parse_list(NULL, value);
   }
 
   int rc;
@@ -262,6 +255,18 @@ static int address_reset(const struct ConfigSet *cs, void *var,
     a = address_create(initial);
 
   int rc = CSR_SUCCESS;
+
+  if (cdef->validator)
+  {
+    rc = cdef->validator(cs, cdef, (intptr_t) a, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    {
+      address_destroy(cs, &a, cdef);
+      return (rc | CSR_INV_VALIDATOR);
+    }
+  }
+
   if (!a)
     rc |= CSR_SUC_EMPTY;
 
@@ -291,8 +296,8 @@ void address_init(struct ConfigSet *cs)
 struct Address *address_create(const char *addr)
 {
   struct Address *a = mutt_mem_calloc(1, sizeof(*a));
-  a->personal = mutt_str_strdup(addr);
-  a->mailbox = mutt_str_strdup("dummy3");
+  // a->personal = mutt_str_strdup(addr);
+  a->mailbox = mutt_str_strdup(addr);
   return a;
 }
 

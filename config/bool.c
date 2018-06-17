@@ -198,6 +198,14 @@ static int bool_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  if (cdef->validator)
+  {
+    int rc = cdef->validator(cs, cdef, cdef->initial, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return (rc | CSR_INV_VALIDATOR);
+  }
+
   *(bool *) var = cdef->initial;
   return CSR_SUCCESS;
 }

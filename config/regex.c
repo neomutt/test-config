@@ -251,18 +251,24 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   struct Regex *r = NULL;
   const char *initial = (const char *) cdef->initial;
 
+  if (initial)
+    r = regex_create(initial, cdef->type, err);
+
   int rc = CSR_SUCCESS;
 
-  if (initial)
+  if (cdef->validator)
   {
-    r = regex_create(initial, cdef->type, err);
-    if (!r)
-      rc = CSR_ERR_INVALID;
+    rc = cdef->validator(cs, cdef, (intptr_t) r, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    {
+      regex_destroy(cs, &r, cdef);
+      return (rc | CSR_INV_VALIDATOR);
+    }
   }
-  else
-  {
+
+  if (!r)
     rc |= CSR_SUC_EMPTY;
-  }
 
   *(struct Regex **) var = r;
   return rc;
