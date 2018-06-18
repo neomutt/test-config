@@ -8,7 +8,7 @@ OUT	= demo
 SRC	+= main.c
 SRC	+= config/account.c config/address.c config/bool.c config/dump.c config/magic.c config/mbtable.c config/regex.c config/number.c config/path.c config/quad.c config/set.c config/sort.c config/string.c
 SRC	+= test/common.c test/account.c test/address.c test/bool.c test/initial.c test/magic.c test/mbtable.c test/number.c test/path.c test/quad.c test/regex.c test/set.c test/sort.c test/string.c test/synonym.c
-SRC	+= mutt/address.c mutt/buffer.c mutt/charset.c mutt/exit.c mutt/file.c mutt/hash.c mutt/idna.c mutt/logging.c mutt/mapping.c mutt/mbyte.c mutt/memory.c mutt/regex.c mutt/string.c
+SRC	+= mutt/address.c mutt/base64.c mutt/buffer.c mutt/charset.c mutt/date.c mutt/envlist.c mutt/exit.c mutt/file.c mutt/hash.c mutt/idna.c mutt/list.c mutt/logging.c mutt/mapping.c mutt/mbyte.c mutt/md5.c mutt/memory.c mutt/mime.c mutt/parameter.c mutt/regex.c mutt/rfc2047.c mutt/sha1.c mutt/signal.c mutt/string.c
 SRC	+= dump/dump.c dump/data.c dump/vars.c
 
 OBJ	+= $(SRC:%.c=%.o)
