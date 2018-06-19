@@ -9,6 +9,7 @@
 #include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
+#include "test/enum.h"
 #include "test/initial.h"
 #include "test/magic.h"
 #include "test/mbtable.h"
@@ -54,6 +55,7 @@ struct Test test[] = {
   { "synonym",   synonym_test   },
   { "address",   address_test   },
   { "bool",      bool_test      },
+  { "enum",      enum_test      },
   { "magic",     magic_test     },
   { "mbtable",   mbtable_test   },
   { "number",    number_test    },

@@ -36,6 +36,7 @@
 #define DT_ADDRESS   10   /**< e-mail address */
 #define DT_MBTABLE   11   /**< multibyte char table */
 #define DT_HCACHE    12   /**< header cache backend */
+#define DT_ENUM      13   /**< an enumeration */
 
 #define DTYPE(x) ((x) & 0x0f) /**< Mask for the Data Type */
 
