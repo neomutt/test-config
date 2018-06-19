@@ -1,20 +1,20 @@
 ---- number_test -------------------------------------------
 ---- set_list ----------------------------------------------
-number Nectarine = 0
-number Damson = 0
+number Apple = -42
 number Banana = 99
+number Cherry = 33
+number Damson = 0
 number Elderberry = 0
 number Fig = 0
-number Kumquat = 0
-number Jackfruit = 0
-number Lemon = 0
-number Cherry = 33
-number Mango = 0
-number Hawthorn = 99
-number Olive = 33
 number Guava = 0
+number Hawthorn = 99
 number Ilama = 0
-number Apple = -42
+number Jackfruit = 0
+number Kumquat = 0
+number Lemon = 0
+number Mango = 0
+number Nectarine = 0
+number Olive = 33
 ---- test_initial_values -----------------------------------
 Apple = -42
 Banana = 99

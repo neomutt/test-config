@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "mutt/buffer.h"
 #include "mutt/hash.h"
@@ -141,6 +142,13 @@ void hash_dump(struct Hash *table)
   }
 }
 
+int sort_list_cb(const void *a, const void *b)
+{
+  const char *stra = *(char **) a;
+  const char *strb = *(char **) b;
+  return strcmp(stra, strb);
+}
+
 void cs_dump_set(const struct ConfigSet *cs)
 {
   if (!cs)
@@ -155,7 +163,12 @@ void cs_dump_set(const struct ConfigSet *cs)
   result.data = mutt_mem_calloc(1, STRING);
   result.dsize = STRING;
 
-  while ((he = mutt_hash_walk(cs->hash, &state)))
+  char tmp[128];
+  char *list[26] = { 0 };
+  size_t index = 0;
+  size_t i = 0;
+
+  for (i = 0; (he = mutt_hash_walk(cs->hash, &state)); i++)
   {
     if (he->type == DT_SYNONYM)
       continue;
@@ -164,9 +177,9 @@ void cs_dump_set(const struct ConfigSet *cs)
 
     if (he->type & DT_INHERITED)
     {
-      struct Inheritance *i = he->data;
-      he = i->parent;
-      name = i->name;
+      struct Inheritance *inh = he->data;
+      he = inh->parent;
+      name = inh->name;
     }
     else
     {
@@ -176,20 +189,29 @@ void cs_dump_set(const struct ConfigSet *cs)
     const struct ConfigSetType *cst = cs_get_type_def(cs, he->type);
     if (!cst)
     {
-      printf("Unknown type: %d\n", he->type);
+      snprintf(tmp, sizeof(tmp), "Unknown type: %d", he->type);
+      list[index] = mutt_str_strdup(tmp);
+      index++;
       continue;
     }
 
     mutt_buffer_reset(&result);
-    printf("%s %s", cst->name, name);
-
     const struct ConfigDef *cdef = he->data;
 
     int rc = cst->string_get(cs, cdef->var, cdef, &result);
     if (CSR_RESULT(rc) == CSR_SUCCESS)
-      printf(" = %s\n", result.data);
+      snprintf(tmp, sizeof(tmp), "%s %s = %s", cst->name, name, result.data);
     else
-      printf(": ERROR: %s\n", result.data);
+      snprintf(tmp, sizeof(tmp), "%s %s: ERROR: %s", cst->name, name, result.data);
+    list[index] = mutt_str_strdup(tmp);
+    index++;
+  }
+
+  qsort(list, index, sizeof(list[0]), sort_list_cb);
+  for (i = 0; list[i]; i++)
+  {
+    puts(list[i]);
+    FREE(&list[i]);
   }
 
   FREE(&result.data);

@@ -1,22 +1,22 @@
 ---- address_test ------------------------------------------
 ---- set_list ----------------------------------------------
-address Nectarine = nectarine@example.com
-address Damson = 
+address Apple = apple@example.com
 address Banana = banana@example.com
+address Cherry = cherry@example.com
+address Damson = 
 address Elderberry = elderberry@example.com
 address Fig = 
-address Kumquat = 
-address Papaya = 
-address Jackfruit = jackfruit@example.com
-address Lemon = lemon@example.com
-address Quince = quince@example.com
-address Cherry = cherry@example.com
-address Mango = mango@example.com
-address Hawthorn = 
-address Olive = olive@example.com
 address Guava = guava@example.com
+address Hawthorn = 
 address Ilama = 
-address Apple = apple@example.com
+address Jackfruit = jackfruit@example.com
+address Kumquat = 
+address Lemon = lemon@example.com
+address Mango = mango@example.com
+address Nectarine = nectarine@example.com
+address Olive = olive@example.com
+address Papaya = 
+address Quince = quince@example.com
 ---- test_initial_values -----------------------------------
 Apple = 'apple@example.com'
 Banana = 'banana@example.com'

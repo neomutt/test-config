@@ -1,24 +1,24 @@
 ---- string_test -------------------------------------------
 ---- set_list ----------------------------------------------
-string Nectarine = nectarine
-string Damson = 
+string Apple = apple
 string Banana = banana
+string Cherry = cherry
+string Damson = 
 string Elderberry = elderberry
 string Fig = 
-string Kumquat = 
-string Papaya = 
-string Strawberry = strawberry
+string Guava = guava
+string Hawthorn = 
+string Ilama = 
 string Jackfruit = jackfruit
+string Kumquat = 
 string Lemon = lemon
+string Mango = mango
+string Nectarine = nectarine
+string Olive = olive
+string Papaya = 
 string Quince = quince
 string Raspberry = raspberry
-string Cherry = cherry
-string Mango = mango
-string Hawthorn = 
-string Olive = olive
-string Guava = guava
-string Ilama = 
-string Apple = apple
+string Strawberry = strawberry
 ---- test_initial_values -----------------------------------
 Apple = apple
 Banana = banana

@@ -1,20 +1,20 @@
 ---- bool_test ---------------------------------------------
 ---- set_list ----------------------------------------------
-quad Nectarine = no
-boolean Damson = no
+boolean Apple = no
 boolean Banana = yes
+boolean Cherry = no
+boolean Damson = no
 boolean Elderberry = no
 boolean Fig = no
-boolean Kumquat = no
-boolean Jackfruit = no
-boolean Lemon = no
-boolean Cherry = no
-boolean Mango = no
-boolean Hawthorn = no
-boolean Olive = no
 boolean Guava = no
+boolean Hawthorn = no
 boolean Ilama = no
-boolean Apple = no
+boolean Jackfruit = no
+boolean Kumquat = no
+boolean Lemon = no
+boolean Mango = no
+boolean Olive = no
+quad Nectarine = no
 ---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 1

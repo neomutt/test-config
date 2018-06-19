@@ -1,8 +1,8 @@
 ---- initial_test ------------------------------------------
 ---- set_list ----------------------------------------------
+string Apple = apple
 string Banana = 
 string Cherry = 
-string Apple = apple
 ---- test_set_initial --------------------------------------
 Event: Apple has been initial-set to 'pie'
 Event: Banana has been initial-set to 'split'
