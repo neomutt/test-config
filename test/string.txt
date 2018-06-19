@@ -7,8 +7,11 @@ string Elderberry = elderberry
 string Fig = 
 string Kumquat = 
 string Papaya = 
+string Strawberry = strawberry
 string Jackfruit = jackfruit
 string Lemon = lemon
+string Quince = quince
+string Raspberry = raspberry
 string Cherry = cherry
 string Mango = mango
 string Hawthorn = 
@@ -36,16 +39,15 @@ Event: Damson has been set to 'world'
 Damson = 'world', set by 'world'
 Event: Damson has been set to ''
 Damson = '', set by ''
-Event: Damson has been set to ''
-Damson = '', set by ''
+Value of Damson wasn't changed
+Expected error: Option Raspberry may not be empty
 Event: Elderberry has been set to 'hello'
 Elderberry = 'hello', set by 'hello'
 Event: Elderberry has been set to 'world'
 Elderberry = 'world', set by 'world'
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
-Event: Elderberry has been set to ''
-Elderberry = '', set by ''
+Value of Elderberry wasn't changed
 ---- test_string_get ---------------------------------------
 Fig = '', ''
 Guava = 'guava', 'guava'
@@ -58,16 +60,15 @@ Event: Ilama has been set to 'world'
 Ilama = 'world', set by 'world'
 Event: Ilama has been set to ''
 Ilama = '', set by ''
-Event: Ilama has been set to ''
-Ilama = '', set by ''
+Value of Ilama wasn't changed
+Expected error: Option Strawberry may not be empty
 Event: Jackfruit has been set to 'hello'
 Jackfruit = 'hello', set by 'hello'
 Event: Jackfruit has been set to 'world'
 Jackfruit = 'world', set by 'world'
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by ''
-Event: Jackfruit has been set to ''
-Jackfruit = '', set by ''
+Value of Jackfruit wasn't changed
 ---- test_native_get ---------------------------------------
 Event: Kumquat has been set to 'kumquat'
 Kumquat = 'kumquat', 'kumquat'
@@ -77,6 +78,11 @@ Event: Lemon has been set to 'hello'
 Set: Lemon = 'hello'
 Event: Lemon has been reset to 'lemon'
 Reset: Lemon = 'lemon'
+Initial: Quince = 'quince'
+Event: Quince has been set to 'hello'
+Set: Quince = 'hello'
+Expected error: validator_fail: Quince, (ptr)
+Reset: Quince = 'hello'
 ---- test_validator ----------------------------------------
 Event: Mango has been set to 'hello'
 validator_succeed: Mango, (ptr)

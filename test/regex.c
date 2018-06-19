@@ -52,6 +52,7 @@ static struct Regex *VarOlive;
 static struct Regex *VarPapaya;
 static struct Regex *VarQuince;
 static struct Regex *VarRaspberry;
+static struct Regex *VarStrawberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -69,6 +70,7 @@ static struct ConfigDef Vars[] = {
   { "Lemon",      DT_REGEX, 0,                  &VarLemon,      0,                 NULL              }, /* test_native_get */
   { "Mango",      DT_REGEX, 0,                  &VarMango,      IP "mango.*",      NULL              }, /* test_reset */
   { "Nectarine",  DT_REGEX, 0,                  &VarNectarine,  IP "\\1",          NULL              },
+  { "Strawberry", DT_REGEX, 0,                  &VarStrawberry, IP "strawberry.*", validator_fail    },
   { "Olive",      DT_REGEX, 0,                  &VarOlive,      IP "olive.*",      validator_succeed }, /* test_validator */
   { "Papaya",     DT_REGEX, 0,                  &VarPapaya,     IP "papaya.*",     validator_warn    },
   { "Quince",     DT_REGEX, 0,                  &VarQuince,     IP "quince.*",     validator_fail    },
@@ -175,7 +177,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello.*", "world.*", "", NULL };
+  const char *valid[] = { "hello.*", "world.*", "world.*", "", NULL };
   char *name = "Damson";
   char *regex = NULL;
 
@@ -188,6 +190,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     regex = VarDamson ? VarDamson->pattern : NULL;
@@ -208,6 +216,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     regex = VarElderberry ? VarElderberry->pattern : NULL;
@@ -426,6 +440,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
+
+  name = "Strawberry";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = '%s'\n", name, VarStrawberry->pattern);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "hel*o", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = '%s'\n", name, VarStrawberry->pattern);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(VarStrawberry->pattern, "hel*o") != 0)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = '%s'\n", name, VarStrawberry->pattern);
 
   return true;
 }

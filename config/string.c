@@ -242,21 +242,23 @@ static int string_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  string_destroy(cs, var, cdef);
-
+  int rc = CSR_SUCCESS;
   if (cdef->validator)
   {
-    int rc = cdef->validator(cs, cdef, cdef->initial, err);
+    rc = cdef->validator(cs, cdef, cdef->initial, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return (rc | CSR_INV_VALIDATOR);
   }
 
   const char *str = (const char *) cdef->initial;
-
-  int rc = CSR_SUCCESS;
   if (!str)
     rc |= CSR_SUC_EMPTY;
+
+  if (mutt_str_strcmp(str, (*(char **) var)) == 0)
+    return (rc | CSR_SUC_NO_CHANGE);
+
+  string_destroy(cs, var, cdef);
 
   *(const char **) var = str;
   return rc;

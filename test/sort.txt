@@ -7,6 +7,7 @@ sort Elderberry = address
 sort Fig = date
 sort Kumquat = date
 sort Papaya = date
+sort Strawberry = date
 sort Jackfruit = date
 sort Lemon = date
 sort Quince = date
@@ -78,8 +79,7 @@ Event: Fig has been set to 'desc'
 Fig = 20, set by 'desc'
 Event: Fig has been set to 'new'
 Fig = 16, set by 'new'
-Event: Fig has been set to 'new'
-Fig = 16, set by 'unread'
+Value of unread wasn't changed
 Event: Fig has been set to 'size'
 Fig = 2, set by 'size'
 Event: Fig has been set to 'unsorted'
@@ -152,6 +152,8 @@ Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
 Expected error: 
+Event: Damson has been set to 'last-date'
+Event: Damson has been set to 'reverse-score'
 ---- test_string_get ---------------------------------------
 Jackfruit = 3, subject
 Jackfruit = 6, threads
@@ -200,8 +202,7 @@ Event: Fig has been set to 'desc'
 Fig = 20, set by 'desc'
 Event: Fig has been set to 'new'
 Fig = 16, set by 'new'
-Event: Fig has been set to 'new'
-Fig = 16, set by 'unread'
+Value of unread wasn't changed
 Event: Fig has been set to 'size'
 Fig = 2, set by 'size'
 Event: Fig has been set to 'unsorted'
@@ -267,6 +268,11 @@ Lemon = 6
 ---- test_reset --------------------------------------------
 Event: Mango has been reset to 'date'
 Reset: Mango = 1
+Initial: Strawberry = 1
+Event: Strawberry has been set to 'size'
+Set: Strawberry = 2
+Expected error: validator_fail: Strawberry, 1
+Reset: Strawberry = 2
 ---- test_validator ----------------------------------------
 Event: Nectarine has been set to 'threads'
 validator_succeed: Nectarine, 6

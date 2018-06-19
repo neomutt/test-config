@@ -50,6 +50,7 @@ static struct Address *VarMango;
 static struct Address *VarNectarine;
 static struct Address *VarOlive;
 static struct Address *VarPapaya;
+static struct Address *VarQuince;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -65,6 +66,7 @@ static struct ConfigDef Vars[] = {
   { "Jackfruit",  DT_ADDRESS, 0, &VarJackfruit,  IP "jackfruit@example.com",  NULL              },
   { "Kumquat",    DT_ADDRESS, 0, &VarKumquat,    0,                           NULL              }, /* test_native_get */
   { "Lemon",      DT_ADDRESS, 0, &VarLemon,      IP "lemon@example.com",      NULL              }, /* test_reset */
+  { "Quince",     DT_ADDRESS, 0, &VarQuince,     IP "quince@example.com",     validator_fail    },
   { "Mango",      DT_ADDRESS, 0, &VarMango,      IP "mango@example.com",      validator_succeed }, /* test_validator */
   { "Nectarine",  DT_ADDRESS, 0, &VarNectarine,  IP "nectarine@example.com",  validator_warn    },
   { "Olive",      DT_ADDRESS, 0, &VarOlive,      IP "olive@example.com",      validator_fail    },
@@ -370,6 +372,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("Reset: %s = '%s'\n", name, NONULL(addr));
+
+  name = "Quince";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = '%s'\n", name, VarQuince->mailbox);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "john@example.com", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = '%s'\n", name, VarQuince->mailbox);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(VarQuince->mailbox, "john@example.com") != 0)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = '%s'\n", name, VarQuince->mailbox);
 
   return true;
 }

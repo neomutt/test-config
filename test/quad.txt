@@ -11,6 +11,7 @@ quad Lemon = no
 quad Cherry = no
 quad Mango = no
 quad Hawthorn = no
+quad Olive = no
 quad Guava = no
 quad Ilama = no
 quad Apple = no
@@ -33,6 +34,7 @@ Event: Damson has been set to 'yes'
 Damson = 1, set by 'yes'
 Event: Damson has been set to 'ask-no'
 Damson = 2, set by 'ask-no'
+Value of Damson wasn't changed
 Event: Damson has been set to 'ask-yes'
 Damson = 3, set by 'ask-yes'
 Expected error: Invalid quad value: nope
@@ -49,6 +51,7 @@ Variable has an invalid value: 4
 ---- test_native_set ---------------------------------------
 Event: Fig has been set to 'yes'
 Fig = 1, set to '1'
+Value of Fig wasn't changed
 Expected error: Invalid quad value: -1
 Expected error: Invalid quad value: 4
 ---- test_native_get ---------------------------------------
@@ -56,6 +59,11 @@ Guava = 1
 ---- test_reset --------------------------------------------
 Event: Hawthorn has been reset to 'no'
 Reset: Hawthorn = 0
+Initial: Olive = 0
+Event: Olive has been set to 'ask-yes'
+Set: Olive = 3
+Expected error: validator_fail: Olive, 0
+Reset: Olive = 3
 ---- test_validator ----------------------------------------
 Event: Ilama has been set to 'yes'
 validator_succeed: Ilama, 1
@@ -77,7 +85,7 @@ Native: Kumquat = 0
 Event: Lemon has been set to 'yes'
           Lemon = 1
     fruit:Lemon = 1
-Event: fruit:Lemon has been set to 'no'
+Value of Lemon wasn't changed
           Lemon = 1
     fruit:Lemon = 0
 Event: fruit:Lemon has been reset to 'yes'

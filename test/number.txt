@@ -1,5 +1,6 @@
 ---- number_test -------------------------------------------
 ---- set_list ----------------------------------------------
+number Nectarine = 0
 number Damson = 0
 number Banana = 99
 number Elderberry = 0
@@ -8,7 +9,9 @@ number Kumquat = 0
 number Jackfruit = 0
 number Lemon = 0
 number Cherry = 33
+number Mango = 0
 number Hawthorn = 99
+number Olive = 33
 number Guava = 0
 number Ilama = 0
 number Apple = -42
@@ -29,6 +32,7 @@ Event: Damson has been set to '-123'
 Damson = -123, set by '-123'
 Event: Damson has been set to '0'
 Damson = 0, set by '0'
+Value of Damson wasn't changed
 Event: Damson has been set to '456'
 Damson = 456, set by '456'
 
@@ -37,13 +41,15 @@ Expected error: Number is too big: 32768
 Expected error: Invalid number: junk
 Expected error: Invalid number: 
 Expected error: Invalid number: (null)
-
+Expected error: Option Mango may not be negative
 ---- test_string_get ---------------------------------------
 Elderberry = 123, 123
 Elderberry = -789, -789
 ---- test_native_set ---------------------------------------
 Event: Fig has been set to '12345'
 Fig = 12345, set to '12345'
+Value of Fig wasn't changed
+Expected error: Option Nectarine may not be negative
 Expected error: Invalid number: -32769
 Expected error: Invalid number: 32768
 ---- test_native_get ---------------------------------------
@@ -51,6 +57,11 @@ Guava = 3456
 ---- test_reset --------------------------------------------
 Event: Hawthorn has been reset to '99'
 Reset: Hawthorn = 99
+Initial: Olive = 33
+Event: Olive has been set to '99'
+Set: Olive = 99
+Expected error: validator_fail: Olive, 33
+Reset: Olive = 99
 ---- test_validator ----------------------------------------
 Event: Ilama has been set to '456'
 validator_succeed: Ilama, 456

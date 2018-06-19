@@ -46,21 +46,27 @@ static short VarIlama;
 static short VarJackfruit;
 static short VarKumquat;
 static short VarLemon;
+static short VarMango;
+static short VarNectarine;
+static short VarOlive;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_NUMBER, 0, &VarApple,      -42, NULL              }, /* test_initial_values() */
-  { "Banana",     DT_NUMBER, 0, &VarBanana,     99,  NULL              },
-  { "Cherry",     DT_NUMBER, 0, &VarCherry,     33,  NULL              },
-  { "Damson",     DT_NUMBER, 0, &VarDamson,     0,   NULL              }, /* test_string_set */
-  { "Elderberry", DT_NUMBER, 0, &VarElderberry, 0,   NULL              }, /* test_string_get */
-  { "Fig",        DT_NUMBER, 0, &VarFig,        0,   NULL              }, /* test_native_set */
-  { "Guava",      DT_NUMBER, 0, &VarGuava,      0,   NULL              }, /* test_native_get */
-  { "Hawthorn",   DT_NUMBER, 0, &VarHawthorn,   99,  NULL              }, /* test_reset */
-  { "Ilama",      DT_NUMBER, 0, &VarIlama,      0,   validator_succeed }, /* test_validator */
-  { "Jackfruit",  DT_NUMBER, 0, &VarJackfruit,  0,   validator_warn    },
-  { "Kumquat",    DT_NUMBER, 0, &VarKumquat,    0,   validator_fail    },
-  { "Lemon",      DT_NUMBER, 0, &VarLemon,      0,   NULL              }, /* test_inherit */
+  { "Apple",      DT_NUMBER,                 0, &VarApple,      -42, NULL              }, /* test_initial_values() */
+  { "Banana",     DT_NUMBER,                 0, &VarBanana,     99,  NULL              },
+  { "Cherry",     DT_NUMBER,                 0, &VarCherry,     33,  NULL              },
+  { "Damson",     DT_NUMBER,                 0, &VarDamson,     0,   NULL              }, /* test_string_set */
+  { "Mango",      DT_NUMBER|DT_NOT_NEGATIVE, 0, &VarMango,      0,   NULL              },
+  { "Elderberry", DT_NUMBER,                 0, &VarElderberry, 0,   NULL              }, /* test_string_get */
+  { "Fig",        DT_NUMBER,                 0, &VarFig,        0,   NULL              }, /* test_native_set */
+  { "Nectarine",  DT_NUMBER|DT_NOT_NEGATIVE, 0, &VarNectarine,  0,   NULL              },
+  { "Guava",      DT_NUMBER,                 0, &VarGuava,      0,   NULL              }, /* test_native_get */
+  { "Hawthorn",   DT_NUMBER,                 0, &VarHawthorn,   99,  NULL              }, /* test_reset */
+  { "Olive",      DT_NUMBER,                 0, &VarOlive,      33,  validator_fail    },
+  { "Ilama",      DT_NUMBER,                 0, &VarIlama,      0,   validator_succeed }, /* test_validator */
+  { "Jackfruit",  DT_NUMBER,                 0, &VarJackfruit,  0,   validator_warn    },
+  { "Kumquat",    DT_NUMBER,                 0, &VarKumquat,    0,   validator_fail    },
+  { "Lemon",      DT_NUMBER,                 0, &VarLemon,      0,   NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -153,11 +159,9 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "-123", "0", "456" };
-  int numbers[] = { -123, 0, 456 };
-  const char *invalid[] = {
-    "-32769", "32768", "junk", "", NULL,
-  };
+  const char *valid[] = { "-123", "0", "-42", "456" };
+  int numbers[] = { -123, 0, -42, 456 };
+  const char *invalid[] = { "-32769", "32768", "junk", "", NULL };
   char *name = "Damson";
 
   int rc;
@@ -171,6 +175,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     if (VarDamson != numbers[i])
@@ -197,7 +207,19 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
   }
-  printf("\n");
+
+  name = "Mango";
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "-42", err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
+  else
+  {
+    printf("Expected error: %s\n", err->data);
+  }
 
   return true;
 }
@@ -252,6 +274,29 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("%s = %d, set to '%d'\n", name, VarFig, value);
+
+  rc = cs_str_native_set(cs, name, value, err);
+  if (rc & CSR_SUC_NO_CHANGE)
+  {
+    printf("Value of %s wasn't changed\n", name);
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
+
+  name = "Nectarine";
+  rc = cs_str_native_set(cs, name, -42, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
 
   int invalid[] = { -32769, 32768 };
   for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
@@ -314,6 +359,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("Reset: %s = %d\n", name, VarHawthorn);
+
+  name = "Olive";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = %d\n", name, VarOlive);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "99", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = %d\n", name, VarOlive);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (VarOlive != 99)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = %d\n", name, VarOlive);
 
   return true;
 }

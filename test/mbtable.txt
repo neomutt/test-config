@@ -9,6 +9,7 @@ mbtable Kumquat =
 mbtable Papaya = 
 mbtable Jackfruit = jackfruit
 mbtable Lemon = lemon
+mbtable Quince = quince
 mbtable Cherry = cherry
 mbtable Mango = mango
 mbtable Hawthorn = 
@@ -34,6 +35,7 @@ Event: Damson has been set to 'hello'
 Damson = 'hello', set by 'hello'
 Event: Damson has been set to 'world'
 Damson = 'world', set by 'world'
+Value of Damson wasn't changed
 Event: Damson has been set to ''
 Damson = '', set by ''
 Event: Damson has been set to ''
@@ -42,6 +44,7 @@ Event: Elderberry has been set to 'hello'
 Elderberry = 'hello', set by 'hello'
 Event: Elderberry has been set to 'world'
 Elderberry = 'world', set by 'world'
+Value of Elderberry wasn't changed
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 Event: Elderberry has been set to ''
@@ -67,6 +70,11 @@ Event: Lemon has been set to 'hello'
 Set: Lemon = 'hello'
 Event: Lemon has been reset to 'lemon'
 Reset: Lemon = 'lemon'
+Initial: Quince = 'quince'
+Event: Quince has been set to 'hello'
+Set: Quince = 'hello'
+Expected error: validator_fail: Quince, (ptr)
+Reset: Quince = 'hello'
 ---- test_validator ----------------------------------------
 Event: Mango has been set to 'hello'
 validator_succeed: Mango, (ptr)

@@ -229,8 +229,6 @@ static int path_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  path_destroy(cs, var, cdef);
-
   int rc = CSR_SUCCESS;
   if (cdef->validator)
   {
@@ -241,9 +239,13 @@ static int path_reset(const struct ConfigSet *cs, void *var,
   }
 
   const char *path = (const char *) cdef->initial;
-
   if (!path)
     rc |= CSR_SUC_EMPTY;
+
+  if (mutt_str_strcmp(path, (*(char **) var)) == 0)
+    return (rc | CSR_SUC_NO_CHANGE);
+
+  path_destroy(cs, var, cdef);
 
   *(const char **) var = path;
   return rc;

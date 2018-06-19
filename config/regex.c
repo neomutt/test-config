@@ -245,8 +245,6 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  regex_destroy(cs, var, cdef);
-
   struct Regex *r = NULL;
   const char *initial = (const char *) cdef->initial;
 
@@ -272,6 +270,8 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
 
   if (!r)
     rc |= CSR_SUC_EMPTY;
+
+  regex_destroy(cs, var, cdef);
 
   *(struct Regex **) var = r;
   return rc;

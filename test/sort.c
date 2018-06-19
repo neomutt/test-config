@@ -53,6 +53,7 @@ static short VarOlive;
 static short VarPapaya;
 static short VarQuince;
 static short VarRaspberry;
+static short VarStrawberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -69,6 +70,7 @@ static struct ConfigDef Vars[] = {
   { "Kumquat",    DT_SORT,                 0, &VarKumquat,    1,  NULL              }, /* test_native_set */
   { "Lemon",      DT_SORT,                 0, &VarLemon,      1,  NULL              }, /* test_native_get */
   { "Mango",      DT_SORT,                 0, &VarMango,      1,  NULL              }, /* test_reset */
+  { "Strawberry", DT_SORT,                 0, &VarStrawberry, 1,  validator_fail    },
   { "Nectarine",  DT_SORT,                 0, &VarNectarine,  1,  validator_succeed }, /* test_validator */
   { "Olive",      DT_SORT,                 0, &VarOlive,      1,  validator_warn    },
   { "Papaya",     DT_SORT,                 0, &VarPapaya,     1,  validator_fail    },
@@ -202,6 +204,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
         return false;
       }
 
+      if (rc & CSR_SUC_NO_CHANGE)
+      {
+        printf("Value of %s wasn't changed\n", map[j].name);
+        continue;
+      }
+
       if (*var != map[j].value)
       {
         printf("Value of %s wasn't changed\n", map[j].name);
@@ -229,6 +237,23 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
         return false;
       }
     }
+  }
+
+  const char *name = "Damson";
+  mutt_buffer_reset(err);
+  int rc = cs_str_string_set(cs, name, "last-date-sent", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "reverse-score", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
   }
 
   return true;
@@ -303,6 +328,12 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
       {
         printf("%s\n", err->data);
         return false;
+      }
+
+      if (rc & CSR_SUC_NO_CHANGE)
+      {
+        printf("Value of %s wasn't changed\n", map[j].name);
+        continue;
       }
 
       if (*var != map[j].value)
@@ -394,6 +425,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("Reset: %s = %d\n", name, VarMango);
+
+  name = "Strawberry";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = %d\n", name, VarStrawberry);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "size", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = %d\n", name, VarStrawberry);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (VarStrawberry != SORT_SIZE)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = %d\n", name, VarStrawberry);
 
   return true;
 }

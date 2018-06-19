@@ -244,8 +244,6 @@ static int address_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  address_destroy(cs, var, cdef);
-
   struct Address *a = NULL;
   const char *initial = (const char *) cdef->initial;
 
@@ -267,6 +265,8 @@ static int address_reset(const struct ConfigSet *cs, void *var,
 
   if (!a)
     rc |= CSR_SUC_EMPTY;
+
+  address_destroy(cs, var, cdef);
 
   *(struct Address **) var = a;
   return rc;

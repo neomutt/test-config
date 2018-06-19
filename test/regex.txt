@@ -7,6 +7,7 @@ regex Elderberry = elderberry.*
 regex Fig = 
 regex Kumquat = kumquat.*
 regex Papaya = papaya.*
+regex Strawberry = strawberry.*
 regex Jackfruit = jackfruit.*
 regex Lemon = 
 regex Quince = quince.*
@@ -36,6 +37,7 @@ Event: Damson has been set to 'hello.*'
 Damson = 'hello.*', set by 'hello.*'
 Event: Damson has been set to 'world.*'
 Damson = 'world.*', set by 'world.*'
+Value of Damson wasn't changed
 Event: Damson has been set to ''
 Damson = '', set by ''
 Event: Damson has been set to ''
@@ -44,6 +46,7 @@ Event: Elderberry has been set to 'hello.*'
 Elderberry = 'hello.*', set by 'hello.*'
 Event: Elderberry has been set to 'world.*'
 Elderberry = 'world.*', set by 'world.*'
+Value of Elderberry wasn't changed
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 Event: Elderberry has been set to ''
@@ -72,6 +75,11 @@ Set: Mango = 'hello.*'
 Event: Mango has been reset to 'mango.*'
 Reset: Mango = 'mango.*'
 Expected error: Invalid back reference
+Initial: Strawberry = 'strawberry.*'
+Event: Strawberry has been set to 'hel*o'
+Set: Strawberry = 'hel*o'
+Expected error: validator_fail: Strawberry, (ptr)
+Reset: Strawberry = 'hel*o'
 ---- test_validator ----------------------------------------
 Event: Olive has been set to 'hello.*'
 validator_succeed: Olive, (ptr)

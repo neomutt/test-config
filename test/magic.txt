@@ -8,6 +8,7 @@ magic Kumquat = mbox
 magic Jackfruit = mbox
 magic Lemon = mbox
 magic Cherry = mbox
+magic Mango = mbox
 magic Hawthorn = mbox
 magic Guava = mbox
 magic Ilama = mbox
@@ -33,6 +34,7 @@ Event: Damson has been set to 'MH'
 Damson = 3, set by 'mh'
 Event: Damson has been set to 'Maildir'
 Damson = 4, set by 'maildir'
+Value of Damson wasn't changed
 Expected error: Invalid magic value: mbox2
 Expected error: Invalid magic value: mm
 Expected error: Invalid magic value: 
@@ -47,6 +49,7 @@ Variable has an invalid value: 5
 ---- test_native_set ---------------------------------------
 Event: Fig has been set to 'Maildir'
 Fig = 4, set to '4'
+Value of Fig wasn't changed
 Expected error: Invalid magic value: 0
 Expected error: Invalid magic value: 5
 ---- test_native_get ---------------------------------------
@@ -54,6 +57,11 @@ Guava = 4
 ---- test_reset --------------------------------------------
 Event: Hawthorn has been reset to 'mbox'
 Reset: Hawthorn = 1
+Initial: Mango = 1
+Event: Mango has been set to 'Maildir'
+Set: Mango = 4
+Expected error: validator_fail: Mango, 1
+Reset: Mango = 4
 ---- test_validator ----------------------------------------
 Event: Ilama has been set to 'Maildir'
 validator_succeed: Ilama, 4

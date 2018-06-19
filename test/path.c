@@ -49,6 +49,7 @@ static char *VarMango;
 static char *VarNectarine;
 static char *VarOlive;
 static char *VarPapaya;
+static char *VarQuince;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -64,6 +65,7 @@ static struct ConfigDef Vars[] = {
   { "Jackfruit",  DT_PATH, 0, &VarJackfruit,  IP "/jackfruit",  NULL              },
   { "Kumquat",    DT_PATH, 0, &VarKumquat,    0,                NULL              }, /* test_native_get */
   { "Lemon",      DT_PATH, 0, &VarLemon,      IP "/lemon",      NULL              }, /* test_reset */
+  { "Quince",     DT_PATH, 0, &VarQuince,     IP "/quince",     validator_fail    },
   { "Mango",      DT_PATH, 0, &VarMango,      IP "/mango",      validator_succeed }, /* test_validator */
   { "Nectarine",  DT_PATH, 0, &VarNectarine,  IP "/nectarine",  validator_warn    },
   { "Olive",      DT_PATH, 0, &VarOlive,      IP "/olive",      validator_fail    },
@@ -170,7 +172,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", "", NULL };
+  const char *valid[] = { "hello", "world", "world", "", NULL };
   char *name = "Damson";
 
   int rc;
@@ -182,6 +184,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     if (mutt_str_strcmp(VarDamson, valid[i]) != 0)
@@ -201,6 +209,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     if (mutt_str_strcmp(VarElderberry, valid[i]) != 0)
@@ -259,7 +273,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", "", NULL };
+  const char *valid[] = { "hello", "world", "world", "", NULL };
   char *name = "Ilama";
 
   int rc;
@@ -271,6 +285,12 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     if (mutt_str_strcmp(VarIlama, valid[i]) != 0)
@@ -290,6 +310,12 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     if (mutt_str_strcmp(VarJackfruit, valid[i]) != 0)
@@ -351,6 +377,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("Reset: %s = '%s'\n", name, VarLemon);
+
+  name = "Quince";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = '%s'\n", name, VarQuince);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "hello", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = '%s'\n", name, VarQuince);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(VarQuince, "hello") != 0)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = '%s'\n", name, VarQuince);
 
   return true;
 }

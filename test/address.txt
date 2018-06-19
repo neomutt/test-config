@@ -9,6 +9,7 @@ address Kumquat =
 address Papaya = 
 address Jackfruit = jackfruit@example.com
 address Lemon = lemon@example.com
+address Quince = quince@example.com
 address Cherry = cherry@example.com
 address Mango = mango@example.com
 address Hawthorn = 
@@ -61,6 +62,11 @@ Event: Lemon has been set to 'hello@example.com'
 Set: Lemon = 'hello@example.com'
 Event: Lemon has been reset to 'lemon@example.com'
 Reset: Lemon = 'lemon@example.com'
+Initial: Quince = 'quince@example.com'
+Event: Quince has been set to 'john@example.com'
+Set: Quince = 'john@example.com'
+Expected error: validator_fail: Quince, (ptr)
+Reset: Quince = 'john@example.com'
 ---- test_validator ----------------------------------------
 Event: Mango has been set to 'hello@example.com'
 validator_succeed: Mango, (ptr)

@@ -49,6 +49,7 @@ static char VarKumquat;
 static char VarLemon;
 static char VarMango;
 static char VarNectarine;
+static char VarOlive;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -60,6 +61,7 @@ static struct ConfigDef Vars[] = {
   { "Fig",        DT_QUAD, 0, &VarFig,        0, NULL              }, /* test_native_set */
   { "Guava",      DT_QUAD, 0, &VarGuava,      0, NULL              }, /* test_native_get */
   { "Hawthorn",   DT_QUAD, 0, &VarHawthorn,   0, NULL              }, /* test_reset */
+  { "Olive",      DT_QUAD, 0, &VarOlive,      0, validator_fail    },
   { "Ilama",      DT_QUAD, 0, &VarIlama,      0, validator_succeed }, /* test_validator */
   { "Jackfruit",  DT_QUAD, 0, &VarJackfruit,  0, validator_warn    },
   { "Kumquat",    DT_QUAD, 0, &VarKumquat,    0, validator_fail    },
@@ -183,6 +185,23 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
     printf("%s = %d, set by '%s'\n", name, VarDamson, valid[i]);
+
+    if (i == 2)
+    {
+      mutt_buffer_reset(err);
+      rc = cs_str_string_set(cs, name, valid[i], err);
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+      {
+        printf("%s\n", err->data);
+        return false;
+      }
+
+      if (rc & CSR_SUC_NO_CHANGE)
+      {
+        printf("Value of %s wasn't changed\n", name);
+        continue;
+      }
+    }
   }
 
   for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
@@ -261,6 +280,19 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 
   printf("%s = %d, set to '%d'\n", name, VarFig, value);
 
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, value, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (rc & CSR_SUC_NO_CHANGE)
+  {
+    printf("Value of %s wasn't changed\n", name);
+  }
+
   int invalid[] = { -1, 4 };
   for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
@@ -322,6 +354,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("Reset: %s = %d\n", name, VarHawthorn);
+
+  name = "Olive";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = %d\n", name, VarOlive);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "ask-yes", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = %d\n", name, VarOlive);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (VarOlive != MUTT_ASKYES)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = %d\n", name, VarOlive);
 
   return true;
 }
@@ -462,6 +524,10 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   {
     printf("Error: %s\n", err->data);
     goto ti_out;
+  }
+  if (rc & CSR_SUC_NO_CHANGE)
+  {
+    printf("Value of %s wasn't changed\n", parent);
   }
   dump_native(cs, parent, child);
 

@@ -8,12 +8,12 @@ reset failed for damaged:Pineapple: Unknown var 'damaged:Pineapple'
 Expected error:
 Expect error for next test
 failed to create damaged:Apple
-Event: Apple has been set to '42'
+Event: Apple has been set to '33'
 Expected error: 
-Apple = 42
+Apple = 33
 Cherry = 0
 Expected error
-fruit:Apple = '42'
+fruit:Apple = '33'
 Event: Apple has been set to '42'
 Set fruit:Apple
 Variable 'Apple' is inherited type.

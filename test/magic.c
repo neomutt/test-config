@@ -46,6 +46,7 @@ static short VarIlama;
 static short VarJackfruit;
 static short VarKumquat;
 static short VarLemon;
+static short VarMango;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -57,6 +58,7 @@ static struct ConfigDef Vars[] = {
   { "Fig",        DT_MAGIC, 0, &VarFig,        1, NULL              }, /* test_native_set */
   { "Guava",      DT_MAGIC, 0, &VarGuava,      1, NULL              }, /* test_native_get */
   { "Hawthorn",   DT_MAGIC, 0, &VarHawthorn,   1, NULL              }, /* test_reset */
+  { "Mango",      DT_MAGIC, 0, &VarMango,      1, validator_fail    },
   { "Ilama",      DT_MAGIC, 0, &VarIlama,      1, validator_succeed }, /* test_validator */
   { "Jackfruit",  DT_MAGIC, 0, &VarJackfruit,  1, validator_warn    },
   { "Kumquat",    DT_MAGIC, 0, &VarKumquat,    1, validator_fail    },
@@ -180,6 +182,18 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     printf("%s = %d, set by '%s'\n", name, VarDamson, valid[i]);
   }
 
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "maildir", err);
+  if (rc & CSR_SUC_NO_CHANGE)
+  {
+    printf("Value of %s wasn't changed\n", name);
+  }
+  else
+  {
+      printf("This test should have failed\n");
+      return false;
+  }
+
   for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
     mutt_buffer_reset(err);
@@ -256,6 +270,18 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 
   printf("%s = %d, set to '%d'\n", name, VarFig, value);
 
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, MUTT_MAILDIR, err);
+  if (rc & CSR_SUC_NO_CHANGE)
+  {
+    printf("Value of %s wasn't changed\n", name);
+  }
+  else
+  {
+      printf("This test should have failed\n");
+      return false;
+  }
+
   int invalid[] = { 0, 5 };
   for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
   {
@@ -317,6 +343,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("Reset: %s = %d\n", name, VarHawthorn);
+
+  name = "Mango";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = %d\n", name, VarMango);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "maildir", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = %d\n", name, VarMango);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (VarMango != MUTT_MAILDIR)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = %d\n", name, VarMango);
 
   return true;
 }

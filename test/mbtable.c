@@ -49,6 +49,7 @@ static struct MbTable *VarMango;
 static struct MbTable *VarNectarine;
 static struct MbTable *VarOlive;
 static struct MbTable *VarPapaya;
+static struct MbTable *VarQuince;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -64,6 +65,7 @@ static struct ConfigDef Vars[] = {
   { "Jackfruit",  DT_MBTABLE, 0, &VarJackfruit,  IP "jackfruit",  NULL              },
   { "Kumquat",    DT_MBTABLE, 0, &VarKumquat,    0,               NULL              }, /* test_native_get */
   { "Lemon",      DT_MBTABLE, 0, &VarLemon,      IP "lemon",      NULL              }, /* test_reset */
+  { "Quince",     DT_MBTABLE, 0, &VarQuince,     IP "quince",     validator_fail    },
   { "Mango",      DT_MBTABLE, 0, &VarMango,      IP "mango",      validator_succeed }, /* test_validator */
   { "Nectarine",  DT_MBTABLE, 0, &VarNectarine,  IP "nectarine",  validator_warn    },
   { "Olive",      DT_MBTABLE, 0, &VarOlive,      IP "olive",      validator_fail    },
@@ -170,7 +172,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", "", NULL };
+  const char *valid[] = { "hello", "world", "world", "", NULL };
   char *name = "Damson";
   char *mb = NULL;
 
@@ -183,6 +185,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     mb = VarDamson ? VarDamson->orig_str : NULL;
@@ -203,6 +211,12 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     {
       printf("%s\n", err->data);
       return false;
+    }
+
+    if (rc & CSR_SUC_NO_CHANGE)
+    {
+      printf("Value of %s wasn't changed\n", name);
+      continue;
     }
 
     const char *orig_str = VarElderberry ? VarElderberry->orig_str : NULL;
@@ -375,6 +389,36 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
   }
 
   printf("Reset: %s = '%s'\n", name, NONULL(mb));
+
+  name = "Quince";
+  mutt_buffer_reset(err);
+
+  printf("Initial: %s = '%s'\n", name, VarQuince->orig_str);
+  dont_fail = true;
+  rc = cs_str_string_set(cs, name, "hello", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+    return false;
+  printf("Set: %s = '%s'\n", name, VarQuince->orig_str);
+  dont_fail = false;
+
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(VarQuince->orig_str, "hello") != 0)
+  {
+    printf("Value of %s changed\n", name);
+    return false;
+  }
+
+  printf("Reset: %s = '%s'\n", name, VarQuince->orig_str);
 
   return true;
 }

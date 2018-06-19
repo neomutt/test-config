@@ -639,8 +639,9 @@ int cs_he_string_set(const struct ConfigSet *cs, struct HashElem *he,
     struct Inheritance *i = he->data;
     he->type = i->parent->type | DT_INHERITED;
   }
-  cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
-  return CSR_SUCCESS;
+  if (!(rc & CSR_SUC_NO_CHANGE))
+    cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
+  return rc;
 }
 
 /**
@@ -779,7 +780,8 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
   {
     if (he->type & DT_INHERITED)
       he->type = cdef->type | DT_INHERITED;
-    cs_notify_listeners(cs, he, cdef->name, CE_SET);
+    if (!(rc & CSR_SUC_NO_CHANGE))
+      cs_notify_listeners(cs, he, cdef->name, CE_SET);
   }
 
   return rc;
@@ -835,7 +837,8 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
   {
     if (he->type & DT_INHERITED)
       he->type = cdef->type | DT_INHERITED;
-    cs_notify_listeners(cs, he, cdef->name, CE_SET);
+    if (!(rc & CSR_SUC_NO_CHANGE))
+      cs_notify_listeners(cs, he, cdef->name, CE_SET);
   }
 
   return rc;

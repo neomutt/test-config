@@ -106,7 +106,7 @@ bool account_test(void)
 
   unsigned int index = 0;
   mutt_buffer_reset(&err);
-  int rc = ac_set_value(ac, index, 42, &err);
+  int rc = ac_set_value(ac, index, 33, &err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err.data);

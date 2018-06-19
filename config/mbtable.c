@@ -286,8 +286,6 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  mbtable_destroy(cs, var, cdef);
-
   struct MbTable *table = NULL;
   const char *initial = (const char *) cdef->initial;
 
@@ -306,12 +304,13 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
     }
   }
 
-  int result = CSR_SUCCESS;
   if (!table)
-    result |= CSR_SUC_EMPTY;
+    rc |= CSR_SUC_EMPTY;
+
+  mbtable_destroy(cs, var, cdef);
 
   *(struct MbTable **) var = table;
-  return result;
+  return rc;
 }
 
 /**
