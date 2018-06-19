@@ -77,18 +77,25 @@ static int magic_string_set(const struct ConfigSet *cs, void *var, struct Config
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
-  if (cdef->validator)
-  {
-    int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
-
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return (rc | CSR_INV_VALIDATOR);
-  }
-
   if (var)
+  {
+    if (num == (*(short *) var))
+      return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+
+    if (cdef->validator)
+    {
+      int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+        return (rc | CSR_INV_VALIDATOR);
+    }
+
     *(short *) var = num;
+  }
   else
+  {
     cdef->initial = num;
+  }
 
   return CSR_SUCCESS;
 }
@@ -146,6 +153,9 @@ static int magic_native_set(const struct ConfigSet *cs, void *var,
     mutt_buffer_printf(err, "Invalid magic value: %ld", value);
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
+
+  if (value == (*(short *) var))
+    return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
 
   if (cdef->validator)
   {

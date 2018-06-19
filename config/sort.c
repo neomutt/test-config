@@ -196,18 +196,26 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   }
 
   id |= flags;
-  if (cdef->validator)
-  {
-    int rc = cdef->validator(cs, cdef, (intptr_t) id, err);
-
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return (rc | CSR_INV_VALIDATOR);
-  }
 
   if (var)
+  {
+    if (id == (*(short *) var))
+      return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+
+    if (cdef->validator)
+    {
+      int rc = cdef->validator(cs, cdef, (intptr_t) id, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+        return (rc | CSR_INV_VALIDATOR);
+    }
+
     *(short *) var = id;
+  }
   else
+  {
     cdef->initial = id;
+  }
 
   return CSR_SUCCESS;
 }
@@ -329,6 +337,9 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
     mutt_buffer_printf(err, "Invalid sort type: %ld", value);
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
+
+  if (value == (*(short *) var))
+    return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
 
   if (cdef->validator)
   {

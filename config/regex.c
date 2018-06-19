@@ -82,10 +82,14 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
 
   struct Regex *r = NULL;
 
-  int rc;
+  int rc = CSR_SUCCESS;
 
   if (var)
   {
+    struct Regex *curval = *(struct Regex **) var;
+    if (curval && (mutt_str_strcmp(value, curval->pattern) == 0))
+      return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+
     if (value)
     {
       r = regex_create(value, cdef->type, err);
@@ -103,12 +107,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
         return (rc | CSR_INV_VALIDATOR);
       }
     }
-  }
 
-  rc = CSR_SUCCESS;
-
-  if (var)
-  {
     regex_destroy(cs, var, cdef);
 
     *(struct Regex **) var = r;

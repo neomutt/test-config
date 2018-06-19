@@ -126,10 +126,14 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
 
   struct MbTable *table = NULL;
 
-  int rc;
+  int rc = CSR_SUCCESS;
 
   if (var)
   {
+    struct MbTable *curval = *(struct MbTable **) var;
+    if (curval && (mutt_str_strcmp(value, curval->orig_str) == 0))
+      return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+
     table = mbtable_parse(value);
 
     if (cdef->validator)
@@ -142,12 +146,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
         return (rc | CSR_INV_VALIDATOR);
       }
     }
-  }
 
-  rc = CSR_SUCCESS;
-
-  if (var)
-  {
     mbtable_destroy(cs, var, cdef);
 
     *(struct MbTable **) var = table;

@@ -88,20 +88,21 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
     return (CSR_ERR_INVALID |  CSR_INV_VALIDATOR);
   }
 
-  int rc;
-
-  if (cdef->validator)
-  {
-    rc = cdef->validator(cs, cdef, (intptr_t) value, err);
-
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return (rc | CSR_INV_VALIDATOR);
-  }
-
-  rc = CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
 
   if (var)
   {
+    if (mutt_str_strcmp(value, (*(char **) var)) == 0)
+      return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+
+    if (cdef->validator)
+    {
+      rc = cdef->validator(cs, cdef, (intptr_t) value, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+        return (rc | CSR_INV_VALIDATOR);
+    }
+
     string_destroy(cs, var, cdef);
 
     const char *str = mutt_str_strdup(value);
@@ -183,6 +184,9 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
     mutt_buffer_printf(err, "Option %s may not be empty", cdef->name);
     return (CSR_ERR_INVALID |  CSR_INV_VALIDATOR);
   }
+
+  if (mutt_str_strcmp((const char *) value, (*(char **) var)) == 0)
+    return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
 
   int rc;
 

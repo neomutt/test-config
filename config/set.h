@@ -51,6 +51,7 @@ enum ConfigEvent
 #define CSR_SUC_INHERITED (1 << 4) /**< Value is inherited */
 #define CSR_SUC_EMPTY     (1 << 5) /**< Value is empty/unset */
 #define CSR_SUC_WARNING   (1 << 6) /**< Notify the user of a warning */
+#define CSR_SUC_NO_CHANGE (1 << 7) /**< The value hasn't changed */
 
 /* Flags for CSR_INVALID */
 #define CSR_INV_TYPE      (1 << 4) /**< Value is not valid for the type */

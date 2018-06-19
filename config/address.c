@@ -81,23 +81,21 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
     addr = mutt_addr_parse_list(NULL, value);
   }
 
-  int rc;
-
-  if (var && cdef->validator)
-  {
-    rc = cdef->validator(cs, cdef, (intptr_t) addr, err);
-
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
-    {
-      address_destroy(cs, &addr, cdef);
-      return (rc | CSR_INV_VALIDATOR);
-    }
-  }
-
-  rc = CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
 
   if (var)
   {
+    if (cdef->validator)
+    {
+      rc = cdef->validator(cs, cdef, (intptr_t) addr, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+      {
+        address_destroy(cs, &addr, cdef);
+        return (rc | CSR_INV_VALIDATOR);
+      }
+    }
+
     /* ordinary variable setting */
     address_destroy(cs, var, cdef);
 

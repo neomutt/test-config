@@ -82,20 +82,21 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   if (value && (value[0] == '\0'))
     value = NULL;
 
-  int rc;
-
-  if (cdef->validator)
-  {
-    rc = cdef->validator(cs, cdef, (intptr_t) value, err);
-
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return (rc | CSR_INV_VALIDATOR);
-  }
-
-  rc = CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
 
   if (var)
   {
+    if (mutt_str_strcmp(value, (*(char **) var)) == 0)
+      return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+
+    if (cdef->validator)
+    {
+      rc = cdef->validator(cs, cdef, (intptr_t) value, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+        return (rc | CSR_INV_VALIDATOR);
+    }
+
     path_destroy(cs, var, cdef);
 
     const char *str = mutt_str_strdup(value);
@@ -170,6 +171,9 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
   /* Store empty strings as NULL */
   if (str && (str[0] == '\0'))
     value = 0;
+
+  if (mutt_str_strcmp((const char *) value, (*(char **) var)) == 0)
+    return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
 
   int rc;
 
