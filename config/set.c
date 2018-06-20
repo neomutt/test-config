@@ -432,7 +432,7 @@ int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *
       rc = cst->reset(cs, cdef->var, cdef, err);
   }
 
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  if ((CSR_RESULT(rc) == CSR_SUCCESS) && !(rc & CSR_SUC_NO_CHANGE))
     cs_notify_listeners(cs, he, he->key.strkey, CE_RESET);
   return rc;
 }

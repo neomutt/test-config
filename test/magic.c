@@ -344,6 +344,14 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   printf("Reset: %s = %d\n", name, VarHawthorn);
 
+  mutt_buffer_reset(err);
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
   name = "Ilama";
   mutt_buffer_reset(err);
 

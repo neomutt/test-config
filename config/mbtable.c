@@ -289,10 +289,19 @@ static int mbtable_reset(const struct ConfigSet *cs, void *var,
   struct MbTable *table = NULL;
   const char *initial = (const char *) cdef->initial;
 
+  struct MbTable *curtable = *(struct MbTable **) var;
+  const char *curval = curtable ? curtable->orig_str : NULL;
+
+  int rc = CSR_SUCCESS;
+  if (!curtable)
+    rc |= CSR_SUC_EMPTY;
+
+  if (mutt_str_strcmp(initial, curval) == 0)
+    return (rc | CSR_SUC_NO_CHANGE);
+
   if (initial)
     table = mbtable_parse(initial);
 
-  int rc = CSR_SUCCESS;
   if (cdef->validator)
   {
     rc = cdef->validator(cs, cdef, (intptr_t) table, err);

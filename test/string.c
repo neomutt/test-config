@@ -408,6 +408,13 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   printf("Reset: %s = '%s'\n", name, VarNectarine);
 
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
   name = "Olive";
   mutt_buffer_reset(err);
 

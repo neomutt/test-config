@@ -466,6 +466,13 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   printf("Reset: %s = %d\n", name, VarMango);
 
+  rc = cs_str_reset(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
   name = "Nectarine";
   mutt_buffer_reset(err);
 

@@ -222,6 +222,9 @@ static int enum_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  if (cdef->initial == (*(short *) var))
+    return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+
   if (cdef->validator)
   {
     int rc = cdef->validator(cs, cdef, cdef->initial, err);

@@ -248,14 +248,22 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
   struct Regex *r = NULL;
   const char *initial = (const char *) cdef->initial;
 
+  struct Regex *currx = *(struct Regex **) var;
+  const char *curval = currx ? currx->pattern : NULL;
+
+  int rc = CSR_SUCCESS;
+  if (!currx)
+    rc |= CSR_SUC_EMPTY;
+
+  if (mutt_str_strcmp(initial, curval) == 0)
+    return (rc | CSR_SUC_NO_CHANGE);
+
   if (initial)
   {
     r = regex_create(initial, cdef->type, err);
     if (!r)
       return CSR_ERR_CODE;
   }
-
-  int rc = CSR_SUCCESS;
 
   if (cdef->validator)
   {

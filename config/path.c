@@ -230,6 +230,14 @@ static int path_reset(const struct ConfigSet *cs, void *var,
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int rc = CSR_SUCCESS;
+
+  const char *path = (const char *) cdef->initial;
+  if (!path)
+    rc |= CSR_SUC_EMPTY;
+
+  if (mutt_str_strcmp((const char *) cdef->initial, (*(char **) var)) == 0)
+    return (rc | CSR_SUC_NO_CHANGE);
+
   if (cdef->validator)
   {
     rc = cdef->validator(cs, cdef, cdef->initial, err);
@@ -238,14 +246,10 @@ static int path_reset(const struct ConfigSet *cs, void *var,
       return (rc | CSR_INV_VALIDATOR);
   }
 
-  const char *path = (const char *) cdef->initial;
+  path_destroy(cs, var, cdef);
+
   if (!path)
     rc |= CSR_SUC_EMPTY;
-
-  if (mutt_str_strcmp(path, (*(char **) var)) == 0)
-    return (rc | CSR_SUC_NO_CHANGE);
-
-  path_destroy(cs, var, cdef);
 
   *(const char **) var = path;
   return rc;

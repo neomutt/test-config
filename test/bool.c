@@ -379,7 +379,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (VarIlama != MUTT_YES)
+  if (!VarIlama)
   {
     printf("Value of %s changed\n", name);
     return false;
