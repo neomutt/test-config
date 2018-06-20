@@ -85,7 +85,7 @@ static int string_string_set(const struct ConfigSet *cs, void *var, struct Confi
   if (!value && (cdef->type & DT_NOT_EMPTY))
   {
     mutt_buffer_printf(err, "Option %s may not be empty", cdef->name);
-    return (CSR_ERR_INVALID |  CSR_INV_VALIDATOR);
+    return (CSR_ERR_INVALID | CSR_INV_VALIDATOR);
   }
 
   int rc = CSR_SUCCESS;
@@ -182,7 +182,7 @@ static int string_native_set(const struct ConfigSet *cs, void *var,
   if ((value == 0) && (cdef->type & DT_NOT_EMPTY))
   {
     mutt_buffer_printf(err, "Option %s may not be empty", cdef->name);
-    return (CSR_ERR_INVALID |  CSR_INV_VALIDATOR);
+    return (CSR_ERR_INVALID | CSR_INV_VALIDATOR);
   }
 
   if (mutt_str_strcmp((const char *) value, (*(char **) var)) == 0)

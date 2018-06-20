@@ -1,6 +1,6 @@
 ---- quad_test ---------------------------------------------
 ---- set_list ----------------------------------------------
-boolean Nectarine = no
+boolean Olive = no
 quad Apple = no
 quad Banana = ask-yes
 quad Cherry = no
@@ -14,7 +14,7 @@ quad Jackfruit = no
 quad Kumquat = no
 quad Lemon = no
 quad Mango = no
-quad Olive = no
+quad Nectarine = no
 ---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 3
@@ -59,49 +59,49 @@ Guava = 1
 ---- test_reset --------------------------------------------
 Event: Hawthorn has been reset to 'no'
 Reset: Hawthorn = 0
-Initial: Olive = 0
-Event: Olive has been set to 'ask-yes'
-Set: Olive = 3
-Expected error: validator_fail: Olive, 0
-Reset: Olive = 3
+Initial: Ilama = 0
+Event: Ilama has been set to 'ask-yes'
+Set: Ilama = 3
+Expected error: validator_fail: Ilama, 0
+Reset: Ilama = 3
 ---- test_validator ----------------------------------------
-Event: Ilama has been set to 'yes'
-validator_succeed: Ilama, 1
-String: Ilama = 1
-Event: Ilama has been set to 'yes'
-validator_succeed: Ilama, 1
-Native: Ilama = 1
 Event: Jackfruit has been set to 'yes'
-validator_warn: Jackfruit, 1
+validator_succeed: Jackfruit, 1
 String: Jackfruit = 1
 Event: Jackfruit has been set to 'yes'
-validator_warn: Jackfruit, 1
+validator_succeed: Jackfruit, 1
 Native: Jackfruit = 1
-Expected error: validator_fail: Kumquat, 1
-String: Kumquat = 0
-Expected error: validator_fail: Kumquat, 1
-Native: Kumquat = 0
+Event: Kumquat has been set to 'yes'
+validator_warn: Kumquat, 1
+String: Kumquat = 1
+Event: Kumquat has been set to 'yes'
+validator_warn: Kumquat, 1
+Native: Kumquat = 1
+Expected error: validator_fail: Lemon, 1
+String: Lemon = 0
+Expected error: validator_fail: Lemon, 1
+Native: Lemon = 0
 ---- test_inherit ------------------------------------------
-Event: Lemon has been set to 'yes'
-          Lemon = 1
-    fruit:Lemon = 1
-Value of Lemon wasn't changed
-          Lemon = 1
-    fruit:Lemon = 0
-Event: fruit:Lemon has been reset to 'yes'
-          Lemon = 1
-    fruit:Lemon = 1
-Event: Lemon has been reset to 'no'
-          Lemon = 0
-    fruit:Lemon = 0
+Event: Mango has been set to 'yes'
+          Mango = 1
+    fruit:Mango = 1
+Value of Mango wasn't changed
+          Mango = 1
+    fruit:Mango = 0
+Event: fruit:Mango has been reset to 'yes'
+          Mango = 1
+    fruit:Mango = 1
+Event: Mango has been reset to 'no'
+          Mango = 0
+    fruit:Mango = 0
 ---- test_toggle -------------------------------------------
 test 0
-Event: Mango has been set to 'yes'
+Event: Nectarine has been set to 'yes'
 test 1
-Event: Mango has been set to 'no'
+Event: Nectarine has been set to 'no'
 test 2
-Event: Mango has been set to 'ask-yes'
+Event: Nectarine has been set to 'ask-yes'
 test 3
-Event: Mango has been set to 'ask-no'
+Event: Nectarine has been set to 'ask-no'
 Expected error: Invalid quad value: 8
 Expected error: 

@@ -32,8 +32,8 @@
 #include "config/types.h"
 #include "test/common.h"
 
-static char *VarCherry;
 static char *VarApple;
+static char *VarCherry;
 static char *VarElderberry;
 static char *VarGuava;
 static char *VarIlama;

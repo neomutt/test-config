@@ -44,7 +44,6 @@ static short VarGuava;
 static short VarHawthorn;
 static short VarIlama;
 static short VarJackfruit;
-static short VarJackfruit;
 static short VarKumquat;
 static short VarLemon;
 static short VarMango;
@@ -57,7 +56,7 @@ static short VarStrawberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_SORT,                 0, &VarApple,      1,  NULL              }, /* test_initial_values() */
+  { "Apple",      DT_SORT,                 0, &VarApple,      1,  NULL              }, /* test_initial_values */
   { "Banana",     DT_SORT,                 0, &VarBanana,     2,  NULL              },
   { "Cherry",     DT_SORT,                 0, &VarCherry,     1,  NULL              },
   { "Damson",     DT_SORT|DT_SORT_INDEX,   0, &VarDamson,     1,  NULL              }, /* test_string_set */
@@ -70,11 +69,11 @@ static struct ConfigDef Vars[] = {
   { "Kumquat",    DT_SORT,                 0, &VarKumquat,    1,  NULL              }, /* test_native_set */
   { "Lemon",      DT_SORT,                 0, &VarLemon,      1,  NULL              }, /* test_native_get */
   { "Mango",      DT_SORT,                 0, &VarMango,      1,  NULL              }, /* test_reset */
-  { "Strawberry", DT_SORT,                 0, &VarStrawberry, 1,  validator_fail    },
-  { "Nectarine",  DT_SORT,                 0, &VarNectarine,  1,  validator_succeed }, /* test_validator */
-  { "Olive",      DT_SORT,                 0, &VarOlive,      1,  validator_warn    },
-  { "Papaya",     DT_SORT,                 0, &VarPapaya,     1,  validator_fail    },
-  { "Quince",     DT_SORT,                 0, &VarQuince,     1,  NULL              }, /* test_inherit */
+  { "Nectarine",  DT_SORT,                 0, &VarNectarine,  1,  validator_fail    },
+  { "Olive",      DT_SORT,                 0, &VarOlive,      1,  validator_succeed }, /* test_validator */
+  { "Papaya",     DT_SORT,                 0, &VarPapaya,     1,  validator_warn    },
+  { "Quince",     DT_SORT,                 0, &VarQuince,     1,  validator_fail    },
+  { "Strawberry", DT_SORT,                 0, &VarStrawberry, 1,  NULL              }, /* test_inherit */
   { NULL },
 };
 
@@ -426,15 +425,15 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   printf("Reset: %s = %d\n", name, VarMango);
 
-  name = "Strawberry";
+  name = "Nectarine";
   mutt_buffer_reset(err);
 
-  printf("Initial: %s = %d\n", name, VarStrawberry);
+  printf("Initial: %s = %d\n", name, VarNectarine);
   dont_fail = true;
   rc = cs_str_string_set(cs, name, "size", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
-  printf("Set: %s = %d\n", name, VarStrawberry);
+  printf("Set: %s = %d\n", name, VarNectarine);
   dont_fail = false;
 
   rc = cs_str_reset(cs, name, err);
@@ -448,13 +447,13 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (VarStrawberry != SORT_SIZE)
+  if (VarNectarine != SORT_SIZE)
   {
     printf("Value of %s changed\n", name);
     return false;
   }
 
-  printf("Reset: %s = %d\n", name, VarStrawberry);
+  printf("Reset: %s = %d\n", name, VarNectarine);
 
   return true;
 }
@@ -463,39 +462,10 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Nectarine";
-  VarNectarine = SORT_SUBJECT;
-  mutt_buffer_reset(err);
-  int rc = cs_str_string_set(cs, name, "threads", err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    return false;
-  }
-  printf("String: %s = %d\n", name, VarNectarine);
-
-  VarNectarine = SORT_SUBJECT;
-  mutt_buffer_reset(err);
-  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    return false;
-  }
-  printf("Native: %s = %d\n", name, VarNectarine);
-
-  name = "Olive";
+  char *name = "Olive";
   VarOlive = SORT_SUBJECT;
   mutt_buffer_reset(err);
-  rc = cs_str_string_set(cs, name, "threads", err);
+  int rc = cs_str_string_set(cs, name, "threads", err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -525,9 +495,9 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarPapaya = SORT_SUBJECT;
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "threads", err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
-    printf("Expected error: %s\n", err->data);
+    printf("%s\n", err->data);
   }
   else
   {
@@ -539,6 +509,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarPapaya = SORT_SUBJECT;
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarPapaya);
+
+  name = "Quince";
+  VarQuince = SORT_SUBJECT;
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "threads", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -548,7 +533,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarPapaya);
+  printf("String: %s = %d\n", name, VarQuince);
+
+  VarQuince = SORT_SUBJECT;
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, SORT_THREADS, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarQuince);
 
   return true;
 }
@@ -568,7 +567,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Quince";
+  const char *parent = "Strawberry";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
@@ -579,7 +578,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   struct Account *ac = ac_create(cs, account, AccountVarStr);
 
   // set parent
-  VarQuince = SORT_SUBJECT;
+  VarStrawberry = SORT_SUBJECT;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, parent, "threads", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)

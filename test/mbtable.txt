@@ -15,8 +15,8 @@ mbtable Lemon = lemon
 mbtable Mango = mango
 mbtable Nectarine = nectarine
 mbtable Olive = olive
-mbtable Papaya = 
-mbtable Quince = quince
+mbtable Papaya = papaya
+mbtable Quince = 
 ---- test_initial_values -----------------------------------
 Apple = apple
 Banana = banana
@@ -70,38 +70,38 @@ Event: Lemon has been set to 'hello'
 Set: Lemon = 'hello'
 Event: Lemon has been reset to 'lemon'
 Reset: Lemon = 'lemon'
-Initial: Quince = 'quince'
-Event: Quince has been set to 'hello'
-Set: Quince = 'hello'
-Expected error: validator_fail: Quince, (ptr)
-Reset: Quince = 'hello'
----- test_validator ----------------------------------------
+Initial: Mango = 'mango'
 Event: Mango has been set to 'hello'
-validator_succeed: Mango, (ptr)
-MbTable: Mango = hello
-Event: Mango has been set to 'world'
-validator_succeed: Mango, (ptr)
-Native: Mango = world
+Set: Mango = 'hello'
+Expected error: validator_fail: Mango, (ptr)
+Reset: Mango = 'hello'
+---- test_validator ----------------------------------------
 Event: Nectarine has been set to 'hello'
-validator_warn: Nectarine, (ptr)
+validator_succeed: Nectarine, (ptr)
 MbTable: Nectarine = hello
 Event: Nectarine has been set to 'world'
-validator_warn: Nectarine, (ptr)
+validator_succeed: Nectarine, (ptr)
 Native: Nectarine = world
-Expected error: validator_fail: Olive, (ptr)
-MbTable: Olive = olive
-Expected error: validator_fail: Olive, (ptr)
-Native: Olive = olive
+Event: Olive has been set to 'hello'
+validator_warn: Olive, (ptr)
+MbTable: Olive = hello
+Event: Olive has been set to 'world'
+validator_warn: Olive, (ptr)
+Native: Olive = world
+Expected error: validator_fail: Papaya, (ptr)
+MbTable: Papaya = papaya
+Expected error: validator_fail: Papaya, (ptr)
+Native: Papaya = papaya
 ---- test_inherit ------------------------------------------
-Event: Papaya has been set to 'hello'
-         Papaya = hello
-   fruit:Papaya = hello
-Event: fruit:Papaya has been set to 'world'
-         Papaya = hello
-   fruit:Papaya = world
-Event: fruit:Papaya has been reset to 'hello'
-         Papaya = hello
-   fruit:Papaya = hello
-Event: Papaya has been reset to ''
-         Papaya = 
-   fruit:Papaya = 
+Event: Quince has been set to 'hello'
+         Quince = hello
+   fruit:Quince = hello
+Event: fruit:Quince has been set to 'world'
+         Quince = hello
+   fruit:Quince = world
+Event: fruit:Quince has been reset to 'hello'
+         Quince = hello
+   fruit:Quince = hello
+Event: Quince has been reset to ''
+         Quince = 
+   fruit:Quince = 

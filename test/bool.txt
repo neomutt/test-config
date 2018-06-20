@@ -13,8 +13,8 @@ boolean Jackfruit = no
 boolean Kumquat = no
 boolean Lemon = no
 boolean Mango = no
-boolean Olive = no
-quad Nectarine = no
+boolean Nectarine = no
+quad Olive = no
 ---- test_initial_values -----------------------------------
 Apple = 0
 Banana = 1
@@ -69,45 +69,45 @@ Guava = 1
 ---- test_reset --------------------------------------------
 Event: Hawthorn has been reset to 'no'
 Reset: Hawthorn = 0
-Initial: Olive = 0
-Event: Olive has been set to 'yes'
-Set: Olive = 1
-Expected error: validator_fail: Olive, 0
-Reset: Olive = 1
+Initial: Ilama = 0
+Event: Ilama has been set to 'yes'
+Set: Ilama = 1
+Expected error: validator_fail: Ilama, 0
+Reset: Ilama = 1
 ---- test_validator ----------------------------------------
-Event: Ilama has been set to 'yes'
-validator_succeed: Ilama, 1
-String: Ilama = 1
-Event: Ilama has been set to 'yes'
-validator_succeed: Ilama, 1
-Native: Ilama = 1
 Event: Jackfruit has been set to 'yes'
-validator_warn: Jackfruit, 1
+validator_succeed: Jackfruit, 1
 String: Jackfruit = 1
 Event: Jackfruit has been set to 'yes'
-validator_warn: Jackfruit, 1
+validator_succeed: Jackfruit, 1
 Native: Jackfruit = 1
-Expected error: validator_fail: Kumquat, 1
-String: Kumquat = 0
-Expected error: validator_fail: Kumquat, 1
-Native: Kumquat = 0
+Event: Kumquat has been set to 'yes'
+validator_warn: Kumquat, 1
+String: Kumquat = 1
+Event: Kumquat has been set to 'yes'
+validator_warn: Kumquat, 1
+Native: Kumquat = 1
+Expected error: validator_fail: Lemon, 1
+String: Lemon = 0
+Expected error: validator_fail: Lemon, 1
+Native: Lemon = 0
 ---- test_inherit ------------------------------------------
-Event: Lemon has been set to 'yes'
-          Lemon = 1
-    fruit:Lemon = 1
-Value of Lemon wasn't changed
-          Lemon = 1
-    fruit:Lemon = 0
-Event: fruit:Lemon has been reset to 'yes'
-          Lemon = 1
-    fruit:Lemon = 1
-Event: Lemon has been reset to 'no'
-          Lemon = 0
-    fruit:Lemon = 0
+Event: Mango has been set to 'yes'
+          Mango = 1
+    fruit:Mango = 1
+Value of Mango wasn't changed
+          Mango = 1
+    fruit:Mango = 0
+Event: fruit:Mango has been reset to 'yes'
+          Mango = 1
+    fruit:Mango = 1
+Event: Mango has been reset to 'no'
+          Mango = 0
+    fruit:Mango = 0
 ---- test_toggle -------------------------------------------
 test 0
-Event: Mango has been set to 'yes'
+Event: Nectarine has been set to 'yes'
 test 1
-Event: Mango has been set to 'no'
+Event: Nectarine has been set to 'no'
 Expected error: Invalid boolean value: 8
 Expected error: 

@@ -251,4 +251,3 @@ void enum_init(struct ConfigSet *cs)
   };
   cs_register_type(cs, DT_ENUM, &cst_enum);
 }
-

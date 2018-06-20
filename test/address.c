@@ -54,7 +54,7 @@ static struct Address *VarQuince;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_ADDRESS, 0, &VarApple,      IP "apple@example.com",      NULL              }, /* test_initial_values() */
+  { "Apple",      DT_ADDRESS, 0, &VarApple,      IP "apple@example.com",      NULL              }, /* test_initial_values */
   { "Banana",     DT_ADDRESS, 0, &VarBanana,     IP "banana@example.com",     NULL              },
   { "Cherry",     DT_ADDRESS, 0, &VarCherry,     IP "cherry@example.com",     NULL              },
   { "Damson",     DT_ADDRESS, 0, &VarDamson,     0,                           NULL              }, /* test_address_set */
@@ -66,11 +66,11 @@ static struct ConfigDef Vars[] = {
   { "Jackfruit",  DT_ADDRESS, 0, &VarJackfruit,  IP "jackfruit@example.com",  NULL              },
   { "Kumquat",    DT_ADDRESS, 0, &VarKumquat,    0,                           NULL              }, /* test_native_get */
   { "Lemon",      DT_ADDRESS, 0, &VarLemon,      IP "lemon@example.com",      NULL              }, /* test_reset */
-  { "Quince",     DT_ADDRESS, 0, &VarQuince,     IP "quince@example.com",     validator_fail    },
-  { "Mango",      DT_ADDRESS, 0, &VarMango,      IP "mango@example.com",      validator_succeed }, /* test_validator */
-  { "Nectarine",  DT_ADDRESS, 0, &VarNectarine,  IP "nectarine@example.com",  validator_warn    },
-  { "Olive",      DT_ADDRESS, 0, &VarOlive,      IP "olive@example.com",      validator_fail    },
-  { "Papaya",     DT_ADDRESS, 0, &VarPapaya,     0,                           NULL              }, /* test_inherit */
+  { "Mango",      DT_ADDRESS, 0, &VarMango,      IP "mango@example.com",      validator_fail    },
+  { "Nectarine",  DT_ADDRESS, 0, &VarNectarine,  IP "nectarine@example.com",  validator_succeed }, /* test_validator */
+  { "Olive",      DT_ADDRESS, 0, &VarOlive,      IP "olive@example.com",      validator_warn    },
+  { "Papaya",     DT_ADDRESS, 0, &VarPapaya,     IP "papaya@example.com",     validator_fail    },
+  { "Quince",     DT_ADDRESS, 0, &VarQuince,     0,                           NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -373,15 +373,15 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   printf("Reset: %s = '%s'\n", name, NONULL(addr));
 
-  name = "Quince";
+  name = "Mango";
   mutt_buffer_reset(err);
 
-  printf("Initial: %s = '%s'\n", name, VarQuince->mailbox);
+  printf("Initial: %s = '%s'\n", name, VarMango->mailbox);
   dont_fail = true;
   rc = cs_str_string_set(cs, name, "john@example.com", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
-  printf("Set: %s = '%s'\n", name, VarQuince->mailbox);
+  printf("Set: %s = '%s'\n", name, VarMango->mailbox);
   dont_fail = false;
 
   rc = cs_str_reset(cs, name, err);
@@ -395,13 +395,13 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (mutt_str_strcmp(VarQuince->mailbox, "john@example.com") != 0)
+  if (mutt_str_strcmp(VarMango->mailbox, "john@example.com") != 0)
   {
     printf("Value of %s changed\n", name);
     return false;
   }
 
-  printf("Reset: %s = '%s'\n", name, VarQuince->mailbox);
+  printf("Reset: %s = '%s'\n", name, VarMango->mailbox);
 
   return true;
 }
@@ -414,38 +414,9 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   struct Address *a = address_create("world@example.com");
   bool result = false;
 
-  char *name = "Mango";
+  char *name = "Nectarine";
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello@example.com", err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    goto tv_out;
-  }
-  addr = VarMango ? VarMango->mailbox : NULL;
-  printf("Address: %s = %s\n", name, NONULL(addr));
-
-  mutt_buffer_reset(err);
-  rc = cs_str_native_set(cs, name, IP a, err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    goto tv_out;
-  }
-  addr = VarMango ? VarMango->mailbox : NULL;
-  printf("Native: %s = %s\n", name, NONULL(addr));
-
-  name = "Nectarine";
-  mutt_buffer_reset(err);
-  rc = cs_str_string_set(cs, name, "hello@example.com", err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -475,6 +446,35 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   name = "Olive";
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "hello@example.com", err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  addr = VarOlive ? VarOlive->mailbox : NULL;
+  printf("Address: %s = %s\n", name, NONULL(addr));
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, IP a, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    goto tv_out;
+  }
+  addr = VarOlive ? VarOlive->mailbox : NULL;
+  printf("Native: %s = %s\n", name, NONULL(addr));
+
+  name = "Papaya";
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "hello@example.com", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -484,7 +484,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarOlive ? VarOlive->mailbox : NULL;
+  addr = VarPapaya ? VarPapaya->mailbox : NULL;
   printf("Address: %s = %s\n", name, NONULL(addr));
 
   mutt_buffer_reset(err);
@@ -498,7 +498,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     goto tv_out;
   }
-  addr = VarOlive ? VarOlive->mailbox : NULL;
+  addr = VarPapaya ? VarPapaya->mailbox : NULL;
   printf("Native: %s = %s\n", name, NONULL(addr));
 
   result = true;
@@ -528,7 +528,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Papaya";
+  const char *parent = "Quince";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 

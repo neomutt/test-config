@@ -268,41 +268,41 @@ Lemon = 6
 ---- test_reset --------------------------------------------
 Event: Mango has been reset to 'date'
 Reset: Mango = 1
-Initial: Strawberry = 1
-Event: Strawberry has been set to 'size'
-Set: Strawberry = 2
-Expected error: validator_fail: Strawberry, 1
-Reset: Strawberry = 2
+Initial: Nectarine = 1
+Event: Nectarine has been set to 'size'
+Set: Nectarine = 2
+Expected error: validator_fail: Nectarine, 1
+Reset: Nectarine = 2
 ---- test_validator ----------------------------------------
-Event: Nectarine has been set to 'threads'
-validator_succeed: Nectarine, 6
-String: Nectarine = 6
-Event: Nectarine has been set to 'threads'
-validator_succeed: Nectarine, 6
-Native: Nectarine = 6
 Event: Olive has been set to 'threads'
-validator_warn: Olive, 6
+validator_succeed: Olive, 6
 String: Olive = 6
 Event: Olive has been set to 'threads'
-validator_warn: Olive, 6
+validator_succeed: Olive, 6
 Native: Olive = 6
-Expected error: validator_fail: Papaya, 6
-String: Papaya = 3
-Expected error: validator_fail: Papaya, 6
-Native: Papaya = 3
+Event: Papaya has been set to 'threads'
+validator_warn: Papaya, 6
+String: Papaya = 6
+Event: Papaya has been set to 'threads'
+validator_warn: Papaya, 6
+Native: Papaya = 6
+Expected error: validator_fail: Quince, 6
+String: Quince = 3
+Expected error: validator_fail: Quince, 6
+Native: Quince = 3
 ---- test_inherit ------------------------------------------
-Event: Quince has been set to 'threads'
-         Quince = 6
-   fruit:Quince = 6
-Event: fruit:Quince has been set to 'score'
-         Quince = 6
-   fruit:Quince = 9
-Event: fruit:Quince has been reset to 'threads'
-         Quince = 6
-   fruit:Quince = 6
-Event: Quince has been reset to 'date'
-         Quince = 1
-   fruit:Quince = 1
+Event: Strawberry has been set to 'threads'
+     Strawberry = 6
+fruit:Strawberry = 6
+Event: fruit:Strawberry has been set to 'score'
+     Strawberry = 6
+fruit:Strawberry = 9
+Event: fruit:Strawberry has been reset to 'threads'
+     Strawberry = 6
+fruit:Strawberry = 6
+Event: Strawberry has been reset to 'date'
+     Strawberry = 1
+fruit:Strawberry = 1
 ---- test_sort_type ----------------------------------------
 Expect error for next test
 Invalid sort type: 144

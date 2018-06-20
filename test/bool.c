@@ -39,21 +39,21 @@ static bool VarApple;
 static bool VarBanana;
 static bool VarCherry;
 static bool VarDamson;
-static char VarElderberry;
 static bool VarFig;
 static bool VarGuava;
 static bool VarHawthorn;
-static bool VarIlama;
 static bool VarJackfruit;
 static bool VarKumquat;
 static bool VarLemon;
-static char VarMango;
+static bool VarMango;
+static char VarElderberry;
+static char VarIlama;
 static char VarNectarine;
 static char VarOlive;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_BOOL, 0, &VarApple,      0, NULL              }, /* test_initial_values() */
+  { "Apple",      DT_BOOL, 0, &VarApple,      0, NULL              }, /* test_initial_values */
   { "Banana",     DT_BOOL, 0, &VarBanana,     1, NULL              },
   { "Cherry",     DT_BOOL, 0, &VarCherry,     0, NULL              },
   { "Damson",     DT_BOOL, 0, &VarDamson,     0, NULL              }, /* test_string_set */
@@ -61,13 +61,13 @@ static struct ConfigDef Vars[] = {
   { "Fig",        DT_BOOL, 0, &VarFig,        0, NULL              }, /* test_native_set */
   { "Guava",      DT_BOOL, 0, &VarGuava,      0, NULL              }, /* test_native_get */
   { "Hawthorn",   DT_BOOL, 0, &VarHawthorn,   0, NULL              }, /* test_reset */
-  { "Olive",      DT_BOOL, 0, &VarOlive,      0, validator_fail    },
-  { "Ilama",      DT_BOOL, 0, &VarIlama,      0, validator_succeed }, /* test_validator */
-  { "Jackfruit",  DT_BOOL, 0, &VarJackfruit,  0, validator_warn    },
-  { "Kumquat",    DT_BOOL, 0, &VarKumquat,    0, validator_fail    },
-  { "Lemon",      DT_BOOL, 0, &VarLemon,      0, NULL              }, /* test_inherit */
-  { "Mango",      DT_BOOL, 0, &VarMango,      0, NULL              }, /* test_toggle */
-  { "Nectarine",  DT_QUAD, 0, &VarNectarine,  0, NULL              },
+  { "Ilama",      DT_BOOL, 0, &VarIlama,      0, validator_fail    },
+  { "Jackfruit",  DT_BOOL, 0, &VarJackfruit,  0, validator_succeed }, /* test_validator */
+  { "Kumquat",    DT_BOOL, 0, &VarKumquat,    0, validator_warn    },
+  { "Lemon",      DT_BOOL, 0, &VarLemon,      0, validator_fail    },
+  { "Mango",      DT_BOOL, 0, &VarMango,      0, NULL              }, /* test_inherit */
+  { "Nectarine",  DT_BOOL, 0, &VarNectarine,  0, NULL              }, /* test_toggle */
+  { "Olive",      DT_QUAD, 0, &VarOlive,      0, NULL              },
   { NULL },
 };
 // clang-format on
@@ -357,15 +357,15 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 
   printf("Reset: %s = %d\n", name, VarHawthorn);
 
-  name = "Olive";
+  name = "Ilama";
   mutt_buffer_reset(err);
 
-  printf("Initial: %s = %d\n", name, VarOlive);
+  printf("Initial: %s = %d\n", name, VarIlama);
   dont_fail = true;
   rc = cs_str_string_set(cs, name, "yes", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
-  printf("Set: %s = %d\n", name, VarOlive);
+  printf("Set: %s = %d\n", name, VarIlama);
   dont_fail = false;
 
   rc = cs_str_reset(cs, name, err);
@@ -379,13 +379,13 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  if (VarOlive != MUTT_YES)
+  if (VarIlama != MUTT_YES)
   {
     printf("Value of %s changed\n", name);
     return false;
   }
 
-  printf("Reset: %s = %d\n", name, VarOlive);
+  printf("Reset: %s = %d\n", name, VarIlama);
 
   return true;
 }
@@ -394,39 +394,10 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Ilama";
-  VarIlama = false;
-  mutt_buffer_reset(err);
-  int rc = cs_str_string_set(cs, name, "yes", err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    return false;
-  }
-  printf("String: %s = %d\n", name, VarIlama);
-
-  VarIlama = false;
-  mutt_buffer_reset(err);
-  rc = cs_str_native_set(cs, name, 1, err);
-  if (CSR_RESULT(rc) == CSR_SUCCESS)
-  {
-    printf("%s\n", err->data);
-  }
-  else
-  {
-    printf("%s\n", err->data);
-    return false;
-  }
-  printf("Native: %s = %d\n", name, VarIlama);
-
-  name = "Jackfruit";
+  char *name = "Jackfruit";
   VarJackfruit = false;
   mutt_buffer_reset(err);
-  rc = cs_str_string_set(cs, name, "yes", err);
+  int rc = cs_str_string_set(cs, name, "yes", err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
     printf("%s\n", err->data);
@@ -456,9 +427,9 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarKumquat = false;
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "yes", err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
   {
-    printf("Expected error: %s\n", err->data);
+    printf("%s\n", err->data);
   }
   else
   {
@@ -470,6 +441,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   VarKumquat = false;
   mutt_buffer_reset(err);
   rc = cs_str_native_set(cs, name, 1, err);
+  if (CSR_RESULT(rc) == CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarKumquat);
+
+  name = "Lemon";
+  VarLemon = false;
+  mutt_buffer_reset(err);
+  rc = cs_str_string_set(cs, name, "yes", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("Expected error: %s\n", err->data);
@@ -479,7 +465,21 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarKumquat);
+  printf("String: %s = %d\n", name, VarLemon);
+
+  VarLemon = false;
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, 1, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+  printf("Native: %s = %d\n", name, VarLemon);
 
   return true;
 }
@@ -499,7 +499,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   bool result = false;
 
   const char *account = "fruit";
-  const char *parent = "Lemon";
+  const char *parent = "Mango";
   char child[128];
   snprintf(child, sizeof(child), "%s:%s", account, parent);
 
@@ -510,7 +510,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   struct Account *ac = ac_create(cs, account, AccountVarStr);
 
   // set parent
-  VarLemon = false;
+  VarMango = false;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, parent, "1", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -572,7 +572,7 @@ static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
 
   struct ToggleTest tests[] = { { false, true }, { true, false } };
 
-  char *name = "Mango";
+  char *name = "Nectarine";
   int rc;
 
   struct HashElem *he = cs_get_elem(cs, name);
@@ -585,7 +585,7 @@ static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
     bool after = tests[i].after;
     printf("test %zd\n", i);
 
-    VarMango = before;
+    VarNectarine = before;
     mutt_buffer_reset(err);
     intptr_t value = cs_he_native_get(cs, he, err);
     if (value == INT_MIN)
@@ -608,14 +608,14 @@ static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
       return false;
     }
 
-    if (VarMango != after)
+    if (VarNectarine != after)
     {
       printf("Toggle value is wrong: %s\n", err->data);
       return false;
     }
   }
 
-  VarMango = 8;
+  VarNectarine = 8;
   mutt_buffer_reset(err);
   rc = bool_he_toggle(cs, he, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -623,7 +623,7 @@ static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
     printf("Expected error: %s\n", err->data);
   }
 
-  name = "Nectarine";
+  name = "Olive";
   he = cs_get_elem(cs, name);
   if (!he)
     return false;

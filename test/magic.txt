@@ -57,38 +57,38 @@ Guava = 4
 ---- test_reset --------------------------------------------
 Event: Hawthorn has been reset to 'mbox'
 Reset: Hawthorn = 1
-Initial: Mango = 1
-Event: Mango has been set to 'Maildir'
-Set: Mango = 4
-Expected error: validator_fail: Mango, 1
-Reset: Mango = 4
+Initial: Ilama = 1
+Event: Ilama has been set to 'Maildir'
+Set: Ilama = 4
+Expected error: validator_fail: Ilama, 1
+Reset: Ilama = 4
 ---- test_validator ----------------------------------------
-Event: Ilama has been set to 'Maildir'
-validator_succeed: Ilama, 4
-String: Ilama = 4
-Event: Ilama has been set to 'Maildir'
-validator_succeed: Ilama, 4
-Native: Ilama = 4
 Event: Jackfruit has been set to 'Maildir'
-validator_warn: Jackfruit, 4
+validator_succeed: Jackfruit, 4
 String: Jackfruit = 4
 Event: Jackfruit has been set to 'Maildir'
-validator_warn: Jackfruit, 4
+validator_succeed: Jackfruit, 4
 Native: Jackfruit = 4
-Expected error: validator_fail: Kumquat, 4
-String: Kumquat = 1
-Expected error: validator_fail: Kumquat, 4
-Native: Kumquat = 1
+Event: Kumquat has been set to 'Maildir'
+validator_warn: Kumquat, 4
+String: Kumquat = 4
+Event: Kumquat has been set to 'Maildir'
+validator_warn: Kumquat, 4
+Native: Kumquat = 4
+Expected error: validator_fail: Lemon, 4
+String: Lemon = 1
+Expected error: validator_fail: Lemon, 4
+Native: Lemon = 1
 ---- test_inherit ------------------------------------------
-Event: Lemon has been set to 'Maildir'
-          Lemon = 4
-    fruit:Lemon = 4
-Event: fruit:Lemon has been set to 'MH'
-          Lemon = 4
-    fruit:Lemon = 3
-Event: fruit:Lemon has been reset to 'Maildir'
-          Lemon = 4
-    fruit:Lemon = 4
-Event: Lemon has been reset to 'mbox'
-          Lemon = 1
-    fruit:Lemon = 1
+Event: Mango has been set to 'Maildir'
+          Mango = 4
+    fruit:Mango = 4
+Event: fruit:Mango has been set to 'MH'
+          Mango = 4
+    fruit:Mango = 3
+Event: fruit:Mango has been reset to 'Maildir'
+          Mango = 4
+    fruit:Mango = 4
+Event: Mango has been reset to 'mbox'
+          Mango = 1
+    fruit:Mango = 1
