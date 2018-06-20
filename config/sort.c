@@ -309,22 +309,22 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
   switch (cdef->type & DT_SUBTYPE_MASK)
   {
     case DT_SORT_INDEX:
-      str = mutt_map_get_name(value, SortMethods);
+      str = mutt_map_get_name((value & SORT_MASK), SortMethods);
       break;
     case DT_SORT_ALIAS:
-      str = mutt_map_get_name(value, SortAliasMethods);
+      str = mutt_map_get_name((value & SORT_MASK), SortAliasMethods);
       break;
     case DT_SORT_AUX:
-      str = mutt_map_get_name(value, SortAuxMethods);
+      str = mutt_map_get_name((value & SORT_MASK), SortAuxMethods);
       break;
     case DT_SORT_BROWSER:
-      str = mutt_map_get_name(value, SortBrowserMethods);
+      str = mutt_map_get_name((value & SORT_MASK), SortBrowserMethods);
       break;
     case DT_SORT_KEYS:
-      str = mutt_map_get_name(value, SortKeyMethods);
+      str = mutt_map_get_name((value & SORT_MASK), SortKeyMethods);
       break;
     case DT_SORT_SIDEBAR:
-      str = mutt_map_get_name(value, SortSidebarMethods);
+      str = mutt_map_get_name((value & SORT_MASK), SortSidebarMethods);
       break;
     default:
       mutt_debug(1, "Invalid sort type: %u\n", cdef->type & DT_SUBTYPE_MASK);

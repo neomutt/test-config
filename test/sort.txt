@@ -263,6 +263,8 @@ Event: Kumquat has been set to 'threads'
 Kumquat = 6, set to '6'
 Expected error: Invalid sort type: -1
 Expected error: Invalid sort type: 999
+Event: Damson has been set to 'last-date'
+Event: Damson has been set to 'reverse-score'
 ---- test_native_get ---------------------------------------
 Lemon = 6
 ---- test_reset --------------------------------------------

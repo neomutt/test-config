@@ -247,11 +247,23 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
+  if (VarDamson != (SORT_DATE | SORT_LAST))
+  {
+    printf("Expected %d, got %d\n", (SORT_DATE | SORT_LAST), VarDamson);
+    return false;
+  }
+
   mutt_buffer_reset(err);
   rc = cs_str_string_set(cs, name, "reverse-score", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
     printf("%s\n", err->data);
+    return false;
+  }
+
+  if (VarDamson != (SORT_SCORE | SORT_REVERSE))
+  {
+    printf("Expected %d, got %d\n", (SORT_DATE | SORT_LAST), VarDamson);
     return false;
   }
 
@@ -379,6 +391,35 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
       printf("This test should have failed\n");
       return false;
     }
+  }
+
+  name = "Damson";
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, (SORT_DATE | SORT_LAST), err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (VarDamson != (SORT_DATE | SORT_LAST))
+  {
+    printf("Expected %d, got %d\n", (SORT_DATE | SORT_LAST), VarDamson);
+    return false;
+  }
+
+  mutt_buffer_reset(err);
+  rc = cs_str_native_set(cs, name, (SORT_SCORE | SORT_REVERSE), err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (VarDamson != (SORT_SCORE | SORT_REVERSE))
+  {
+    printf("Expected %d, got %d\n", (SORT_DATE | SORT_LAST), VarDamson);
+    return false;
   }
 
   return true;
