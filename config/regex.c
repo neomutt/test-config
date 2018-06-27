@@ -3,7 +3,7 @@
  * Type representing a regular expression
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -320,6 +320,9 @@ struct Regex *regex_create(const char *str, int flags, struct Buffer *err)
   /* Should we use smart case matching? */
   if (((flags & DT_REGEX_MATCH_CASE) == 0) && mutt_mb_is_lower(str))
     rflags |= REG_ICASE;
+
+  if ((flags & DT_REGEX_NOSUB))
+    rflags |= REG_NOSUB;
 
   /* Is a prefix of '!' allowed? */
   if (((flags & DT_REGEX_ALLOW_NOT) != 0) && (str[0] == '!'))

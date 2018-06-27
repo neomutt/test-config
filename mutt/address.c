@@ -30,7 +30,6 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
-#include "config/lib.h"
 #include "address.h"
 #include "idna2.h"
 #include "memory.h"
@@ -989,8 +988,6 @@ const char *mutt_addr_for_display(struct Address *a)
   char *user = NULL, *domain = NULL;
   static char *buf = NULL;
   char *local_mailbox = NULL;
-
-  FREE(&buf);
 
   if (!a->mailbox || mutt_addr_is_local(a))
     return a->mailbox;

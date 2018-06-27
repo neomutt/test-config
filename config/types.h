@@ -3,7 +3,7 @@
  * Constants for all the config types
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -35,8 +35,9 @@
 #define DT_SYNONYM    9   /**< synonym for another variable */
 #define DT_ADDRESS   10   /**< e-mail address */
 #define DT_MBTABLE   11   /**< multibyte char table */
-#define DT_HCACHE    12   /**< header cache backend */
-#define DT_ENUM      13   /**< an enumeration */
+#define DT_LONG      12   /**< a number (long) */
+#define DT_HCACHE    13   /**< header cache backend */
+#define DT_ENUM      14   /**< an enumeration */
 
 #define DTYPE(x) ((x) & 0x0f) /**< Mask for the Data Type */
 

@@ -3,7 +3,7 @@
  * Type representing a string
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -39,7 +39,7 @@
 /**
  * string_destroy - Destroy a String
  * @param cs   Config items
- * @param var  Variable to set
+ * @param var  Variable to destroy
  * @param cdef Variable definition
  */
 static void string_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
@@ -253,7 +253,7 @@ static int string_reset(const struct ConfigSet *cs, void *var,
 
   if (cdef->validator)
   {
-    rc = cdef->validator(cs, cdef, (intptr_t) str, err);
+    rc = cdef->validator(cs, cdef, cdef->initial, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
       return (rc | CSR_INV_VALIDATOR);

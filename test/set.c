@@ -116,7 +116,7 @@ bool set_test(void)
     dummy_native_get, dummy_reset,      dummy_destroy,
   };
 
-  if (!cs_register_type(cs, 15, &cst_dummy2))
+  if (!cs_register_type(cs, 25, &cst_dummy2))
   {
     printf("Expected error\n");
   }

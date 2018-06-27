@@ -3,7 +3,7 @@
  * Dump all the config
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -27,8 +27,8 @@
 
 struct ConfigSet;
 
-#define CS_DUMP_STYLE_MUTT   0 /**< Display config in Mutt style */ 
-#define CS_DUMP_STYLE_NEO    1 /**< Display config in NeoMutt style */ 
+#define CS_DUMP_STYLE_MUTT   0 /**< Display config in Mutt style */
+#define CS_DUMP_STYLE_NEO    1 /**< Display config in NeoMutt style */
 
 #define CS_DUMP_ONLY_CHANGED   (1 << 0) /**< Only show config that the user has changed */
 #define CS_DUMP_HIDE_SENSITIVE (1 << 1) /**< Obscure sensitive information like passwords */

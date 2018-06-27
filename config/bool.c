@@ -3,7 +3,7 @@
  * Type representing a boolean
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -266,4 +266,26 @@ int bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err
 
   cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
   return CSR_SUCCESS;
+}
+
+/**
+ * bool_str_toggle - Toggle the value of a bool
+ * @param cs   Config items
+ * @param name Name of config item
+ * @param err  Buffer for error messages
+ * @retval int Result, e.g. #CSR_SUCCESS
+ */
+int bool_str_toggle(struct ConfigSet *cs, const char *name, struct Buffer *err)
+{
+  if (!cs || !name)
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+
+  struct HashElem *he = cs_get_elem(cs, name);
+  if (!he)
+  {
+    mutt_buffer_printf(err, "Unknown var '%s'", name);
+    return CSR_ERR_UNKNOWN;
+  }
+
+  return bool_he_toggle(cs, he, err);
 }

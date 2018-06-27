@@ -3,7 +3,7 @@
  * Type representing a boolean
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -31,5 +31,6 @@ extern const char *bool_values[];
 
 void bool_init(struct ConfigSet *cs);
 int  bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
+int  bool_str_toggle(struct ConfigSet *cs, const char *name, struct Buffer *err);
 
 #endif /* _CONFIG_BOOL_H */

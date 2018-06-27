@@ -3,7 +3,7 @@
  * A collection of config items
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -40,7 +40,7 @@
 #include "inheritance.h"
 #include "types.h"
 
-struct ConfigSetType RegisteredTypes[16] = {
+struct ConfigSetType RegisteredTypes[18] = {
   { NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
@@ -321,7 +321,7 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
 /**
  * cs_add_listener - Add a listener (callback function)
  * @param cs Config items
- * @param fn Listener callback function 
+ * @param fn Listener callback function
  */
 void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 {
@@ -350,7 +350,7 @@ void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
 /**
  * cs_remove_listener - Remove a listener (callback function)
  * @param cs Config items
- * @param fn Listener callback function 
+ * @param fn Listener callback function
  */
 void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
 {
@@ -372,7 +372,7 @@ void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
  * cs_notify_listeners - Notify all listeners of an event
  * @param cs   Config items
  * @param he   HashElem representing config item
- * @param name Name of config item 
+ * @param name Name of config item
  * @param ev   Type of event
  */
 void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,

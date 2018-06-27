@@ -3,7 +3,7 @@
  * A collection of config items
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -126,8 +126,8 @@ struct ConfigSetType
 struct ConfigSet
 {
   struct Hash *hash;              /**< HashTable storing the config itesm */
-  struct ConfigSetType types[14]; /**< All the defined config types */
-  cs_listener listeners[4];       /**< Listeners for notifications of changes to config items */
+  struct ConfigSetType types[18]; /**< All the defined config types */
+  cs_listener listeners[8];       /**< Listeners for notifications of changes to config items */
 };
 
 struct ConfigSet *cs_create(size_t size);

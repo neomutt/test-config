@@ -3,7 +3,7 @@
  * Type representing an email address
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -26,19 +26,6 @@
 #include <stdbool.h>
 
 struct ConfigSet;
-
-/**
- * struct Address - An email address
- */
-struct Address
-{
-  char *personal;        /**< Real name of address */
-  char *mailbox;         /**< Mailbox and host address */
-  int group;             /**< Group mailbox? */
-  struct Address *next;  /**< Next item in the list */
-  bool is_intl : 1;      /**< Is this an IDN (Internationalised Domain Name) */
-  bool intl_checked : 1; /**< Has the IDN status been checked? */
-};
 
 void address_init(struct ConfigSet *cs);
 struct Address *address_create(const char *addr);
