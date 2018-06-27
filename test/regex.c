@@ -60,7 +60,7 @@ static struct ConfigDef Vars[] = {
   { "Banana",     DT_REGEX, 0,                  &VarBanana,     IP "banana.*",     NULL              },
   { "Cherry",     DT_REGEX, 0,                  &VarCherry,     IP "cherry.*",     NULL              },
   { "Damson",     DT_REGEX, 0,                  &VarDamson,     0,                 NULL              }, /* test_regex_set */
-  { "Elderberry", DT_REGEX, 0,                  &VarElderberry, IP "elderberry.*", NULL              },
+  { "Elderberry", DT_REGEX, DT_REGEX_NOSUB,     &VarElderberry, IP "elderberry.*", NULL              },
   { "Fig",        DT_REGEX, 0,                  &VarFig,        0,                 NULL              }, /* test_regex_get */
   { "Guava",      DT_REGEX, 0,                  &VarGuava,      IP "guava.*",      NULL              },
   { "Hawthorn",   DT_REGEX, 0,                  &VarHawthorn,   0,                 NULL              },

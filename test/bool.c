@@ -615,6 +615,42 @@ static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
     }
   }
 
+  for (size_t i = 0; i < mutt_array_size(tests); i++)
+  {
+    bool before = tests[i].before;
+    bool after = tests[i].after;
+    printf("test %zd\n", i);
+
+    VarNectarine = before;
+    mutt_buffer_reset(err);
+    intptr_t value = cs_he_native_get(cs, he, err);
+    if (value == INT_MIN)
+    {
+      printf("Get failed: %s\n", err->data);
+      return false;
+    }
+
+    bool copy = value;
+    if (copy != before)
+    {
+      printf("Initial value is wrong: %s\n", err->data);
+      return false;
+    }
+
+    rc = bool_str_toggle(cs, "Nectarine", err);
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    {
+      printf("Toggle failed: %s\n", err->data);
+      return false;
+    }
+
+    if (VarNectarine != after)
+    {
+      printf("Toggle value is wrong: %s\n", err->data);
+      return false;
+    }
+  }
+
   VarNectarine = 8;
   mutt_buffer_reset(err);
   rc = bool_he_toggle(cs, he, err);

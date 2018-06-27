@@ -176,7 +176,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", "", NULL };
+  const char *valid[] = { "hello", "world", "world", "", NULL };
   char *name = "Damson";
 
   int rc;
@@ -290,7 +290,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  const char *valid[] = { "hello", "world", "", NULL };
+  const char *valid[] = { "hello", "world", "world", "", NULL };
   char *name = "Jackfruit";
 
   int rc;

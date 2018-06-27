@@ -37,6 +37,7 @@ Event: Damson has been set to 'hello'
 Damson = 'hello', set by 'hello'
 Event: Damson has been set to 'world'
 Damson = 'world', set by 'world'
+Value of Damson wasn't changed
 Event: Damson has been set to ''
 Damson = '', set by ''
 Value of Damson wasn't changed
@@ -45,6 +46,7 @@ Event: Elderberry has been set to 'hello'
 Elderberry = 'hello', set by 'hello'
 Event: Elderberry has been set to 'world'
 Elderberry = 'world', set by 'world'
+Value of Elderberry wasn't changed
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 Value of Elderberry wasn't changed
@@ -58,6 +60,7 @@ Event: Jackfruit has been set to 'hello'
 Jackfruit = 'hello', set by 'hello'
 Event: Jackfruit has been set to 'world'
 Jackfruit = 'world', set by 'world'
+Value of Jackfruit wasn't changed
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by ''
 Value of Jackfruit wasn't changed
@@ -66,6 +69,7 @@ Event: Kumquat has been set to 'hello'
 Kumquat = 'hello', set by 'hello'
 Event: Kumquat has been set to 'world'
 Kumquat = 'world', set by 'world'
+Value of Kumquat wasn't changed
 Event: Kumquat has been set to ''
 Kumquat = '', set by ''
 Value of Kumquat wasn't changed
