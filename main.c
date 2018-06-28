@@ -18,6 +18,7 @@
 #include "test/quad.h"
 #include "test/regex3.h"
 #include "test/set.h"
+#include "test/slist.h"
 #include "test/sort.h"
 #include "test/string4.h"
 #include "test/synonym.h"
@@ -62,6 +63,7 @@ struct Test test[] = {
   { "path",      path_test      },
   { "quad",      quad_test      },
   { "regex",     regex_test     },
+  { "slist",     slist_test     },
   { "sort",      sort_test      },
   { "string",    string_test    },
   { "dump",      dump_test      },

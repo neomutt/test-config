@@ -38,6 +38,7 @@
 #define DT_LONG      12   /**< a number (long) */
 #define DT_HCACHE    13   /**< header cache backend */
 #define DT_ENUM      14   /**< an enumeration */
+#define DT_SLIST     15   /**< a list of strings */
 
 #define DTYPE(x) ((x) & 0x0f) /**< Mask for the Data Type */
 
