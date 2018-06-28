@@ -47,6 +47,7 @@ static struct ConfigDef Vars[] = {
 
 static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
+  cs_str_string_set(cs, "apple", "dave:eric:fred", err);
   return true;
 }
 

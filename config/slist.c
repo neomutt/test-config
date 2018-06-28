@@ -34,6 +34,7 @@
 #include "mutt/buffer.h"
 #include "mutt/logging.h"
 #include "mutt/memory.h"
+#include "mutt/queue.h"
 #include "mutt/string2.h"
 #include "slist.h"
 #include "set.h"
@@ -42,7 +43,9 @@
 // static const char *Separators[] = { ",", " ", ":" };
 
 /**
- * slist_parse - XXX
+ * slist_parse - Parse a list of strings into a list
+ * @param s String of strings
+ * @retval ptr New Slist object
  */
 struct Slist *slist_parse(const char *str)
 {
@@ -80,7 +83,10 @@ void slist_free(struct Slist **list)
 }
 
 /**
- * slist_destroy - XXX
+ * slist_destroy - Destroy an Slist object
+ * @param cs   Config items
+ * @param var  Variable to destroy
+ * @param cdef Variable definition
  */
 static void slist_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
@@ -111,6 +117,44 @@ static int slist_string_set(const struct ConfigSet *cs, void *var, struct Config
   if (!cs || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  if (value && (value[0] == '\0'))
+    value = NULL;
+
+  struct Slist *list = NULL;
+
+  int rc = CSR_SUCCESS;
+
+  if (var)
+  {
+    list = slist_parse(value);
+
+    if (cdef->validator)
+    {
+      rc = cdef->validator(cs, cdef, (intptr_t) list, err);
+
+      if (CSR_RESULT(rc) != CSR_SUCCESS)
+      {
+        slist_free(&list);
+        return (rc | CSR_INV_VALIDATOR);
+      }
+    }
+
+    slist_destroy(cs, var, cdef);
+
+    *(struct Slist **) var = list;
+
+    if (!list)
+      rc |= CSR_SUC_EMPTY;
+  }
+  else
+  {
+    if (cdef->type & DT_INITIAL_SET)
+      FREE(&cdef->initial);
+
+    cdef->type |= DT_INITIAL_SET;
+    cdef->initial = IP mutt_str_strdup(value);
+  }
+
   return CSR_SUCCESS;
 }
 
@@ -130,7 +174,47 @@ static int slist_string_get(const struct ConfigSet *cs, void *var,
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  if (var)
+  {
+    struct Slist *list = *(struct Slist **) var;
+    if (!list)
+      return (CSR_SUCCESS | CSR_SUC_EMPTY); /* empty string */
+
+    struct ListNode *np = NULL;
+    STAILQ_FOREACH(np, &list->head, entries)
+    {
+      mutt_buffer_addstr(result, np->data);
+      if (STAILQ_NEXT(np, entries))
+        mutt_buffer_addch(result, ':');
+    }
+  }
+  else
+  {
+    mutt_buffer_addstr(result, (char *) cdef->initial);
+  }
+
   return CSR_SUCCESS;
+}
+
+/**
+ * slist_dup - Create a copy of an Slist object
+ * @param list Slist to duplicate
+ * @retval ptr New Slist object
+ */
+static struct Slist *slist_dup(struct Slist *list)
+{
+  if (!list)
+    return NULL; /* LCOV_EXCL_LINE */
+
+  struct Slist *l = mutt_mem_calloc(1, sizeof(*l));
+  l->flags = list->flags;
+
+  struct ListNode *np = NULL;
+  STAILQ_FOREACH(np, &list->head, entries)
+  {
+    mutt_list_insert_tail(&l->head, mutt_str_strdup(np->data));
+  }
+  return l;
 }
 
 /**
@@ -148,7 +232,26 @@ static int slist_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  return CSR_SUCCESS;
+  int rc;
+
+  if (cdef->validator)
+  {
+    rc = cdef->validator(cs, cdef, value, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+      return (rc | CSR_INV_VALIDATOR);
+  }
+
+  slist_free(var);
+
+  struct Slist *list = slist_dup((struct Slist *) value);
+
+  rc = CSR_SUCCESS;
+  if (!list)
+    rc |= CSR_SUC_EMPTY;
+
+  *(struct Slist **) var = list;
+  return rc;
 }
 
 /**
