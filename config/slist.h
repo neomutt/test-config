@@ -23,27 +23,40 @@
 #ifndef _CONFIG_SLIST_H
 #define _CONFIG_SLIST_H
 
+#include <stdbool.h>
 #include "mutt/list.h"
 
-#define SLIST_SEP_COMMA (1 << 0)
-#define SLIST_SEP_SPACE (1 << 1)
-#define SLIST_SEP_COLON (1 << 2)
+#define SLIST_SEP_COMMA      (1 << 0)
+#define SLIST_SEP_SPACE      (1 << 1)
+#define SLIST_SEP_COLON      (1 << 2)
 
-#define SLIST_SORT_NONE    0
-#define SLIST_SORT_ALPHA   (1 << 0)
-#define SLIST_SORT_NUMERIC (1 << 1)
+#define SLIST_SORT_NONE      0
+#define SLIST_SORT_ALPHA     (1 << 3)
+#define SLIST_SORT_NUMBER    (1 << 4)
+
+#define SLIST_ALLOW_DUPES    (1 << 5)
+#define SLIST_CASE_SENSITIVE (1 << 6)
 
 struct ConfigSet;
 
 /**
- * struct Slist - XXX
+ * struct Slist - String list
  */
 struct Slist
 {
   struct ListHead head;
+  size_t count;
   int flags;
 };
 
-void slist_init(struct ConfigSet *cs);
+struct Slist *slist_add_list(struct Slist *list, const struct Slist *add);
+struct Slist *slist_add_string(struct Slist *list, const char *str);
+bool          slist_compare(const struct Slist *a, const struct Slist *b);
+struct Slist *slist_dup(const struct Slist *list);
+void          slist_free(struct Slist **list);
+void          slist_init(struct ConfigSet *cs);
+bool          slist_is_member(const struct Slist *list, const char *str);
+struct Slist *slist_parse(const char *str);
+struct Slist *slist_remove_string(struct Slist *list, const char *str);
 
 #endif /* _CONFIG_SLIST_H */

@@ -43,46 +43,6 @@
 // static const char *Separators[] = { ",", " ", ":" };
 
 /**
- * slist_parse - Parse a list of strings into a list
- * @param s String of strings
- * @retval ptr New Slist object
- */
-struct Slist *slist_parse(const char *str)
-{
-  char *src = mutt_str_strdup(str);
-  if (!src)
-    return NULL;
-
-  struct Slist *list = mutt_mem_calloc(1, sizeof (struct Slist));
-  STAILQ_INIT(&list->head);
-
-  char *q = NULL;
-  for (char *p = strtok_r(src, ":", &q); p; p = strtok_r(NULL, ":", &q))
-  {
-    if (p[0] == '\0')
-      continue;
-
-    mutt_list_insert_tail(&list->head, mutt_str_strdup(p));
-  }
-
-  FREE(&src);
-  return list;
-}
-
-/**
- * slist_free - Free an Slist object
- * @param list Slist to free
- */
-void slist_free(struct Slist **list)
-{
-  if (!list || !*list)
-    return; /* LCOV_EXCL_LINE */
-
-  mutt_list_free(&(*list)->head);
-  FREE(list);
-}
-
-/**
  * slist_destroy - Destroy an Slist object
  * @param cs   Config items
  * @param var  Variable to destroy
@@ -197,27 +157,6 @@ static int slist_string_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * slist_dup - Create a copy of an Slist object
- * @param list Slist to duplicate
- * @retval ptr New Slist object
- */
-static struct Slist *slist_dup(struct Slist *list)
-{
-  if (!list)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  struct Slist *l = mutt_mem_calloc(1, sizeof(*l));
-  l->flags = list->flags;
-
-  struct ListNode *np = NULL;
-  STAILQ_FOREACH(np, &list->head, entries)
-  {
-    mutt_list_insert_tail(&l->head, mutt_str_strdup(np->data));
-  }
-  return l;
-}
-
-/**
  * slist_native_set - Set a Slist config item by STAILQ
  * @param cs    Config items
  * @param var   Variable to set
@@ -324,13 +263,166 @@ static int slist_reset(const struct ConfigSet *cs, void *var,
 void slist_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_slist = {
-    "slist",
-    slist_string_set,
-    slist_string_get,
-    slist_native_set,
-    slist_native_get,
-    slist_reset,
-    slist_destroy,
+    "slist",          slist_string_set, slist_string_get, slist_native_set,
+    slist_native_get, slist_reset,      slist_destroy,
   };
   cs_register_type(cs, DT_SLIST, &cst_slist);
+}
+
+/**
+ * slist_add_list - XXX
+ */
+struct Slist *slist_add_list(struct Slist *list, const struct Slist *add)
+{
+  if (!add)
+    return list;
+  if (!list)
+    return slist_dup(add);
+
+  struct ListNode *np = NULL;
+  STAILQ_FOREACH(np, &add->head, entries)
+  {
+    mutt_list_insert_tail(&list->head, mutt_str_strdup((char *) np->data));
+    list->count++;
+  }
+  return NULL;
+}
+
+/**
+ * slist_add_string - XXX
+ */
+struct Slist *slist_add_string(struct Slist *list, const char *str)
+{
+  if (!list)
+    return NULL;
+
+  if (!str)
+    return list;
+
+  mutt_list_insert_tail(&list->head, mutt_str_strdup(str));
+  list->count++;
+
+  return list;
+}
+
+/**
+ * slist_compare - XXX
+ */
+bool slist_compare(const struct Slist *a, const struct Slist *b)
+{
+  if (!a && !b) /* both empty */
+    return true;
+  if (!a ^ !b) /* one is empty, but not the other */
+    return false;
+  if (a->count != b->count)
+    return false;
+
+  return false;
+}
+
+/**
+ * slist_dup - Create a copy of an Slist object
+ * @param list Slist to duplicate
+ * @retval ptr New Slist object
+ */
+struct Slist *slist_dup(const struct Slist *list)
+{
+  if (!list)
+    return NULL; /* LCOV_EXCL_LINE */
+
+  struct Slist *l = mutt_mem_calloc(1, sizeof(*l));
+  l->flags = list->flags;
+  l->count = list->count;
+
+  struct ListNode *np = NULL;
+  STAILQ_FOREACH(np, &list->head, entries)
+  {
+    mutt_list_insert_tail(&l->head, mutt_str_strdup(np->data));
+  }
+  return l;
+}
+
+/**
+ * slist_free - Free an Slist object
+ * @param list Slist to free
+ */
+void slist_free(struct Slist **list)
+{
+  if (!list || !*list)
+    return; /* LCOV_EXCL_LINE */
+
+  mutt_list_free(&(*list)->head);
+  FREE(list);
+}
+
+/**
+ * slist_is_member - XXX
+ */
+bool slist_is_member(const struct Slist *list, const char *str)
+{
+  if (!list || !str)
+    return NULL;
+
+  struct ListNode *np = NULL;
+  STAILQ_FOREACH(np, &list->head, entries)
+  {
+    if (mutt_str_strcmp(np->data, str) == 0)
+      return true;
+  }
+  return false;
+}
+
+/**
+ * slist_parse - Parse a list of strings into a list
+ * @param s String of strings
+ * @retval ptr New Slist object
+ */
+struct Slist *slist_parse(const char *str)
+{
+  char *src = mutt_str_strdup(str);
+  if (!src)
+    return NULL;
+
+  struct Slist *list = mutt_mem_calloc(1, sizeof(struct Slist));
+  STAILQ_INIT(&list->head);
+
+  char *q = NULL;
+  for (char *p = strtok_r(src, ":", &q); p; p = strtok_r(NULL, ":", &q))
+  {
+    if (p[0] == '\0')
+      continue;
+
+    mutt_list_insert_tail(&list->head, mutt_str_strdup(p));
+    list->count++;
+  }
+
+  FREE(&src);
+  return list;
+}
+
+/**
+ * slist_remove_string - XXX
+ */
+struct Slist *slist_remove_string(struct Slist *list, const char *str)
+{
+  if (!list)
+    return NULL;
+  if (!str)
+    return list;
+
+  struct ListNode *prev = NULL;
+  struct ListNode *np = NULL;
+  STAILQ_FOREACH(np, &list->head, entries)
+  {
+    if (mutt_str_strcmp(np->data, str) == 0)
+    {
+      if (prev)
+        STAILQ_REMOVE_AFTER(&list->head, prev, entries);
+      else
+        STAILQ_REMOVE_HEAD(&list->head, entries);
+      break;
+    }
+    prev = np;
+  }
+  return list;
 }
