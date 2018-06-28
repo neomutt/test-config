@@ -86,7 +86,7 @@ static int slist_string_set(const struct ConfigSet *cs, void *var, struct Config
 
   if (var)
   {
-    list = slist_parse(value);
+    list = slist_parse(value, cdef->flags);
 
     if (cdef->validator)
     {
@@ -153,7 +153,11 @@ static int slist_string_get(const struct ConfigSet *cs, void *var,
     mutt_buffer_addstr(result, (char *) cdef->initial);
   }
 
-  return CSR_SUCCESS;
+  int rc = CSR_SUCCESS;
+  if (mutt_buffer_is_empty(result))
+    rc |= CSR_SUC_EMPTY;
+
+  return rc;
 }
 
 /**
@@ -234,7 +238,7 @@ static int slist_reset(const struct ConfigSet *cs, void *var,
     rc |= CSR_SUC_EMPTY;
 
   if (initial)
-    list = slist_parse(initial);
+    list = slist_parse(initial, cdef->flags);
 
   if (cdef->validator)
   {
@@ -270,7 +274,10 @@ void slist_init(struct ConfigSet *cs)
 }
 
 /**
- * slist_add_list - XXX
+ * slist_add_list - Add a list to another list
+ * @param list String list to add to
+ * @param add  String list to add
+ * @retval ptr Modified list
  */
 struct Slist *slist_add_list(struct Slist *list, const struct Slist *add)
 {
@@ -289,7 +296,10 @@ struct Slist *slist_add_list(struct Slist *list, const struct Slist *add)
 }
 
 /**
- * slist_add_string - XXX
+ * slist_add_string - Add a string to a list
+ * @param list List to modify
+ * @param str  String to add
+ * @retval ptr Modified list
  */
 struct Slist *slist_add_string(struct Slist *list, const char *str)
 {
@@ -306,7 +316,10 @@ struct Slist *slist_add_string(struct Slist *list, const char *str)
 }
 
 /**
- * slist_compare - XXX
+ * slist_compare - Compare two string lists
+ * @param a First list
+ * @param b Second list
+ * @retval true If they are identical
  */
 bool slist_compare(const struct Slist *a, const struct Slist *b)
 {
@@ -356,7 +369,10 @@ void slist_free(struct Slist **list)
 }
 
 /**
- * slist_is_member - XXX
+ * slist_is_member - Is a string a member of a list?
+ * @param list List to modify
+ * @param str  String to find
+ * @param true String is in the list
  */
 bool slist_is_member(const struct Slist *list, const char *str)
 {
@@ -377,7 +393,7 @@ bool slist_is_member(const struct Slist *list, const char *str)
  * @param s String of strings
  * @retval ptr New Slist object
  */
-struct Slist *slist_parse(const char *str)
+struct Slist *slist_parse(const char *str, int flags)
 {
   char *src = mutt_str_strdup(str);
   if (!src)
@@ -401,7 +417,10 @@ struct Slist *slist_parse(const char *str)
 }
 
 /**
- * slist_remove_string - XXX
+ * slist_remove_string - Remove a string from a list
+ * @param list List to modify
+ * @param str  String to remove
+ * @retval ptr Modified list
  */
 struct Slist *slist_remove_string(struct Slist *list, const char *str)
 {

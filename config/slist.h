@@ -30,12 +30,13 @@
 #define SLIST_SEP_SPACE      (1 << 1)
 #define SLIST_SEP_COLON      (1 << 2)
 
-#define SLIST_SORT_NONE      0
-#define SLIST_SORT_ALPHA     (1 << 3)
-#define SLIST_SORT_NUMBER    (1 << 4)
+#define SLIST_ALLOW_DUPES    (1 << 3)
+#define SLIST_ALLOW_EMPTY    (1 << 4)
+#define SLIST_CASE_SENSITIVE (1 << 5)
 
-#define SLIST_ALLOW_DUPES    (1 << 5)
-#define SLIST_CASE_SENSITIVE (1 << 6)
+#define SLIST_SORT_NONE      0
+#define SLIST_SORT_ALPHA     (1 << 6)
+#define SLIST_SORT_NUMBER    (1 << 7)
 
 struct ConfigSet;
 
@@ -56,7 +57,7 @@ struct Slist *slist_dup(const struct Slist *list);
 void          slist_free(struct Slist **list);
 void          slist_init(struct ConfigSet *cs);
 bool          slist_is_member(const struct Slist *list, const char *str);
-struct Slist *slist_parse(const char *str);
+struct Slist *slist_parse(const char *str, int flags);
 struct Slist *slist_remove_string(struct Slist *list, const char *str);
 
 #endif /* _CONFIG_SLIST_H */
