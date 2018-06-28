@@ -25,11 +25,22 @@
 
 #include "mutt/list.h"
 
+#define SLIST_SEP_COMMA (1 << 0)
+#define SLIST_SEP_SPACE (1 << 1)
+#define SLIST_SEP_COLON (1 << 2)
+
+#define SLIST_SORT_NONE    0
+#define SLIST_SORT_ALPHA   (1 << 0)
+#define SLIST_SORT_NUMERIC (1 << 1)
+
 struct ConfigSet;
 
+/**
+ * struct Slist - XXX
+ */
 struct Slist
 {
-  struct ListNode list;
+  struct ListHead head;
   int flags;
 };
 

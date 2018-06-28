@@ -30,12 +30,69 @@
 #include <stddef.h>
 #include <limits.h>
 #include <stdint.h>
+#include <string.h>
 #include "mutt/buffer.h"
 #include "mutt/logging.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "slist.h"
 #include "set.h"
 #include "types.h"
+
+// static const char *Separators[] = { ",", " ", ":" };
+
+/**
+ * slist_parse - XXX
+ */
+struct Slist *slist_parse(const char *str)
+{
+  char *src = mutt_str_strdup(str);
+  if (!src)
+    return NULL;
+
+  struct Slist *list = mutt_mem_calloc(1, sizeof (struct Slist));
+  STAILQ_INIT(&list->head);
+
+  char *q = NULL;
+  for (char *p = strtok_r(src, ":", &q); p; p = strtok_r(NULL, ":", &q))
+  {
+    if (p[0] == '\0')
+      continue;
+
+    mutt_list_insert_tail(&list->head, mutt_str_strdup(p));
+  }
+
+  FREE(&src);
+  return list;
+}
+
+/**
+ * slist_free - Free an Slist object
+ * @param list Slist to free
+ */
+void slist_free(struct Slist **list)
+{
+  if (!list || !*list)
+    return; /* LCOV_EXCL_LINE */
+
+  mutt_list_free(&(*list)->head);
+  FREE(list);
+}
+
+/**
+ * slist_destroy - XXX
+ */
+static void slist_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
+{
+  if (!cs || !var || !cdef)
+    return; /* LCOV_EXCL_LINE */
+
+  struct Slist **l = (struct Slist **) var;
+  if (!*l)
+    return;
+
+  slist_free(l);
+}
 
 /**
  * slist_string_set - Set a Slist by string
@@ -125,7 +182,36 @@ static int slist_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  return CSR_SUCCESS;
+  struct Slist *list = NULL;
+  const char *initial = (const char *) cdef->initial;
+
+  struct Slist *curlist = *(struct Slist **) var;
+
+  int rc = CSR_SUCCESS;
+  if (!curlist)
+    rc |= CSR_SUC_EMPTY;
+
+  if (initial)
+    list = slist_parse(initial);
+
+  if (cdef->validator)
+  {
+    rc = cdef->validator(cs, cdef, (intptr_t) list, err);
+
+    if (CSR_RESULT(rc) != CSR_SUCCESS)
+    {
+      slist_destroy(cs, &list, cdef);
+      return (rc | CSR_INV_VALIDATOR);
+    }
+  }
+
+  if (!list)
+    rc |= CSR_SUC_EMPTY;
+
+  slist_destroy(cs, var, cdef);
+
+  *(struct Slist **) var = list;
+  return rc;
 }
 
 /**
@@ -141,7 +227,7 @@ void slist_init(struct ConfigSet *cs)
     slist_native_set,
     slist_native_get,
     slist_reset,
-    NULL,
+    slist_destroy,
   };
   cs_register_type(cs, DT_SLIST, &cst_slist);
 }

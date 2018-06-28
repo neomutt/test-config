@@ -36,7 +36,7 @@
 #include "config/types.h"
 #include "test/common.h"
 
-struct Slist VarApple;
+struct Slist *VarApple;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
