@@ -54,6 +54,14 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   printf("Apple:  %ld\n", VarApple->count);
   printf("Banana: %ld\n", VarBanana->count);
   printf("Cherry: %ld\n", VarCherry->count);
+
+  slist_add_string(VarApple, "damson");
+  slist_remove_string(VarBanana, "banana");
+  set_list(cs);
+  printf("Apple:  %ld\n", VarApple->count);
+  printf("Banana: %ld\n", VarBanana->count);
+  printf("Cherry: %d\n", slist_is_member(VarCherry, "cherry"));
+
   return true;
 }
 

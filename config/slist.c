@@ -144,10 +144,11 @@ static int slist_string_get(const struct ConfigSet *cs, void *var,
       mutt_buffer_addstr(result, np->data);
       if (STAILQ_NEXT(np, entries))
       {
-        if (cdef->flags & SLIST_SEP_COLON)
-          mutt_buffer_addch(result, ':');
-        else if (cdef->flags & SLIST_SEP_COMMA)
+        int sep = (cdef->flags & SLIST_SEP_MASK);
+        if (sep == SLIST_SEP_COMMA)
           mutt_buffer_addch(result, ',');
+        else if (sep == SLIST_SEP_COLON)
+          mutt_buffer_addch(result, ':');
         else
           mutt_buffer_addch(result, ' ');
       }
@@ -404,13 +405,11 @@ struct Slist *slist_parse(const char *str, int flags)
   if (!src)
     return NULL;
 
-  char sep;
-  if (flags & SLIST_SEP_COLON)
-    sep = ':';
-  else if (flags & SLIST_SEP_COMMA)
+  char sep = ' ';
+  if ((flags & SLIST_SEP_MASK) == SLIST_SEP_COMMA)
     sep = ',';
-  else
-    sep = ' ';
+  else if ((flags & SLIST_SEP_MASK) == SLIST_SEP_COLON)
+    sep = ':';
 
   struct Slist *list = mutt_mem_calloc(1, sizeof(struct Slist));
   STAILQ_INIT(&list->head);

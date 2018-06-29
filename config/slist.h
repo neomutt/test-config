@@ -26,17 +26,25 @@
 #include <stdbool.h>
 #include "mutt/list.h"
 
-#define SLIST_SEP_COMMA      (1 << 0)
-#define SLIST_SEP_COLON      (1 << 1)
-#define SLIST_SEP_SPACE      (1 << 2)
+/**
+ * SlistSeparator - XXX
+ */
+enum SlistSeparator
+{
+  SLIST_SEP_SPACE,
+  SLIST_SEP_COMMA,
+  SLIST_SEP_COLON,
+};
 
-#define SLIST_ALLOW_DUPES    (1 << 3)
-#define SLIST_ALLOW_EMPTY    (1 << 4)
-#define SLIST_CASE_SENSITIVE (1 << 5)
+#define SLIST_SEP_MASK       3
+
+#define SLIST_ALLOW_DUPES    (1 << 2)
+#define SLIST_ALLOW_EMPTY    (1 << 3)
+#define SLIST_CASE_SENSITIVE (1 << 4)
 
 #define SLIST_SORT_NONE      0
-#define SLIST_SORT_ALPHA     (1 << 6)
-#define SLIST_SORT_NUMBER    (1 << 7)
+#define SLIST_SORT_ALPHA     (1 << 5)
+#define SLIST_SORT_NUMBER    (1 << 6)
 
 struct ConfigSet;
 
