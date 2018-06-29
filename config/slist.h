@@ -27,8 +27,8 @@
 #include "mutt/list.h"
 
 #define SLIST_SEP_COMMA      (1 << 0)
-#define SLIST_SEP_SPACE      (1 << 1)
-#define SLIST_SEP_COLON      (1 << 2)
+#define SLIST_SEP_COLON      (1 << 1)
+#define SLIST_SEP_SPACE      (1 << 2)
 
 #define SLIST_ALLOW_DUPES    (1 << 3)
 #define SLIST_ALLOW_EMPTY    (1 << 4)

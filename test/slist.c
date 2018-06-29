@@ -37,17 +37,23 @@
 #include "test/common.h"
 
 struct Slist *VarApple;
+struct Slist *VarBanana;
+struct Slist *VarCherry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple", DT_SLIST, 0, &VarApple, IP "apple:banana:cherry", NULL }, /* test_initial_values */
+  { "Apple",  DT_SLIST, SLIST_SEP_COLON, &VarApple,  IP "apple:banana:cherry", NULL }, /* test_initial_values */
+  { "Banana", DT_SLIST, SLIST_SEP_COMMA, &VarBanana, IP "apple,banana,cherry", NULL },
+  { "Cherry", DT_SLIST, SLIST_SEP_SPACE, &VarCherry, IP "apple banana cherry", NULL },
   { NULL },
 };
 // clang-format on
 
 static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
-  cs_str_string_set(cs, "apple", "dave:eric:fred", err);
+  printf("Apple:  %ld\n", VarApple->count);
+  printf("Banana: %ld\n", VarBanana->count);
+  printf("Cherry: %ld\n", VarCherry->count);
   return true;
 }
 

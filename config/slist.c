@@ -40,8 +40,6 @@
 #include "set.h"
 #include "types.h"
 
-// static const char *Separators[] = { ",", " ", ":" };
-
 /**
  * slist_destroy - Destroy an Slist object
  * @param cs   Config items
@@ -145,7 +143,14 @@ static int slist_string_get(const struct ConfigSet *cs, void *var,
     {
       mutt_buffer_addstr(result, np->data);
       if (STAILQ_NEXT(np, entries))
-        mutt_buffer_addch(result, ':');
+      {
+        if (cdef->flags & SLIST_SEP_COLON)
+          mutt_buffer_addch(result, ':');
+        else if (cdef->flags & SLIST_SEP_COMMA)
+          mutt_buffer_addch(result, ',');
+        else
+          mutt_buffer_addch(result, ' ');
+      }
     }
   }
   else
@@ -399,18 +404,37 @@ struct Slist *slist_parse(const char *str, int flags)
   if (!src)
     return NULL;
 
+  char sep;
+  if (flags & SLIST_SEP_COLON)
+    sep = ':';
+  else if (flags & SLIST_SEP_COMMA)
+    sep = ',';
+  else
+    sep = ' ';
+
   struct Slist *list = mutt_mem_calloc(1, sizeof(struct Slist));
   STAILQ_INIT(&list->head);
 
-  char *q = NULL;
-  for (char *p = strtok_r(src, ":", &q); p; p = strtok_r(NULL, ":", &q))
+  char *start = src;
+  for (char *p = start; *p; p++)
   {
-    if (p[0] == '\0')
+    if ((p[0] == '\\') && (p[1] != '\0'))
+    {
+      p++;
       continue;
+    }
 
-    mutt_list_insert_tail(&list->head, mutt_str_strdup(p));
-    list->count++;
+    if (p[0] == sep)
+    {
+      p[0] = '\0';
+      mutt_list_insert_tail(&list->head, mutt_str_strdup(start));
+      list->count++;
+      start = p + 1;
+    }
   }
+
+  mutt_list_insert_tail(&list->head, mutt_str_strdup(start));
+  list->count++;
 
   FREE(&src);
   return list;
