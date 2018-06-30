@@ -1,6 +1,6 @@
 /**
  * @file
- * Type representing a number
+ * Type representing a long
  *
  * @authors
  * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
@@ -20,11 +20,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_NUMBER_H
-#define _CONFIG_NUMBER_H
+#ifndef _CONFIG_LONG_H
+#define _CONFIG_LONG_H
 
 struct ConfigSet;
 
-void number_init(struct ConfigSet *cs);
+void long_init(struct ConfigSet *cs);
 
-#endif /* _CONFIG_NUMBER_H */
+#endif /* _CONFIG_LONG_H */

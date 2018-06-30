@@ -12,6 +12,7 @@
 #include "test/command.h"
 #include "test/enum.h"
 #include "test/initial.h"
+#include "test/long.h"
 #include "test/magic.h"
 #include "test/mbtable.h"
 #include "test/number.h"
@@ -59,6 +60,7 @@ struct Test test[] = {
   { "bool",      bool_test      },
   { "command",   command_test   },
   { "enum",      enum_test      },
+  { "long",      long_test      },
   { "magic",     magic_test     },
   { "mbtable",   mbtable_test   },
   { "number",    number_test    },

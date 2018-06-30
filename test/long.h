@@ -1,9 +1,9 @@
 /**
  * @file
- * Type representing a number
+ * Test code for the Long object
  *
  * @authors
- * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,11 +20,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_NUMBER_H
-#define _CONFIG_NUMBER_H
+#ifndef _TEST_LONG_H
+#define _TEST_LONG_H
 
-struct ConfigSet;
+#include <stdbool.h>
 
-void number_init(struct ConfigSet *cs);
+bool long_test(void);
 
-#endif /* _CONFIG_NUMBER_H */
+#endif /* _TEST_LONG_H */

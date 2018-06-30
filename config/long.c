@@ -1,6 +1,6 @@
 /**
  * @file
- * Type representing a number
+ * Type representing a long
  *
  * @authors
  * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-number Type: Number
+ * @page config-long Type: Long
  *
- * Type representing a number.
+ * Type representing a long.
  */
 
 #include "config.h"
@@ -36,7 +36,7 @@
 #include "types.h"
 
 /**
- * number_string_set - Set a Number by string
+ * long_string_set - Set a Long by string
  * @param cs    Config items
  * @param var   Variable to set
  * @param cdef  Variable definition
@@ -46,22 +46,22 @@
  *
  * If var is NULL, then the config item's initial value will be set.
  */
-static int number_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+static int long_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                              const char *value, struct Buffer *err)
 {
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  int num = 0;
-  if (!value || !value[0] || (mutt_str_atoi(value, &num) < 0))
+  long num = 0;
+  if (!value || !value[0] || (mutt_str_atol(value, &num) < 0))
   {
-    mutt_buffer_printf(err, "Invalid number: %s", value);
+    mutt_buffer_printf(err, "Invalid long: %s", value);
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
-  if ((num < SHRT_MIN) || (num > SHRT_MAX))
+  if ((num < LONG_MIN) || (num > LONG_MAX))
   {
-    mutt_buffer_printf(err, "Number is too big: %s", value);
+    mutt_buffer_printf(err, "Long is too big: %s", value);
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
@@ -95,7 +95,7 @@ static int number_string_set(const struct ConfigSet *cs, void *var, struct Confi
 }
 
 /**
- * number_string_get - Get a Number as a string
+ * long_string_get - Get a Long as a string
  * @param cs     Config items
  * @param var    Variable to get
  * @param cdef   Variable definition
@@ -104,7 +104,7 @@ static int number_string_set(const struct ConfigSet *cs, void *var, struct Confi
  *
  * If var is NULL, then the config item's initial value will be returned.
  */
-static int number_string_get(const struct ConfigSet *cs, void *var,
+static int long_string_get(const struct ConfigSet *cs, void *var,
                              const struct ConfigDef *cdef, struct Buffer *result)
 {
   if (!cs || !cdef)
@@ -122,24 +122,24 @@ static int number_string_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * number_native_set - Set a Number config item by int
+ * long_native_set - Set a Long config item by int
  * @param cs    Config items
  * @param var   Variable to set
  * @param cdef  Variable definition
- * @param value Number
+ * @param value Long
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int number_native_set(const struct ConfigSet *cs, void *var,
+static int long_native_set(const struct ConfigSet *cs, void *var,
                              const struct ConfigDef *cdef, intptr_t value,
                              struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if ((value < SHRT_MIN) || (value > SHRT_MAX))
+  if ((value < LONG_MIN) || (value > LONG_MAX))
   {
-    mutt_buffer_printf(err, "Invalid number: %ld", value);
+    mutt_buffer_printf(err, "Invalid long: %ld", value);
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
@@ -165,14 +165,14 @@ static int number_native_set(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * number_native_get - Get an int from a Number config item
+ * long_native_get - Get an int from a Long config item
  * @param cs   Config items
  * @param var  Variable to get
  * @param cdef Variable definition
  * @param err  Buffer for error messages
- * @retval intptr_t Number
+ * @retval intptr_t Long
  */
-static intptr_t number_native_get(const struct ConfigSet *cs, void *var,
+static intptr_t long_native_get(const struct ConfigSet *cs, void *var,
                                   const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
@@ -182,14 +182,14 @@ static intptr_t number_native_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * number_reset - Reset a Number to its initial value
+ * long_reset - Reset a Long to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
  * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int number_reset(const struct ConfigSet *cs, void *var,
+static int long_reset(const struct ConfigSet *cs, void *var,
                         const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
@@ -211,19 +211,19 @@ static int number_reset(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * number_init - Register the Number config type
+ * long_init - Register the Long config type
  * @param cs Config items
  */
-void number_init(struct ConfigSet *cs)
+void long_init(struct ConfigSet *cs)
 {
-  const struct ConfigSetType cst_number = {
-    "number",
-    number_string_set,
-    number_string_get,
-    number_native_set,
-    number_native_get,
-    number_reset,
+  const struct ConfigSetType cst_long = {
+    "long",
+    long_string_set,
+    long_string_get,
+    long_native_set,
+    long_native_get,
+    long_reset,
     NULL,
   };
-  cs_register_type(cs, DT_NUMBER, &cst_number);
+  cs_register_type(cs, DT_LONG, &cst_long);
 }
