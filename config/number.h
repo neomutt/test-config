@@ -25,6 +25,7 @@
 
 struct ConfigSet;
 
+void long_init(struct ConfigSet *cs);
 void number_init(struct ConfigSet *cs);
 
 #endif /* _CONFIG_NUMBER_H */

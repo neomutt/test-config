@@ -227,3 +227,21 @@ void number_init(struct ConfigSet *cs)
   };
   cs_register_type(cs, DT_NUMBER, &cst_number);
 }
+
+/**
+ * long_init - Register the Long config type
+ * @param cs Config items
+ */
+void long_init(struct ConfigSet *cs)
+{
+  const struct ConfigSetType cst_long = {
+    "long",
+    number_string_set,
+    number_string_get,
+    number_native_set,
+    number_native_get,
+    number_reset,
+    NULL,
+  };
+  cs_register_type(cs, DT_LONG, &cst_long);
+}

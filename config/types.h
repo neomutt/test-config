@@ -37,16 +37,17 @@
 #define DT_MBTABLE   11   /**< multibyte char table */
 #define DT_LONG      12   /**< a number (long) */
 #define DT_HCACHE    13   /**< header cache backend */
-#define DT_ENUM      14   /**< an enumeration */
-#define DT_SLIST     15   /**< a list of strings */
+#define DT_COMMAND   14   /**< a command */
+#define DT_ENUM      15   /**< an enumeration */
+#define DT_SLIST     16   /**< a list of strings */
 
-#define DTYPE(x) ((x) & 0x0f) /**< Mask for the Data Type */
+#define DTYPE(x) ((x) & 0x1f) /**< Mask for the Data Type */
 
-#define DT_NOT_EMPTY    0x10  /**< Empty string are not allowed */
-#define DT_NOT_NEGATIVE 0x20  /**< Negative numbers are not allowed */
+#define DT_NOT_EMPTY    0x40  /**< Empty string are not allowed */
+#define DT_NOT_NEGATIVE 0x80  /**< Negative numbers are not allowed */
 
 /* subtypes for... */
-#define DT_SUBTYPE_MASK 0xff0 /**< Mask for the Data Subtype */
+#define DT_SUBTYPE_MASK 0xfe0 /**< Mask for the Data Subtype */
 
 /* Private config item flags */
 #define DT_INHERITED    0x1000 /**< Config item is inherited */

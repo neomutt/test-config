@@ -25,6 +25,7 @@
 
 struct ConfigSet;
 
+void command_init(struct ConfigSet *cs);
 void path_init(struct ConfigSet *cs);
 
 #endif /* _CONFIG_PATH_H */

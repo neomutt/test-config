@@ -160,7 +160,7 @@ Jackfruit = 6, threads
 Expect error for next test
 Variable has an invalid value: 0/255
 Expect error for next test
-Invalid sort type: 144
+Invalid sort type: 576
 ---- test_native_set ---------------------------------------
 Event: Damson has been set to 'date'
 Damson = 1, set by 'date'
@@ -307,6 +307,6 @@ Event: Strawberry has been reset to 'date'
 fruit:Strawberry = 1
 ---- test_sort_type ----------------------------------------
 Expect error for next test
-Invalid sort type: 144
+Invalid sort type: 576
 Expect error for next test
-Invalid sort type: 144
+Invalid sort type: 576
