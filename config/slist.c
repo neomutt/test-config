@@ -462,6 +462,7 @@ struct Slist *slist_remove_string(struct Slist *list, const char *str)
         STAILQ_REMOVE_AFTER(&list->head, prev, entries);
       else
         STAILQ_REMOVE_HEAD(&list->head, entries);
+      list->count--;
       break;
     }
     prev = np;

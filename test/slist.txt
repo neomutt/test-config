@@ -1,3 +1,15 @@
 ---- slist_test --------------------------------------------
 ---- set_list ----------------------------------------------
 slist Apple = apple:banana:cherry
+slist Banana = apple,banana,cherry
+slist Cherry = apple banana cherry
+Apple:  3
+Banana: 3
+Cherry: 3
+---- set_list ----------------------------------------------
+slist Apple = apple:banana:cherry:damson
+slist Banana = apple,cherry
+slist Cherry = apple banana cherry
+Apple:  4
+Banana: 2
+Cherry: 1

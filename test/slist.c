@@ -93,3 +93,40 @@ bool slist_test(void)
 
   return true;
 }
+
+#if 0
+SLIST TESTS
+3 runs (1 for each separator)?
+
+initial:
+  empty
+  single token
+  two tokens
+  three tokens
+  ":token"
+  "token:"
+  ":"
+  "::"
+initil test with "allow dupes", "allow empty"
+
+setting - no dupes, no empty
+  above tests
+  "one:two:one"
+  "one::true"
+
+errors
+  !allow_dupes -> quiet or fail?
+  !allow_empty -> quiet or fail?
+
+validators
+reset (+validator)
+getting
+native get/set
+
+slist type tests
+  add_str, unique, dupe, empty list, empty string
+  remove_str, missing, empty list, empty string
+  cat lists, (uniq1,uniq2), empty list combos, dupe list combos
+  is_member true, false, empty list, empty string
+
+#endif
