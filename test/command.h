@@ -1,9 +1,9 @@
 /**
  * @file
- * Type representing a path
+ * Test code for the Command object
  *
  * @authors
- * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,11 +20,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_PATH_H
-#define _CONFIG_PATH_H
+#ifndef _TEST_COMMAND_H
+#define _TEST_COMMAND_H
 
-struct ConfigSet;
+#include <stdbool.h>
 
-void path_init(struct ConfigSet *cs);
+bool command_test(void);
 
-#endif /* _CONFIG_PATH_H */
+#endif /* _TEST_COMMAND_H */

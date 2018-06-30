@@ -1,9 +1,9 @@
 /**
  * @file
- * Type representing a path
+ * Type representing a command
  *
  * @authors
- * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,11 +20,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_PATH_H
-#define _CONFIG_PATH_H
+#ifndef _CONFIG_COMMAND_H
+#define _CONFIG_COMMAND_H
 
 struct ConfigSet;
 
-void path_init(struct ConfigSet *cs);
+void command_init(struct ConfigSet *cs);
 
-#endif /* _CONFIG_PATH_H */
+#endif /* _CONFIG_COMMAND_H */

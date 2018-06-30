@@ -1,9 +1,9 @@
 /**
  * @file
- * Type representing a path
+ * Type representing a command
  *
  * @authors
- * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -21,9 +21,9 @@
  */
 
 /**
- * @page config-path Type: Path
+ * @page config-command Type: Command
  *
- * Type representing a path.
+ * Type representing a command.
  */
 
 #include "config.h"
@@ -37,12 +37,12 @@
 #include "types.h"
 
 /**
- * path_destroy - Destroy a Path
+ * command_destroy - Destroy a Command
  * @param cs   Config items
  * @param var  Variable to destroy
  * @param cdef Variable definition
  */
-static void path_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
+static void command_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
   if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
@@ -62,7 +62,7 @@ static void path_destroy(const struct ConfigSet *cs, void *var, const struct Con
 }
 
 /**
- * path_string_set - Set a Path by string
+ * command_string_set - Set a Command by string
  * @param cs    Config items
  * @param var   Variable to set
  * @param cdef  Variable definition
@@ -72,7 +72,7 @@ static void path_destroy(const struct ConfigSet *cs, void *var, const struct Con
  *
  * If var is NULL, then the config item's initial value will be set.
  */
-static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
+static int command_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                            const char *value, struct Buffer *err)
 {
   if (!cs || !cdef)
@@ -103,7 +103,7 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
         return (rc | CSR_INV_VALIDATOR);
     }
 
-    path_destroy(cs, var, cdef);
+    command_destroy(cs, var, cdef);
 
     const char *str = mutt_str_strdup(value);
     if (!str)
@@ -128,7 +128,7 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
 }
 
 /**
- * path_string_get - Get a Path as a string
+ * command_string_get - Get a Command as a string
  * @param cs     Config items
  * @param var    Variable to get
  * @param cdef   Variable definition
@@ -137,7 +137,7 @@ static int path_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
  *
  * If var is NULL, then the config item's initial value will be returned.
  */
-static int path_string_get(const struct ConfigSet *cs, void *var,
+static int command_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)
 {
   if (!cs || !cdef)
@@ -158,7 +158,7 @@ static int path_string_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * path_native_set - Set a Path config item by string
+ * command_native_set - Set a Command config item by string
  * @param cs    Config items
  * @param var   Variable to set
  * @param cdef  Variable definition
@@ -166,7 +166,7 @@ static int path_string_get(const struct ConfigSet *cs, void *var,
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int path_native_set(const struct ConfigSet *cs, void *var,
+static int command_native_set(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
@@ -197,7 +197,7 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
       return (rc | CSR_INV_VALIDATOR);
   }
 
-  path_destroy(cs, var, cdef);
+  command_destroy(cs, var, cdef);
 
   str = mutt_str_strdup(str);
   rc = CSR_SUCCESS;
@@ -209,14 +209,14 @@ static int path_native_set(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * path_native_get - Get a string from a Path config item
+ * command_native_get - Get a string from a Command config item
  * @param cs   Config items
  * @param var  Variable to get
  * @param cdef Variable definition
  * @param err  Buffer for error messages
- * @retval intptr_t Path string
+ * @retval intptr_t Command string
  */
-static intptr_t path_native_get(const struct ConfigSet *cs, void *var,
+static intptr_t command_native_get(const struct ConfigSet *cs, void *var,
                                 const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
@@ -228,14 +228,14 @@ static intptr_t path_native_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * path_reset - Reset a Path to its initial value
+ * command_reset - Reset a Command to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
  * @param cdef Variable definition
  * @param err  Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-static int path_reset(const struct ConfigSet *cs, void *var,
+static int command_reset(const struct ConfigSet *cs, void *var,
                       const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
@@ -243,11 +243,11 @@ static int path_reset(const struct ConfigSet *cs, void *var,
 
   int rc = CSR_SUCCESS;
 
-  const char *path = (const char *) cdef->initial;
-  if (!path)
+  const char *command = (const char *) cdef->initial;
+  if (!command)
     rc |= CSR_SUC_EMPTY;
 
-  if (mutt_str_strcmp(path, (*(char **) var)) == 0)
+  if (mutt_str_strcmp(command, (*(char **) var)) == 0)
     return (rc | CSR_SUC_NO_CHANGE);
 
   if (cdef->validator)
@@ -258,24 +258,24 @@ static int path_reset(const struct ConfigSet *cs, void *var,
       return (rc | CSR_INV_VALIDATOR);
   }
 
-  path_destroy(cs, var, cdef);
+  command_destroy(cs, var, cdef);
 
-  if (!path)
+  if (!command)
     rc |= CSR_SUC_EMPTY;
 
-  *(const char **) var = path;
+  *(const char **) var = command;
   return rc;
 }
 
 /**
- * path_init - Register the Path config type
+ * command_init - Register the Command config type
  * @param cs Config items
  */
-void path_init(struct ConfigSet *cs)
+void command_init(struct ConfigSet *cs)
 {
-  const struct ConfigSetType cst_path = {
-    "path",          path_string_set, path_string_get, path_native_set,
-    path_native_get, path_reset,      path_destroy,
+  const struct ConfigSetType cst_command = {
+    "command",          command_string_set, command_string_get, command_native_set,
+    command_native_get, command_reset,      command_destroy,
   };
-  cs_register_type(cs, DT_PATH, &cst_path);
+  cs_register_type(cs, DT_COMMAND, &cst_command);
 }
