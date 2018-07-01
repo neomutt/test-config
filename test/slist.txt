@@ -1,15 +1,70 @@
 ---- slist_test --------------------------------------------
+COLON | SLIST_ALLOW_EMPTY
+>>NULL<<
+[0] 
+>><<
+[0] 
+>>apple<<
+[1] 'apple'
+>>apple:banana<<
+[2] 'apple','banana'
+>>apple:banana:cherry<<
+[3] 'apple','banana','cherry'
+>>:apple<<
+[2] NULL,'apple'
+>>banana:<<
+[2] 'banana',NULL
+>>:<<
+[2] NULL,NULL
+>>::<<
+[3] NULL,NULL,NULL
+>>apple:banana:apple<<
+[3] 'apple','banana','apple'
+>>apple::banana<<
+[3] 'apple',NULL,'banana'
+[0] 
+[1] NULL
+[1] NULL
+[1] 'apple'
+[2] 'apple','banana'
+[3] 'apple','banana','apple'
+[4] 'apple','banana',NULL,'cherry'
+[3] 'apple','banana','cherry'
+[2] 'banana','cherry'
+[2] 'banana','cherry'
+[4] 'apple','banana',NULL,'cherry'
+member 'apple' : yes
+member '' : yes
+member 'damson' : no
+member '(null)' : yes
+[4] 'apple','banana',NULL,'cherry'
+[4] 'damson',NULL,'apple','apple'
+[4] 'damson',NULL,'apple','apple'
+[0] 'damson',NULL,'apple','apple'
+---- slist_test_separator ----------------------------------
 ---- set_list ----------------------------------------------
-slist Apple = apple:banana:cherry
-slist Banana = apple,banana,cherry
-slist Cherry = apple banana cherry
-Apple:  3
-Banana: 3
-Cherry: 3
+slist Apple = apple
+slist Banana = apple:banana
+slist Cherry = apple:banana:cherry
+---- test_initial_values -----------------------------------
+Apple, 1 items, 2 flags
+Banana, 2 items, 2 flags
+Cherry, 3 items, 2 flags
+---- slist_test_separator ----------------------------------
 ---- set_list ----------------------------------------------
-slist Apple = apple:banana:cherry:damson
-slist Banana = apple,cherry
+slist Apple = apple
+slist Banana = apple,banana
+slist Cherry = apple,banana,cherry
+---- test_initial_values -----------------------------------
+Apple, 1 items, 1 flags
+Banana, 2 items, 1 flags
+Cherry, 3 items, 1 flags
+---- slist_test_separator ----------------------------------
+---- set_list ----------------------------------------------
+slist Apple = apple
+slist Banana = apple banana
 slist Cherry = apple banana cherry
-Apple:  4
-Banana: 2
-Cherry: 1
+---- test_initial_values -----------------------------------
+Apple, 1 items, 0 flags
+Banana, 2 items, 0 flags
+Cherry, 3 items, 0 flags

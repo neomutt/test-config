@@ -55,13 +55,14 @@ struct Slist
 {
   struct ListHead head;
   size_t count;
-  int flags;
+  unsigned int flags;
 };
 
 struct Slist *slist_add_list(struct Slist *list, const struct Slist *add);
 struct Slist *slist_add_string(struct Slist *list, const char *str);
 bool          slist_compare(const struct Slist *a, const struct Slist *b);
 struct Slist *slist_dup(const struct Slist *list);
+struct Slist *slist_empty(struct Slist **list);
 void          slist_free(struct Slist **list);
 void          slist_init(struct ConfigSet *cs);
 bool          slist_is_member(const struct Slist *list, const char *str);

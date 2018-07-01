@@ -298,7 +298,7 @@ struct Slist *slist_add_list(struct Slist *list, const struct Slist *add)
     mutt_list_insert_tail(&list->head, mutt_str_strdup((char *) np->data));
     list->count++;
   }
-  return NULL;
+  return list;
 }
 
 /**
@@ -312,7 +312,10 @@ struct Slist *slist_add_string(struct Slist *list, const char *str)
   if (!list)
     return NULL;
 
-  if (!str)
+  if (str && (str[0] == '\0'))
+    str = NULL;
+
+  if (!str && !(list->flags & SLIST_ALLOW_EMPTY))
     return list;
 
   mutt_list_insert_tail(&list->head, mutt_str_strdup(str));
@@ -351,7 +354,7 @@ struct Slist *slist_dup(const struct Slist *list)
 
   struct Slist *l = mutt_mem_calloc(1, sizeof(*l));
   l->flags = list->flags;
-  l->count = list->count;
+  STAILQ_INIT(&l->head);
 
   struct ListNode *np = NULL;
   STAILQ_FOREACH(np, &list->head, entries)
@@ -359,6 +362,28 @@ struct Slist *slist_dup(const struct Slist *list)
     mutt_list_insert_tail(&l->head, mutt_str_strdup(np->data));
   }
   return l;
+}
+
+/**
+ * slist_empty - Empty out an Slist object
+ * @param list Slist to duplicate
+ * @retval ptr New Slist object
+ */
+struct Slist *slist_empty(struct Slist **list)
+{
+  if (!list || !*list)
+    return NULL; /* LCOV_EXCL_LINE */
+
+  mutt_list_free(&(*list)->head);
+
+  if ((*list)->flags & SLIST_ALLOW_EMPTY)
+  {
+    (*list)->count = 0;
+    return *list;
+  }
+
+  FREE(list);
+  return NULL;
 }
 
 /**
@@ -382,8 +407,11 @@ void slist_free(struct Slist **list)
  */
 bool slist_is_member(const struct Slist *list, const char *str)
 {
-  if (!list || !str)
-    return NULL;
+  if (!list)
+    return false;
+
+  if (!str && !(list->flags & SLIST_ALLOW_EMPTY))
+    return false;
 
   struct ListNode *np = NULL;
   STAILQ_FOREACH(np, &list->head, entries)
@@ -402,7 +430,7 @@ bool slist_is_member(const struct Slist *list, const char *str)
 struct Slist *slist_parse(const char *str, int flags)
 {
   char *src = mutt_str_strdup(str);
-  if (!src)
+  if (!src && !(flags & SLIST_ALLOW_EMPTY))
     return NULL;
 
   char sep = ' ';
@@ -412,7 +440,11 @@ struct Slist *slist_parse(const char *str, int flags)
     sep = ':';
 
   struct Slist *list = mutt_mem_calloc(1, sizeof(struct Slist));
+  list->flags = flags;
   STAILQ_INIT(&list->head);
+
+  if (!src)
+    return list;
 
   char *start = src;
   for (char *p = start; *p; p++)
@@ -449,12 +481,13 @@ struct Slist *slist_remove_string(struct Slist *list, const char *str)
 {
   if (!list)
     return NULL;
-  if (!str)
+  if (!str && !(list->flags & SLIST_ALLOW_EMPTY))
     return list;
 
   struct ListNode *prev = NULL;
   struct ListNode *np = NULL;
-  STAILQ_FOREACH(np, &list->head, entries)
+  struct ListNode *tmp = NULL;
+  STAILQ_FOREACH_SAFE(np, &list->head, entries, tmp)
   {
     if (mutt_str_strcmp(np->data, str) == 0)
     {
@@ -462,6 +495,8 @@ struct Slist *slist_remove_string(struct Slist *list, const char *str)
         STAILQ_REMOVE_AFTER(&list->head, prev, entries);
       else
         STAILQ_REMOVE_HEAD(&list->head, entries);
+      FREE(&np->data);
+      FREE(&np);
       list->count--;
       break;
     }

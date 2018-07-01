@@ -115,3 +115,4 @@ test 1
 Event: Nectarine has been set to 'no'
 Expected error: Invalid boolean value: 8
 Expected error: 
+Expected error: Unknown var 'unknown'

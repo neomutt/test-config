@@ -671,6 +671,18 @@ static bool test_toggle(struct ConfigSet *cs, struct Buffer *err)
     printf("Expected error: %s\n", err->data);
   }
 
+  mutt_buffer_reset(err);
+  rc = bool_str_toggle(cs, "unknown", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("Expected error: %s\n", err->data);
+  }
+  else
+  {
+    printf("This test should have failed\n");
+    return false;
+  }
+
   return true;
 }
 
