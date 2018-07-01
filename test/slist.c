@@ -39,12 +39,12 @@
 static struct Slist *VarApple;
 static struct Slist *VarBanana;
 static struct Slist *VarCherry;
-#if 0
 static struct Slist *VarDamson;
 static struct Slist *VarElderberry;
 static struct Slist *VarFig;
 static struct Slist *VarGuava;
 static struct Slist *VarHawthorn;
+#if 0
 static struct Slist *VarIlama;
 static struct Slist *VarJackfruit;
 static struct Slist *VarKumquat;
@@ -60,23 +60,38 @@ static struct Slist *VarStrawberry;
 
 // clang-format off
 static struct ConfigDef VarsColon[] = {
-  { "Apple",  DT_SLIST, SLIST_SEP_COLON, &VarApple,  IP "apple",               NULL }, /* test_initial_values */
-  { "Banana", DT_SLIST, SLIST_SEP_COLON, &VarBanana, IP "apple:banana",        NULL },
-  { "Cherry", DT_SLIST, SLIST_SEP_COLON, &VarCherry, IP "apple:banana:cherry", NULL },
+  { "Apple",      DT_SLIST, SLIST_SEP_COLON, &VarApple,      IP "apple",               NULL }, /* test_initial_values */
+  { "Banana",     DT_SLIST, SLIST_SEP_COLON, &VarBanana,     IP "apple:banana",        NULL },
+  { "Cherry",     DT_SLIST, SLIST_SEP_COLON, &VarCherry,     IP "apple:banana:cherry", NULL },
+  { "Damson",     DT_SLIST, SLIST_SEP_COLON, &VarDamson,     IP "apple:banana",        NULL }, /* test_string_set */
+  { "Elderberry", DT_SLIST, SLIST_SEP_COLON, &VarElderberry, 0,                        NULL },
+  { "Fig",        DT_SLIST, SLIST_SEP_COLON, &VarFig,        IP ":apple",              NULL }, /* test_string_get */
+  { "Guava",      DT_SLIST, SLIST_SEP_COLON, &VarGuava,      IP "apple::cherry",       NULL },
+  { "Hawthorn",   DT_SLIST, SLIST_SEP_COLON, &VarHawthorn,   IP "apple:",              NULL },
   { NULL },
 };
 
 static struct ConfigDef VarsComma[] = {
-  { "Apple",  DT_SLIST, SLIST_SEP_COMMA, &VarApple,  IP "apple",               NULL }, /* test_initial_values */
-  { "Banana", DT_SLIST, SLIST_SEP_COMMA, &VarBanana, IP "apple,banana",        NULL },
-  { "Cherry", DT_SLIST, SLIST_SEP_COMMA, &VarCherry, IP "apple,banana,cherry", NULL },
+  { "Apple",      DT_SLIST, SLIST_SEP_COMMA, &VarApple,      IP "apple",               NULL }, /* test_initial_values */
+  { "Banana",     DT_SLIST, SLIST_SEP_COMMA, &VarBanana,     IP "apple,banana",        NULL },
+  { "Cherry",     DT_SLIST, SLIST_SEP_COMMA, &VarCherry,     IP "apple,banana,cherry", NULL },
+  { "Damson",     DT_SLIST, SLIST_SEP_COLON, &VarDamson,     IP "apple,banana",        NULL }, /* test_string_set */
+  { "Elderberry", DT_SLIST, SLIST_SEP_COLON, &VarElderberry, 0,                        NULL },
+  { "Fig",        DT_SLIST, SLIST_SEP_COLON, &VarFig,        IP ",apple",              NULL }, /* test_string_get */
+  { "Guava",      DT_SLIST, SLIST_SEP_COLON, &VarGuava,      IP "apple,,cherry",       NULL },
+  { "Hawthorn",   DT_SLIST, SLIST_SEP_COLON, &VarHawthorn,   IP "apple,",              NULL },
   { NULL },
 };
 
 static struct ConfigDef VarsSpace[] = {
-  { "Apple",  DT_SLIST, SLIST_SEP_SPACE, &VarApple,  IP "apple",               NULL }, /* test_initial_values */
-  { "Banana", DT_SLIST, SLIST_SEP_SPACE, &VarBanana, IP "apple banana",        NULL },
-  { "Cherry", DT_SLIST, SLIST_SEP_SPACE, &VarCherry, IP "apple banana cherry", NULL },
+  { "Apple",      DT_SLIST, SLIST_SEP_SPACE, &VarApple,      IP "apple",               NULL }, /* test_initial_values */
+  { "Banana",     DT_SLIST, SLIST_SEP_SPACE, &VarBanana,     IP "apple banana",        NULL },
+  { "Cherry",     DT_SLIST, SLIST_SEP_SPACE, &VarCherry,     IP "apple banana cherry", NULL },
+  { "Damson",     DT_SLIST, SLIST_SEP_COLON, &VarDamson,     IP "apple banana",        NULL }, /* test_string_set */
+  { "Elderberry", DT_SLIST, SLIST_SEP_COLON, &VarElderberry, 0,                        NULL },
+  { "Fig",        DT_SLIST, SLIST_SEP_COLON, &VarFig,        IP " apple",              NULL }, /* test_string_get */
+  { "Guava",      DT_SLIST, SLIST_SEP_COLON, &VarGuava,      IP "apple  cherry",       NULL },
+  { "Hawthorn",   DT_SLIST, SLIST_SEP_COLON, &VarHawthorn,   IP "apple ",              NULL },
   { NULL },
 };
 // clang-format on
@@ -319,21 +334,122 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   return true;
 }
 
-#if 0
 static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  return false;
+  int rc;
+
+  mutt_buffer_reset(err);
+  char *name = "Damson";
+  rc = cs_str_string_set(cs, name, "pig:quail:rhino", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  mutt_buffer_reset(err);
+  name = "Elderberry";
+  rc = cs_str_string_set(cs, name, "pig:quail:rhino", err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  return true;
 }
 
 static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  return false;
+  struct Buffer initial;
+  mutt_buffer_init(&initial);
+  initial.data = mutt_mem_calloc(1, STRING);
+  initial.dsize = STRING;
+
+  mutt_buffer_reset(err);
+  mutt_buffer_reset(&initial);
+  char *name = "Fig";
+
+  int rc = cs_str_initial_get(cs, name, &initial);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  rc = cs_str_string_get(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(initial.data, err->data) != 0)
+  {
+    printf("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
+    return false;
+  }
+  printf("Match: %s '%s' '%s'\n", name, initial.data, err->data);
+
+  mutt_buffer_reset(err);
+  mutt_buffer_reset(&initial);
+  name = "Guava";
+
+  rc = cs_str_initial_get(cs, name, &initial);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  rc = cs_str_string_get(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(initial.data, err->data) != 0)
+  {
+    printf("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
+    return false;
+  }
+  printf("Match: %s '%s' '%s'\n", name, initial.data, err->data);
+
+  mutt_buffer_reset(err);
+  mutt_buffer_reset(&initial);
+  name = "Hawthorn";
+
+  rc = cs_str_initial_get(cs, name, &initial);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  rc = cs_str_string_get(cs, name, err);
+  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  {
+    printf("%s\n", err->data);
+    return false;
+  }
+
+  if (mutt_str_strcmp(initial.data, err->data) != 0)
+  {
+    printf("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
+    return false;
+  }
+  printf("Match: %s '%s' '%s'\n", name, initial.data, err->data);
+
+  FREE(&initial.data);
+  return true;
 }
 
+#if 0
 static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
@@ -386,6 +502,10 @@ bool slist_test_separator(struct ConfigDef Vars[], struct Buffer *err)
   set_list(cs);
 
   if (!test_initial_values(cs, err))
+    return false;
+  if (!test_string_set(cs, err))
+    return false;
+  if (!test_string_get(cs, err))
     return false;
 
   cs_free(&cs);

@@ -39,6 +39,7 @@ member 'damson' : no
 member '(null)' : yes
 [4] 'apple','banana',NULL,'cherry'
 [4] 'damson',NULL,'apple','apple'
+[8] 'apple','banana',NULL,'cherry','damson',NULL,'apple','apple'
 [4] 'damson',NULL,'apple','apple'
 [0] 'damson',NULL,'apple','apple'
 ---- slist_test_separator ----------------------------------
@@ -46,25 +47,61 @@ member '(null)' : yes
 slist Apple = apple
 slist Banana = apple:banana
 slist Cherry = apple:banana:cherry
+slist Damson = apple:banana
+slist Elderberry = 
+slist Fig = :apple
+slist Guava = apple::cherry
+slist Hawthorn = apple:
 ---- test_initial_values -----------------------------------
 Apple, 1 items, 2 flags
 Banana, 2 items, 2 flags
 Cherry, 3 items, 2 flags
+---- test_string_set ---------------------------------------
+Event: Damson has been set to 'pig:quail:rhino'
+Event: Elderberry has been set to 'pig:quail:rhino'
+---- test_string_get ---------------------------------------
+Match: Fig ':apple' ':apple'
+Match: Guava 'apple::cherry' 'apple::cherry'
+Match: Hawthorn 'apple:' 'apple:'
 ---- slist_test_separator ----------------------------------
 ---- set_list ----------------------------------------------
 slist Apple = apple
 slist Banana = apple,banana
 slist Cherry = apple,banana,cherry
+slist Damson = apple,banana
+slist Elderberry = 
+slist Fig = ,apple
+slist Guava = apple,,cherry
+slist Hawthorn = apple,
 ---- test_initial_values -----------------------------------
 Apple, 1 items, 1 flags
 Banana, 2 items, 1 flags
 Cherry, 3 items, 1 flags
+---- test_string_set ---------------------------------------
+Event: Damson has been set to 'pig:quail:rhino'
+Event: Elderberry has been set to 'pig:quail:rhino'
+---- test_string_get ---------------------------------------
+Match: Fig ',apple' ',apple'
+Match: Guava 'apple,,cherry' 'apple,,cherry'
+Match: Hawthorn 'apple,' 'apple,'
 ---- slist_test_separator ----------------------------------
 ---- set_list ----------------------------------------------
 slist Apple = apple
 slist Banana = apple banana
 slist Cherry = apple banana cherry
+slist Damson = apple banana
+slist Elderberry = 
+slist Fig =  apple
+slist Guava = apple  cherry
+slist Hawthorn = apple 
 ---- test_initial_values -----------------------------------
 Apple, 1 items, 0 flags
 Banana, 2 items, 0 flags
 Cherry, 3 items, 0 flags
+---- test_string_set ---------------------------------------
+Event: Damson has been set to 'pig:quail:rhino'
+Event: Elderberry has been set to 'pig:quail:rhino'
+---- test_string_get ---------------------------------------
+Match: Fig ' apple' ' apple'
+Match: Guava 'apple  cherry' 'apple  cherry'
+Match: Hawthorn 'apple ' 'apple '
