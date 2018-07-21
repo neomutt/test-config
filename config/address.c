@@ -30,10 +30,10 @@
 #include <stddef.h>
 #include <limits.h>
 #include <stdint.h>
-#include "mutt/address.h"
 #include "mutt/buffer.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
+#include "email/address.h"
 #include "address.h"
 #include "set.h"
 #include "types.h"

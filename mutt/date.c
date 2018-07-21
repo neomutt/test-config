@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -164,7 +165,7 @@ static int is_leap_year_feb(struct tm *tm)
     return 0;
 
   int y = tm->tm_year + 1900;
-  return (((y & 3) == 0) && (((y % 100) != 0) || ((y % 400) == 0)));
+  return ((y & 3) == 0) && (((y % 100) != 0) || ((y % 400) == 0));
 }
 
 /**
@@ -221,7 +222,7 @@ time_t mutt_date_local_tz(time_t t)
   /* need to make a copy because gmtime/localtime return a pointer to
      static memory (grr!) */
   memcpy(&utc, ptm, sizeof(utc));
-  return (compute_tz(t, &utc));
+  return compute_tz(t, &utc);
 }
 
 /**
@@ -241,8 +242,7 @@ time_t mutt_date_make_time(struct tm *t, int local)
     0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334,
   };
 
-  /* Prevent an integer overflow.
-   * The time_t cast is an attempt to silence a clang range warning. */
+  /* Prevent an integer overflow. */
   if ((time_t) t->tm_year > (TM_YEAR_MAX - 1900))
     return TIME_T_MAX;
   if ((time_t) t->tm_year < (TM_YEAR_MIN - 1900))
@@ -680,7 +680,7 @@ time_t mutt_date_parse_imap(char *s)
   if (s[0] == '+')
     tz = -tz;
 
-  return (mutt_date_make_time(&t, 0) + tz);
+  return mutt_date_make_time(&t, 0) + tz;
 }
 
 /**
@@ -699,5 +699,5 @@ time_t mutt_date_add_timeout(time_t now, long timeout)
   if ((TIME_T_MAX - now) < timeout)
     return TIME_T_MAX;
 
-  return (now + timeout);
+  return now + timeout;
 }

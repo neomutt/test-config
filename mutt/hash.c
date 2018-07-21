@@ -29,6 +29,7 @@
 
 #include "config.h"
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include "hash.h"
 #include "memory.h"
@@ -106,7 +107,7 @@ static int cmp_case_string_key(union HashKey a, union HashKey b)
  */
 static size_t gen_int_hash(union HashKey key, size_t n)
 {
-  return (key.intkey % n);
+  return key.intkey % n;
 }
 
 /**

@@ -28,10 +28,9 @@
 
 #include "config.h"
 #include <errno.h>
-#include <limits.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -215,7 +214,7 @@ void log_file_set_version(const char *version)
  */
 bool log_file_running(void)
 {
-  return (LogFileFP != NULL);
+  return LogFileFP != NULL;
 }
 
 /**

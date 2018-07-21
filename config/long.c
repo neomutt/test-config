@@ -47,7 +47,7 @@
  * If var is NULL, then the config item's initial value will be set.
  */
 static int long_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
-                             const char *value, struct Buffer *err)
+                           const char *value, struct Buffer *err)
 {
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -105,7 +105,7 @@ static int long_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
  * If var is NULL, then the config item's initial value will be returned.
  */
 static int long_string_get(const struct ConfigSet *cs, void *var,
-                             const struct ConfigDef *cdef, struct Buffer *result)
+                           const struct ConfigDef *cdef, struct Buffer *result)
 {
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -131,8 +131,7 @@ static int long_string_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int long_native_set(const struct ConfigSet *cs, void *var,
-                             const struct ConfigDef *cdef, intptr_t value,
-                             struct Buffer *err)
+                           const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -173,7 +172,7 @@ static int long_native_set(const struct ConfigSet *cs, void *var,
  * @retval intptr_t Long
  */
 static intptr_t long_native_get(const struct ConfigSet *cs, void *var,
-                                  const struct ConfigDef *cdef, struct Buffer *err)
+                                const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
@@ -190,7 +189,7 @@ static intptr_t long_native_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int long_reset(const struct ConfigSet *cs, void *var,
-                        const struct ConfigDef *cdef, struct Buffer *err)
+                      const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */

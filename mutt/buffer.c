@@ -29,6 +29,7 @@
 
 #include "config.h"
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include "buffer.h"
@@ -235,7 +236,7 @@ bool mutt_buffer_is_empty(const struct Buffer *buf)
   if (!buf)
     return true;
 
-  return (buf->data && (buf->data[0] == '\0'));
+  return buf->data && (buf->data[0] == '\0');
 }
 
 /**

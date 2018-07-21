@@ -23,6 +23,7 @@
 #ifndef _MUTT_REGEX_H
 #define _MUTT_REGEX_H
 
+#include <stddef.h>
 #include <regex.h>
 #include <stdbool.h>
 

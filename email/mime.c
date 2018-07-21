@@ -21,16 +21,13 @@
  */
 
 /**
- * @page mime Constants and macros for managing MIME encoding
+ * @page email_mime Constants and macros for managing MIME encoding
  *
  * Constants and macros for managing MIME encoding.
  */
 
 #include "config.h"
-#include <stdbool.h>
 #include "mime.h"
-#include "memory.h"
-#include "string2.h"
 
 // clang-format off
 /**

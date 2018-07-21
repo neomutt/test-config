@@ -21,7 +21,7 @@
  */
 
 /**
- * @page idna Handling of international domain names
+ * @page email_idna Handling of international domain names
  *
  * Handling of international domain names
  */
@@ -30,11 +30,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include "charset.h"
+#include "mutt/mutt.h"
 #include "idna2.h"
-#include "logging.h"
-#include "memory.h"
-#include "string2.h"
 #ifdef HAVE_STRINGPREP_H
 #include <stringprep.h>
 #elif defined(HAVE_IDN_STRINGPREP_H)
@@ -50,6 +47,7 @@
 #include <idn/idna.h>
 #endif
 
+/* These Config Variables are only used in mutt/idna.c */
 #ifdef HAVE_LIBIDN
 bool IdnDecode;
 bool IdnEncode;
@@ -73,23 +71,6 @@ bool IdnEncode;
 
 #ifdef HAVE_LIBIDN
 /**
- * mutt_idna_to_ascii_lz - Convert a domain to Punycode
- * @param input  Domain
- * @param output Result
- * @param flags  Flags, e.g. IDNA_ALLOW_UNASSIGNED
- * @retval 0 Success
- * @retval >0 Failure, error code
- *
- * Convert a domain from the current locale to Punycode.
- *
- * @note The caller must free output
- */
-int mutt_idna_to_ascii_lz(const char *input, char **output, int flags)
-{
-  return idna_to_ascii_lz(input, output, flags);
-}
-
-/**
  * check_idn - Is domain in Punycode?
  * @param domain Domain to test
  * @retval true At least one part of domain is in Punycode
@@ -109,6 +90,23 @@ static bool check_idn(char *domain)
   }
 
   return false;
+}
+
+/**
+ * mutt_idna_to_ascii_lz - Convert a domain to Punycode
+ * @param input  Domain
+ * @param output Result
+ * @param flags  Flags, e.g. IDNA_ALLOW_UNASSIGNED
+ * @retval 0 Success
+ * @retval >0 Failure, error code
+ *
+ * Convert a domain from the current locale to Punycode.
+ *
+ * @note The caller must free output
+ */
+int mutt_idna_to_ascii_lz(const char *input, char **output, int flags)
+{
+  return idna_to_ascii_lz(input, output, flags);
 }
 #endif /* HAVE_LIBIDN */
 

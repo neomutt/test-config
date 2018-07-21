@@ -1,8 +1,10 @@
 /**
  * @file
- * Conversion to/from base64 encoding
+ * Determine who the email is from
  *
  * @authors
+ * Copyright (C) 1996-2000,2013 Michael R. Elkins <me@mutt.org>
+ *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -18,16 +20,13 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_BASE64_H
-#define _MUTT_BASE64_H
+#ifndef _EMAIL_FROM_H
+#define _EMAIL_FROM_H
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <time.h>
 
-extern const int Index64[];
+bool is_from(const char *s, char *path, size_t pathlen, time_t *tp);
 
-#define base64val(c) Index64[(unsigned int) (c)]
-
-int    mutt_b64_decode(char *out, const char *in, size_t olen);
-size_t mutt_b64_encode(char *out, const char *cin, size_t len, size_t olen);
-
-#endif /* _MUTT_BASE64_H */
+#endif /* _EMAIL_FROM_H */

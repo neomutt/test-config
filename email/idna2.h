@@ -1,8 +1,10 @@
 /**
  * @file
- * Conversion to/from base64 encoding
+ * Handling of international domain names
  *
  * @authors
+ * Copyright (C) 2003,2005 Thomas Roessler <roessler@does-not-exist.org>
+ *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -18,16 +20,20 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_BASE64_H
-#define _MUTT_BASE64_H
+#ifndef _EMAIL_IDNA_H
+#define _EMAIL_IDNA_H
 
-#include <stdio.h>
+#include <stdbool.h>
 
-extern const int Index64[];
+/* These Config Variables are only used in mutt/idna.c */
+extern bool IdnDecode;
+extern bool IdnEncode;
 
-#define base64val(c) Index64[(unsigned int) (c)]
+#define MI_MAY_BE_IRREVERSIBLE (1 << 0)
 
-int    mutt_b64_decode(char *out, const char *in, size_t olen);
-size_t mutt_b64_encode(char *out, const char *cin, size_t len, size_t olen);
+char *      mutt_idna_intl_to_local(const char *user, const char *domain, int flags);
+char *      mutt_idna_local_to_intl(const char *user, const char *domain);
+const char *mutt_idna_print_version(void);
+int         mutt_idna_to_ascii_lz(const char *input, char **output, int flags);
 
-#endif /* _MUTT_BASE64_H */
+#endif /* _EMAIL_IDNA_H */

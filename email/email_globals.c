@@ -1,8 +1,10 @@
 /**
  * @file
- * Conversion to/from base64 encoding
+ * Email Global Variables
  *
  * @authors
+ * Copyright (C) 2018 Richard Russon <rich@flatcap.org>
+ *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -18,16 +20,25 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_BASE64_H
-#define _MUTT_BASE64_H
+/**
+ * @page email_globals Email Global Variables
+ *
+ * These global variables are private to the email library.
+ */
 
-#include <stdio.h>
+#include "config.h"
+#include <stdbool.h>
+#include "mutt/mutt.h"
 
-extern const int Index64[];
+/* Config items */
+bool MarkOld;
+struct Regex *ReplyRegex;
+char *SendCharset;
+char *SpamSeparator;
+bool Weed;
 
-#define base64val(c) Index64[(unsigned int) (c)]
-
-int    mutt_b64_decode(char *out, const char *in, size_t olen);
-size_t mutt_b64_encode(char *out, const char *cin, size_t len, size_t olen);
-
-#endif /* _MUTT_BASE64_H */
+/* Global variables */
+struct RegexList *NoSpamList;
+struct ReplaceList *SpamList;
+struct ListHead Ignore = STAILQ_HEAD_INITIALIZER(Ignore);
+struct ListHead UnIgnore = STAILQ_HEAD_INITIALIZER(UnIgnore);

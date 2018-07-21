@@ -25,7 +25,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "mutt/address.h"
 #include "mutt/buffer.h"
 #include "mutt/memory.h"
 #include "mutt/string2.h"
@@ -33,6 +32,7 @@
 #include "config/address.h"
 #include "config/set.h"
 #include "config/types.h"
+#include "email/address.h"
 #include "test/common.h"
 
 static struct Address *VarApple;

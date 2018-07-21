@@ -21,17 +21,16 @@
  */
 
 /**
- * @page parameter Store attributes associated with a MIME part
+ * @page email_parameter Store attributes associated with a MIME part
  *
  * Store attributes associated with a MIME part
  */
 
 #include "config.h"
 #include <stddef.h>
+#include <stdbool.h>
+#include "mutt/mutt.h"
 #include "parameter.h"
-#include "memory.h"
-#include "queue.h"
-#include "string2.h"
 
 /**
  * mutt_param_new - Create a new Parameter
@@ -84,7 +83,7 @@ char *mutt_param_get(const struct ParameterList *p, const char *s)
   if (!p)
     return NULL;
 
-  struct Parameter *np;
+  struct Parameter *np = NULL;
   TAILQ_FOREACH(np, p, entries)
   {
     if (mutt_str_strcasecmp(s, np->attribute) == 0)
@@ -116,7 +115,7 @@ void mutt_param_set(struct ParameterList *p, const char *attribute, const char *
     return;
   }
 
-  struct Parameter *np;
+  struct Parameter *np = NULL;
   TAILQ_FOREACH(np, p, entries)
   {
     if (mutt_str_strcasecmp(attribute, np->attribute) == 0)
@@ -142,7 +141,7 @@ void mutt_param_delete(struct ParameterList *p, const char *attribute)
   if (!p)
     return;
 
-  struct Parameter *np;
+  struct Parameter *np = NULL;
   TAILQ_FOREACH(np, p, entries)
   {
     if (mutt_str_strcasecmp(attribute, np->attribute) == 0)

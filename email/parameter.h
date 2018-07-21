@@ -20,11 +20,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_PARAMETER_H
-#define _MUTT_PARAMETER_H
+#ifndef _EMAIL_PARAMETER_H
+#define _EMAIL_PARAMETER_H
 
 #include <stdbool.h>
-#include "queue.h"
+#include "mutt/mutt.h"
 
 /**
  * struct ParameterList - List of parameters.
@@ -41,12 +41,12 @@ struct Parameter
   TAILQ_ENTRY(Parameter) entries;
 };
 
-struct Parameter *mutt_param_new(void);
 bool              mutt_param_cmp_strict(const struct ParameterList *p1, const struct ParameterList *p2);
 void              mutt_param_delete(struct ParameterList *p, const char *attribute);
 void              mutt_param_free(struct ParameterList *p);
 void              mutt_param_free_one(struct Parameter **p);
 char *            mutt_param_get(const struct ParameterList *p, const char *s);
+struct Parameter *mutt_param_new(void);
 void              mutt_param_set(struct ParameterList *p, const char *attribute, const char *value);
 
-#endif /* _MUTT_PARAMETER_H */
+#endif /* _EMAIL_PARAMETER_H */

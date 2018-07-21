@@ -73,7 +73,7 @@ static void command_destroy(const struct ConfigSet *cs, void *var, const struct 
  * If var is NULL, then the config item's initial value will be set.
  */
 static int command_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
-                           const char *value, struct Buffer *err)
+                              const char *value, struct Buffer *err)
 {
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -138,7 +138,7 @@ static int command_string_set(const struct ConfigSet *cs, void *var, struct Conf
  * If var is NULL, then the config item's initial value will be returned.
  */
 static int command_string_get(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, struct Buffer *result)
+                              const struct ConfigDef *cdef, struct Buffer *result)
 {
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -167,7 +167,8 @@ static int command_string_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int command_native_set(const struct ConfigSet *cs, void *var,
-                           const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
+                              const struct ConfigDef *cdef, intptr_t value,
+                              struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -217,7 +218,7 @@ static int command_native_set(const struct ConfigSet *cs, void *var,
  * @retval intptr_t Command string
  */
 static intptr_t command_native_get(const struct ConfigSet *cs, void *var,
-                                const struct ConfigDef *cdef, struct Buffer *err)
+                                   const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
@@ -236,7 +237,7 @@ static intptr_t command_native_get(const struct ConfigSet *cs, void *var,
  * @retval int Result, e.g. #CSR_SUCCESS
  */
 static int command_reset(const struct ConfigSet *cs, void *var,
-                      const struct ConfigDef *cdef, struct Buffer *err)
+                         const struct ConfigDef *cdef, struct Buffer *err)
 {
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -274,8 +275,9 @@ static int command_reset(const struct ConfigSet *cs, void *var,
 void command_init(struct ConfigSet *cs)
 {
   const struct ConfigSetType cst_command = {
-    "command",          command_string_set, command_string_get, command_native_set,
-    command_native_get, command_reset,      command_destroy,
+    "command",          command_string_set, command_string_get,
+    command_native_set, command_native_get, command_reset,
+    command_destroy,
   };
   cs_register_type(cs, DT_COMMAND, &cst_command);
 }
