@@ -117,6 +117,7 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
     int result = cs_str_reset(cs, child, &err);
     if (CSR_RESULT(result) != CSR_SUCCESS)
       mutt_debug(1, "reset failed for %s: %s\n", child, err.data);
+    mutt_hash_delete(cs->hash, child, NULL);
   }
 
   FREE(&err.data);
