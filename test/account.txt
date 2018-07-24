@@ -8,6 +8,7 @@ reset failed for damaged:Pineapple: Unknown var 'damaged:Pineapple'
 Expected error:
 Expect error for next test
 failed to create damaged:Apple
+reset failed for damaged:Apple: Unknown var 'damaged:Apple'
 Event: Apple has been set to '33'
 Expected error: 
 Apple = 33
