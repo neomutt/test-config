@@ -55,36 +55,30 @@ static int long_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   long num = 0;
   if (!value || !value[0] || (mutt_str_atol(value, &num) < 0))
   {
-    mutt_buffer_printf(err, "Invalid long: %s", value);
-    return (CSR_ERR_INVALID | CSR_INV_TYPE);
-  }
-
-  if ((num < LONG_MIN) || (num > LONG_MAX))
-  {
-    mutt_buffer_printf(err, "Long is too big: %s", value);
-    return (CSR_ERR_INVALID | CSR_INV_TYPE);
+    mutt_buffer_printf(err, "Invalid long: %s", NONULL(value));
+    return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
   if ((num < 0) && (cdef->type & DT_NOT_NEGATIVE))
   {
     mutt_buffer_printf(err, "Option %s may not be negative", cdef->name);
-    return (CSR_ERR_INVALID | CSR_INV_VALIDATOR);
+    return CSR_ERR_INVALID | CSR_INV_VALIDATOR;
   }
 
   if (var)
   {
-    if (num == (*(short *) var))
-      return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+    if (num == (*(long *) var))
+      return CSR_SUCCESS | CSR_SUC_NO_CHANGE;
 
     if (cdef->validator)
     {
       int rc = cdef->validator(cs, cdef, (intptr_t) num, err);
 
       if (CSR_RESULT(rc) != CSR_SUCCESS)
-        return (rc | CSR_INV_VALIDATOR);
+        return rc | CSR_INV_VALIDATOR;
     }
 
-    *(short *) var = num;
+    *(long *) var = num;
   }
   else
   {
@@ -113,7 +107,7 @@ static int long_string_get(const struct ConfigSet *cs, void *var,
   int value;
 
   if (var)
-    value = *(short *) var;
+    value = *(long *) var;
   else
     value = (int) cdef->initial;
 
@@ -136,30 +130,24 @@ static int long_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if ((value < LONG_MIN) || (value > LONG_MAX))
-  {
-    mutt_buffer_printf(err, "Invalid long: %ld", value);
-    return (CSR_ERR_INVALID | CSR_INV_TYPE);
-  }
-
   if ((value < 0) && (cdef->type & DT_NOT_NEGATIVE))
   {
     mutt_buffer_printf(err, "Option %s may not be negative", cdef->name);
-    return (CSR_ERR_INVALID | CSR_INV_VALIDATOR);
+    return CSR_ERR_INVALID | CSR_INV_VALIDATOR;
   }
 
-  if (value == (*(short *) var))
-    return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+  if (value == (*(long *) var))
+    return CSR_SUCCESS | CSR_SUC_NO_CHANGE;
 
   if (cdef->validator)
   {
     int rc = cdef->validator(cs, cdef, value, err);
 
     if (CSR_RESULT(rc) != CSR_SUCCESS)
-      return (rc | CSR_INV_VALIDATOR);
+      return rc | CSR_INV_VALIDATOR;
   }
 
-  *(short *) var = value;
+  *(long *) var = value;
   return CSR_SUCCESS;
 }
 
@@ -177,7 +165,7 @@ static intptr_t long_native_get(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
-  return *(short *) var;
+  return *(long *) var;
 }
 
 /**
@@ -194,8 +182,8 @@ static int long_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if (cdef->initial == (*(short *) var))
-    return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
+  if (cdef->initial == (*(long *) var))
+    return CSR_SUCCESS | CSR_SUC_NO_CHANGE;
 
   if (cdef->validator)
   {
@@ -205,7 +193,7 @@ static int long_reset(const struct ConfigSet *cs, void *var,
       return (rc | CSR_INV_VALIDATOR);
   }
 
-  *(short *) var = cdef->initial;
+  *(long *) var = cdef->initial;
   return CSR_SUCCESS;
 }
 

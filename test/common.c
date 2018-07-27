@@ -96,7 +96,7 @@ bool log_listener(const struct ConfigSet *cs, struct HashElem *he,
   else
     cs_he_initial_get(cs, he, &result);
 
-  printf("Event: %s has been %s to '%s'\n", name, events[ev], result.data);
+  printf("Event: %s has been %s to '%s'\n", name, events[ev - 1], result.data);
 
   FREE(&result.data);
   return true;

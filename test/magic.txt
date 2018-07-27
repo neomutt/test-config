@@ -37,8 +37,8 @@ Damson = 4, set by 'maildir'
 Value of Damson wasn't changed
 Expected error: Invalid magic value: mbox2
 Expected error: Invalid magic value: mm
-Expected error: Invalid magic value: 
-Expected error: 
+Expected error: Option Damson may not be empty
+Expected error: Option Damson may not be empty
 ---- test_string_get ---------------------------------------
 Elderberry = 1, mbox
 Elderberry = 2, MMDF

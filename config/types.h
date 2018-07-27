@@ -24,26 +24,26 @@
 #define _CONFIG_TYPES_H
 
 /* Data Types */
-#define DT_BOOL       1   /**< boolean option */
-#define DT_NUMBER     2   /**< a number */
-#define DT_STRING     3   /**< a string */
-#define DT_PATH       4   /**< a pathname */
-#define DT_QUAD       5   /**< quad-option (no/yes/ask-no/ask-yes) */
-#define DT_SORT       6   /**< sorting methods */
-#define DT_REGEX      7   /**< regular expressions */
-#define DT_MAGIC      8   /**< mailbox type */
-#define DT_SYNONYM    9   /**< synonym for another variable */
-#define DT_ADDRESS   10   /**< e-mail address */
-#define DT_MBTABLE   11   /**< multibyte char table */
-#define DT_LONG      12   /**< a number (long) */
-#define DT_HCACHE    13   /**< header cache backend */
-#define DT_COMMAND   14   /**< a command */
-#define DT_ENUM      15   /**< an enumeration */
-#define DT_SLIST     16   /**< a list of strings */
+#define DT_ADDRESS    1   /**< e-mail address */
+#define DT_BOOL       2   /**< boolean option */
+#define DT_COMMAND    3   /**< a command */
+#define DT_ENUM       4   /**< an enumeration */
+#define DT_HCACHE     5   /**< header cache backend */
+#define DT_LONG       6   /**< a number (long) */
+#define DT_MAGIC      7   /**< mailbox type */
+#define DT_MBTABLE    8   /**< multibyte char table */
+#define DT_NUMBER     9   /**< a number */
+#define DT_PATH      10   /**< a pathname */
+#define DT_QUAD      11   /**< quad-option (no/yes/ask-no/ask-yes) */
+#define DT_REGEX     12   /**< regular expressions */
+#define DT_SLIST     13   /**< a list of strings */
+#define DT_SORT      14   /**< sorting methods */
+#define DT_STRING    15   /**< a string */
+#define DT_SYNONYM   16   /**< synonym for another variable */
 
 #define DTYPE(x) ((x) & 0x1f) /**< Mask for the Data Type */
 
-#define DT_NOT_EMPTY    0x40  /**< Empty string are not allowed */
+#define DT_NOT_EMPTY    0x40  /**< Empty strings are not allowed */
 #define DT_NOT_NEGATIVE 0x80  /**< Negative numbers are not allowed */
 
 /* subtypes for... */

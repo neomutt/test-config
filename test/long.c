@@ -34,21 +34,21 @@
 #include "config/types.h"
 #include "test/common.h"
 
-static short VarApple;
-static short VarBanana;
-static short VarCherry;
-static short VarDamson;
-static short VarElderberry;
-static short VarFig;
-static short VarGuava;
-static short VarHawthorn;
-static short VarIlama;
-static short VarJackfruit;
-static short VarKumquat;
-static short VarLemon;
-static short VarMango;
-static short VarNectarine;
-static short VarOlive;
+static long VarApple;
+static long VarBanana;
+static long VarCherry;
+static long VarDamson;
+static long VarElderberry;
+static long VarFig;
+static long VarGuava;
+static long VarHawthorn;
+static long VarIlama;
+static long VarJackfruit;
+static long VarKumquat;
+static long VarLemon;
+static long VarMango;
+static long VarNectarine;
+static long VarOlive;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
@@ -74,8 +74,8 @@ static struct ConfigDef Vars[] = {
 static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  printf("Apple = %d\n", VarApple);
-  printf("Banana = %d\n", VarBanana);
+  printf("Apple = %ld\n", VarApple);
+  printf("Banana = %ld\n", VarBanana);
 
   if ((VarApple != -42) || (VarBanana != 99))
   {
@@ -109,7 +109,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     FREE(&value.data);
     return false;
   }
-  printf("Apple = %d\n", VarApple);
+  printf("Apple = %ld\n", VarApple);
   printf("Apple's initial value is '%s'\n", value.data);
 
   mutt_buffer_reset(&value);
@@ -127,7 +127,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     FREE(&value.data);
     return false;
   }
-  printf("Banana = %d\n", VarBanana);
+  printf("Banana = %ld\n", VarBanana);
   printf("Banana's initial value is '%s'\n", NONULL(value.data));
 
   mutt_buffer_reset(&value);
@@ -148,7 +148,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  printf("Cherry = %d\n", VarCherry);
+  printf("Cherry = %ld\n", VarCherry);
   printf("Cherry's initial value is %s\n", value.data);
 
   FREE(&value.data);
@@ -161,7 +161,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
 
   const char *valid[] = { "-123", "0", "-42", "456" };
   int longs[] = { -123, 0, -42, 456 };
-  const char *invalid[] = { "-2147483648", "2147483648", "junk", "", NULL };
+  const char *invalid[] = { "-9223372036854775809", "9223372036854775808", "junk", "", NULL };
 
   char *name = "Damson";
 
@@ -189,7 +189,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
       printf("Value of %s wasn't changed\n", name);
       return false;
     }
-    printf("%s = %d, set by '%s'\n", name, VarDamson, valid[i]);
+    printf("%s = %ld, set by '%s'\n", name, VarDamson, valid[i]);
   }
 
   printf("\n");
@@ -203,7 +203,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
     }
     else
     {
-      printf("%s = %d, set by '%s'\n", name, VarDamson, invalid[i]);
+      printf("%s = %ld, set by '%s'\n", name, VarDamson, invalid[i]);
       printf("This test should have failed\n");
       // return false;
     }
@@ -238,7 +238,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  printf("%s = %d, %s\n", name, VarFig, err->data);
+  printf("%s = %ld, %s\n", name, VarFig, err->data);
 
   VarFig = -789;
   mutt_buffer_reset(err);
@@ -248,7 +248,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
     printf("Get failed: %s\n", err->data);
     return false;
   }
-  printf("%s = %d, %s\n", name, VarFig, err->data);
+  printf("%s = %ld, %s\n", name, VarFig, err->data);
 
   return true;
 }
@@ -257,7 +257,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
   char *name = "Guava";
-  short value = 12345;
+  long value = 12345;
 
   VarGuava = 0;
   mutt_buffer_reset(err);
@@ -274,7 +274,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  printf("%s = %d, set to '%d'\n", name, VarGuava, value);
+  printf("%s = %ld, set to '%ld'\n", name, VarGuava, value);
 
   rc = cs_str_native_set(cs, name, value, err);
   if (rc & CSR_SUC_NO_CHANGE)
@@ -297,24 +297,6 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   {
     printf("This test should have failed\n");
     return false;
-  }
-
-  int invalid[] = { -32769, 32768 };
-  for (unsigned int i = 0; i < mutt_array_size(invalid); i++)
-  {
-    VarGuava = 123;
-    mutt_buffer_reset(err);
-    rc = cs_str_native_set(cs, name, invalid[i], err);
-    if (CSR_RESULT(rc) != CSR_SUCCESS)
-    {
-      printf("Expected error: %s\n", err->data);
-    }
-    else
-    {
-      printf("%s = %d, set by '%d'\n", name, VarGuava, invalid[i]);
-      printf("This test should have failed\n");
-      // return false;
-    }
   }
 
   return true;
@@ -359,17 +341,17 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  printf("Reset: %s = %d\n", name, VarJackfruit);
+  printf("Reset: %s = %ld\n", name, VarJackfruit);
 
   name = "Kumquat";
   mutt_buffer_reset(err);
 
-  printf("Initial: %s = %d\n", name, VarKumquat);
+  printf("Initial: %s = %ld\n", name, VarKumquat);
   dont_fail = true;
   rc = cs_str_string_set(cs, name, "99", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return false;
-  printf("Set: %s = %d\n", name, VarKumquat);
+  printf("Set: %s = %ld\n", name, VarKumquat);
   dont_fail = false;
 
   rc = cs_str_reset(cs, name, err);
@@ -389,7 +371,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  printf("Reset: %s = %d\n", name, VarKumquat);
+  printf("Reset: %s = %ld\n", name, VarKumquat);
 
   return true;
 }
@@ -411,7 +393,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("String: %s = %d\n", name, VarLemon);
+  printf("String: %s = %ld\n", name, VarLemon);
 
   VarLemon = 456;
   mutt_buffer_reset(err);
@@ -425,7 +407,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarLemon);
+  printf("Native: %s = %ld\n", name, VarLemon);
 
   name = "Mango";
   VarMango = 123;
@@ -440,7 +422,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("String: %s = %d\n", name, VarMango);
+  printf("String: %s = %ld\n", name, VarMango);
 
   VarMango = 456;
   mutt_buffer_reset(err);
@@ -454,7 +436,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarMango);
+  printf("Native: %s = %ld\n", name, VarMango);
 
   name = "Nectarine";
   VarNectarine = 123;
@@ -469,7 +451,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("String: %s = %d\n", name, VarNectarine);
+  printf("String: %s = %ld\n", name, VarNectarine);
 
   VarNectarine = 456;
   mutt_buffer_reset(err);
@@ -483,7 +465,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
     printf("%s\n", err->data);
     return false;
   }
-  printf("Native: %s = %d\n", name, VarNectarine);
+  printf("Native: %s = %ld\n", name, VarNectarine);
 
   return true;
 }

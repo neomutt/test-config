@@ -36,7 +36,7 @@ struct ConfigDef;
  */
 enum ConfigEvent
 {
-  CE_SET,   /**< Config item has been set */
+  CE_SET = 1,   /**< Config item has been set */
   CE_RESET, /**< Config item has been reset to initial, or parent, value */
   CE_INITIAL_SET, /**< Config item's initial value has been set */
 };
@@ -65,8 +65,8 @@ enum ConfigEvent
  */
 enum CsListenerAction
 {
-  CSLA_CONTINUE, /**< Continue notifying listeners */
-  CSLA_STOP,     /**< Stop notifying listeners */
+  CSLA_CONTINUE = 1, /**< Continue notifying listeners */
+  CSLA_STOP,         /**< Stop notifying listeners */
 };
 
 typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);

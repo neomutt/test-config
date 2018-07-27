@@ -24,6 +24,8 @@
 #define _MUTT_HISTORY_H
 
 #include <stdbool.h>
+#include <stdio.h>
+#include "config/lib.h"
 
 /* These Config Variables are only used in mutt/history.c */
 extern short History;

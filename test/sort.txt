@@ -58,7 +58,7 @@ Damson = 8, set by 'to'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
-Expected error: 
+Expected error: Option Damson may not be empty
 Event: Elderberry has been set to 'address'
 Elderberry = 11, set by 'address'
 Event: Elderberry has been set to 'alias'
@@ -68,7 +68,7 @@ Elderberry = 5, set by 'unsorted'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
-Expected error: 
+Expected error: Option Elderberry may not be empty
 Event: Fig has been set to 'alpha'
 Fig = 3, set by 'alpha'
 Event: Fig has been set to 'count'
@@ -87,7 +87,7 @@ Fig = 5, set by 'unsorted'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
-Expected error: 
+Expected error: Option Fig may not be empty
 Event: Guava has been set to 'address'
 Guava = 11, set by 'address'
 Event: Guava has been set to 'date'
@@ -99,7 +99,7 @@ Guava = 13, set by 'trust'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
-Expected error: 
+Expected error: Option Guava may not be empty
 Event: Hawthorn has been set to 'date'
 Hawthorn = 1, set by 'date'
 Event: Hawthorn has been set to 'date-received'
@@ -127,7 +127,7 @@ Hawthorn = 8, set by 'to'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
-Expected error: 
+Expected error: Option Hawthorn may not be empty
 Event: Ilama has been set to 'alpha'
 Ilama = 18, set by 'alpha'
 Event: Ilama has been set to 'count'
@@ -151,7 +151,7 @@ Ilama = 5, set by 'unsorted'
 Expected error: Invalid sort name: -1
 Expected error: Invalid sort name: 999
 Expected error: Invalid sort name: junk
-Expected error: 
+Expected error: Option Ilama may not be empty
 Event: Damson has been set to 'last-date'
 Event: Damson has been set to 'reverse-score'
 ---- test_string_get ---------------------------------------

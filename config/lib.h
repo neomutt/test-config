@@ -25,17 +25,21 @@
  *
  * User configurable variables.
  *
- * -# @subpage config-set
  * -# @subpage config-account
- * -# @subpage config-dump
  * -# @subpage config-address
  * -# @subpage config-bool
+ * -# @subpage config-command
+ * -# @subpage config-dump
+ * -# @subpage config-enum
+ * -# @subpage config-long
  * -# @subpage config-magic
  * -# @subpage config-mbtable
  * -# @subpage config-number
  * -# @subpage config-path
  * -# @subpage config-quad
  * -# @subpage config-regex
+ * -# @subpage config-set
+ * -# @subpage config-slist
  * -# @subpage config-sort
  * -# @subpage config-string
  */
@@ -48,6 +52,7 @@
 #include "bool.h"
 #include "command.h"
 #include "dump.h"
+#include "enum.h"
 #include "inheritance.h"
 #include "long.h"
 #include "magic.h"
@@ -57,6 +62,7 @@
 #include "quad.h"
 #include "regex2.h"
 #include "set.h"
+#include "slist.h"
 #include "sort.h"
 #include "string3.h"
 #include "types.h"

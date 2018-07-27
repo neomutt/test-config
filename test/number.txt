@@ -39,8 +39,8 @@ Damson = 456, set by '456'
 Expected error: Number is too big: -32769
 Expected error: Number is too big: 32768
 Expected error: Invalid number: junk
-Expected error: Invalid number: 
-Expected error: Invalid number: (null)
+Expected error: Option Damson may not be empty
+Expected error: Option Damson may not be empty
 Expected error: Option Elderberry may not be negative
 ---- test_string_get ---------------------------------------
 Fig = 123, 123

@@ -36,15 +36,11 @@ Value of Damson wasn't changed
 Event: Damson has been set to '456'
 Damson = 456, set by '456'
 
-Event: Damson has been set to '0'
-Damson = 0, set by '-2147483648'
-This test should have failed
-Event: Damson has been set to '0'
-Damson = 0, set by '2147483648'
-This test should have failed
+Expected error: Invalid long: -9223372036854775809
+Expected error: Invalid long: 9223372036854775808
 Expected error: Invalid long: junk
 Expected error: Invalid long: 
-Expected error: Invalid long: (null)
+Expected error: Invalid long: 
 Expected error: Option Elderberry may not be negative
 ---- test_string_get ---------------------------------------
 Fig = 123, 123
@@ -54,10 +50,6 @@ Event: Guava has been set to '12345'
 Guava = 12345, set to '12345'
 Value of Guava wasn't changed
 Expected error: Option Hawthorn may not be negative
-Expected error: Option Hawthorn may not be negative
-Event: Hawthorn has been set to '-32768'
-Hawthorn = 123, set by '32768'
-This test should have failed
 ---- test_native_get ---------------------------------------
 Ilama = 3456
 ---- test_reset --------------------------------------------

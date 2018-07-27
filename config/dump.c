@@ -40,9 +40,7 @@
 #include "set.h"
 #include "types.h"
 
-void mutt_pretty_mailbox(char *s, size_t buflen)
-{
-}
+void mutt_pretty_mailbox(char *s, size_t buflen);
 
 /**
  * escape_string - Write a string to a buffer, escaping special characters
@@ -217,7 +215,8 @@ void dump_config_neo(struct ConfigSet *cs, struct HashElem *he,
   if (flags & CS_DUMP_SHOW_DEFAULTS)
   {
     const struct ConfigSetType *cst = cs_get_type_def(cs, he->type);
-    printf("# %s %s %s\n", cst->name, name, value->data);
+    if (cst)
+      printf("# %s %s %s\n", cst->name, name, value->data);
   }
 }
 
@@ -249,13 +248,13 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
     mutt_buffer_reset(value);
     mutt_buffer_reset(initial);
     he = list[i];
-    int type = he->type;
+    const int type = DTYPE(he->type);
 
     if ((type == DT_SYNONYM) && !(flags & CS_DUMP_SHOW_SYNONYMS))
       continue;
 
-    if ((type == DT_DISABLED) && !(flags & CS_DUMP_SHOW_DISABLED))
-      continue;
+    // if ((type == DT_DISABLED) && !(flags & CS_DUMP_SHOW_DISABLED))
+    //   continue;
 
     if (type != DT_SYNONYM)
     {
@@ -278,8 +277,8 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
           mutt_buffer_addstr(value, "***");
         }
 
-        if (type == DT_PATH)
-          mutt_pretty_mailbox(value->data, value->dsize);
+        // if (type == DT_PATH)
+        //   mutt_pretty_mailbox(value->data, value->dsize);
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))
@@ -300,8 +299,8 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
           break;
         }
 
-        if (type == DT_PATH)
-          mutt_pretty_mailbox(value->data, value->dsize);
+        // if (type == DT_PATH)
+        //   mutt_pretty_mailbox(value->data, value->dsize);
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))
