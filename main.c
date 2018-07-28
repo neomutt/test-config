@@ -25,7 +25,7 @@
 #include "test/string4.h"
 #include "test/synonym.h"
 
-typedef bool (*test_fn)(void);
+typedef void (*test_fn)(void);
 
 int log_disp_stdout(time_t stamp, const char *file, int line,
                     const char *function, int level, ...)
@@ -52,25 +52,25 @@ struct Test
 
 // clang-format off
 struct Test test[] = {
-  { "set",       set_test       },
-  { "account",   account_test   },
-  { "initial",   initial_test   },
-  { "synonym",   synonym_test   },
-  { "address",   address_test   },
-  { "bool",      bool_test      },
-  { "command",   command_test   },
-  { "enum",      enum_test      },
-  { "long",      long_test      },
-  { "magic",     magic_test     },
-  { "mbtable",   mbtable_test   },
-  { "number",    number_test    },
-  { "path",      path_test      },
-  { "quad",      quad_test      },
-  { "regex",     regex_test     },
-  { "slist",     slist_test     },
-  { "sort",      sort_test      },
-  { "string",    string_test    },
-  { "dump",      dump_test      },
+  { "set",       config_set       },
+  { "account",   config_account   },
+  { "initial",   config_initial   },
+  { "synonym",   config_synonym   },
+  { "address",   config_address   },
+  { "bool",      config_bool      },
+  { "command",   config_command   },
+  { "enum",      config_enum      },
+  { "long",      config_long      },
+  { "magic",     config_magic     },
+  { "mbtable",   config_mbtable   },
+  { "number",    config_number    },
+  { "path",      config_path      },
+  { "quad",      config_quad      },
+  { "regex",     config_regex     },
+  { "slist",     config_slist     },
+  { "sort",      config_sort      },
+  { "string",    config_string    },
+  { "dump",      config_dump      },
   { NULL },
 };
 // clang-format on
@@ -108,11 +108,7 @@ int main(int argc, char *argv[])
       continue;
     }
 
-    if (!t->function())
-    {
-      printf("%s_test() failed\n", t->name);
-      result = 1;
-    }
+    t->function();
   }
 
   return result;

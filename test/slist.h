@@ -25,6 +25,6 @@
 
 #include <stdbool.h>
 
-bool slist_test(void);
+void config_slist(void);
 
 #endif /* _TEST_SLIST_H */

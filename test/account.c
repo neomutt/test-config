@@ -3,7 +3,7 @@
  * Test code for the Account object
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,16 +20,13 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define TEST_NO_MAIN
+#include "acutest.h"
 #include "config.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "mutt/buffer.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
-#include "config/account.h"
-#include "config/number.h"
-#include "config/set.h"
-#include "config/types.h"
+#include "mutt/mutt.h"
+#include "config/lib.h"
 #include "test/common.h"
 
 static short VarApple;
@@ -45,7 +42,7 @@ static struct ConfigDef Vars[] = {
 };
 // clang-format on
 
-bool account_test(void)
+void config_account(void)
 {
   log_line(__func__);
 
@@ -58,8 +55,8 @@ bool account_test(void)
   struct ConfigSet *cs = cs_create(30);
 
   number_init(cs);
-  if (!cs_register_variables(cs, Vars, 0))
-    return false;
+  if (!TEST_CHECK(cs_register_variables(cs, Vars, 0)))
+    return;
 
   set_list(cs);
 
@@ -67,171 +64,175 @@ bool account_test(void)
 
   const char *account = "damaged";
   const char *BrokenVarStr[] = {
-    "Pineapple", NULL,
+    "Pineapple",
+    NULL,
   };
 
   struct Account *ac = ac_create(cs, account, BrokenVarStr);
-  if (!ac)
+  if (TEST_CHECK(!ac))
   {
-    printf("Expected error:\n");
+    TEST_MSG("Expected error:\n");
   }
   else
   {
     ac_free(cs, &ac);
-    printf("This test should have failed\n");
-    return false;
+    TEST_MSG("This test should have failed\n");
+    return;
   }
 
   const char *AccountVarStr2[] = {
-    "Apple", "Apple", NULL,
+    "Apple",
+    "Apple",
+    NULL,
   };
 
-  printf("Expect error for next test\n");
+  TEST_MSG("Expect error for next test\n");
   ac = ac_create(cs, account, AccountVarStr2);
-  if (ac)
+  if (!TEST_CHECK(!ac))
   {
     ac_free(cs, &ac);
-    printf("This test should have failed\n");
-    return false;
+    TEST_MSG("This test should have failed\n");
+    return;
   }
 
   account = "fruit";
   const char *AccountVarStr[] = {
-    "Apple", "Cherry", NULL,
+    "Apple",
+    "Cherry",
+    NULL,
   };
 
   ac = ac_create(cs, account, AccountVarStr);
-  if (!ac)
-    return false;
+  if (!TEST_CHECK(ac != NULL))
+    return;
 
-  unsigned int index = 0;
+  size_t index = 0;
   mutt_buffer_reset(&err);
   int rc = ac_set_value(ac, index, 33, &err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (!TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
   {
-    printf("%s\n", err.data);
+    TEST_MSG("%s\n", err.data);
   }
 
   mutt_buffer_reset(&err);
   rc = ac_set_value(ac, 99, 42, &err);
-  if (CSR_RESULT(rc) == CSR_ERR_UNKNOWN)
+  if (TEST_CHECK(CSR_RESULT(rc) == CSR_ERR_UNKNOWN))
   {
-    printf("Expected error: %s\n", err.data);
+    TEST_MSG("Expected error: %s\n", err.data);
   }
   else
   {
-    printf("This test should have failed\n");
-    return false;
+    TEST_MSG("This test should have failed\n");
+    return;
   }
 
   mutt_buffer_reset(&err);
   rc = ac_get_value(ac, index, &err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (!TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
   {
-    printf("%s\n", err.data);
+    TEST_MSG("%s\n", err.data);
   }
   else
   {
-    printf("%s = %s\n", AccountVarStr[index], err.data);
+    TEST_MSG("%s = %s\n", AccountVarStr[index], err.data);
   }
 
   index++;
   mutt_buffer_reset(&err);
   rc = ac_get_value(ac, index, &err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (!TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
   {
-    printf("%s\n", err.data);
+    TEST_MSG("%s\n", err.data);
   }
   else
   {
-    printf("%s = %s\n", AccountVarStr[index], err.data);
+    TEST_MSG("%s = %s\n", AccountVarStr[index], err.data);
   }
 
   mutt_buffer_reset(&err);
   rc = ac_get_value(ac, 99, &err);
-  if (CSR_RESULT(rc) == CSR_ERR_UNKNOWN)
+  if (TEST_CHECK(CSR_RESULT(rc) == CSR_ERR_UNKNOWN))
   {
-    printf("Expected error\n");
+    TEST_MSG("Expected error\n");
   }
   else
   {
-    printf("This test should have failed\n");
-    return false;
+    TEST_MSG("This test should have failed\n");
+    return;
   }
 
   const char *name = "fruit:Apple";
   mutt_buffer_reset(&err);
   int result = cs_str_string_get(cs, name, &err);
-  if (CSR_RESULT(result) == CSR_SUCCESS)
+  if (TEST_CHECK(CSR_RESULT(result) == CSR_SUCCESS))
   {
-    printf("%s = '%s'\n", name, err.data);
+    TEST_MSG("%s = '%s'\n", name, err.data);
   }
   else
   {
-    printf("%s\n", err.data);
-    return false;
+    TEST_MSG("%s\n", err.data);
+    return;
   }
 
   mutt_buffer_reset(&err);
   result = cs_str_native_set(cs, name, 42, &err);
-  if (CSR_RESULT(result) == CSR_SUCCESS)
+  if (TEST_CHECK(CSR_RESULT(result) == CSR_SUCCESS))
   {
-    printf("Set %s\n", name);
+    TEST_MSG("Set %s\n", name);
   }
   else
   {
-    printf("%s\n", err.data);
-    return false;
+    TEST_MSG("%s\n", err.data);
+    return;
   }
 
   struct HashElem *he = cs_get_elem(cs, name);
-  if (!he)
-    return false;
+  if (!TEST_CHECK(he != NULL))
+    return;
 
   mutt_buffer_reset(&err);
   result = cs_str_initial_set(cs, name, "42", &err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (TEST_CHECK(CSR_RESULT(rc) != CSR_SUCCESS))
   {
-    printf("Expected error\n");
+    TEST_MSG("Expected error\n");
   }
   else
   {
-    printf("This test should have failed\n");
-    return false;
+    TEST_MSG("This test should have failed\n");
+    return;
   }
 
   mutt_buffer_reset(&err);
   result = cs_str_initial_get(cs, name, &err);
-  if (CSR_RESULT(rc) != CSR_SUCCESS)
+  if (TEST_CHECK(CSR_RESULT(rc) != CSR_SUCCESS))
   {
-    printf("Expected error\n");
+    TEST_MSG("Expected error\n");
   }
   else
   {
-    printf("This test should have failed\n");
-    return false;
+    TEST_MSG("This test should have failed\n");
+    return;
   }
 
   name = "Apple";
   he = cs_get_elem(cs, name);
-  if (!he)
-    return false;
+  if (!TEST_CHECK(he != NULL))
+    return;
 
   mutt_buffer_reset(&err);
   result = cs_he_native_set(cs, he, 42, &err);
-  if (CSR_RESULT(result) == CSR_SUCCESS)
+  if (TEST_CHECK(CSR_RESULT(result) == CSR_SUCCESS))
   {
-    printf("Set %s\n", name);
+    TEST_MSG("Set %s\n", name);
   }
   else
   {
-    printf("%s\n", err.data);
-    return false;
+    TEST_MSG("%s\n", err.data);
+    return;
   }
 
   ac_free(cs, &ac);
   cs_free(&cs);
   FREE(&err.data);
-
-  return true;
+  log_line(__func__);
 }

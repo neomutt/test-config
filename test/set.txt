@@ -1,4 +1,4 @@
----- set_test ----------------------------------------------
+[36m---- config_set ----------------------------------[m
 Listener was already registered
 Listener wasn't registered
 Expected error
@@ -9,5 +9,7 @@ Expected error: Unknown var 'Unknown'
 Expected error: Unknown var 'Unknown'
 Expected error: Unknown var 'Unknown'
 Expected error: Unknown var 'Unknown'
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 boolean Banana = yes
+[36m---- set_list ------------------------------------[m
+[36m---- config_set ----------------------------------[m

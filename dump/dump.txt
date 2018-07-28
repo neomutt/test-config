@@ -1,4 +1,4 @@
----- dump_test ---------------------------------------------
+[36m---- config_dump ---------------------------------[m
 set abort_noattach = no
 # quad abort_noattach no
 set abort_nosubject = ask-yes
@@ -1440,3 +1440,4 @@ wrapmargin=0
 write_bcc is set
 write_inc=10
 x_comment_to is unset
+[36m---- config_dump ---------------------------------[m

@@ -1,5 +1,4 @@
----- string_test -------------------------------------------
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 string Apple = apple
 string Banana = banana
 string Cherry = cherry
@@ -19,7 +18,8 @@ string Papaya = papaya
 string Quince = quince
 string Raspberry = raspberry
 string Strawberry = 
----- test_initial_values -----------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_initial_values -------------------------[m
 Apple = apple
 Banana = banana
 Event: Apple has been set to 'car'
@@ -32,51 +32,72 @@ Event: Cherry has been initial-set to 'train'
 Event: Cherry has been initial-set to 'plane'
 Cherry = 'cherry'
 Cherry's initial value is 'plane'
----- test_string_set ---------------------------------------
+[36m---- test_initial_values -------------------------[m
+[36m---- test_string_set -----------------------------[m
 Event: Damson has been set to 'hello'
 Damson = 'hello', set by 'hello'
+----------------------------------------
 Event: Damson has been set to 'world'
 Damson = 'world', set by 'world'
+----------------------------------------
 Value of Damson wasn't changed
 Event: Damson has been set to ''
 Damson = '', set by ''
+----------------------------------------
 Value of Damson wasn't changed
 Expected error: Option Fig may not be empty
+----------------------------------------
 Event: Elderberry has been set to 'hello'
 Elderberry = 'hello', set by 'hello'
+----------------------------------------
 Event: Elderberry has been set to 'world'
 Elderberry = 'world', set by 'world'
+----------------------------------------
 Value of Elderberry wasn't changed
+----------------------------------------
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
+----------------------------------------
 Value of Elderberry wasn't changed
----- test_string_get ---------------------------------------
+[36m---- test_string_set -----------------------------[m
+[36m---- test_string_get -----------------------------[m
 Guava = '', ''
 Hawthorn = 'hawthorn', 'hawthorn'
 Event: Ilama has been set to 'ilama'
 Ilama = 'ilama', 'ilama'
----- test_native_set ---------------------------------------
+[36m---- test_string_get -----------------------------[m
+[36m---- test_native_set -----------------------------[m
 Event: Jackfruit has been set to 'hello'
 Jackfruit = 'hello', set by 'hello'
+----------------------------------------
 Event: Jackfruit has been set to 'world'
 Jackfruit = 'world', set by 'world'
+----------------------------------------
 Value of Jackfruit wasn't changed
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by ''
+----------------------------------------
 Value of Jackfruit wasn't changed
 Expected error: Option Lemon may not be empty
+----------------------------------------
 Event: Kumquat has been set to 'hello'
 Kumquat = 'hello', set by 'hello'
+----------------------------------------
 Event: Kumquat has been set to 'world'
 Kumquat = 'world', set by 'world'
+----------------------------------------
 Value of Kumquat wasn't changed
+----------------------------------------
 Event: Kumquat has been set to ''
 Kumquat = '', set by ''
+----------------------------------------
 Value of Kumquat wasn't changed
----- test_native_get ---------------------------------------
+[36m---- test_native_set -----------------------------[m
+[36m---- test_native_get -----------------------------[m
 Event: Mango has been set to 'mango'
 Mango = 'mango', 'mango'
----- test_reset --------------------------------------------
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
 Initial: Nectarine = 'nectarine'
 Event: Nectarine has been set to 'hello'
 Set: Nectarine = 'hello'
@@ -87,7 +108,8 @@ Event: Olive has been set to 'hello'
 Set: Olive = 'hello'
 Expected error: validator_fail: Olive, (ptr)
 Reset: Olive = 'hello'
----- test_validator ----------------------------------------
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
 Event: Papaya has been set to 'hello'
 validator_succeed: Papaya, (ptr)
 String: Papaya = hello
@@ -104,7 +126,8 @@ Expected error: validator_fail: Raspberry, (ptr)
 String: Raspberry = raspberry
 Expected error: validator_fail: Raspberry, (ptr)
 Native: Raspberry = raspberry
----- test_inherit ------------------------------------------
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
 Event: Strawberry has been set to 'hello'
      Strawberry = hello
 fruit:Strawberry = hello
@@ -117,3 +140,4 @@ fruit:Strawberry = hello
 Event: Strawberry has been reset to ''
      Strawberry = (null)
 fruit:Strawberry = (null)
+[36m---- test_inherit --------------------------------[m

@@ -1,9 +1,11 @@
----- enum_test ---------------------------------------------
----- set_list ----------------------------------------------
+[36m---- config_enum ---------------------------------[m
+[36m---- set_list ------------------------------------[m
 enum Apple = Dingo
----- test_initial_values -----------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_initial_values -------------------------[m
 Apple = 40
 Event: Apple has been set to 'Antelope'
 Apple = 1, 
 Event: Apple has been set to 'Echidna'
 Apple = 41, 
+[36m---- config_enum ---------------------------------[m

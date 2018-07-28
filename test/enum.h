@@ -25,6 +25,6 @@
 
 #include <stdbool.h>
 
-bool enum_test(void);
+void config_enum(void);
 
 #endif /* _TEST_ENUM_H */

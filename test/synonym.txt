@@ -1,24 +1,25 @@
----- synonym_test ------------------------------------------
+[36m---- config_synonym ------------------------------[m
 No such variable: Broken
 Expected error
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 string Apple = 
 string Cherry = cherry
 string Elderberry = 
 string Guava = 
 string Ilama = iguana
----- test_string_set ---------------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_string_set -----------------------------[m
 Event: Apple has been set to 'pudding'
 Banana = pudding, set by 'pudding'
----- test_string_get ---------------------------------------
+[36m---- test_string_get -----------------------------[m
 Damson = 'cherry', 'cherry'
----- test_native_set ---------------------------------------
+[36m---- test_native_set -----------------------------[m
 Event: Elderberry has been set to 'tree'
 Fig = tree, set by 'tree'
----- test_native_get ---------------------------------------
+[36m---- test_native_get -----------------------------[m
 Event: Guava has been set to 'tree'
 Hawthorn = 'tree', 'tree'
----- test_reset --------------------------------------------
+[36m---- test_reset ----------------------------------[m
 Initial: Jackfruit = 'iguana'
 Event: Ilama has been set to 'hello'
 Set: Jackfruit = 'hello'

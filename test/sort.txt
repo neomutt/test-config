@@ -1,5 +1,4 @@
----- sort_test ---------------------------------------------
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 sort Apple = date
 sort Banana = size
 sort Cherry = date
@@ -18,7 +17,8 @@ sort Olive = date
 sort Papaya = date
 sort Quince = date
 sort Strawberry = date
----- test_initial_values -----------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_initial_values -------------------------[m
 Apple = 1
 Banana = 2
 Event: Apple has been set to 'threads'
@@ -30,7 +30,8 @@ Banana's initial value is 'size'
 Event: Cherry has been initial-set to 'size'
 Cherry = date
 Cherry's initial value is size
----- test_string_set ---------------------------------------
+[36m---- test_initial_values -------------------------[m
+[36m---- test_string_set -----------------------------[m
 Event: Damson has been set to 'date'
 Damson = 1, set by 'date'
 Event: Damson has been set to 'date-received'
@@ -154,14 +155,16 @@ Expected error: Invalid sort name: junk
 Expected error: Option Ilama may not be empty
 Event: Damson has been set to 'last-date'
 Event: Damson has been set to 'reverse-score'
----- test_string_get ---------------------------------------
+[36m---- test_string_set -----------------------------[m
+[36m---- test_string_get -----------------------------[m
 Jackfruit = 3, subject
 Jackfruit = 6, threads
 Expect error for next test
 Variable has an invalid value: 0/255
 Expect error for next test
 Invalid sort type: 576
----- test_native_set ---------------------------------------
+[36m---- test_string_get -----------------------------[m
+[36m---- test_native_set -----------------------------[m
 Event: Damson has been set to 'date'
 Damson = 1, set by 'date'
 Event: Damson has been set to 'date-received'
@@ -265,9 +268,11 @@ Expected error: Invalid sort type: -1
 Expected error: Invalid sort type: 999
 Event: Damson has been set to 'last-date'
 Event: Damson has been set to 'reverse-score'
----- test_native_get ---------------------------------------
+[36m---- test_native_set -----------------------------[m
+[36m---- test_native_get -----------------------------[m
 Lemon = 6
----- test_reset --------------------------------------------
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
 Event: Mango has been reset to 'date'
 Reset: Mango = 1
 Initial: Nectarine = 1
@@ -275,7 +280,8 @@ Event: Nectarine has been set to 'size'
 Set: Nectarine = 2
 Expected error: validator_fail: Nectarine, 1
 Reset: Nectarine = 2
----- test_validator ----------------------------------------
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
 Event: Olive has been set to 'threads'
 validator_succeed: Olive, 6
 String: Olive = 6
@@ -292,7 +298,8 @@ Expected error: validator_fail: Quince, 6
 String: Quince = 3
 Expected error: validator_fail: Quince, 6
 Native: Quince = 3
----- test_inherit ------------------------------------------
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
 Event: Strawberry has been set to 'threads'
      Strawberry = 6
 fruit:Strawberry = 6
@@ -305,8 +312,10 @@ fruit:Strawberry = 6
 Event: Strawberry has been reset to 'date'
      Strawberry = 1
 fruit:Strawberry = 1
----- test_sort_type ----------------------------------------
+[36m---- test_inherit --------------------------------[m
+[36m---- test_sort_type ------------------------------[m
 Expect error for next test
 Invalid sort type: 576
 Expect error for next test
 Invalid sort type: 576
+[36m---- test_sort_type ------------------------------[m

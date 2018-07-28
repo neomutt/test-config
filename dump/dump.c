@@ -29,7 +29,7 @@
 #include "data.h"
 #include "test/common.h"
 
-bool dump_test(void)
+void config_dump(void)
 {
   log_line(__func__);
 
@@ -53,7 +53,7 @@ bool dump_test(void)
   string_init(cs);
 
   if (!cs_register_variables(cs, MuttVars, 0))
-    return false;
+    return;
 
   cs_add_listener(cs, log_listener);
 
@@ -68,6 +68,5 @@ bool dump_test(void)
 
   cs_free(&cs);
   FREE(&err.data);
-
-  return true;
+  log_line(__func__);
 }

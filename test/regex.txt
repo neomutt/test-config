@@ -1,5 +1,4 @@
----- regex_test --------------------------------------------
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 regex Apple = apple.*
 regex Banana = banana.*
 regex Cherry = cherry.*
@@ -19,7 +18,8 @@ regex Papaya = papaya.*
 regex Quince = quince.*
 regex Raspberry = raspberry.*
 regex Strawberry = 
----- test_initial_values -----------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_initial_values -------------------------[m
 Apple = apple.*
 Banana = banana.*
 Event: Apple has been set to 'car*'
@@ -32,7 +32,8 @@ Event: Cherry has been initial-set to 'up.*'
 Event: Cherry has been initial-set to 'down.*'
 Cherry = 'cherry.*'
 Cherry's initial value is 'down.*'
----- test_string_set ---------------------------------------
+[36m---- test_initial_values -------------------------[m
+[36m---- test_string_set -----------------------------[m
 Event: Damson has been set to 'hello.*'
 Damson = 'hello.*', set by 'hello.*'
 Event: Damson has been set to 'world.*'
@@ -52,12 +53,14 @@ Elderberry = '', set by ''
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 Expected error: Invalid back reference
----- test_string_get ---------------------------------------
+[36m---- test_string_set -----------------------------[m
+[36m---- test_string_get -----------------------------[m
 Fig = '', ''
 Guava = 'guava.*', 'guava.*'
 Event: Hawthorn has been set to 'hawthorn'
 Hawthorn = 'hawthorn', 'hawthorn'
----- test_native_set ---------------------------------------
+[36m---- test_string_get -----------------------------[m
+[36m---- test_native_set -----------------------------[m
 Event: Ilama has been set to 'hello.*'
 Ilama = 'hello.*', set by 'hello.*'
 Event: Ilama has been set to '!world.*'
@@ -65,10 +68,12 @@ Event: Ilama has been set to '!world.*'
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by NULL
 Expected error: Invalid back reference
----- test_native_get ---------------------------------------
+[36m---- test_native_set -----------------------------[m
+[36m---- test_native_get -----------------------------[m
 Event: Lemon has been set to 'lemon.*'
 Lemon = 'lemon.*', 'lemon.*'
----- test_reset --------------------------------------------
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
 Initial: Mango = 'mango.*'
 Event: Mango has been set to 'hello.*'
 Set: Mango = 'hello.*'
@@ -80,7 +85,8 @@ Event: Olive has been set to 'hel*o'
 Set: Olive = 'hel*o'
 Expected error: validator_fail: Olive, (ptr)
 Reset: Olive = 'hel*o'
----- test_validator ----------------------------------------
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
 Event: Papaya has been set to 'hello.*'
 validator_succeed: Papaya, (ptr)
 Regex: Papaya = hello.*
@@ -97,7 +103,8 @@ Expected error: validator_fail: Raspberry, (ptr)
 Regex: Raspberry = raspberry.*
 Expected error: validator_fail: Raspberry, (ptr)
 Native: Raspberry = raspberry.*
----- test_inherit ------------------------------------------
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
 Event: Strawberry has been set to 'hello.*'
      Strawberry = hello.*
 fruit:Strawberry = hello.*
@@ -110,3 +117,4 @@ fruit:Strawberry = hello.*
 Event: Strawberry has been reset to ''
      Strawberry = 
 fruit:Strawberry = 
+[36m---- test_inherit --------------------------------[m

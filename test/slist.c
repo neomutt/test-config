@@ -20,20 +20,15 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define TEST_NO_MAIN
+#include "acutest.h"
 #include "config.h"
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "mutt/buffer.h"
-#include "mutt/mapping.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
-#include "config/account.h"
-#include "config/bool.h"
-#include "config/set.h"
-#include "config/slist.h"
-#include "config/types.h"
+#include "mutt/mutt.h"
+#include "config/lib.h"
 #include "test/common.h"
 
 static struct Slist *VarApple;
@@ -101,25 +96,25 @@ static void slist_flags(unsigned int flags)
   switch (flags & SLIST_SEP_MASK)
   {
     case SLIST_SEP_SPACE:
-      printf("SPACE");
+      TEST_MSG("SPACE");
       break;
     case SLIST_SEP_COMMA:
-      printf("COMMA");
+      TEST_MSG("COMMA");
       break;
     case SLIST_SEP_COLON:
-      printf("COLON");
+      TEST_MSG("COLON");
       break;
     default:
-      printf("UNKNOWN");
+      TEST_MSG("UNKNOWN");
       return;
   }
 
   if (flags & SLIST_ALLOW_DUPES)
-    printf(" | SLIST_ALLOW_DUPES");
+    TEST_MSG(" | SLIST_ALLOW_DUPES");
   if (flags & SLIST_ALLOW_EMPTY)
-    printf(" | SLIST_ALLOW_EMPTY");
+    TEST_MSG(" | SLIST_ALLOW_EMPTY");
   if (flags & SLIST_CASE_SENSITIVE)
-    printf(" | SLIST_CASE_SENSITIVE");
+    TEST_MSG(" | SLIST_CASE_SENSITIVE");
 }
 
 static void slist_dump(const struct Slist *list)
@@ -127,19 +122,19 @@ static void slist_dump(const struct Slist *list)
   if (!list)
     return;
 
-  printf("[%ld] ", list->count);
+  TEST_MSG("[%ld] ", list->count);
 
   struct ListNode *np = NULL;
   STAILQ_FOREACH(np, &list->head, entries)
   {
     if (np->data)
-      printf("'%s'", np->data);
+      TEST_MSG("'%s'", np->data);
     else
-      printf("NULL");
+      TEST_MSG("NULL");
     if (STAILQ_NEXT(np, entries))
-      printf(",");
+      TEST_MSG(",");
   }
-  printf("\n");
+  TEST_MSG("\n");
 }
 
 static bool test_slist_parse(struct Buffer *err)
@@ -162,12 +157,12 @@ static bool test_slist_parse(struct Buffer *err)
 
   unsigned int flags = SLIST_SEP_COLON | SLIST_ALLOW_EMPTY;
   slist_flags(flags);
-  printf("\n");
+  TEST_MSG("\n");
 
   struct Slist *list = NULL;
   for (size_t i = 0; i < mutt_array_size(init); i++)
   {
-    printf(">>%s<<\n", init[i] ? init[i] : "NULL");
+    TEST_MSG(">>%s<<\n", init[i] ? init[i] : "NULL");
     list = slist_parse(init[i], flags);
     slist_dump(list);
     slist_free(&list);
@@ -237,7 +232,7 @@ static bool test_slist_is_member(struct Buffer *err)
 
   for (size_t i = 0; i < mutt_array_size(values); i++)
   {
-    printf("member '%s' : %s\n", values[i], slist_is_member(list, values[i]) ? "yes" : "no");
+    TEST_MSG("member '%s' : %s\n", values[i], slist_is_member(list, values[i]) ? "yes" : "no");
   }
 
   slist_free(&list);
@@ -283,10 +278,10 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 
   static const char *values[] = { "apple", "banana", "cherry", NULL };
 
-  printf("Apple, %ld items, %u flags\n", VarApple->count, VarApple->flags);
+  TEST_MSG("Apple, %ld items, %u flags\n", VarApple->count, VarApple->flags);
   if (VarApple->count != 1)
   {
-    printf("Apple should have 1 item\n");
+    TEST_MSG("Apple should have 1 item\n");
     return false;
   }
 
@@ -299,10 +294,10 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     i++;
   }
 
-  printf("Banana, %ld items, %u flags\n", VarBanana->count, VarBanana->flags);
+  TEST_MSG("Banana, %ld items, %u flags\n", VarBanana->count, VarBanana->flags);
   if (VarBanana->count != 2)
   {
-    printf("Banana should have 2 items\n");
+    TEST_MSG("Banana should have 2 items\n");
     return false;
   }
 
@@ -315,10 +310,10 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     i++;
   }
 
-  printf("Cherry, %ld items, %u flags\n", VarCherry->count, VarCherry->flags);
+  TEST_MSG("Cherry, %ld items, %u flags\n", VarCherry->count, VarCherry->flags);
   if (VarCherry->count != 3)
   {
-    printf("Cherry should have 3 items\n");
+    TEST_MSG("Cherry should have 3 items\n");
     return false;
   }
 
@@ -345,7 +340,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   rc = cs_str_string_set(cs, name, "pig:quail:rhino", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
@@ -354,7 +349,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   rc = cs_str_string_set(cs, name, "pig:quail:rhino", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
@@ -377,23 +372,23 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
   int rc = cs_str_initial_get(cs, name, &initial);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
   rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
   if (mutt_str_strcmp(initial.data, err->data) != 0)
   {
-    printf("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
+    TEST_MSG("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
     return false;
   }
-  printf("Match: %s '%s' '%s'\n", name, initial.data, err->data);
+  TEST_MSG("Match: %s '%s' '%s'\n", name, initial.data, err->data);
 
   mutt_buffer_reset(err);
   mutt_buffer_reset(&initial);
@@ -402,23 +397,23 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
   rc = cs_str_initial_get(cs, name, &initial);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
   rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
   if (mutt_str_strcmp(initial.data, err->data) != 0)
   {
-    printf("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
+    TEST_MSG("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
     return false;
   }
-  printf("Match: %s '%s' '%s'\n", name, initial.data, err->data);
+  TEST_MSG("Match: %s '%s' '%s'\n", name, initial.data, err->data);
 
   mutt_buffer_reset(err);
   mutt_buffer_reset(&initial);
@@ -427,23 +422,23 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
   rc = cs_str_initial_get(cs, name, &initial);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
   rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
   if (mutt_str_strcmp(initial.data, err->data) != 0)
   {
-    printf("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
+    TEST_MSG("Differ: %s '%s' '%s'\n", name, initial.data, err->data);
     return false;
   }
-  printf("Match: %s '%s' '%s'\n", name, initial.data, err->data);
+  TEST_MSG("Match: %s '%s' '%s'\n", name, initial.data, err->data);
 
   FREE(&initial.data);
   return true;
@@ -512,7 +507,7 @@ bool slist_test_separator(struct ConfigDef Vars[], struct Buffer *err)
   return true;
 }
 
-bool slist_test(void)
+void config_slist(void)
 {
   log_line(__func__);
 
@@ -520,28 +515,17 @@ bool slist_test(void)
   mutt_buffer_init(&err);
   err.data = mutt_mem_calloc(1, STRING);
   err.dsize = STRING;
-  bool result = false;
 
-  if (!test_slist_parse(&err))
-    goto st_done;
-  if (!test_slist_add_string(&err))
-    goto st_done;
-  if (!test_slist_remove_string(&err))
-    goto st_done;
-  if (!test_slist_is_member(&err))
-    goto st_done;
-  if (!test_slist_add_list(&err))
-    goto st_done;
+  TEST_CHECK(test_slist_parse(&err));
+  TEST_CHECK(test_slist_add_string(&err));
+  TEST_CHECK(test_slist_remove_string(&err));
+  TEST_CHECK(test_slist_is_member(&err));
+  TEST_CHECK(test_slist_add_list(&err));
 
-  if (!slist_test_separator(VarsColon, &err))
-    goto st_done;
-  if (!slist_test_separator(VarsComma, &err))
-    goto st_done;
-  if (!slist_test_separator(VarsSpace, &err))
-    goto st_done;
+  TEST_CHECK(slist_test_separator(VarsColon, &err));
+  TEST_CHECK(slist_test_separator(VarsComma, &err));
+  TEST_CHECK(slist_test_separator(VarsSpace, &err));
 
-  result = true;
-st_done:
   FREE(&err.data);
-  return result;
+  log_line(__func__);
 }

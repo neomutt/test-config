@@ -1,12 +1,14 @@
----- initial_test ------------------------------------------
----- set_list ----------------------------------------------
+[36m---- config_initial ------------------------------[m
+[36m---- set_list ------------------------------------[m
 string Apple = apple
 string Banana = 
 string Cherry = 
----- test_set_initial --------------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_set_initial ----------------------------[m
 Event: Apple has been initial-set to 'pie'
 Event: Banana has been initial-set to 'split'
 Event: Cherry has been initial-set to 'blossom'
 Apple = apple
 Banana = (null)
 Cherry = (null)
+[36m---- test_set_initial ----------------------------[m

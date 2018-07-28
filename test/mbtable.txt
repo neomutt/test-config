@@ -1,5 +1,4 @@
----- mbtable_test ------------------------------------------
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 mbtable Apple = apple
 mbtable Banana = banana
 mbtable Cherry = cherry
@@ -17,7 +16,8 @@ mbtable Nectarine = nectarine
 mbtable Olive = olive
 mbtable Papaya = papaya
 mbtable Quince = 
----- test_initial_values -----------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_initial_values -------------------------[m
 Apple = apple
 Banana = banana
 Event: Apple has been set to 'car'
@@ -30,7 +30,8 @@ Event: Cherry has been initial-set to 'config.*'
 Event: Cherry has been initial-set to 'file.*'
 Cherry = 'cherry'
 Cherry's initial value is 'file.*'
----- test_string_set ---------------------------------------
+[36m---- test_initial_values -------------------------[m
+[36m---- test_string_set -----------------------------[m
 Event: Damson has been set to 'hello'
 Damson = 'hello', set by 'hello'
 Event: Damson has been set to 'world'
@@ -51,20 +52,24 @@ Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 mbtable_parse: mbrtowc returned -1 converting ÿ in ÿ
 Event: Elderberry has been set to 'ÿ'
----- test_string_get ---------------------------------------
+[36m---- test_string_set -----------------------------[m
+[36m---- test_string_get -----------------------------[m
 Fig = '', ''
 Guava = 'guava', 'guava'
 Event: Hawthorn has been set to 'hawthorn'
 Hawthorn = 'hawthorn', 'hawthorn'
----- test_native_set ---------------------------------------
+[36m---- test_string_get -----------------------------[m
+[36m---- test_native_set -----------------------------[m
 Event: Ilama has been set to 'hello'
 Ilama = 'hello', set by 'hello'
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by NULL
----- test_native_get ---------------------------------------
+[36m---- test_native_set -----------------------------[m
+[36m---- test_native_get -----------------------------[m
 Event: Kumquat has been set to 'kumquat'
 Kumquat = 'kumquat', 'kumquat'
----- test_reset --------------------------------------------
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
 Initial: Lemon = 'lemon'
 Event: Lemon has been set to 'hello'
 Set: Lemon = 'hello'
@@ -75,7 +80,8 @@ Event: Mango has been set to 'hello'
 Set: Mango = 'hello'
 Expected error: validator_fail: Mango, (ptr)
 Reset: Mango = 'hello'
----- test_validator ----------------------------------------
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
 Event: Nectarine has been set to 'hello'
 validator_succeed: Nectarine, (ptr)
 MbTable: Nectarine = hello
@@ -92,7 +98,8 @@ Expected error: validator_fail: Papaya, (ptr)
 MbTable: Papaya = papaya
 Expected error: validator_fail: Papaya, (ptr)
 Native: Papaya = papaya
----- test_inherit ------------------------------------------
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
 Event: Quince has been set to 'hello'
          Quince = hello
    fruit:Quince = hello
@@ -105,3 +112,4 @@ Event: fruit:Quince has been reset to 'hello'
 Event: Quince has been reset to ''
          Quince = 
    fruit:Quince = 
+[36m---- test_inherit --------------------------------[m

@@ -1,5 +1,4 @@
----- quad_test ---------------------------------------------
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 boolean Olive = no
 quad Apple = no
 quad Banana = ask-yes
@@ -15,7 +14,8 @@ quad Kumquat = no
 quad Lemon = no
 quad Mango = no
 quad Nectarine = no
----- test_initial_values -----------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_initial_values -------------------------[m
 Apple = 0
 Banana = 3
 Event: Apple has been set to 'ask-yes'
@@ -27,74 +27,110 @@ Banana's initial value is 'ask-yes'
 Event: Cherry has been initial-set to 'ask-yes'
 Cherry = 'no'
 Cherry's initial value is 'ask-yes'
----- test_string_set ---------------------------------------
+[36m---- test_initial_values -------------------------[m
+[36m---- test_string_set -----------------------------[m
+Setting Damson to no
 Event: Damson has been set to 'no'
 Damson = 0, set by 'no'
+----------------------------------------
+Setting Damson to yes
 Event: Damson has been set to 'yes'
 Damson = 1, set by 'yes'
+----------------------------------------
+Setting Damson to ask-no
 Event: Damson has been set to 'ask-no'
 Damson = 2, set by 'ask-no'
 Value of Damson wasn't changed
+Setting Damson to ask-yes
 Event: Damson has been set to 'ask-yes'
 Damson = 3, set by 'ask-yes'
+----------------------------------------
 Expected error: Invalid quad value: nope
+----------------------------------------
 Expected error: Invalid quad value: ye
+----------------------------------------
 Expected error: Invalid quad value: 
+----------------------------------------
 Expected error: 
----- test_string_get ---------------------------------------
+----------------------------------------
+[36m---- test_string_set -----------------------------[m
+[36m---- test_string_get -----------------------------[m
 Elderberry = 0, no
 Elderberry = 1, yes
 Elderberry = 2, ask-no
 Elderberry = 3, ask-yes
 Expect error for next test
 Variable has an invalid value: 4
----- test_native_set ---------------------------------------
+[36m---- test_string_get -----------------------------[m
+[36m---- test_native_set -----------------------------[m
+Setting Fig to 1
 Event: Fig has been set to 'yes'
 Fig = 1, set to '1'
+----------------------------------------
+Setting Fig to 1
 Value of Fig wasn't changed
+----------------------------------------
+Setting Fig to -1
 Expected error: Invalid quad value: -1
+----------------------------------------
+Setting Fig to 4
 Expected error: Invalid quad value: 4
----- test_native_get ---------------------------------------
+[36m---- test_native_set -----------------------------[m
+[36m---- test_native_get -----------------------------[m
 Guava = 1
----- test_reset --------------------------------------------
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
+Hawthorn = 0
 Event: Hawthorn has been reset to 'no'
 Reset: Hawthorn = 0
+----------------------------------------
 Initial: Ilama = 0
 Event: Ilama has been set to 'ask-yes'
 Set: Ilama = 3
 Expected error: validator_fail: Ilama, 0
 Reset: Ilama = 3
----- test_validator ----------------------------------------
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
 Event: Jackfruit has been set to 'yes'
 validator_succeed: Jackfruit, 1
 String: Jackfruit = 1
+----------------------------------------
 Event: Jackfruit has been set to 'yes'
 validator_succeed: Jackfruit, 1
 Native: Jackfruit = 1
+----------------------------------------
 Event: Kumquat has been set to 'yes'
 validator_warn: Kumquat, 1
 String: Kumquat = 1
+----------------------------------------
 Event: Kumquat has been set to 'yes'
 validator_warn: Kumquat, 1
 Native: Kumquat = 1
+----------------------------------------
 Expected error: validator_fail: Lemon, 1
 String: Lemon = 0
+----------------------------------------
 Expected error: validator_fail: Lemon, 1
 Native: Lemon = 0
----- test_inherit ------------------------------------------
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
 Event: Mango has been set to 'yes'
           Mango = 1
     fruit:Mango = 1
+----------------------------------------
 Value of Mango wasn't changed
           Mango = 1
     fruit:Mango = 0
+----------------------------------------
 Event: fruit:Mango has been reset to 'yes'
           Mango = 1
     fruit:Mango = 1
+----------------------------------------
 Event: Mango has been reset to 'no'
           Mango = 0
     fruit:Mango = 0
----- test_toggle -------------------------------------------
+[36m---- test_inherit --------------------------------[m
+[36m---- test_toggle ---------------------------------[m
 test 0
 Event: Nectarine has been set to 'yes'
 test 1
@@ -104,4 +140,4 @@ Event: Nectarine has been set to 'ask-yes'
 test 3
 Event: Nectarine has been set to 'ask-no'
 Expected error: Invalid quad value: 8
-Expected error: 
+[36m---- test_toggle ---------------------------------[m

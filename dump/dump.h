@@ -23,6 +23,6 @@
 #ifndef _DUMP_DUMP_H
 #define _DUMP_DUMP_H
 
-bool dump_test(void);
+void config_dump(void);
 
 #endif /* _DUMP_DUMP_H */

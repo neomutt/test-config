@@ -20,20 +20,15 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define TEST_NO_MAIN
+#include "acutest.h"
 #include "config.h"
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "mutt/buffer.h"
-#include "mutt/mapping.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
-#include "config/account.h"
-#include "config/bool.h"
-#include "config/enum.h"
-#include "config/set.h"
-#include "config/types.h"
+#include "mutt/mutt.h"
+#include "config/lib.h"
 #include "test/common.h"
 
 static short VarApple;
@@ -79,22 +74,22 @@ static struct ConfigDef Vars[] = {
 static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  printf("Apple = %d\n", VarApple);
+  TEST_MSG("Apple = %d\n", VarApple);
 
   const char *name = "Apple";
 
   int rc = cs_str_string_set(cs, name, "herbivore", err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
-  printf("%s = %d, %s\n", name, VarApple, err->data);
+  TEST_MSG("%s = %d, %s\n", name, VarApple, err->data);
 
   rc = cs_str_string_get(cs, name, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("Get failed: %s\n", err->data);
+    TEST_MSG("Get failed: %s\n", err->data);
     return false;
   }
 
@@ -103,21 +98,21 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
   rc = cs_str_native_set(cs, name, value, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
   {
-    printf("%s\n", err->data);
+    TEST_MSG("%s\n", err->data);
     return false;
   }
 
   if (VarApple != value)
   {
-    printf("Value of %s wasn't changed\n", name);
+    TEST_MSG("Value of %s wasn't changed\n", name);
     return false;
   }
 
-  printf("%s = %d, %s\n", name, VarApple, err->data);
+  TEST_MSG("%s = %d, %s\n", name, VarApple, err->data);
   return true;
 }
 
-bool enum_test(void)
+void config_enum(void)
 {
   log_line(__func__);
 
@@ -131,17 +126,16 @@ bool enum_test(void)
 
   enum_init(cs);
   if (!cs_register_variables(cs, Vars, 0))
-    return false;
+    return;
 
   cs_add_listener(cs, log_listener);
 
   set_list(cs);
 
   if (!test_initial_values(cs, &err))
-    return false;
+    return;
 
   cs_free(&cs);
   FREE(&err.data);
-
-  return true;
+  log_line(__func__);
 }

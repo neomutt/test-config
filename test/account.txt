@@ -1,8 +1,9 @@
----- account_test ------------------------------------------
----- set_list ----------------------------------------------
+[36m---- config_account ------------------------------[m
+[36m---- set_list ------------------------------------[m
 number Apple = 0
 number Banana = 0
 number Cherry = 0
+[36m---- set_list ------------------------------------[m
 Pineapple doesn't exist
 reset failed for damaged:Pineapple: Unknown var 'damaged:Pineapple'
 Expected error:
@@ -23,3 +24,4 @@ Expected error
 Event: Apple has been set to '42'
 Set Apple
 Event: fruit:Apple has been reset to '42'
+[36m---- config_account ------------------------------[m

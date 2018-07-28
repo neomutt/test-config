@@ -1,5 +1,4 @@
----- number_test -------------------------------------------
----- set_list ----------------------------------------------
+[36m---- set_list ------------------------------------[m
 number Apple = -42
 number Banana = 99
 number Cherry = 33
@@ -15,7 +14,8 @@ number Lemon = 0
 number Mango = 0
 number Nectarine = 0
 number Olive = 0
----- test_initial_values -----------------------------------
+[36m---- set_list ------------------------------------[m
+[36m---- test_initial_values -------------------------[m
 Apple = -42
 Banana = 99
 Event: Apple has been set to '2001'
@@ -27,68 +27,112 @@ Banana's initial value is '99'
 Event: Cherry has been initial-set to '123'
 Cherry = 33
 Cherry's initial value is 123
----- test_string_set ---------------------------------------
+[36m---- test_initial_values -------------------------[m
+[36m---- test_string_set -----------------------------[m
+Setting Damson to -123
 Event: Damson has been set to '-123'
 Damson = -123, set by '-123'
+----------------------------------------
+Setting Damson to 0
 Event: Damson has been set to '0'
 Damson = 0, set by '0'
+----------------------------------------
+Setting Damson to -42
 Value of Damson wasn't changed
+Setting Damson to 456
 Event: Damson has been set to '456'
 Damson = 456, set by '456'
-
+----------------------------------------
+Setting Damson to -32769
 Expected error: Number is too big: -32769
+----------------------------------------
+Setting Damson to 32768
 Expected error: Number is too big: 32768
+----------------------------------------
+Setting Damson to junk
 Expected error: Invalid number: junk
+----------------------------------------
+Setting Damson to 
 Expected error: Option Damson may not be empty
+----------------------------------------
+Setting Damson to 
 Expected error: Option Damson may not be empty
+----------------------------------------
+Setting Elderberry to -42
 Expected error: Option Elderberry may not be negative
----- test_string_get ---------------------------------------
+[36m---- test_string_set -----------------------------[m
+[36m---- test_string_get -----------------------------[m
 Fig = 123, 123
 Fig = -789, -789
----- test_native_set ---------------------------------------
+[36m---- test_string_get -----------------------------[m
+[36m---- test_native_set -----------------------------[m
+Setting Guava to 12345
 Event: Guava has been set to '12345'
 Guava = 12345, set to '12345'
+----------------------------------------
+Setting Guava to 12345
 Value of Guava wasn't changed
+----------------------------------------
+Setting Hawthorn to -42
 Expected error: Option Hawthorn may not be negative
+----------------------------------------
+Setting Hawthorn to -32769
 Expected error: Invalid number: -32769
+----------------------------------------
+Setting Hawthorn to 32768
 Expected error: Invalid number: 32768
----- test_native_get ---------------------------------------
+[36m---- test_native_set -----------------------------[m
+[36m---- test_native_get -----------------------------[m
 Ilama = 3456
----- test_reset --------------------------------------------
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
+Jackfruit = 345
 Event: Jackfruit has been reset to '99'
 Reset: Jackfruit = 99
+----------------------------------------
 Initial: Kumquat = 33
 Event: Kumquat has been set to '99'
 Set: Kumquat = 99
 Expected error: validator_fail: Kumquat, 33
 Reset: Kumquat = 99
----- test_validator ----------------------------------------
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
 Event: Lemon has been set to '456'
 validator_succeed: Lemon, 456
 String: Lemon = 456
+----------------------------------------
 Event: Lemon has been set to '123'
 validator_succeed: Lemon, 123
 Native: Lemon = 123
+----------------------------------------
 Event: Mango has been set to '456'
 validator_warn: Mango, 456
 String: Mango = 456
+----------------------------------------
 Event: Mango has been set to '123'
 validator_warn: Mango, 123
 Native: Mango = 123
+----------------------------------------
 Expected error: validator_fail: Nectarine, 456
 String: Nectarine = 123
+----------------------------------------
 Expected error: validator_fail: Nectarine, 123
 Native: Nectarine = 456
----- test_inherit ------------------------------------------
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
 Event: Olive has been set to '456'
           Olive = 456
     fruit:Olive = 456
+----------------------------------------
 Event: fruit:Olive has been set to '-99'
           Olive = 456
     fruit:Olive = -99
+----------------------------------------
 Event: fruit:Olive has been reset to '456'
           Olive = 456
     fruit:Olive = 456
+----------------------------------------
 Event: Olive has been reset to '0'
           Olive = 0
     fruit:Olive = 0
+[36m---- test_inherit --------------------------------[m
