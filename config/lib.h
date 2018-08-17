@@ -21,27 +21,29 @@
  */
 
 /**
- * @page config Flexible handling of config items
+ * @page config CONFIG: Flexible handling of config items
  *
  * User configurable variables.
  *
- * -# @subpage config-account
- * -# @subpage config-address
- * -# @subpage config-bool
- * -# @subpage config-command
- * -# @subpage config-dump
- * -# @subpage config-enum
- * -# @subpage config-long
- * -# @subpage config-magic
- * -# @subpage config-mbtable
- * -# @subpage config-number
- * -# @subpage config-path
- * -# @subpage config-quad
- * -# @subpage config-regex
- * -# @subpage config-set
- * -# @subpage config-slist
- * -# @subpage config-sort
- * -# @subpage config-string
+ * | File             | Description             |
+ * | :--------------- | :---------------------- |
+ * | config/account.c | @subpage config-account |
+ * | config/address.c | @subpage config-address |
+ * | config/bool.c    | @subpage config-bool    |
+ * | config/command.c | @subpage config-command |
+ * | config/dump.c    | @subpage config-dump    |
+ * | config/enum.c    | @subpage config-enum    |
+ * | config/long.c    | @subpage config-long    |
+ * | config/magic.c   | @subpage config-magic   |
+ * | config/mbtable.c | @subpage config-mbtable |
+ * | config/number.c  | @subpage config-number  |
+ * | config/path.c    | @subpage config-path    |
+ * | config/quad.c    | @subpage config-quad    |
+ * | config/regex.c   | @subpage config-regex   |
+ * | config/set.c     | @subpage config-set     |
+ * | config/slist.c   | @subpage config-slist   |
+ * | config/sort.c    | @subpage config-sort    |
+ * | config/string.c  | @subpage config-string  |
  */
 
 #ifndef _CONFIG_CONFIG_H

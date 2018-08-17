@@ -40,7 +40,9 @@
 #include "set.h"
 #include "types.h"
 
-void mutt_pretty_mailbox(char *s, size_t buflen);
+void mutt_pretty_mailbox(char *s, size_t buflen)
+{
+}
 
 /**
  * escape_string - Write a string to a buffer, escaping special characters
@@ -239,9 +241,9 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
 
   bool result = true;
 
-  struct Buffer *value = mutt_buffer_alloc(1024);
-  struct Buffer *initial = mutt_buffer_alloc(1024);
-  struct Buffer *tmp = mutt_buffer_alloc(1024);
+  struct Buffer *value = mutt_buffer_alloc(STRING);
+  struct Buffer *initial = mutt_buffer_alloc(STRING);
+  struct Buffer *tmp = mutt_buffer_alloc(STRING);
 
   for (size_t i = 0; list[i]; i++)
   {
@@ -277,10 +279,10 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
           mutt_buffer_addstr(value, "***");
         }
 
-        // if (type == DT_PATH)
-        //   mutt_pretty_mailbox(value->data, value->dsize);
+        if ((type == DT_PATH) && (value->data[0] == '/'))
+          mutt_pretty_mailbox(value->data, value->dsize);
 
-        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(tmp);
@@ -299,15 +301,15 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
           break;
         }
 
-        // if (type == DT_PATH)
-        //   mutt_pretty_mailbox(value->data, value->dsize);
+        if ((type == DT_PATH) && !(he->type & DT_MAILBOX))
+          mutt_pretty_mailbox(initial->data, initial->dsize);
 
-        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_QUAD) &&
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) && (type != DT_QUAD) &&
             !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(tmp);
           size_t len = pretty_var(initial->data, tmp);
-          mutt_str_strfcpy(value->data, tmp->data, len + 1);
+          mutt_str_strfcpy(initial->data, tmp->data, len + 1);
         }
       }
     }
