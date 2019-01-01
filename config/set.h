@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_SET_H
-#define _CONFIG_SET_H
+#ifndef MUTT_CONFIG_SET_H
+#define MUTT_CONFIG_SET_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -36,9 +36,9 @@ struct ConfigDef;
  */
 enum ConfigEvent
 {
-  CE_SET = 1,   /**< Config item has been set */
-  CE_RESET, /**< Config item has been reset to initial, or parent, value */
-  CE_INITIAL_SET, /**< Config item's initial value has been set */
+  CE_SET = 1,     ///< Config item has been set
+  CE_RESET,       ///< Config item has been reset to initial, or parent, value
+  CE_INITIAL_SET, ///< Config item's initial value has been set
 };
 
 /* Config Set Results */
@@ -65,12 +65,12 @@ enum ConfigEvent
  */
 enum CsListenerAction
 {
-  CSLA_CONTINUE = 1, /**< Continue notifying listeners */
-  CSLA_STOP,         /**< Stop notifying listeners */
+  CSLA_CONTINUE = 1, ///< Continue notifying listeners
+  CSLA_STOP,         ///< Stop notifying listeners
 };
 
 /**
- * cs_listener - Listen for config changes
+ * typedef cs_listener - Listen for config changes
  * @param cs   Config items
  * @param he   HashElem representing config item
  * @param name Name of the config item
@@ -79,7 +79,7 @@ enum CsListenerAction
  */
 typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
 /**
- * cs_validator - Validate the "charset" config variable
+ * typedef cs_validator - Validate the "charset" config variable
  * @param cs    Config items
  * @param cdef  Config definition
  * @param value Native value
@@ -88,9 +88,8 @@ typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *h
  * @retval CSR_ERR_INVALID Failure
  */
 typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct ConfigDef *cdef, intptr_t value, struct Buffer *err);
-
 /**
- * cst_string_set - Set a config item by string
+ * typedef cst_string_set - Set a config item by string
  * @param cs    Config items
  * @param var   Variable to set
  * @param cdef  Variable definition
@@ -102,7 +101,7 @@ typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct Confi
  */
 typedef int     (*cst_string_set)(const struct ConfigSet *cs, void *var,       struct ConfigDef *cdef, const char *value, struct Buffer *err);
 /**
- * cst_string_get - Get a config item as a string
+ * typedef cst_string_get - Get a config item as a string
  * @param cs     Config items
  * @param var    Variable to get
  * @param cdef   Variable definition
@@ -113,7 +112,7 @@ typedef int     (*cst_string_set)(const struct ConfigSet *cs, void *var,       s
  */
 typedef int     (*cst_string_get)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef,                    struct Buffer *result);
 /**
- * cst_native_set - Set a config item by string
+ * typedef cst_native_set - Set a config item by string
  * @param cs    Config items
  * @param var   Variable to set
  * @param cdef  Variable definition
@@ -123,7 +122,7 @@ typedef int     (*cst_string_get)(const struct ConfigSet *cs, void *var, const s
  */
 typedef int     (*cst_native_set)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef, intptr_t value,    struct Buffer *err);
 /**
- * cst_native_get - Get a string from a config item
+ * typedef cst_native_get - Get a string from a config item
  * @param cs   Config items
  * @param var  Variable to get
  * @param cdef Variable definition
@@ -133,7 +132,7 @@ typedef int     (*cst_native_set)(const struct ConfigSet *cs, void *var, const s
 typedef intptr_t(*cst_native_get)(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef,                    struct Buffer *err);
 
 /**
- * cst_reset - Reset a config item to its initial value
+ * typedef cst_reset - Reset a config item to its initial value
  * @param cs   Config items
  * @param var  Variable to reset
  * @param cdef Variable definition
@@ -142,7 +141,7 @@ typedef intptr_t(*cst_native_get)(const struct ConfigSet *cs, void *var, const s
  */
 typedef int     (*cst_reset)     (const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef, struct Buffer *err);
 /**
- * cst_destroy - Destroy a config item
+ * typedef cst_destroy - Destroy a config item
  * @param cs   Config items
  * @param var  Variable to destroy
  * @param cdef Variable definition
@@ -199,7 +198,7 @@ struct ConfigSet
   cs_listener listeners[8];       /**< Listeners for notifications of changes to config items */
 };
 
-struct ConfigSet *cs_create(size_t size);
+struct ConfigSet *cs_new(size_t size);
 void              cs_init(struct ConfigSet *cs, size_t size);
 void              cs_free(struct ConfigSet **cs);
 
@@ -230,4 +229,4 @@ int      cs_str_reset      (const struct ConfigSet *cs, const char *name,       
 int      cs_str_string_get (const struct ConfigSet *cs, const char *name,                       struct Buffer *result);
 int      cs_str_string_set (const struct ConfigSet *cs, const char *name,    const char *value, struct Buffer *err);
 
-#endif /* _CONFIG_SET_H */
+#endif /* MUTT_CONFIG_SET_H */

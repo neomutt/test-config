@@ -20,24 +20,24 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EMAIL_MIME_H
-#define _EMAIL_MIME_H
+#ifndef MUTT_EMAIL_MIME_H
+#define MUTT_EMAIL_MIME_H
 
 /**
  * enum ContentType - Content-Type
  */
 enum ContentType
 {
-  TYPE_OTHER,
-  TYPE_AUDIO,
-  TYPE_APPLICATION,
-  TYPE_IMAGE,
-  TYPE_MESSAGE,
-  TYPE_MODEL,
-  TYPE_MULTIPART,
-  TYPE_TEXT,
-  TYPE_VIDEO,
-  TYPE_ANY
+  TYPE_OTHER,       ///< Unknown Content-Type
+  TYPE_AUDIO,       ///< Type: 'audio/*'
+  TYPE_APPLICATION, ///< Type: 'application/*'
+  TYPE_IMAGE,       ///< Type: 'image/*'
+  TYPE_MESSAGE,     ///< Type: 'message/*'
+  TYPE_MODEL,       ///< Type: 'model/*'
+  TYPE_MULTIPART,   ///< Type: 'multipart/*'
+  TYPE_TEXT,        ///< Type: 'text/*'
+  TYPE_VIDEO,       ///< Type: 'video/*'
+  TYPE_ANY,         ///< Type: '*' or '.*'
 };
 
 /**
@@ -45,13 +45,13 @@ enum ContentType
  */
 enum ContentEncoding
 {
-  ENC_OTHER,
-  ENC_7BIT,
-  ENC_8BIT,
-  ENC_QUOTED_PRINTABLE,
-  ENC_BASE64,
-  ENC_BINARY,
-  ENC_UUENCODED
+  ENC_OTHER,            ///< Encoding unknown
+  ENC_7BIT,             ///< 7-bit text
+  ENC_8BIT,             ///< 8-bit text
+  ENC_QUOTED_PRINTABLE, ///< Quoted-printable text
+  ENC_BASE64,           ///< Base-64 encoded text
+  ENC_BINARY,           ///< Binary
+  ENC_UUENCODED,        ///< UUEncoded text
 };
 
 /**
@@ -59,10 +59,10 @@ enum ContentEncoding
  */
 enum ContentDisposition
 {
-  DISP_INLINE,
-  DISP_ATTACH,
-  DISP_FORM_DATA,
-  DISP_NONE /* no preferred disposition */
+  DISP_INLINE,    ///< Content is inline
+  DISP_ATTACH,    ///< Content is attached
+  DISP_FORM_DATA, ///< Content is form-data
+  DISP_NONE,      ///< No preferred disposition
 };
 
 /* MIME encoding/decoding global vars */
@@ -74,13 +74,13 @@ extern const char MimeSpecials[];
 
 #define hexval(c) IndexHex[(unsigned int) (c)]
 
-#define is_multipart(x)                                                             \
+#define is_multipart(x)                                                               \
   (((x)->type == TYPE_MULTIPART) || (((x)->type == TYPE_MESSAGE) && ((x)->subtype) && \
-                                    ((strcasecmp((x)->subtype, "rfc822") == 0) ||   \
-                                     (strcasecmp((x)->subtype, "news") == 0))))
+                                     ((strcasecmp((x)->subtype, "rfc822") == 0) ||    \
+                                      (strcasecmp((x)->subtype, "news") == 0))))
 
 #define TYPE(X)                                                                \
-  ((X->type == TYPE_OTHER) && (X->xtype != NULL) ? X->xtype : BodyTypes[(X->type)])
+  ((X->type == TYPE_OTHER) && X->xtype ? X->xtype : BodyTypes[(X->type)])
 #define ENCODING(X) BodyEncodings[(X)]
 
-#endif /* _EMAIL_MIME_H */
+#endif /* MUTT_EMAIL_MIME_H */

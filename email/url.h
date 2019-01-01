@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EMAIL_URL_H
-#define _EMAIL_URL_H
+#ifndef MUTT_EMAIL_URL_H
+#define MUTT_EMAIL_URL_H
 
 #include <stddef.h>
 #include "mutt/mutt.h"
@@ -31,21 +31,20 @@
  */
 enum UrlScheme
 {
-  U_UNKNOWN,
-  U_FILE,
-  U_POP,
-  U_POPS,
-  U_IMAP,
-  U_IMAPS,
-  U_NNTP,
-  U_NNTPS,
-  U_SMTP,
-  U_SMTPS,
-  U_MAILTO,
-  U_NOTMUCH,
+  U_UNKNOWN, ///< Url wasn't recognised
+  U_FILE,    ///< Url is file://
+  U_POP,     ///< Url is pop://
+  U_POPS,    ///< Url is pops://
+  U_IMAP,    ///< Url is imap://
+  U_IMAPS,   ///< Url is imaps://
+  U_NNTP,    ///< Url is nntp://
+  U_NNTPS,   ///< Url is nntps://
+  U_SMTP,    ///< Url is smtp://
+  U_SMTPS,   ///< Url is smtps://
+  U_MAILTO,  ///< Url is mailto://
+  U_NOTMUCH, ///< Url is notmuch://
 };
 
-#define U_DECODE_PASSWD (1 << 0)
 #define U_PATH          (1 << 1)
 
 /**
@@ -60,6 +59,8 @@ struct UrlQueryString
   STAILQ_ENTRY(UrlQueryString) entries;
 };
 
+STAILQ_HEAD(UrlQueryStringHead, UrlQueryString);
+
 /**
  * struct Url - A parsed URL `proto://user:password@host:port/path?a=1&b=2`
  */
@@ -71,14 +72,15 @@ struct Url
   char *host;
   unsigned short port;
   char *path;
-  STAILQ_HEAD(, UrlQueryString) query_strings;
+  struct UrlQueryStringHead query_strings;
+  char *src;
 };
 
 enum UrlScheme url_check_scheme(const char *s);
-void           url_free(struct Url *u);
-int            url_parse(struct Url *u, char *src);
+void           url_free(struct Url **u);
+struct Url    *url_parse(const char *src);
 int            url_pct_decode(char *s);
-void           url_pct_encode(char *dst, size_t l, const char *src);
-int            url_tostring(struct Url *u, char *dest, size_t len, int flags);
+void           url_pct_encode(char *buf, size_t buflen, const char *src);
+int            url_tostring(struct Url *u, char *buf, size_t buflen, int flags);
 
-#endif /* _EMAIL_URL_H */
+#endif /* MUTT_EMAIL_URL_H */

@@ -147,7 +147,7 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
     return false;
   }
 
-  TEST_MSG("Cherry = %s\n", magic_values[VarCherry]);
+  TEST_MSG("Cherry = %s\n", MagicValues[VarCherry]);
   TEST_MSG("Cherry's initial value is %s\n", value.data);
 
   FREE(&value.data);
@@ -511,7 +511,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *ac = ac_create(cs, account, AccountVarStr);
+  struct Account *ac = ac_new(cs, account, AccountVarStr);
 
   // set parent
   mutt_buffer_reset(err);
@@ -568,7 +568,7 @@ void config_magic(void)
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 
-  struct ConfigSet *cs = cs_create(30);
+  struct ConfigSet *cs = cs_new(30);
 
   magic_init(cs);
   dont_fail = true;

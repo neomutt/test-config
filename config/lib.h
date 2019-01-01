@@ -25,29 +25,27 @@
  *
  * User configurable variables.
  *
- * | File             | Description             |
- * | :--------------- | :---------------------- |
- * | config/account.c | @subpage config-account |
- * | config/address.c | @subpage config-address |
- * | config/bool.c    | @subpage config-bool    |
- * | config/command.c | @subpage config-command |
- * | config/dump.c    | @subpage config-dump    |
- * | config/enum.c    | @subpage config-enum    |
- * | config/long.c    | @subpage config-long    |
- * | config/magic.c   | @subpage config-magic   |
- * | config/mbtable.c | @subpage config-mbtable |
- * | config/number.c  | @subpage config-number  |
- * | config/path.c    | @subpage config-path    |
- * | config/quad.c    | @subpage config-quad    |
- * | config/regex.c   | @subpage config-regex   |
- * | config/set.c     | @subpage config-set     |
- * | config/slist.c   | @subpage config-slist   |
- * | config/sort.c    | @subpage config-sort    |
- * | config/string.c  | @subpage config-string  |
+ * | File                | Description                |
+ * | :------------------ | :------------------------- |
+ * | config/address.c    | @subpage config_address    |
+ * | config/bool.c       | @subpage config_bool       |
+ * | config/gaccount.c   | @subpage config_account    |
+ * | config/command.c    | @subpage config_command    |
+ * | config/dump.c       | @subpage config_dump       |
+ * | config/long.c       | @subpage config_long       |
+ * | config/magic.c      | @subpage config_magic      |
+ * | config/mbtable.c    | @subpage config_mbtable    |
+ * | config/number.c     | @subpage config_number     |
+ * | config/path.c       | @subpage config_path       |
+ * | config/quad.c       | @subpage config_quad       |
+ * | config/regex.c      | @subpage config_regex      |
+ * | config/set.c        | @subpage config_set        |
+ * | config/sort.c       | @subpage config_sort       |
+ * | config/string.c     | @subpage config_string     |
  */
 
-#ifndef _CONFIG_CONFIG_H
-#define _CONFIG_CONFIG_H
+#ifndef MUTT_CONFIG_LIB_H
+#define MUTT_CONFIG_LIB_H
 
 #include "account.h"
 #include "address.h"
@@ -69,4 +67,4 @@
 #include "string3.h"
 #include "types.h"
 
-#endif /* _CONFIG_CONFIG_H */
+#endif /* MUTT_CONFIG_LIB_H */

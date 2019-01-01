@@ -20,17 +20,17 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_BOOL_H
-#define _CONFIG_BOOL_H
+#ifndef MUTT_CONFIG_BOOL_H
+#define MUTT_CONFIG_BOOL_H
 
 struct Buffer;
 struct ConfigSet;
 struct HashElem;
 
-extern const char *bool_values[];
+extern const char *BoolValues[];
 
 void bool_init(struct ConfigSet *cs);
 int  bool_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 int  bool_str_toggle(struct ConfigSet *cs, const char *name, struct Buffer *err);
 
-#endif /* _CONFIG_BOOL_H */
+#endif /* MUTT_CONFIG_BOOL_H */

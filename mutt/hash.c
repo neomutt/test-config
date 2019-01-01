@@ -253,8 +253,8 @@ static void union_hash_delete(struct Hash *table, union HashKey key, const void 
     if ((data == ptr->data || !data) && table->cmp_key(ptr->key, key) == 0)
     {
       *last = ptr->next;
-      if (table->destroy)
-        table->destroy(ptr->type, ptr->data, table->dest_data);
+      if (table->elem_free)
+        table->elem_free(ptr->type, ptr->data, table->hash_data);
       if (table->strdup_keys)
         FREE(&ptr->key.strkey);
       FREE(&ptr);
@@ -270,12 +270,12 @@ static void union_hash_delete(struct Hash *table, union HashKey key, const void 
 }
 
 /**
- * mutt_hash_create - Create a new Hash table (with string keys)
+ * mutt_hash_new - Create a new Hash table (with string keys)
  * @param nelem Number of elements it should contain
  * @param flags Flags, e.g. #MUTT_HASH_STRCASECMP
  * @retval ptr New Hash table
  */
-struct Hash *mutt_hash_create(size_t nelem, int flags)
+struct Hash *mutt_hash_new(size_t nelem, int flags)
 {
   struct Hash *table = new_hash(nelem);
   if (flags & MUTT_HASH_STRCASECMP)
@@ -296,12 +296,12 @@ struct Hash *mutt_hash_create(size_t nelem, int flags)
 }
 
 /**
- * mutt_hash_int_create - Create a new Hash table (with integer keys)
+ * mutt_hash_int_new - Create a new Hash table (with integer keys)
  * @param nelem Number of elements it should contain
  * @param flags Flags, e.g. #MUTT_HASH_ALLOW_DUPS
  * @retval ptr New Hash table
  */
-struct Hash *mutt_hash_int_create(size_t nelem, int flags)
+struct Hash *mutt_hash_int_new(size_t nelem, int flags)
 {
   struct Hash *table = new_hash(nelem);
   table->gen_hash = gen_int_hash;
@@ -317,10 +317,10 @@ struct Hash *mutt_hash_int_create(size_t nelem, int flags)
  * @param fn      Callback function to free Hash Table's resources
  * @param fn_data Data to pass to the callback function
  */
-void mutt_hash_set_destructor(struct Hash *table, hash_destructor_t fn, intptr_t fn_data)
+void mutt_hash_set_destructor(struct Hash *table, hashelem_free_t fn, intptr_t fn_data)
 {
-  table->destroy = fn;
-  table->dest_data = fn_data;
+  table->elem_free = fn;
+  table->hash_data = fn_data;
 }
 
 /**
@@ -452,26 +452,25 @@ void mutt_hash_int_delete(struct Hash *table, unsigned int intkey, const void *d
 }
 
 /**
- * mutt_hash_destroy - Destroy a hash table
+ * mutt_hash_free - elem_free a hash table
  * @param ptr Hash Table to be freed
  */
-void mutt_hash_destroy(struct Hash **ptr)
+void mutt_hash_free(struct Hash **ptr)
 {
-  struct Hash *pptr = NULL;
-  struct HashElem *elem = NULL, *tmp = NULL;
-
   if (!ptr || !*ptr)
     return;
 
-  pptr = *ptr;
+  struct Hash *pptr = *ptr;
+  struct HashElem *elem = NULL, *tmp = NULL;
+
   for (size_t i = 0; i < pptr->nelem; i++)
   {
     for (elem = pptr->table[i]; elem;)
     {
       tmp = elem;
       elem = elem->next;
-      if (pptr->destroy)
-        pptr->destroy(tmp->type, tmp->data, pptr->dest_data);
+      if (pptr->elem_free)
+        pptr->elem_free(tmp->type, tmp->data, pptr->hash_data);
       if (pptr->strdup_keys)
         FREE(&tmp->key.strkey);
       FREE(&tmp);

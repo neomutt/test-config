@@ -29,6 +29,7 @@
 
 #include "config.h"
 #include <stddef.h>
+#include <stdbool.h>
 #include <string.h>
 #include "md5.h"
 
@@ -104,7 +105,7 @@ static void mutt_md5_process_block(const void *buffer, size_t len, struct Md5Ctx
     words++;                                                                   \
     CYCLIC(a, s);                                                              \
     a += b;                                                                    \
-  } while (0)
+  } while (false)
 
 /* It is unfortunate that C does not provide an operator for
  * cyclic rotation.  Hope the C compiler is smart enough. */
@@ -145,7 +146,7 @@ static void mutt_md5_process_block(const void *buffer, size_t len, struct Md5Ctx
     a += f(b, c, d) + correct_words[k] + T;                                    \
     CYCLIC(a, s);                                                              \
     a += b;                                                                    \
-  } while (0)
+  } while (false)
 
     /* Round 2. */
     OP(FG, A, B, C, D, 1, 5, 0xf61e2562);
@@ -263,7 +264,8 @@ void mutt_md5_init_ctx(struct Md5Ctx *ctx)
   ctx->C = 0x98badcfe;
   ctx->D = 0x10325476;
 
-  ctx->total[0] = ctx->total[1] = 0;
+  ctx->total[0] = 0;
+  ctx->total[1] = 0;
   ctx->buflen = 0;
 }
 

@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-bool Type: Boolean
+ * @page config_bool Type: Boolean
  *
  * Type representing a boolean.
  */
@@ -40,16 +40,16 @@
 #include "types.h"
 
 /**
- * bool_values - Valid strings for creating a Bool
+ * BoolValues - Valid strings for creating a Bool
  *
  * These strings are case-insensitive.
  */
-const char *bool_values[] = {
+const char *BoolValues[] = {
   "no", "yes", "n", "y", "false", "true", "0", "1", "off", "on", NULL,
 };
 
 /**
- * bool_string_set - Set a Bool by string - Implements ::cst_string_set
+ * bool_string_set - Set a Bool by string - Implements ::cst_string_set()
  */
 static int bool_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                            const char *value, struct Buffer *err)
@@ -58,9 +58,9 @@ static int bool_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int num = -1;
-  for (size_t i = 0; bool_values[i]; i++)
+  for (size_t i = 0; BoolValues[i]; i++)
   {
-    if (mutt_str_strcasecmp(bool_values[i], value) == 0)
+    if (mutt_str_strcasecmp(BoolValues[i], value) == 0)
     {
       num = i % 2;
       break;
@@ -97,7 +97,7 @@ static int bool_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
 }
 
 /**
- * bool_string_get - Get a Bool as a string - Implements ::cst_string_get
+ * bool_string_get - Get a Bool as a string - Implements ::cst_string_get()
  */
 static int bool_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)
@@ -118,12 +118,12 @@ static int bool_string_get(const struct ConfigSet *cs, void *var,
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  mutt_buffer_addstr(result, bool_values[index]);
+  mutt_buffer_addstr(result, BoolValues[index]);
   return CSR_SUCCESS;
 }
 
 /**
- * bool_native_set - Set a Bool config item by bool - Implements ::cst_native_set
+ * bool_native_set - Set a Bool config item by bool - Implements ::cst_native_set()
  */
 static int bool_native_set(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
@@ -153,7 +153,7 @@ static int bool_native_set(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * bool_native_get - Get a bool from a Bool config item - Implements ::cst_native_get
+ * bool_native_get - Get a bool from a Bool config item - Implements ::cst_native_get()
  */
 static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
                                 const struct ConfigDef *cdef, struct Buffer *err)
@@ -165,7 +165,7 @@ static intptr_t bool_native_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * bool_reset - Reset a Bool to its initial value - Implements ::cst_reset
+ * bool_reset - Reset a Bool to its initial value - Implements ::cst_reset()
  */
 static int bool_reset(const struct ConfigSet *cs, void *var,
                       const struct ConfigDef *cdef, struct Buffer *err)

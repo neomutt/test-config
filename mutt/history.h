@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_HISTORY_H
-#define _MUTT_HISTORY_H
+#ifndef MUTT_LIB_HISTORY_H
+#define MUTT_LIB_HISTORY_H
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -35,18 +35,19 @@ extern short SaveHistory;
 
 /**
  * enum HistoryClass - Type to differentiate different histories
+ *
+ * Saved lists of recently-used:
  */
 enum HistoryClass
 {
-  HC_CMD,
-  HC_ALIAS,
-  HC_COMMAND,
-  HC_FILE,
-  HC_PATTERN,
-  HC_OTHER,
-  HC_MBOX,
-  /* insert new items here to keep history file working */
-  HC_LAST
+  HC_CMD,     ///< External commands
+  HC_ALIAS,   ///< Aliases
+  HC_COMMAND, ///< NeoMutt commands
+  HC_FILE,    ///< Files
+  HC_PATTERN, ///< Patterns
+  HC_OTHER,   ///< Miscellaneous strings
+  HC_MBOX,    ///< Mailboxes
+  HC_MAX,
 };
 
 void  mutt_hist_add(enum HistoryClass hclass, const char *str, bool save);
@@ -58,6 +59,6 @@ char *mutt_hist_prev(enum HistoryClass hclass);
 void  mutt_hist_read_file(void);
 void  mutt_hist_reset_state(enum HistoryClass hclass);
 void  mutt_hist_save_scratch(enum HistoryClass hclass, const char *str);
-int   mutt_hist_search(char *search_buf, enum HistoryClass hclass, char **matches);
+int   mutt_hist_search(const char *search_buf, enum HistoryClass hclass, char **matches);
 
-#endif /* _MUTT_HISTORY_H */
+#endif /* MUTT_LIB_HISTORY_H */

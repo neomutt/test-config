@@ -20,15 +20,15 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_ADDRESS_H
-#define _CONFIG_ADDRESS_H
+#ifndef MUTT_CONFIG_ADDRESS_H
+#define MUTT_CONFIG_ADDRESS_H
 
 #include <stdbool.h>
 
 struct ConfigSet;
 
 void address_init(struct ConfigSet *cs);
-struct Address *address_create(const char *addr);
+struct Address *address_new(const char *addr);
 void address_free(struct Address **addr);
 
-#endif /* _CONFIG_ADDRESS_H */
+#endif /* MUTT_CONFIG_ADDRESS_H */

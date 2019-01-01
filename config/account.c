@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-account Account-specific config items
+ * @page config_cfgaccount Account-specific config items
  *
  * A collection of account-specific config items.
  */
@@ -41,13 +41,13 @@
 #include "types.h"
 
 /**
- * ac_create - Create an Account
+ * ac_new - Create an Account
  * @param cs        Config items
  * @param name      Name of Account
  * @param var_names List of config items (NULL terminated)
  * @retval ptr New Account object
  */
-struct Account *ac_create(const struct ConfigSet *cs, const char *name,
+struct Account *ac_new(const struct ConfigSet *cs, const char *name,
                           const char *var_names[])
 {
   if (!cs || !name || !var_names)
@@ -134,7 +134,7 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
  * @param err   Buffer for error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-int ac_set_value(const struct Account *ac, unsigned int vid, intptr_t value, struct Buffer *err)
+int ac_set_value(const struct Account *ac, size_t vid, intptr_t value, struct Buffer *err)
 {
   if (!ac)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
@@ -146,13 +146,13 @@ int ac_set_value(const struct Account *ac, unsigned int vid, intptr_t value, str
 }
 
 /**
- * ac_get_value - Get an Account-specific config item
+ * ac_get_value - Get an account-specific config item
  * @param ac     Account-specific config items
  * @param vid    Value ID (index into Account's HashElem's)
  * @param result Buffer for results or error messages
  * @retval int Result, e.g. #CSR_SUCCESS
  */
-int ac_get_value(const struct Account *ac, unsigned int vid, struct Buffer *result)
+int ac_get_value(const struct Account *ac, size_t vid, struct Buffer *result)
 {
   if (!ac)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */

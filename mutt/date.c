@@ -232,7 +232,7 @@ time_t mutt_date_local_tz(time_t t)
  * @retval num Time in Unix format
  *
  * Convert a struct tm to time_t, but don't take the local timezone into
- * account unless ``local'' is nonzero
+ * account unless "local" is nonzero
  */
 time_t mutt_date_make_time(struct tm *t, int local)
 {
@@ -403,7 +403,7 @@ char *mutt_date_make_date(char *buf, size_t buflen)
 int mutt_date_check_month(const char *s)
 {
   for (int i = 0; i < mutt_array_size(Months); i++)
-    if (mutt_str_strncasecmp(s, Months[i], 3) == 0)
+    if (mutt_str_startswith(s, Months[i], CASE_IGNORE))
       return i;
 
   return -1; /* error */
@@ -423,7 +423,7 @@ bool mutt_date_is_day_name(const char *s)
     return false;
 
   for (int i = 0; i < mutt_array_size(Weekdays); i++)
-    if (mutt_str_strncasecmp(s, Weekdays[i], 3) == 0)
+    if (mutt_str_startswith(s, Weekdays[i], CASE_IGNORE))
       return true;
 
   return false;
@@ -470,7 +470,7 @@ time_t mutt_date_parse_date(const char *s, struct Tz *tz_out)
 
   memset(&tm, 0, sizeof(tm));
 
-  while ((t = strtok(t, " \t")) != NULL)
+  while ((t = strtok(t, " \t")))
   {
     switch (count)
     {
@@ -636,7 +636,7 @@ int mutt_date_make_tls(char *buf, size_t buflen, time_t timestamp)
  * @retval num Unix time
  * @retval 0   Error
  */
-time_t mutt_date_parse_imap(char *s)
+time_t mutt_date_parse_imap(const char *s)
 {
   struct tm t;
   time_t tz;

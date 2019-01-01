@@ -46,12 +46,12 @@ static const struct Mapping UrlMap[] = {
 
 /**
  * parse_query_string - Parse a URL query string
- * @param u Url to store the results
+ * @param l List to store the results
  * @param src String to parse
  * @retval  0 Success
  * @retval -1 Error
  */
-static int parse_query_string(struct Url *u, char *src)
+static int parse_query_string(struct UrlQueryStringHead *l, char *src)
 {
   struct UrlQueryString *qs = NULL;
   char *k = NULL, *v = NULL;
@@ -80,7 +80,7 @@ static int parse_query_string(struct Url *u, char *src)
       FREE(&qs);
       return -1;
     }
-    STAILQ_INSERT_TAIL(&u->query_strings, qs, entries);
+    STAILQ_INSERT_TAIL(l, qs, entries);
 
     if (!k)
       break;
@@ -142,8 +142,7 @@ enum UrlScheme url_check_scheme(const char *s)
     return U_UNKNOWN;
 
   mutt_str_strfcpy(sbuf, s, t - s + 1);
-  for (t = sbuf; *t; t++)
-    *t = tolower(*t);
+  mutt_str_strlower(sbuf);
 
   i = mutt_map_get_value(sbuf, UrlMap);
   if (i == -1)
@@ -154,61 +153,66 @@ enum UrlScheme url_check_scheme(const char *s)
 
 /**
  * url_parse - Fill in Url
- * @param u   Url where the result is stored
- * @param src String to parse
- * @retval 0  String is valid
- * @retval -1 String is invalid
+ * @param src   String to parse
+ * @retval ptr  Pointer to the parsed URL
+ * @retval NULL String is invalid
  *
- * char* elements are pointers into src, which is modified by this call
- * (duplicate it first if you need to).
- *
- * This method doesn't allocated any additional char* of the Url and
- * UrlQueryString structs.
- *
- * To free Url, caller must free "src" and call url_free()
+ * To free Url, caller must call url_free()
  */
-int url_parse(struct Url *u, char *src)
+struct Url *url_parse(const char *src)
 {
-  char *t = NULL, *p = NULL;
+  if (!src || !*src)
+    return NULL;
 
+  enum UrlScheme scheme = url_check_scheme(src);
+  if (scheme == U_UNKNOWN)
+    return NULL;
+
+  char *p = NULL;
+  size_t srcsize = strlen(src) + 1;
+  struct Url *u = mutt_mem_calloc(1, sizeof(struct Url) + srcsize);
+
+  u->scheme = scheme;
   u->user = NULL;
   u->pass = NULL;
   u->host = NULL;
   u->port = 0;
   u->path = NULL;
   STAILQ_INIT(&u->query_strings);
+  u->src = (char *) u + sizeof(struct Url);
+  mutt_str_strfcpy(u->src, src, srcsize);
 
-  u->scheme = url_check_scheme(src);
-  if (u->scheme == U_UNKNOWN)
-    return -1;
+  char *it = u->src;
 
-  src = strchr(src, ':') + 1;
+  it = strchr(it, ':') + 1;
 
-  if (strncmp(src, "//", 2) != 0)
+  if (strncmp(it, "//", 2) != 0)
   {
-    u->path = src;
-    return url_pct_decode(u->path);
+    u->path = it;
+    if (url_pct_decode(u->path) < 0)
+    {
+      url_free(&u);
+    }
+    return u;
   }
 
-  src += 2;
+  it += 2;
 
-  /* Notmuch and mailto schemes can include a query */
-#ifdef USE_NOTMUCH
-  if ((u->scheme == U_NOTMUCH) || (u->scheme == U_MAILTO))
-#else
-  if (u->scheme == U_MAILTO)
-#endif
+  /* We have the length of the string, so let's be fancier than strrchr */
+  for (char *q = u->src + srcsize - 1; q >= it; --q)
   {
-    t = strrchr(src, '?');
-    if (t)
+    if (*q == '?')
     {
-      *t++ = '\0';
-      if (parse_query_string(u, t) < 0)
+      *q = '\0';
+      if (parse_query_string(&u->query_strings, q + 1) < 0)
+      {
         goto err;
+      }
+      break;
     }
   }
 
-  u->path = strchr(src, '/');
+  u->path = strchr(it, '/');
   if (u->path)
   {
     *u->path++ = '\0';
@@ -216,11 +220,11 @@ int url_parse(struct Url *u, char *src)
       goto err;
   }
 
-  t = strrchr(src, '@');
-  if (t)
+  char *at = strrchr(it, '@');
+  if (at)
   {
-    *t = '\0';
-    p = strchr(src, ':');
+    *at = '\0';
+    p = strchr(it, ':');
     if (p)
     {
       *p = '\0';
@@ -228,24 +232,24 @@ int url_parse(struct Url *u, char *src)
       if (url_pct_decode(u->pass) < 0)
         goto err;
     }
-    u->user = src;
+    u->user = it;
     if (url_pct_decode(u->user) < 0)
       goto err;
-    src = t + 1;
+    it = at + 1;
   }
 
-  /* IPv6 literal address.  It may contain colons, so set t to start
+  /* IPv6 literal address.  It may contain colons, so set p to start
    * the port scan after it.
    */
-  if ((*src == '[') && (t = strchr(src, ']')))
+  if ((*it == '[') && (p = strchr(it, ']')))
   {
-    src++;
-    *t++ = '\0';
+    it++;
+    *p++ = '\0';
   }
   else
-    t = src;
+    p = it;
 
-  p = strchr(t, ':');
+  p = strchr(p, ':');
   if (p)
   {
     int num;
@@ -257,24 +261,24 @@ int url_parse(struct Url *u, char *src)
   else
     u->port = 0;
 
-  if (mutt_str_strlen(src) != 0)
+  if (mutt_str_strlen(it) != 0)
   {
-    u->host = src;
+    u->host = it;
     if (url_pct_decode(u->host) < 0)
       goto err;
   }
   else if (u->path)
   {
     /* No host are provided, we restore the / because this is absolute path */
-    u->path = src;
-    *src++ = '/';
+    u->path = it;
+    *it++ = '/';
   }
 
-  return 0;
+  return u;
 
 err:
-  url_free(u);
-  return -1;
+  url_free(&u);
+  return NULL;
 }
 
 /**
@@ -283,9 +287,12 @@ err:
  *
  * @note The Url itself is not freed
  */
-void url_free(struct Url *u)
+void url_free(struct Url **u)
 {
-  struct UrlQueryString *np = STAILQ_FIRST(&u->query_strings), *next = NULL;
+  if (!u || !*u)
+    return;
+
+  struct UrlQueryString *np = STAILQ_FIRST(&(*u)->query_strings), *next = NULL;
   while (np)
   {
     next = STAILQ_NEXT(np, entries);
@@ -294,103 +301,95 @@ void url_free(struct Url *u)
     FREE(&np);
     np = next;
   }
-  STAILQ_INIT(&u->query_strings);
+  STAILQ_INIT(&(*u)->query_strings);
+  FREE(u);
 }
 
 /**
  * url_pct_encode - Percent-encode a string
- * @param dst Buffer for the result
- * @param l   Length of buffer
+ * @param buf    Buffer for the result
+ * @param buflen Length of buffer
  * @param src String to encode
  *
  * e.g. turn "hello world" into "hello%20world"
  */
-void url_pct_encode(char *dst, size_t l, const char *src)
+void url_pct_encode(char *buf, size_t buflen, const char *src)
 {
   static const char *alph = "0123456789ABCDEF";
 
-  *dst = 0;
-  l--;
-  while (src && *src && (l != 0))
+  *buf = 0;
+  buflen--;
+  while (src && *src && (buflen != 0))
   {
     if (strchr("/:&%", *src))
     {
-      if (l < 3)
+      if (buflen < 3)
         break;
 
-      *dst++ = '%';
-      *dst++ = alph[(*src >> 4) & 0xf];
-      *dst++ = alph[*src & 0xf];
+      *buf++ = '%';
+      *buf++ = alph[(*src >> 4) & 0xf];
+      *buf++ = alph[*src & 0xf];
       src++;
-      l -= 3;
+      buflen -= 3;
       continue;
     }
-    *dst++ = *src++;
-    l--;
+    *buf++ = *src++;
+    buflen--;
   }
-  *dst = 0;
+  *buf = 0;
 }
 
 /**
  * url_tostring - Output the URL string for a given Url object
- * @param u     Url to turn into a string
- * @param dest  Buffer for the result
- * @param len   Length of buffer
- * @param flags Flags, e.g. #U_DECODE_PASSWD
+ * @param u      Url to turn into a string
+ * @param buf    Buffer for the result
+ * @param buflen Length of buffer
+ * @param flags  Flags, e.g. #U_PATH
  * @retval  0 Success
  * @retval -1 Error
  */
-int url_tostring(struct Url *u, char *dest, size_t len, int flags)
+int url_tostring(struct Url *u, char *buf, size_t buflen, int flags)
 {
   if (u->scheme == U_UNKNOWN)
     return -1;
 
-  snprintf(dest, len, "%s:", mutt_map_get_name(u->scheme, UrlMap));
+  snprintf(buf, buflen, "%s:", mutt_map_get_name(u->scheme, UrlMap));
 
   if (u->host)
   {
     if (!(flags & U_PATH))
-      mutt_str_strcat(dest, len, "//");
-    size_t l = strlen(dest);
-    len -= l;
-    dest += l;
+      mutt_str_strcat(buf, buflen, "//");
+    size_t l = strlen(buf);
+    buflen -= l;
+    buf += l;
 
     if (u->user && (u->user[0] || !(flags & U_PATH)))
     {
       char str[STRING];
       url_pct_encode(str, sizeof(str), u->user);
-
-      if (flags & U_DECODE_PASSWD && u->pass)
-      {
-        char p[STRING];
-        url_pct_encode(p, sizeof(p), u->pass);
-        snprintf(dest, len, "%s:%s@", str, p);
-      }
-      else
-        snprintf(dest, len, "%s@", str);
-
-      l = strlen(dest);
-      len -= l;
-      dest += l;
+      snprintf(buf, buflen, "%s@", str);
+      l = strlen(buf);
+      buflen -= l;
+      buf += l;
     }
 
     if (strchr(u->host, ':'))
-      snprintf(dest, len, "[%s]", u->host);
+      snprintf(buf, buflen, "[%s]", u->host);
     else
-      snprintf(dest, len, "%s", u->host);
+      snprintf(buf, buflen, "%s", u->host);
 
-    l = strlen(dest);
-    len -= l;
-    dest += l;
+    l = strlen(buf);
+    buflen -= l;
+    buf += l;
 
     if (u->port)
-      snprintf(dest, len, ":%hu/", u->port);
+      snprintf(buf, buflen, ":%hu/", u->port);
     else
-      snprintf(dest, len, "/");
+      snprintf(buf, buflen, "/");
   }
 
   if (u->path)
-    mutt_str_strcat(dest, len, u->path);
+    mutt_str_strcat(buf, buflen, u->path);
 
   return 0;
 }

@@ -20,31 +20,31 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_MAGIC_H
-#define _CONFIG_MAGIC_H
+#ifndef MUTT_CONFIG_MAGIC_H
+#define MUTT_CONFIG_MAGIC_H
 
 struct ConfigSet;
 
-extern const char *magic_values[];
+extern const char *MagicValues[];
 
 /**
  * enum MailboxType - Supported mailbox formats
  */
 enum MailboxType
 {
-  MUTT_MAILBOX_ERROR = -1,
-  MUTT_UNKNOWN = 0,
-  MUTT_MBOX,
-  MUTT_MMDF,
-  MUTT_MH,
-  MUTT_MAILDIR,
-  MUTT_NNTP,
-  MUTT_IMAP,
-  MUTT_NOTMUCH,
-  MUTT_POP,
-  MUTT_COMPRESSED,
+  MUTT_MAILBOX_ERROR = -1, ///< Error occurred examining mailbox
+  MUTT_UNKNOWN = 0,        ///< Mailbox wasn't recognised
+  MUTT_MBOX,               ///< 'mbox' Mailbox type
+  MUTT_MMDF,               ///< 'mmdf' Mailbox type
+  MUTT_MH,                 ///< 'MH' Mailbox type
+  MUTT_MAILDIR,            ///< 'Maildir' Mailbox type
+  MUTT_NNTP,               ///< 'NNTP' (Usenet) Mailbox type
+  MUTT_IMAP,               ///< 'IMAP' Mailbox type
+  MUTT_NOTMUCH,            ///< 'Notmuch' (virtual) Mailbox type
+  MUTT_POP,                ///< 'POP3' Mailbox type
+  MUTT_COMPRESSED,         ///< Compressed file Mailbox type
 };
 
 void magic_init(struct ConfigSet *cs);
 
-#endif /* _CONFIG_MAGIC_H */
+#endif /* MUTT_CONFIG_MAGIC_H */

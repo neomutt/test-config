@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-dump Dump all the config
+ * @page config_dump Dump all the config
  *
  * Dump all the config items in various formats.
  */
@@ -282,12 +282,12 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
         if ((type == DT_PATH) && (value->data[0] == '/'))
           mutt_pretty_mailbox(value->data, value->dsize);
 
-        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) && (type != DT_QUAD) &&
-            !(flags & CS_DUMP_NO_ESCAPING))
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) &&
+            (type != DT_QUAD) && !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(tmp);
-          size_t len = pretty_var(value->data, tmp);
-          mutt_str_strfcpy(value->data, tmp->data, len + 1);
+          pretty_var(value->data, tmp);
+          mutt_buffer_strcpy(value, tmp->data);
         }
       }
 
@@ -304,12 +304,12 @@ bool dump_config(struct ConfigSet *cs, int style, int flags)
         if ((type == DT_PATH) && !(he->type & DT_MAILBOX))
           mutt_pretty_mailbox(initial->data, initial->dsize);
 
-        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) && (type != DT_QUAD) &&
-            !(flags & CS_DUMP_NO_ESCAPING))
+        if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) &&
+            (type != DT_QUAD) && !(flags & CS_DUMP_NO_ESCAPING))
         {
           mutt_buffer_reset(tmp);
-          size_t len = pretty_var(initial->data, tmp);
-          mutt_str_strfcpy(initial->data, tmp->data, len + 1);
+          pretty_var(initial->data, tmp);
+          mutt_buffer_strcpy(initial, tmp->data);
         }
       }
     }

@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EMAIL_ADDRESS_H
-#define _EMAIL_ADDRESS_H
+#ifndef MUTT_EMAIL_ADDRESS_H
+#define MUTT_EMAIL_ADDRESS_H
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -44,12 +44,12 @@ struct Address
  */
 enum AddressError
 {
-  ERR_MEMORY = 1,
-  ERR_MISMATCH_PAREN,
-  ERR_MISMATCH_QUOTE,
-  ERR_BAD_ROUTE,
-  ERR_BAD_ROUTE_ADDR,
-  ERR_BAD_ADDR_SPEC
+  ADDR_ERR_MEMORY = 1,     ///< Out of memory
+  ADDR_ERR_MISMATCH_PAREN, ///< Mismatched parentheses
+  ADDR_ERR_MISMATCH_QUOTE, ///< Mismatches quotes
+  ADDR_ERR_BAD_ROUTE,      ///< Bad route
+  ADDR_ERR_BAD_ROUTE_ADDR, ///< Bad route address
+  ADDR_ERR_BAD_ADDR_SPEC,  ///< Bad address specifier
 };
 
 extern int AddressError;
@@ -75,6 +75,7 @@ struct Address *mutt_addr_parse_list(struct Address *top, const char *s);
 struct Address *mutt_addr_parse_list2(struct Address *p, const char *s);
 void            mutt_addr_qualify(struct Address *addr, const char *host);
 int             mutt_addr_remove_from_list(struct Address **a, const char *mailbox);
+struct Address *mutt_addr_remove_xrefs(struct Address *a, struct Address *b);
 bool            mutt_addr_search(struct Address *a, struct Address *lst);
 void            mutt_addr_set_intl(struct Address *a, char *intl_mailbox);
 void            mutt_addr_set_local(struct Address *a, char *local_mailbox);
@@ -84,4 +85,4 @@ void            mutt_addr_write_single(char *buf, size_t buflen, struct Address 
 int             mutt_addrlist_to_intl(struct Address *a, char **err);
 int             mutt_addrlist_to_local(struct Address *a);
 
-#endif /* _EMAIL_ADDRESS_H */
+#endif /* MUTT_EMAIL_ADDRESS_H */

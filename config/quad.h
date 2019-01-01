@@ -20,28 +20,28 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFIG_QUAD_H
-#define _CONFIG_QUAD_H
+#ifndef MUTT_CONFIG_QUAD_H
+#define MUTT_CONFIG_QUAD_H
 
 struct Buffer;
 struct ConfigSet;
 struct HashElem;
 
-extern const char *quad_values[];
+extern const char *QuadValues[];
 
 /**
  * enum QuadOption - Possible values for a quad-option
  */
 enum QuadOption
 {
-  MUTT_ABORT = -1,
-  MUTT_NO,
-  MUTT_YES,
-  MUTT_ASKNO,
-  MUTT_ASKYES
+  MUTT_ABORT = -1, ///< User aborted the question (with Ctrl-G)
+  MUTT_NO,         ///< User answered 'No', or assume 'No'
+  MUTT_YES,        ///< User answered 'Yes', or assume 'Yes'
+  MUTT_ASKNO,      ///< Ask the user, defaulting to 'No'
+  MUTT_ASKYES,     ///< Ask the user, defaulting to 'Yes'
 };
 
 void quad_init(struct ConfigSet *cs);
 int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err);
 
-#endif /* _CONFIG_QUAD_H */
+#endif /* MUTT_CONFIG_QUAD_H */

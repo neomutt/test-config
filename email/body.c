@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include "mutt/mutt.h"
 #include "body.h"
-#include "header.h"
+#include "email.h"
 #include "mime.h"
 #include "parameter.h"
 
@@ -55,6 +55,9 @@ struct Body *mutt_body_new(void)
  */
 void mutt_body_free(struct Body **p)
 {
+  if (!p)
+    return;
+
   struct Body *a = *p, *b = NULL;
 
   while (a)
@@ -76,19 +79,18 @@ void mutt_body_free(struct Body **p)
     FREE(&b->content);
     FREE(&b->xtype);
     FREE(&b->subtype);
+    FREE(&b->language);
     FREE(&b->description);
     FREE(&b->form_name);
 
-    if (b->hdr)
+    if (b->email)
     {
       /* Don't free twice (b->hdr->content = b->parts) */
-      b->hdr->content = NULL;
-      mutt_header_free(&b->hdr);
+      b->email->content = NULL;
+      mutt_email_free(&b->email);
     }
 
-    if (b->parts)
-      mutt_body_free(&b->parts);
-
+    mutt_body_free(&b->parts);
     FREE(&b);
   }
 

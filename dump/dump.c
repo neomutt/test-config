@@ -39,7 +39,7 @@ void config_dump(void)
   err.dsize = STRING;
   mutt_buffer_reset(&err);
 
-  struct ConfigSet *cs = cs_create(500);
+  struct ConfigSet *cs = cs_new(500);
 
   address_init(cs);
   bool_init(cs);

@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-regex Type: Regular expression
+ * @page config_regex Type: Regular expression
  *
  * Type representing a regular expression.
  */
@@ -42,14 +42,14 @@
 #include "types.h"
 
 /**
- * regex_destroy - Destroy a Regex object - Implements ::cst_destroy
+ * regex_destroy - Destroy a Regex object - Implements ::cst_destroy()
  */
 static void regex_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
   if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
 
-  struct Regex **r = (struct Regex **) var;
+  struct Regex **r = var;
   if (!*r)
     return;
 
@@ -57,7 +57,7 @@ static void regex_destroy(const struct ConfigSet *cs, void *var, const struct Co
 }
 
 /**
- * regex_string_set - Set a Regex by string - Implements ::cst_string_set
+ * regex_string_set - Set a Regex by string - Implements ::cst_string_set()
  */
 static int regex_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                             const char *value, struct Buffer *err)
@@ -81,7 +81,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
 
     if (value)
     {
-      r = regex_create(value, cdef->type, err);
+      r = regex_new(value, cdef->type, err);
       if (!r)
         return CSR_ERR_INVALID;
     }
@@ -117,7 +117,7 @@ static int regex_string_set(const struct ConfigSet *cs, void *var, struct Config
 }
 
 /**
- * regex_string_get - Get a Regex as a string - Implements ::cst_string_get
+ * regex_string_get - Get a Regex as a string - Implements ::cst_string_get()
  */
 static int regex_string_get(const struct ConfigSet *cs, void *var,
                             const struct ConfigDef *cdef, struct Buffer *result)
@@ -146,7 +146,7 @@ static int regex_string_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * regex_native_set - Set a Regex config item by Regex object - Implements ::cst_native_set
+ * regex_native_set - Set a Regex config item by Regex object - Implements ::cst_native_set()
  */
 static int regex_native_set(const struct ConfigSet *cs, void *var,
                             const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
@@ -171,7 +171,7 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
   if (orig && orig->pattern)
   {
     const int flags = orig->not? DT_REGEX_ALLOW_NOT : 0;
-    r = regex_create(orig->pattern, flags, err);
+    r = regex_new(orig->pattern, flags, err);
     if (!r)
       rc = CSR_ERR_INVALID;
   }
@@ -190,7 +190,7 @@ static int regex_native_set(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * regex_native_get - Get a Regex object from a Regex config item - Implements ::cst_native_get
+ * regex_native_get - Get a Regex object from a Regex config item - Implements ::cst_native_get()
  */
 static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
                                  const struct ConfigDef *cdef, struct Buffer *err)
@@ -204,7 +204,7 @@ static intptr_t regex_native_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * regex_reset - Reset a Regex to its initial value - Implements ::cst_reset
+ * regex_reset - Reset a Regex to its initial value - Implements ::cst_reset()
  */
 static int regex_reset(const struct ConfigSet *cs, void *var,
                        const struct ConfigDef *cdef, struct Buffer *err)
@@ -227,7 +227,7 @@ static int regex_reset(const struct ConfigSet *cs, void *var,
 
   if (initial)
   {
-    r = regex_create(initial, cdef->type, err);
+    r = regex_new(initial, cdef->type, err);
     if (!r)
       return CSR_ERR_CODE;
   }
@@ -266,14 +266,14 @@ void regex_init(struct ConfigSet *cs)
 }
 
 /**
- * regex_create - Create an Regex from a string
+ * regex_new - Create an Regex from a string
  * @param str   Regular expression
  * @param flags Type flags, e.g. #DT_REGEX_MATCH_CASE
  * @param err   Buffer for error messages
  * @retval ptr New Regex object
  * @retval NULL Error
  */
-struct Regex *regex_create(const char *str, int flags, struct Buffer *err)
+struct Regex *regex_new(const char *str, int flags, struct Buffer *err)
 {
   if (!str)
     return NULL; /* LCOV_EXCL_LINE */

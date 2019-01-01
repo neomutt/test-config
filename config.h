@@ -1,15 +1,18 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 #define _GNU_SOURCE 1
-#define ALL_TARGETS "all-po all-doc all-contrib"
+#define ALL_TARGETS "all-po all-doc all-contrib all-test"
 #define BINDIR "/usr/bin"
-#define CLEAN_TARGETS "clean-po clean-doc clean-contrib"
+#define CLEAN_TARGETS "clean-po clean-doc clean-contrib clean-test"
 #define CRYPT_BACKEND_CLASSIC_PGP 1
 #define CRYPT_BACKEND_CLASSIC_SMIME 1
 #define CRYPT_BACKEND_GPGME 1
+#define ENABLE_NLS 1
 #define HAVE_BDB 1
+#define HAVE_BIND_TEXTDOMAIN_CODESET 1
 #define HAVE_BKGDSET 1
 #define HAVE_CFLAG_STD_C99 1
+#define HAVE_CLOCK_GETTIME 1
 #define HAVE_COLOR 1
 #define HAVE_CURS_SET 1
 #define HAVE_DB_ENV_CREATE 1
@@ -39,18 +42,20 @@
 #define HAVE_GPGME 1
 #define HAVE_GPGME_H 1
 #define HAVE_GPGME_NEW 1
-#define HAVE_GPGME_OP_EXPORT_KEYS 1
 #define HAVE_ICONV 1
 #define HAVE_ICONV_H 1
-#define HAVE_IDNA_H 1
+#define HAVE_IDN2_H 1
+#define HAVE_IDN2_LOOKUP_U8 1
 #define HAVE_IDNA_TO_ASCII_8Z 1
 /* #undef HAVE_IDNA_TO_ASCII_FROM_LOCALE */
 /* #undef HAVE_IDNA_TO_ASCII_FROM_UTF8 */
 #define HAVE_IDNA_TO_ASCII_LZ 1
 #define HAVE_IDNA_TO_UNICODE_8Z8Z 1
 /* #undef HAVE_IDNA_TO_UNICODE_UTF8_FROM_UTF8 */
-/* #undef HAVE_IDN_IDNA_H */
-/* #undef HAVE_IDN_STRINGPREP_H */
+/* #undef HAVE_IDN_IDN2_H */
+#define HAVE_INOTIFY_ADD_WATCH 1
+#define HAVE_INOTIFY_INIT1 1
+#define HAVE_INOTIFY_RM_WATCH 1
 /* #undef HAVE_IOCTL_H */
 #define HAVE_ISWBLANK 1
 #define HAVE_KC 1
@@ -68,6 +73,7 @@
 #define HAVE_MKDTEMP 1
 #define HAVE_NCURSESW_NCURSES_H 1
 #define HAVE_NOTMUCH 1
+#define HAVE_NOTMUCH_DATABASE_INDEX_FILE 1
 #define HAVE_NOTMUCH_DATABASE_OPEN 1
 #define HAVE_NOTMUCH_H 1
 #define HAVE_PGP 1
@@ -83,28 +89,32 @@
 #define HAVE_SMIME 1
 #define HAVE_START_COLOR 1
 #define HAVE_STDLIB_H 1
-#define HAVE_STRINGPREP_CHECK_VERSION 1
-#define HAVE_STRINGPREP_H 1
 #define HAVE_STRSEP 1
+#define HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC 1
+#define HAVE_STRUCT_TIMESPEC 1
 #define HAVE_SYSEXITS_H 1
+#define HAVE_SYS_INOTIFY_H 1
 #define HAVE_SYS_IOCTL_H 1
 #define HAVE_SYS_PARAM_H 1
+#define HAVE_SYS_STAT_H 1
 #define HAVE_SYS_SYSCALL_H 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_TC 1
 #define HAVE_TCBDBOPEN 1
 #define HAVE_TCBDB_H 1
 #define HAVE_TGETENT 1
+#define HAVE_TIME_H 1
 #define HAVE_TYPEAHEAD 1
 #define HAVE_UNISTD_H 1
 #define HAVE_USE_DEFAULT_COLORS 1
 #define HAVE_USE_EXTENDED_NAMES 1
+/* #undef HAVE_UTIMESNSAT */
 #define HAVE_VASPRINTF 1
 #define HAVE_VLOPEN 1
 #define HAVE_WADDNWSTR 1
 #define HAVE_WCSCASECMP 1
 #define ICONV_CONST 
-#define INSTALL_TARGETS "install-po install-doc install-contrib"
+#define INSTALL_TARGETS "install-po install-doc install-contrib install-test"
 #define LOFF_T off_t
 #define MAILPATH "/var/mail"
 #define MIXMASTER "mixmaster"
@@ -112,7 +122,7 @@
 #define NOTMUCH_API_3 1
 #define OFF_T_FMT "%" PRId64
 #define PACKAGE "neomutt"
-#define PACKAGE_VERSION "20171027"
+#define PACKAGE_VERSION "20180716"
 #define PKGDATADIR "/usr/share/neomutt"
 #define PKGDOCDIR "/usr/share/doc/neomutt"
 #define SENDMAIL "/usr/sbin/sendmail"
@@ -120,13 +130,14 @@
 #define SIZEOF_OFF_T 8
 #define SUN_ATTACHMENT 1
 #define SYSCONFDIR "/etc"
-#define UNINSTALL_TARGETS "uninstall-po uninstall-doc uninstall-contrib"
+#define UNINSTALL_TARGETS "uninstall-po uninstall-doc uninstall-contrib uninstall-test"
 #define USE_COMPRESSED 1
 #define USE_FCNTL 1
 /* #undef USE_FMEMOPEN */
 #define USE_GSS 1
 #define USE_HCACHE 1
 #define USE_IMAP 1
+#define USE_INOTIFY 1
 #define USE_LUA 1
 #define USE_NNTP 1
 #define USE_NOTMUCH 1

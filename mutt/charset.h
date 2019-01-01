@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_CHARSET_H
-#define _MUTT_CHARSET_H
+#ifndef MUTT_LIB_CHARSET_H
+#define MUTT_LIB_CHARSET_H
 
 #include <iconv.h>
 #include <stdbool.h>
@@ -74,8 +74,8 @@ struct MimeNames
  */
 enum LookupType
 {
-  MUTT_LOOKUP_CHARSET,
-  MUTT_LOOKUP_ICONV
+  MUTT_LOOKUP_CHARSET, ///< Alias for another character set
+  MUTT_LOOKUP_ICONV,   ///< Character set conversion
 };
 
 #define MUTT_ICONV_HOOK_FROM 1 /**< apply charset-hooks to fromcode */
@@ -86,7 +86,7 @@ void             mutt_ch_canonical_charset(char *buf, size_t buflen, const char 
 const char *     mutt_ch_charset_lookup(const char *chs);
 int              mutt_ch_check(const char *s, size_t slen, const char *from, const char *to);
 bool             mutt_ch_check_charset(const char *cs, bool strict);
-char *           mutt_ch_choose(const char *fromcode, const char *charsets, char *u, size_t ulen, char **d, size_t *dlen);
+char *           mutt_ch_choose(const char *fromcode, const char *charsets, const char *u, size_t ulen, char **d, size_t *dlen);
 bool             mutt_ch_chscmp(const char *cs1, const char *cs2);
 int              mutt_ch_convert_nonmime_string(char **ps);
 int              mutt_ch_convert_string(char **ps, const char *from, const char *to, int flags);
@@ -106,4 +106,4 @@ void             mutt_ch_set_charset(const char *charset);
 #define mutt_ch_is_utf8(a)     mutt_ch_chscmp(a, "utf-8")
 #define mutt_ch_is_us_ascii(a) mutt_ch_chscmp(a, "us-ascii")
 
-#endif
+#endif /* MUTT_LIB_CHARSET_H */

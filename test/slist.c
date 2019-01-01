@@ -486,7 +486,7 @@ bool slist_test_separator(struct ConfigDef Vars[], struct Buffer *err)
   log_line(__func__);
 
   mutt_buffer_reset(err);
-  struct ConfigSet *cs = cs_create(30);
+  struct ConfigSet *cs = cs_new(30);
 
   slist_init(cs);
   if (!cs_register_variables(cs, Vars, 0))

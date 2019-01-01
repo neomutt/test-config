@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-sort Type: Sorting
+ * @page config_sort Type: Sorting
  *
  * Type representing a sort option.
  */
@@ -132,7 +132,7 @@ const struct Mapping SortSidebarMethods[] = {
 // clang-format on
 
 /**
- * sort_string_set - Set a Sort by string - Implements ::cst_string_set
+ * sort_string_set - Set a Sort by string - Implements ::cst_string_set()
  */
 static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                            const char *value, struct Buffer *err)
@@ -149,16 +149,19 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
-  if (mutt_str_strncmp("reverse-", value, 8) == 0)
+  size_t plen = 0;
+  plen = mutt_str_startswith(value, "reverse-", CASE_MATCH);
+  if (plen != 0)
   {
     flags |= SORT_REVERSE;
-    value += 8;
+    value += plen;
   }
 
-  if (mutt_str_strncmp("last-", value, 5) == 0)
+  plen = mutt_str_startswith(value, "last-", CASE_MATCH);
+  if (plen != 0)
   {
     flags |= SORT_LAST;
-    value += 5;
+    value += plen;
   }
 
   switch (cdef->type & DT_SUBTYPE_MASK)
@@ -219,7 +222,7 @@ static int sort_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
 }
 
 /**
- * sort_string_get - Get a Sort as a string - Implements ::cst_string_get
+ * sort_string_get - Get a Sort as a string - Implements ::cst_string_get()
  */
 static int sort_string_get(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, struct Buffer *result)
@@ -281,7 +284,7 @@ static int sort_string_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * sort_native_set - Set a Sort config item by int - Implements ::cst_native_set
+ * sort_native_set - Set a Sort config item by int - Implements ::cst_native_set()
  */
 static int sort_native_set(const struct ConfigSet *cs, void *var,
                            const struct ConfigDef *cdef, intptr_t value, struct Buffer *err)
@@ -339,7 +342,7 @@ static int sort_native_set(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * sort_native_get - Get an int from a Sort config item - Implements ::cst_native_get
+ * sort_native_get - Get an int from a Sort config item - Implements ::cst_native_get()
  */
 static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
                                 const struct ConfigDef *cdef, struct Buffer *err)
@@ -351,7 +354,7 @@ static intptr_t sort_native_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * sort_reset - Reset a Sort to its initial value - Implements ::cst_reset
+ * sort_reset - Reset a Sort to its initial value - Implements ::cst_reset()
  */
 static int sort_reset(const struct ConfigSet *cs, void *var,
                       const struct ConfigDef *cdef, struct Buffer *err)

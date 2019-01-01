@@ -193,6 +193,16 @@ int log_file_set_level(int level, bool verbose)
     log_file_open(verbose);
   }
 
+  if (LogFileLevel == LL_DEBUG5)
+  {
+    fprintf(LogFileFP,
+            "\n"
+            "WARNING:\n"
+            "    Logging at this level can reveal personal information.\n"
+            "    Review the log carefully before posting in bug reports.\n"
+            "\n");
+  }
+
   return 0;
 }
 
@@ -214,7 +224,7 @@ void log_file_set_version(const char *version)
  */
 bool log_file_running(void)
 {
-  return LogFileFP != NULL;
+  return LogFileFP;
 }
 
 /**
@@ -284,7 +294,10 @@ int log_queue_add(struct LogLine *ll)
 
   if ((LogQueueMax > 0) && (LogQueueCount >= LogQueueMax))
   {
+    ll = STAILQ_FIRST(&LogQueue);
     STAILQ_REMOVE_HEAD(&LogQueue, entries);
+    FREE(&ll->message);
+    FREE(&ll);
   }
   else
   {

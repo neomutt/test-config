@@ -115,7 +115,7 @@ static const char *parse_comment(const char *s, char *comment, size_t *commentle
   }
   if (level != 0)
   {
-    AddressError = ERR_MISMATCH_PAREN;
+    AddressError = ADDR_ERR_MISMATCH_PAREN;
     return NULL;
   }
   return s;
@@ -149,7 +149,7 @@ static const char *parse_quote(const char *s, char *token, size_t *tokenlen, siz
     (*tokenlen)++;
     s++;
   }
-  AddressError = ERR_MISMATCH_QUOTE;
+  AddressError = ADDR_ERR_MISMATCH_QUOTE;
   return NULL;
 }
 
@@ -313,7 +313,7 @@ static const char *parse_route_addr(const char *s, char *comment, size_t *commen
     }
     if (!s || (*s != ':'))
     {
-      AddressError = ERR_BAD_ROUTE;
+      AddressError = ADDR_ERR_BAD_ROUTE;
       return NULL; /* invalid route */
     }
 
@@ -329,7 +329,7 @@ static const char *parse_route_addr(const char *s, char *comment, size_t *commen
 
   if (*s != '>')
   {
-    AddressError = ERR_BAD_ROUTE_ADDR;
+    AddressError = ADDR_ERR_BAD_ROUTE_ADDR;
     return NULL;
   }
 
@@ -359,7 +359,7 @@ static const char *parse_addr_spec(const char *s, char *comment, size_t *comment
                     commentmax, addr);
   if (s && *s && (*s != ',') && (*s != ';'))
   {
-    AddressError = ERR_BAD_ADDR_SPEC;
+    AddressError = ADDR_ERR_BAD_ADDR_SPEC;
     return NULL;
   }
   return s;
@@ -637,7 +637,7 @@ struct Address *mutt_addr_parse_list2(struct Address *p, const char *s)
 
     mutt_str_strfcpy(tmp, s, sizeof(tmp));
     char *r = tmp;
-    while ((r = strtok(r, " \t")) != NULL)
+    while ((r = strtok(r, " \t")))
     {
       p = mutt_addr_parse_list(p, r);
       r = NULL;
@@ -743,7 +743,10 @@ struct Address *mutt_addr_copy_list(struct Address *addr, bool prune)
       last = last->next;
     }
     else
-      top = last = mutt_addr_copy(addr);
+    {
+      last = mutt_addr_copy(addr);
+      top = last;
+    }
   }
   return top;
 }
@@ -768,7 +771,10 @@ struct Address *mutt_addr_append(struct Address **a, struct Address *b, bool pru
   if (tmp)
     tmp->next = mutt_addr_copy_list(b, prune);
   else
-    tmp = *a = mutt_addr_copy_list(b, prune);
+  {
+    *a = mutt_addr_copy_list(b, prune);
+    tmp = *a;
+  }
   while (tmp && tmp->next)
     tmp = tmp->next;
   return tmp;
@@ -1308,6 +1314,51 @@ struct Address *mutt_addrlist_dedupe(struct Address *addr)
       addr = addr->next;
     }
   }
+  return top;
+}
 
+/**
+ * mutt_addr_remove_xrefs - Remove cross-references
+ * @param a Reference list of Addresses
+ * @param b Address list to trim
+ * @retval ptr Updated Address list
+ *
+ * Remove addresses from "b" which are contained in "a"
+ */
+struct Address *mutt_addr_remove_xrefs(struct Address *a, struct Address *b)
+{
+  struct Address *p = NULL, *prev = NULL;
+
+  struct Address *top = b;
+  while (b)
+  {
+    for (p = a; p; p = p->next)
+    {
+      if (mutt_addr_cmp(p, b))
+        break;
+    }
+    if (p)
+    {
+      if (prev)
+      {
+        prev->next = b->next;
+        b->next = NULL;
+        mutt_addr_free(&b);
+        b = prev;
+      }
+      else
+      {
+        top = top->next;
+        b->next = NULL;
+        mutt_addr_free(&b);
+        b = top;
+      }
+    }
+    else
+    {
+      prev = b;
+      b = b->next;
+    }
+  }
   return top;
 }

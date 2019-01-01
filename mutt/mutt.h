@@ -34,6 +34,7 @@
  * | mutt/envlist.c   | @subpage envlist   |
  * | mutt/exit.c      | @subpage exit      |
  * | mutt/file.c      | @subpage file      |
+ * | mutt/group.c     | @subpage group     |
  * | mutt/hash.c      | @subpage hash      |
  * | mutt/history.c   | @subpage history   |
  * | mutt/list.c      | @subpage list      |
@@ -52,8 +53,8 @@
  *       the library, but none depends on source from outside.
  */
 
-#ifndef _MUTT_MUTT_H
-#define _MUTT_MUTT_H
+#ifndef MUTT_LIB_MUTT_H
+#define MUTT_LIB_MUTT_H
 
 #include "base64.h"
 #include "buffer.h"
@@ -62,6 +63,7 @@
 #include "envlist.h"
 #include "exit.h"
 #include "file.h"
+#include "group.h"
 #include "hash.h"
 #include "history.h"
 #include "list.h"
@@ -78,4 +80,4 @@
 #include "signal2.h"
 #include "string2.h"
 
-#endif /* _MUTT_MUTT_H */
+#endif /* MUTT_LIB_MUTT_H */

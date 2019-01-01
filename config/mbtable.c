@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-mbtable Type: Multi-byte character table
+ * @page config_mbtable Type: Multi-byte character table
  *
  * Type representing a multibyte character table.
  */
@@ -61,7 +61,8 @@ struct MbTable *mbtable_parse(const char *s)
   /* This could be more space efficient.  However, being used on tiny
    * strings (Tochars and StatusChars), the overhead is not great. */
   t->chars = mutt_mem_calloc(slen, sizeof(char *));
-  d = t->segmented_str = mutt_mem_calloc(slen * 2, sizeof(char));
+  t->segmented_str = mutt_mem_calloc(slen * 2, sizeof(char));
+  d = t->segmented_str;
 
   memset(&mbstate, 0, sizeof(mbstate));
   while (slen && (k = mbrtowc(NULL, s, slen, &mbstate)))
@@ -87,14 +88,14 @@ struct MbTable *mbtable_parse(const char *s)
 }
 
 /**
- * mbtable_destroy - Destroy an MbTable object - Implements ::cst_destroy
+ * mbtable_destroy - Destroy an MbTable object - Implements ::cst_destroy()
  */
 static void mbtable_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef *cdef)
 {
   if (!cs || !var || !cdef)
     return; /* LCOV_EXCL_LINE */
 
-  struct MbTable **m = (struct MbTable **) var;
+  struct MbTable **m = var;
   if (!*m)
     return;
 
@@ -102,7 +103,7 @@ static void mbtable_destroy(const struct ConfigSet *cs, void *var, const struct 
 }
 
 /**
- * mbtable_string_set - Set a MbTable by string - Implements ::cst_string_set
+ * mbtable_string_set - Set a MbTable by string - Implements ::cst_string_set()
  */
 static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                               const char *value, struct Buffer *err)
@@ -156,7 +157,7 @@ static int mbtable_string_set(const struct ConfigSet *cs, void *var, struct Conf
 }
 
 /**
- * mbtable_string_get - Get a MbTable as a string - Implements ::cst_string_get
+ * mbtable_string_get - Get a MbTable as a string - Implements ::cst_string_get()
  */
 static int mbtable_string_get(const struct ConfigSet *cs, void *var,
                               const struct ConfigDef *cdef, struct Buffer *result)
@@ -198,7 +199,7 @@ static struct MbTable *mbtable_dup(struct MbTable *table)
 }
 
 /**
- * mbtable_native_set - Set a MbTable config item by MbTable object - Implements ::cst_native_set
+ * mbtable_native_set - Set a MbTable config item by MbTable object - Implements ::cst_native_set()
  */
 static int mbtable_native_set(const struct ConfigSet *cs, void *var,
                               const struct ConfigDef *cdef, intptr_t value,
@@ -230,7 +231,7 @@ static int mbtable_native_set(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * mbtable_native_get - Get an MbTable object from a MbTable config item - Implements ::cst_native_get
+ * mbtable_native_get - Get an MbTable object from a MbTable config item - Implements ::cst_native_get()
  */
 static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
                                    const struct ConfigDef *cdef, struct Buffer *err)
@@ -244,7 +245,7 @@ static intptr_t mbtable_native_get(const struct ConfigSet *cs, void *var,
 }
 
 /**
- * mbtable_reset - Reset an MbTable to its initial value - Implements ::cst_reset
+ * mbtable_reset - Reset an MbTable to its initial value - Implements ::cst_reset()
  */
 static int mbtable_reset(const struct ConfigSet *cs, void *var,
                          const struct ConfigDef *cdef, struct Buffer *err)

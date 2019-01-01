@@ -20,9 +20,13 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_SIGNAL_H
-#define _MUTT_SIGNAL_H
+#ifndef MUTT_LIB_SIGNAL_H
+#define MUTT_LIB_SIGNAL_H
 
+/**
+ * typedef sig_handler_t - Handler for signals
+ * @param sig Signal number, e.g. SIGINT
+ */
 typedef void (*sig_handler_t)(int sig);
 
 void mutt_sig_allow_interrupt(int disposition);
@@ -34,4 +38,4 @@ void mutt_sig_init(sig_handler_t sig_fn, sig_handler_t exit_fn);
 void mutt_sig_unblock(void);
 void mutt_sig_unblock_system(bool catch);
 
-#endif /* _MUTT_SIGNAL_H */
+#endif /* MUTT_LIB_SIGNAL_H */

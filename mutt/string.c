@@ -118,6 +118,71 @@ const char *mutt_str_sysexit(int e)
 }
 
 /**
+ * char_cmp_identity - Compare two characters
+ * @param a First character to compare
+ * @param b Second character to compare
+ * @retval a == b
+ */
+static inline bool char_cmp_identity(char a, char b)
+{
+  return a == b;
+}
+
+/**
+ * char_cmp_lower - Compare two characters ignoring case
+ * @param a First character to compare
+ * @param b Second character to compare
+ * @retval a == b, ignoring case
+ */
+static inline bool char_cmp_lower(char a, char b)
+{
+  return tolower((unsigned char) a) == tolower((unsigned char) b);
+}
+
+/**
+ * char_cmp - Pointer to a function taking two characters and returning bool
+ */
+typedef bool (*char_cmp)(char, char);
+
+/**
+ * get_char_cmp - Retrieve the correct function to compare characters according
+ * to a case sensitivity setting.
+ * @param cs Case sensitivity setting
+ * @retval A char_cmp function pointer
+ */
+static char_cmp get_char_cmp(enum CaseSensitivity cs)
+{
+  return cs == CASE_IGNORE ? char_cmp_lower : char_cmp_identity;
+}
+
+/**
+ * mutt_str_startswith - Check whether a string starts with a prefix.
+ * @param str String to check
+ * @param prefix Prefix to match
+ * @param cs Case sensitivity setting
+ * @retval Length of prefix if str starts with prefix
+ * @retval 0 if str does not start with prefix
+ */
+size_t mutt_str_startswith(const char *str, const char *prefix, enum CaseSensitivity cs)
+{
+  if (!str || !str[0] || !prefix || !prefix[0])
+  {
+    return 0;
+  }
+
+  const char *saved_prefix = prefix;
+  for (char_cmp f = get_char_cmp(cs); *str && *prefix; str++, prefix++)
+  {
+    if (!f(*str, *prefix))
+    {
+      return 0;
+    }
+  }
+
+  return (!*prefix) ? prefix - saved_prefix : 0;
+}
+
+/**
  * mutt_str_atol - Convert ASCII string to a long
  * @param[in]  str String to read
  * @param[out] dst Store the result
@@ -271,6 +336,39 @@ int mutt_str_atoul(const char *str, unsigned long *dst)
   errno = 0;
   *res = strtoul(str, &e, 10);
   if ((*res == ULONG_MAX) && (errno == ERANGE))
+    return -1;
+  if (e && (*e != '\0'))
+    return 1;
+  return 0;
+}
+
+/**
+ * mutt_str_atoull - Convert ASCII string to an unsigned long long
+ * @param[in]  str String to read
+ * @param[out] dst Store the result
+ * @retval  1 Successful conversion, with trailing characters
+ * @retval  0 Successful conversion
+ * @retval -1 Invalid input
+ *
+ * @note This function's return value differs from the other functions.
+ *       They return -1 if there is input beyond the number.
+ */
+int mutt_str_atoull(const char *str, unsigned long long *dst)
+{
+  unsigned long long r;
+  unsigned long long *res = dst ? dst : &r;
+  char *e = NULL;
+
+  /* no input: 0 */
+  if (!str || !*str)
+  {
+    *res = 0;
+    return 0;
+  }
+
+  errno = 0;
+  *res = strtoull(str, &e, 10);
+  if ((*res == ULLONG_MAX) && (errno == ERANGE))
     return -1;
   if (e && (*e != '\0'))
     return 1;
@@ -681,7 +779,7 @@ char *mutt_str_skip_email_wsp(const char *s)
  */
 bool mutt_str_is_email_wsp(char c)
 {
-  return c && (strchr(EMAIL_WSP, c) != NULL);
+  return c && (strchr(EMAIL_WSP, c));
 }
 
 /**
@@ -956,6 +1054,96 @@ const char *mutt_str_getenv(const char *name)
   const char *val = getenv(name);
   if (val && (val[0] != '\0'))
     return val;
+
+  return NULL;
+}
+
+/**
+ * mutt_str_inline_replace - Replace the beginning of a string
+ * @param buf    Buffer to modify
+ * @param buflen Length of buffer
+ * @param xlen   Length of string to overwrite
+ * @param rstr   Replacement string
+ * @retval true Success
+ *
+ * String (`XX<OOOOOO>......`, 16, 2, `RRRR`) becomes `RRRR<OOOOOO>....`
+ */
+bool mutt_str_inline_replace(char *buf, size_t buflen, size_t xlen, const char *rstr)
+{
+  if (!buf || !rstr || (xlen >= buflen))
+    return false;
+
+  size_t slen = mutt_str_strlen(buf + xlen);
+  size_t rlen = mutt_str_strlen(rstr);
+
+  memmove(buf + rlen, buf + xlen, slen + 1);
+  memmove(buf, rstr, rlen);
+
+  return true;
+}
+
+/**
+ * mutt_str_remall_strcasestr - Remove all occurrences of substring, ignoring case
+ * @param str     String containing the substring
+ * @param target  Target substring for removal
+ * @retval 0 String contained substring and substring was removed successfully
+ * @retval 1 String did not contain substring
+ */
+int mutt_str_remall_strcasestr(char *str, const char *target)
+{
+  int retval = 1;
+
+  // Look through an ensure all instances of the substring are gone.
+  while ((str = (char *) mutt_str_strcasestr(str, target)))
+  {
+    size_t target_len = mutt_str_strlen(target);
+    memmove(str, str + target_len, 1 + strlen(str + target_len));
+    retval = 0; // If we got here, then a substring existed and has been removed.
+  }
+
+  return retval;
+}
+
+/**
+ * mutt_str_strcasestr - Find a substring within a string without worrying about case
+ * @param haystack String that may or may not contain the substring
+ * @param needle   Substring we're looking for
+ * @retval ptr  Beginning of substring
+ * @retval NULL Substring is not in substring
+ *
+ * This performs a byte-to-byte check so it will return unspecified
+ * results for multibyte locales.
+ */
+const char *mutt_str_strcasestr(const char *haystack, const char *needle)
+{
+  if (!needle)
+    return NULL;
+
+  size_t haystack_len = mutt_str_strlen(haystack);
+  size_t needle_len = mutt_str_strlen(needle);
+
+  // Empty string exists at the front of a string. Check strstr if you don't believe me.
+  if (needle_len == 0)
+    return haystack;
+
+  // Check size conditions. No point wasting CPU cycles.
+  if ((haystack_len == 0) || (haystack_len < needle_len))
+    return NULL;
+
+  // Only check space that needle could fit in.
+  // Conditional has + 1 to handle when the haystack and needle are the same length.
+  for (size_t i = 0; i < (haystack_len - needle_len) + 1; i++)
+  {
+    for (size_t j = 0; j < needle_len; j++)
+    {
+      if (tolower((unsigned char) haystack[i + j]) != tolower((unsigned char) needle[j]))
+        break;
+
+      // If this statement is true, the needle has been found.
+      if (j == (needle_len - 1))
+        return haystack + i;
+    }
+  }
 
   return NULL;
 }

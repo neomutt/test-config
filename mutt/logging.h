@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MUTT_LOGGING_H
-#define _MUTT_LOGGING_H
+#ifndef MUTT_LIB_LOGGING_H
+#define MUTT_LIB_LOGGING_H
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -29,7 +29,7 @@
 #include "queue.h"
 
 /**
- * log_dispatcher_t - Prototype for a logging function
+ * typedef log_dispatcher_t - Prototype for a logging function
  * @param stamp    Unix time (optional)
  * @param file     Source file
  * @param line     Source line
@@ -49,15 +49,15 @@ extern log_dispatcher_t MuttLogger;
  */
 enum LogLevel
 {
-  LL_PERROR  = -3,
-  LL_ERROR   = -2,
-  LL_WARNING = -1,
-  LL_MESSAGE =  0,
-  LL_DEBUG1  =  1,
-  LL_DEBUG2  =  2,
-  LL_DEBUG3  =  3,
-  LL_DEBUG4  =  4,
-  LL_DEBUG5  =  5,
+  LL_PERROR  = -3, ///< Log perror (using errno)
+  LL_ERROR   = -2, ///< Log error
+  LL_WARNING = -1, ///< Log warning
+  LL_MESSAGE =  0, ///< Log informational message
+  LL_DEBUG1  =  1, ///< Log at debug level 1
+  LL_DEBUG2  =  2, ///< Log at debug level 2
+  LL_DEBUG3  =  3, ///< Log at debug level 3
+  LL_DEBUG4  =  4, ///< Log at debug level 4
+  LL_DEBUG5  =  5, ///< Log at debug level 5
 };
 
 /**
@@ -105,4 +105,4 @@ int  log_file_set_filename(const char *file, bool verbose);
 int  log_file_set_level(int level, bool verbose);
 void log_file_set_version(const char *version);
 
-#endif /* _MUTT_LOGGING_H */
+#endif /* MUTT_LIB_LOGGING_H */

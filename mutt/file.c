@@ -91,11 +91,10 @@ static int mkwrapdir(const char *path, char *newfile, size_t nflen, char *newdir
 {
   const char *basename = NULL;
   char parent[PATH_MAX];
-  char *p = NULL;
 
   mutt_str_strfcpy(parent, path, sizeof(parent));
 
-  p = strrchr(parent, '/');
+  char *p = strrchr(parent, '/');
   if (p)
   {
     *p = '\0';
@@ -149,11 +148,10 @@ static int put_file_in_place(const char *path, const char *safe_file, const char
  */
 int mutt_file_fclose(FILE **f)
 {
-  int r = 0;
+  if (!f || !*f)
+    return 0;
 
-  if (*f)
-    r = fclose(*f);
-
+  int r = fclose(*f);
   *f = NULL;
   return r;
 }
@@ -304,7 +302,7 @@ int mutt_file_symlink(const char *oldpath, const char *newpath)
   {
     char abs_oldpath[PATH_MAX];
 
-    if ((getcwd(abs_oldpath, sizeof(abs_oldpath)) == NULL) ||
+    if (!getcwd(abs_oldpath, sizeof(abs_oldpath)) ||
         ((strlen(abs_oldpath) + 1 + strlen(oldpath) + 1) > sizeof(abs_oldpath)))
     {
       return -1;
@@ -338,12 +336,35 @@ int mutt_file_symlink(const char *oldpath, const char *newpath)
 int mutt_file_safe_rename(const char *src, const char *target)
 {
   struct stat ssb, tsb;
+  int link_errno;
 
   if (!src || !target)
     return -1;
 
   if (link(src, target) != 0)
   {
+    link_errno = errno;
+
+    /* It is historically documented that link can return -1 if NFS
+     * dies after creating the link.  In that case, we are supposed
+     * to use stat to check if the link was created.
+     *
+     * Derek Martin notes that some implementations of link() follow a
+     * source symlink.  It might be more correct to use stat() on src.
+     * I am not doing so to minimize changes in behavior: the function
+     * used lstat() further below for 20 years without issue, and I
+     * believe was never intended to be used on a src symlink.
+     */
+    if ((lstat(src, &ssb) == 0) && (lstat(target, &tsb) == 0) &&
+        (compare_stat(&ssb, &tsb) == 0))
+    {
+      mutt_debug(1, "link (%s, %s) reported failure: %s (%d) but actually succeeded\n",
+                 src, target, strerror(errno), errno);
+      goto success;
+    }
+
+    errno = link_errno;
+
     /* Coda does not allow cross-directory links, but tells
      * us it's a cross-filesystem linking attempt.
      *
@@ -380,8 +401,14 @@ int mutt_file_safe_rename(const char *src, const char *target)
     return -1;
   }
 
+  /* Remove the compare_stat() check, because it causes problems with maildir
+   * on filesystems that don't properly support hard links, such as sshfs.  The
+   * filesystem creates the link, but the resulting file is given a different
+   * inode number by the sshfs layer.  This results in an infinite loop
+   * creating links.
+   */
+#if 0
   /* Stat both links and check if they are equal. */
-
   if (lstat(src, &ssb) == -1)
   {
     mutt_debug(1, "#1 can't stat %s: %s (%d)\n", src, strerror(errno), errno);
@@ -402,7 +429,9 @@ int mutt_file_safe_rename(const char *src, const char *target)
     errno = EEXIST;
     return -1;
   }
+#endif
 
+success:
   /* Unlink the original link.
    * Should we really ignore the return value here? XXX */
   if (unlink(src) == -1)
@@ -587,49 +616,49 @@ int mutt_file_sanitize_regex(char *dest, size_t destlen, const char *src)
 
 /**
  * mutt_file_read_line - Read a line from a file
- * @param[out] s     Buffer allocated on the head (optional)
- * @param[in]  size  Length of buffer (optional)
- * @param[in]  fp    File to read
- * @param[out] line  Current line number
- * @param[in]  flags Flags, e.g. #MUTT_CONT
- * @retval ptr The allocated string
+ * @param[out] line     Buffer allocated on the head (optional)
+ * @param[in]  size     Length of buffer (optional)
+ * @param[in]  fp       File to read
+ * @param[out] line_num Current line number
+ * @param[in]  flags    Flags, e.g. #MUTT_CONT
+ * @retval ptr          The allocated string
  *
- * Read a line from ``fp'' into the dynamically allocated ``s'', increasing
- * ``s'' if necessary. The ending "\n" or "\r\n" is removed.  If a line ends
+ * Read a line from "fp" into the dynamically allocated "s", increasing
+ * "s" if necessary. The ending "\n" or "\r\n" is removed.  If a line ends
  * with "\", this char and the linefeed is removed, and the next line is read
  * too.
  */
-char *mutt_file_read_line(char *s, size_t *size, FILE *fp, int *line, int flags)
+char *mutt_file_read_line(char *line, size_t *size, FILE *fp, int *line_num, int flags)
 {
   size_t offset = 0;
   char *ch = NULL;
 
-  if (!s)
+  if (!line)
   {
-    s = mutt_mem_malloc(STRING);
+    line = mutt_mem_malloc(STRING);
     *size = STRING;
   }
 
   while (true)
   {
-    if (fgets(s + offset, *size - offset, fp) == NULL)
+    if (!fgets(line + offset, *size - offset, fp))
     {
-      FREE(&s);
+      FREE(&line);
       return NULL;
     }
-    ch = strchr(s + offset, '\n');
+    ch = strchr(line + offset, '\n');
     if (ch)
     {
-      if (line)
-        (*line)++;
+      if (line_num)
+        (*line_num)++;
       if (flags & MUTT_EOL)
-        return s;
+        return line;
       *ch = '\0';
-      if ((ch > s) && (*(ch - 1) == '\r'))
+      if ((ch > line) && (*(ch - 1) == '\r'))
         *--ch = '\0';
-      if (!(flags & MUTT_CONT) || (ch == s) || (*(ch - 1) != '\\'))
-        return s;
-      offset = ch - s - 1;
+      if (!(flags & MUTT_CONT) || (ch == line) || (*(ch - 1) != '\\'))
+        return line;
+      offset = ch - line - 1;
     }
     else
     {
@@ -642,61 +671,110 @@ char *mutt_file_read_line(char *s, size_t *size, FILE *fp, int *line, int flags)
       if (c == EOF)
       {
         /* The last line of fp isn't \n terminated */
-        if (line)
-          (*line)++;
-        return s;
+        if (line_num)
+          (*line_num)++;
+        return line;
       }
       else
       {
         ungetc(c, fp); /* undo our damage */
-        /* There wasn't room for the line -- increase ``s'' */
+        /* There wasn't room for the line -- increase "line" */
         offset = *size - 1; /* overwrite the terminating 0 */
         *size += STRING;
-        mutt_mem_realloc(&s, *size);
+        mutt_mem_realloc(&line, *size);
       }
     }
   }
 }
 
 /**
+ * mutt_file_iter_line - iterate over the lines from an open file pointer
+ * @param iter  State of iteration including ptr to line
+ * @param fp    File pointer to read from
+ * @param flags Same as mutt_file_read_line()
+ * @retval      true iff data read, false on eof
+ *
+ * This is a slightly cleaner interface for mutt_file_read_line() which avoids
+ * the eternal C loop initialization ugliness.  Use like this:
+ *
+ * ```
+ * struct MuttFileIter iter = { 0 };
+ * while (mutt_file_iter_line(&iter, fp, flags))
+ * {
+ *   do_stuff(iter.line, iter.line_num);
+ * }
+ * ```
+ */
+bool mutt_file_iter_line(struct MuttFileIter *iter, FILE *fp, int flags)
+{
+  char *p = mutt_file_read_line(iter->line, &iter->size, fp, &iter->line_num, flags);
+  if (!p)
+    return false;
+  iter->line = p;
+  return true;
+}
+
+/**
+ * mutt_file_map_lines - Process lines of text read from a file pointer
+ * @param func      Callback function to call for each line, see mutt_file_map_t
+ * @param user_data Arbitrary data passed to "func"
+ * @param fp        File pointer to read from
+ * @param flags     Same as mutt_file_read_line()
+ * @retval          true iff all data mapped, false if "func" returns false
+ */
+bool mutt_file_map_lines(mutt_file_map_t func, void *user_data, FILE *fp, int flags)
+{
+  struct MuttFileIter iter = { 0 };
+  while (mutt_file_iter_line(&iter, fp, flags))
+  {
+    if (!(*func)(iter.line, iter.line_num, user_data))
+    {
+      FREE(&iter.line);
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * mutt_file_quote_filename - Quote a filename to survive the shell's quoting rules
- * @param d Buffer for the result
- * @param l Length of buffer
- * @param f String to convert
+ * @param filename String to convert
+ * @param buf      Buffer for the result
+ * @param buflen   Length of buffer
  * @retval num Bytes written to the buffer
  *
  * From the Unix programming FAQ by way of Liviu.
  */
-size_t mutt_file_quote_filename(char *d, size_t l, const char *f)
+size_t mutt_file_quote_filename(const char *filename, char *buf, size_t buflen)
 {
   size_t j = 0;
 
-  if (!f)
+  if (!filename)
   {
-    *d = '\0';
+    *buf = '\0';
     return 0;
   }
 
   /* leave some space for the trailing characters. */
-  l -= 6;
+  buflen -= 6;
 
-  d[j++] = '\'';
+  buf[j++] = '\'';
 
-  for (size_t i = 0; (j < l) && f[i]; i++)
+  for (size_t i = 0; (j < buflen) && filename[i]; i++)
   {
-    if ((f[i] == '\'') || (f[i] == '`'))
+    if ((filename[i] == '\'') || (filename[i] == '`'))
     {
-      d[j++] = '\'';
-      d[j++] = '\\';
-      d[j++] = f[i];
-      d[j++] = '\'';
+      buf[j++] = '\'';
+      buf[j++] = '\\';
+      buf[j++] = filename[i];
+      buf[j++] = '\'';
     }
     else
-      d[j++] = f[i];
+      buf[j++] = filename[i];
   }
 
-  d[j++] = '\'';
-  d[j] = '\0';
+  buf[j++] = '\'';
+  buf[j] = '\0';
 
   return j;
 }
@@ -979,8 +1057,8 @@ int mutt_file_chmod_rm_stat(const char *path, mode_t mode, struct stat *st)
 /**
  * mutt_file_lock - (try to) lock a file using fcntl()
  * @param fd      File descriptor to file
- * @param excl    If set, try to lock exclusively
- * @param timeout Retry after this time
+ * @param excl    If true, try to lock exclusively
+ * @param timeout If true, Retry #MAX_LOCK_ATTEMPTS times
  * @retval  0 Success
  * @retval -1 Failure
  *
@@ -988,20 +1066,17 @@ int mutt_file_chmod_rm_stat(const char *path, mode_t mode, struct stat *st)
  *
  * Use mutt_file_unlock() to unlock the file.
  */
-int mutt_file_lock(int fd, int excl, int timeout)
+int mutt_file_lock(int fd, bool excl, bool timeout)
 {
-  int count;
-  int attempt;
   struct stat sb = { 0 }, prev_sb = { 0 };
+  int count = 0;
+  int attempt = 0;
 
   struct flock lck;
-
   memset(&lck, 0, sizeof(struct flock));
   lck.l_type = excl ? F_WRLCK : F_RDLCK;
   lck.l_whence = SEEK_SET;
 
-  count = 0;
-  attempt = 0;
   while (fcntl(fd, F_SETLK, &lck) == -1)
   {
     mutt_debug(1, "fcntl errno %d.\n", errno);
@@ -1054,8 +1129,8 @@ int mutt_file_unlock(int fd)
 /**
  * mutt_file_lock - (try to) lock a file using flock()
  * @param fd      File descriptor to file
- * @param excl    If set, try to lock exclusively
- * @param timeout Retry after this time
+ * @param excl    If true, try to lock exclusively
+ * @param timeout If true, Retry #MAX_LOCK_ATTEMPTS times
  * @retval  0 Success
  * @retval -1 Failure
  *
@@ -1063,21 +1138,19 @@ int mutt_file_unlock(int fd)
  *
  * Use mutt_file_unlock() to unlock the file.
  */
-int mutt_file_lock(int fd, int excl, int timeout)
+int mutt_file_lock(int fd, bool excl, bool timeout)
 {
-  int count;
-  int attempt;
   struct stat sb = { 0 }, prev_sb = { 0 };
-  int r = 0;
+  int rc = 0;
+  int count = 0;
+  int attempt = 0;
 
-  count = 0;
-  attempt = 0;
   while (flock(fd, (excl ? LOCK_EX : LOCK_SH) | LOCK_NB) == -1)
   {
     if (errno != EWOULDBLOCK)
     {
       mutt_perror("flock");
-      r = -1;
+      rc = -1;
       break;
     }
 
@@ -1092,7 +1165,7 @@ int mutt_file_lock(int fd, int excl, int timeout)
     {
       if (timeout)
         mutt_error(_("Timeout exceeded while attempting flock lock"));
-      r = -1;
+      rc = -1;
       break;
     }
 
@@ -1103,12 +1176,12 @@ int mutt_file_lock(int fd, int excl, int timeout)
   }
 
   /* release any other locks obtained in this routine */
-  if (r != 0)
+  if (rc != 0)
   {
     flock(fd, LOCK_UN);
   }
 
-  return r;
+  return rc;
 }
 
 /**
@@ -1138,7 +1211,7 @@ void mutt_file_unlink_empty(const char *path)
   if (fd == -1)
     return;
 
-  if (mutt_file_lock(fd, 1, 1) == -1)
+  if (mutt_file_lock(fd, true, true) == -1)
   {
     close(fd);
     return;
@@ -1163,7 +1236,7 @@ void mutt_file_unlink_empty(const char *path)
  * @note on access(2) use No dangling symlink problems here due to
  * mutt_file_fopen().
  */
-int mutt_file_rename(char *oldfile, char *newfile)
+int mutt_file_rename(const char *oldfile, const char *newfile)
 {
   FILE *ofp = NULL, *nfp = NULL;
 
@@ -1190,32 +1263,32 @@ int mutt_file_rename(char *oldfile, char *newfile)
 /**
  * mutt_file_read_keyword - Read a keyword from a file
  * @param file   File to read
- * @param buffer Buffer to store the keyword
- * @param buflen Length of the buffer
+ * @param buf    Buffer to store the keyword
+ * @param buflen Length of the buf
  * @retval ptr Start of the keyword
  *
  * Read one line from the start of a file.
  * Skip any leading whitespace and extract the first token.
  */
-char *mutt_file_read_keyword(const char *file, char *buffer, size_t buflen)
+char *mutt_file_read_keyword(const char *file, char *buf, size_t buflen)
 {
   FILE *fp = mutt_file_fopen(file, "r");
   if (!fp)
     return NULL;
 
-  buffer = fgets(buffer, buflen, fp);
+  buf = fgets(buf, buflen, fp);
   mutt_file_fclose(&fp);
 
-  if (!buffer)
+  if (!buf)
     return NULL;
 
-  SKIPWS(buffer);
-  char *start = buffer;
+  SKIPWS(buf);
+  char *start = buf;
 
-  while (*buffer && !isspace(*buffer))
-    buffer++;
+  while (*buf && !isspace(*buf))
+    buf++;
 
-  *buffer = '\0';
+  *buf = '\0';
 
   return start;
 }
@@ -1250,7 +1323,7 @@ void mutt_file_expand_fmt_quote(char *dest, size_t destlen, const char *fmt, con
 {
   char tmp[PATH_MAX];
 
-  mutt_file_quote_filename(tmp, sizeof(tmp), src);
+  mutt_file_quote_filename(src, tmp, sizeof(tmp));
   mutt_file_expand_fmt(dest, destlen, fmt, tmp);
 }
 
@@ -1308,4 +1381,117 @@ void mutt_file_expand_fmt(char *dest, size_t destlen, const char *fmt, const cha
     mutt_str_strcat(dest, destlen, " ");
     mutt_str_strcat(dest, destlen, src);
   }
+}
+
+/**
+ * mutt_file_get_size - Get the size of a file
+ * @param path File to measure
+ * @retval num Size in bytes
+ * @retval 0   Error
+ */
+long mutt_file_get_size(const char *path)
+{
+  if (!path)
+    return 0;
+
+  struct stat sb;
+  if (stat(path, &sb) != 0)
+    return 0;
+
+  return sb.st_size;
+}
+
+/**
+ * mutt_file_timespec_compare - Compare to time values
+ * @param a First time value
+ * @param b Second time value
+ * @retval -1 a precedes b
+ * @retval  0 a and b are identical
+ * @retval  1 b precedes a
+ */
+int mutt_file_timespec_compare(struct timespec *a, struct timespec *b)
+{
+  if (a->tv_sec < b->tv_sec)
+    return -1;
+  if (a->tv_sec > b->tv_sec)
+    return 1;
+
+  if (a->tv_nsec < b->tv_nsec)
+    return -1;
+  if (a->tv_nsec > b->tv_nsec)
+    return 1;
+  return 0;
+}
+
+/**
+ * mutt_file_get_stat_timespec - Read the stat() time into a time value
+ * @param dest Time value to populate
+ * @param sb   stat info
+ * @param type Type of stat info to read, e.g. #MUTT_STAT_ATIME
+ */
+void mutt_file_get_stat_timespec(struct timespec *dest, struct stat *sb, enum MuttStatType type)
+{
+  dest->tv_sec = 0;
+  dest->tv_nsec = 0;
+
+  switch (type)
+  {
+    case MUTT_STAT_ATIME:
+      dest->tv_sec = sb->st_atime;
+#ifdef HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
+      dest->tv_nsec = sb->st_atim.tv_nsec;
+#endif
+      break;
+    case MUTT_STAT_MTIME:
+      dest->tv_sec = sb->st_mtime;
+#ifdef HAVE_STRUCT_STAT_ST_MTIM_TV_NSEC
+      dest->tv_nsec = sb->st_mtim.tv_nsec;
+#endif
+      break;
+    case MUTT_STAT_CTIME:
+      dest->tv_sec = sb->st_ctime;
+#ifdef HAVE_STRUCT_STAT_ST_CTIM_TV_NSEC
+      dest->tv_nsec = sb->st_ctim.tv_nsec;
+#endif
+      break;
+  }
+}
+
+/**
+ * mutt_file_stat_timespec_compare - Compare stat info with a time value
+ * @param sba  stat info
+ * @param type Type of stat info, e.g. #MUTT_STAT_ATIME
+ * @param b    Time value
+ * @retval -1 a precedes b
+ * @retval  0 a and b are identical
+ * @retval  1 b precedes a
+ */
+int mutt_file_stat_timespec_compare(struct stat *sba, enum MuttStatType type,
+                                    struct timespec *b)
+{
+  struct timespec a = { 0 };
+
+  mutt_file_get_stat_timespec(&a, sba, type);
+  return mutt_file_timespec_compare(&a, b);
+}
+
+/**
+ * mutt_file_stat_compare - Compare two stat infos
+ * @param sba      First stat info
+ * @param sba_type Type of first stat info, e.g. #MUTT_STAT_ATIME
+ * @param sbb      Second stat info
+ * @param sbb_type Type of second stat info, e.g. #MUTT_STAT_ATIME
+ * @retval -1 a precedes b
+ * @retval  0 a and b are identical
+ * @retval  1 b precedes a
+ */
+int mutt_file_stat_compare(struct stat *sba, enum MuttStatType sba_type,
+                           struct stat *sbb, enum MuttStatType sbb_type)
+{
+  struct timespec a = { 0 };
+  struct timespec b = { 0 };
+
+  mutt_file_get_stat_timespec(&a, sba, sba_type);
+  mutt_file_get_stat_timespec(&b, sbb, sbb_type);
+  return mutt_file_timespec_compare(&a, &b);
 }

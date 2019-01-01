@@ -20,8 +20,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EMAIL_TAG_H
-#define _EMAIL_TAG_H
+#ifndef MUTT_EMAIL_TAGS_H
+#define MUTT_EMAIL_TAGS_H
 
 #include <stdbool.h>
 #include "mutt/mutt.h"
@@ -49,8 +49,8 @@ STAILQ_HEAD(TagHead, TagNode);
 void  driver_tags_free(struct TagHead *head);
 char *driver_tags_get(struct TagHead *head);
 char *driver_tags_get_transformed(struct TagHead *head);
-char *driver_tags_get_transformed_for(char *name, struct TagHead *head);
+char *driver_tags_get_transformed_for(const char *name, struct TagHead *head);
 char *driver_tags_get_with_hidden(struct TagHead *head);
 bool  driver_tags_replace(struct TagHead *head, char *tags);
 
-#endif /* _EMAIL_TAG_H */
+#endif /* MUTT_EMAIL_TAGS_H */

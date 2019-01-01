@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-set Config Set
+ * @page config_set Config Set
  *
  * A collection of config items.
  */
@@ -45,7 +45,7 @@ struct ConfigSetType RegisteredTypes[18] = {
 };
 
 /**
- * destroy - Callback function for the Hash Table - Implements ::hash_destructor_t
+ * destroy - Callback function for the Hash Table - Implements ::hashelem_free_t
  * @param type Object type, e.g. #DT_STRING
  * @param obj  Object to destroy
  * @param data ConfigSet associated with the object
@@ -144,11 +144,11 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
 }
 
 /**
- * cs_create - Create a new Config Set
+ * cs_new - Create a new Config Set
  * @param size Number of expected config items
  * @retval ptr New ConfigSet object
  */
-struct ConfigSet *cs_create(size_t size)
+struct ConfigSet *cs_new(size_t size)
 {
   struct ConfigSet *cs = mutt_mem_malloc(sizeof(*cs));
   cs_init(cs, size);
@@ -166,7 +166,7 @@ void cs_init(struct ConfigSet *cs, size_t size)
     return; /* LCOV_EXCL_LINE */
 
   memset(cs, 0, sizeof(*cs));
-  cs->hash = mutt_hash_create(size, 0);
+  cs->hash = mutt_hash_new(size, 0);
   mutt_hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
 }
 
@@ -179,7 +179,7 @@ void cs_free(struct ConfigSet **cs)
   if (!cs || !*cs)
     return; /* LCOV_EXCL_LINE */
 
-  mutt_hash_destroy(&(*cs)->hash);
+  mutt_hash_free(&(*cs)->hash);
   FREE(cs);
 }
 
