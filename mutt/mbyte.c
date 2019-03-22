@@ -66,7 +66,7 @@ int mutt_mb_charlen(const char *s, int *width)
   k = mbrtowc(&wc, s, n, &mbstate);
   if (width)
     *width = wcwidth(wc);
-  return (k == (size_t)(-1) || k == (size_t)(-2)) ? -1 : k;
+  return ((k == (size_t)(-1)) || (k == (size_t)(-2))) ? -1 : k;
 }
 
 /**
@@ -123,7 +123,7 @@ bool mutt_mb_get_initials(const char *name, char *buf, size_t buflen)
       name++;
   }
 
-  *buf = 0;
+  *buf = '\0';
   return true;
 }
 
@@ -151,7 +151,7 @@ int mutt_mb_width(const char *str, int col, bool display)
         l = 1;
       /* correctly calc tab stop, even for sending as the
        * line should look pretty on the receiving end */
-      if (wc == L'\t' || (nl && wc == L' '))
+      if ((wc == L'\t') || (nl && (wc == L' ')))
       {
         nl = 0;
         l = 8 - (col % 8);
@@ -178,7 +178,7 @@ int mutt_mb_width(const char *str, int col, bool display)
 int mutt_mb_wcwidth(wchar_t wc)
 {
   int n = wcwidth(wc);
-  if (IsWPrint(wc) && n > 0)
+  if (IsWPrint(wc) && (n > 0))
     return n;
   if (!(wc & ~0x7f))
     return 2;
@@ -277,10 +277,10 @@ void mutt_mb_wcstombs(char *dest, size_t dlen, const wchar_t *src, size_t slen)
 
 /**
  * mutt_mb_mbstowcs - Convert a string from multibyte to wide characters
- * @param pwbuf    Buffer for the result
- * @param pwbuflen Length of the result buffer
- * @param i        Starting index into the result buffer
- * @param buf      String to convert
+ * @param[out] pwbuf    Buffer for the result
+ * @param[out] pwbuflen Length of the result buffer
+ * @param[in]  i        Starting index into the result buffer
+ * @param[in]  buf      String to convert
  * @retval num First character after the result
  */
 size_t mutt_mb_mbstowcs(wchar_t **pwbuf, size_t *pwbuflen, size_t i, char *buf)
@@ -291,7 +291,7 @@ size_t mutt_mb_mbstowcs(wchar_t **pwbuf, size_t *pwbuflen, size_t i, char *buf)
   wchar_t *wbuf = *pwbuf;
   size_t wbuflen = *pwbuflen;
 
-  while (*buf)
+  while (*buf != '\0')
   {
     memset(&st, 0, sizeof(st));
     for (; (k = mbrtowc(&wc, buf, MB_LEN_MAX, &st)) && k != (size_t)(-1) &&
@@ -305,7 +305,7 @@ size_t mutt_mb_mbstowcs(wchar_t **pwbuf, size_t *pwbuflen, size_t i, char *buf)
       }
       wbuf[i++] = wc;
     }
-    if (*buf && (k == (size_t) -1 || k == (size_t) -2))
+    if ((*buf != '\0') && ((k == (size_t) -1) || (k == (size_t) -2)))
     {
       if (i >= wbuflen)
       {

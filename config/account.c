@@ -27,14 +27,9 @@
  */
 
 #include "config.h"
-#include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include "mutt/buffer.h"
-#include "mutt/hash.h"
-#include "mutt/logging.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
+#include "mutt/mutt.h"
 #include "account.h"
 #include "inheritance.h"
 #include "set.h"
@@ -72,7 +67,7 @@ struct Account *ac_new(const struct ConfigSet *cs, const char *name,
     struct HashElem *parent = cs_get_elem(cs, ac->var_names[i]);
     if (!parent)
     {
-      mutt_debug(1, "%s doesn't exist\n", ac->var_names[i]);
+      mutt_debug(LL_DEBUG1, "%s doesn't exist\n", ac->var_names[i]);
       success = false;
       break;
     }
@@ -81,7 +76,7 @@ struct Account *ac_new(const struct ConfigSet *cs, const char *name,
     ac->vars[i] = cs_inherit_variable(cs, parent, acname);
     if (!ac->vars[i])
     {
-      mutt_debug(1, "failed to create %s\n", acname);
+      mutt_debug(LL_DEBUG1, "failed to create %s\n", acname);
       success = false;
       break;
     }
@@ -96,8 +91,8 @@ struct Account *ac_new(const struct ConfigSet *cs, const char *name,
 
 /**
  * ac_free - Free an Account object
- * @param cs Config items
- * @param ac Account to free
+ * @param[in]  cs Config items
+ * @param[out] ac Account to free
  */
 void ac_free(const struct ConfigSet *cs, struct Account **ac)
 {
@@ -107,8 +102,8 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
   char child[128];
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, STRING);
-  err.dsize = STRING;
+  err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
 
   for (size_t i = 0; i < (*ac)->num_vars; i++)
   {
@@ -116,7 +111,7 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
     mutt_buffer_reset(&err);
     int result = cs_str_reset(cs, child, &err);
     if (CSR_RESULT(result) != CSR_SUCCESS)
-      mutt_debug(1, "reset failed for %s: %s\n", child, err.data);
+      mutt_debug(LL_DEBUG1, "reset failed for %s: %s\n", child, err.data);
     mutt_hash_delete(cs->hash, child, NULL);
   }
 

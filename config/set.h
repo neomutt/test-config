@@ -25,6 +25,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 struct Buffer;
 struct ConfigSet;
@@ -84,8 +85,8 @@ typedef bool    (*cs_listener)   (const struct ConfigSet *cs, struct HashElem *h
  * @param cdef  Config definition
  * @param value Native value
  * @param err   Message for the user
- * @retval CSR_SUCCESS     Success
- * @retval CSR_ERR_INVALID Failure
+ * @retval #CSR_SUCCESS     Success
+ * @retval #CSR_ERR_INVALID Failure
  */
 typedef int     (*cs_validator)  (const struct ConfigSet *cs, const struct ConfigDef *cdef, intptr_t value, struct Buffer *err);
 /**
@@ -161,7 +162,7 @@ struct ConfigDef
 {
   const char   *name;      /**< User-visible name */
   unsigned int  type;      /**< Variable type, e.g. #DT_STRING */
-  intptr_t      flags;     /**< Notification flags, e.g. #R_PAGER */
+  intptr_t      flags;     /**< Notification flags, see #ConfigRedrawFlags */
   void         *var;       /**< Pointer to the global variable */
   intptr_t      initial;   /**< Initial value */
   cs_validator  validator; /**< Validator callback function */
@@ -187,7 +188,7 @@ struct ConfigSetType
  * struct ConfigSet - Container for lots of config items
  *
  * The config items are stored in a HashTable so that their names can be looked
- * up efficiently.  Each config item is repesented by a HashElem.  Once
+ * up efficiently.  Each config item is represented by a HashElem.  Once
  * created, this HashElem is static and may be used for the lifetime of the
  * ConfigSet.
  */

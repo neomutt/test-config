@@ -35,6 +35,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "logging.h"
+#include "date.h"
 #include "file.h"
 #include "memory.h"
 #include "message.h"
@@ -83,7 +84,7 @@ static const char *timestamp(time_t stamp)
 
   if (stamp != last)
   {
-    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", localtime(&stamp));
+    mutt_date_localtime_format(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", stamp);
     last = stamp;
   }
 
@@ -165,11 +166,11 @@ int log_file_set_filename(const char *file, bool verbose)
  * @retval  0 Success
  * @retval -1 Error, level is out of range
  *
- * The level can be between 0 and LL_DEBUG5.
+ * The level should be: LL_MESSAGE <= level < LL_MAX.
  */
 int log_file_set_level(int level, bool verbose)
 {
-  if ((level < 0) || (level > 5))
+  if ((level < LL_MESSAGE) || (level >= LL_MAX))
     return -1;
 
   if (level == LogFileLevel)
@@ -177,7 +178,7 @@ int log_file_set_level(int level, bool verbose)
 
   LogFileLevel = level;
 
-  if (level == 0)
+  if (level == LL_MESSAGE)
   {
     log_file_close(verbose);
   }
@@ -193,7 +194,7 @@ int log_file_set_level(int level, bool verbose)
     log_file_open(verbose);
   }
 
-  if (LogFileLevel == LL_DEBUG5)
+  if (LogFileLevel >= LL_DEBUG5)
   {
     fprintf(LogFileFP,
             "\n"
@@ -377,7 +378,7 @@ int log_queue_save(FILE *fp)
   struct LogLine *ll = NULL;
   STAILQ_FOREACH(ll, &LogQueue, entries)
   {
-    strftime(buf, sizeof(buf), "%H:%M:%S", localtime(&ll->time));
+    mutt_date_localtime_format(buf, sizeof(buf), "%H:%M:%S", ll->time);
     fprintf(fp, "[%s]<%c> %s", buf, LevelAbbr[ll->level + 3], ll->message);
     if (ll->level <= 0)
       fputs("\n", fp);
@@ -396,12 +397,12 @@ int log_queue_save(FILE *fp)
  *
  * @sa log_queue_set_max_size(), log_queue_flush(), log_queue_empty()
  *
- * @warning Log lines are limited to #LONG_STRING bytes.
+ * @warning Log lines are limited to 1024 bytes.
  */
 int log_disp_queue(time_t stamp, const char *file, int line,
                    const char *function, int level, ...)
 {
-  char buf[LONG_STRING] = "";
+  char buf[1024] = "";
   int err = errno;
 
   va_list ap;
@@ -445,7 +446,7 @@ int log_disp_terminal(time_t stamp, const char *file, int line,
   if ((level < LL_PERROR) || (level > LL_MESSAGE))
     return 0;
 
-  char buf[LONG_STRING];
+  char buf[1024];
 
   va_list ap;
   va_start(ap, level);
@@ -494,8 +495,7 @@ int log_disp_terminal(time_t stamp, const char *file, int line,
   if (colour > 0)
     ret += fprintf(fp, "\033[0m");
 
-  if (level < 1)
-    ret += fprintf(fp, "\n");
+  ret += fprintf(fp, "\n");
 
   return ret;
 }

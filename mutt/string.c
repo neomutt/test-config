@@ -145,8 +145,7 @@ static inline bool char_cmp_lower(char a, char b)
 typedef bool (*char_cmp)(char, char);
 
 /**
- * get_char_cmp - Retrieve the correct function to compare characters according
- * to a case sensitivity setting.
+ * get_char_cmp - Retrieve the correct function to compare characters according to a case sensitivity setting.
  * @param cs Case sensitivity setting
  * @retval A char_cmp function pointer
  */
@@ -165,7 +164,7 @@ static char_cmp get_char_cmp(enum CaseSensitivity cs)
  */
 size_t mutt_str_startswith(const char *str, const char *prefix, enum CaseSensitivity cs)
 {
-  if (!str || !str[0] || !prefix || !prefix[0])
+  if (!str || (str[0] == '\0') || !prefix || !prefix[0])
   {
     return 0;
   }
@@ -408,7 +407,7 @@ char *mutt_str_strcat(char *buf, size_t buflen, const char *s)
 
   buflen--; /* Space for the trailing '\0'. */
 
-  for (; *buf && buflen; buflen--)
+  for (; (*buf != '\0') && buflen; buflen--)
     buf++;
   for (; *s && buflen; buflen--)
     *buf++ = *s++;
@@ -449,8 +448,8 @@ char *mutt_str_strncat(char *d, size_t l, const char *s, size_t sl)
 
 /**
  * mutt_str_replace - Replace one string with another
- * @param p String to replace
- * @param s New string
+ * @param[out] p String to replace
+ * @param[in]  s New string
  *
  * This function free()s the original string, strdup()s the new string and
  * overwrites the pointer to the first string.
@@ -465,9 +464,9 @@ void mutt_str_replace(char **p, const char *s)
 
 /**
  * mutt_str_append_item - Add string to another separated by sep
- * @param str  String appended
- * @param item String to append
- * @param sep separator between string item
+ * @param[out] str  String appended
+ * @param[in]  item String to append
+ * @param[in]  sep separator between string item
  *
  * This function appends a string to another separate them by sep
  * if needed
@@ -489,7 +488,7 @@ void mutt_str_append_item(char **str, const char *item, int sep)
 
 /**
  * mutt_str_adjust - Shrink-to-fit a string
- * @param p String to alter
+ * @param[out] p String to alter
  *
  * Take a string which is allocated on the heap, find its length and reallocate
  * the memory to be exactly the right size.
@@ -580,7 +579,7 @@ char *mutt_str_substr_dup(const char *begin, const char *end)
 
   if (!begin)
   {
-    mutt_debug(1, "%s: ERROR: 'begin' is NULL\n", __func__);
+    mutt_debug(LL_DEBUG1, "%s: ERROR: 'begin' is NULL\n", __func__);
     return NULL;
   }
 
@@ -821,7 +820,7 @@ size_t mutt_str_lws_len(const char *s, size_t n)
     }
   }
 
-  if (len != 0 && strchr("\r\n", *(p - 1))) /* LWS doesn't end with CRLF */
+  if ((len != 0) && strchr("\r\n", *(p - 1))) /* LWS doesn't end with CRLF */
     len = 0;
   return len;
 }
@@ -922,7 +921,7 @@ const char *mutt_str_rstrnstr(const char *haystack, size_t haystack_length, cons
 
   for (const char *p = haystack_end; p >= haystack; --p)
   {
-    for (size_t i = 0; i < needle_length; ++i)
+    for (size_t i = 0; i < needle_length; i++)
     {
       if (p[i] != needle[i])
         goto next;
@@ -949,10 +948,10 @@ const char *mutt_str_rstrnstr(const char *haystack, size_t haystack_length, cons
  */
 int mutt_str_word_casecmp(const char *a, const char *b)
 {
-  char tmp[SHORT_STRING] = "";
+  char tmp[128] = "";
 
   int i;
-  for (i = 0; i < (SHORT_STRING - 2); i++, b++)
+  for (i = 0; i < (sizeof(tmp) - 2); i++, b++)
   {
     if (!*b || ISSPACE(*b))
     {
@@ -1091,17 +1090,17 @@ bool mutt_str_inline_replace(char *buf, size_t buflen, size_t xlen, const char *
  */
 int mutt_str_remall_strcasestr(char *str, const char *target)
 {
-  int retval = 1;
+  int rc = 1;
 
   // Look through an ensure all instances of the substring are gone.
   while ((str = (char *) mutt_str_strcasestr(str, target)))
   {
     size_t target_len = mutt_str_strlen(target);
     memmove(str, str + target_len, 1 + strlen(str + target_len));
-    retval = 0; // If we got here, then a substring existed and has been removed.
+    rc = 0; // If we got here, then a substring existed and has been removed.
   }
 
-  return retval;
+  return rc;
 }
 
 /**

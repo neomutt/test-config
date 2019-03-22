@@ -30,11 +30,7 @@
 #include <stddef.h>
 #include <limits.h>
 #include <stdint.h>
-#include "mutt/buffer.h"
-#include "mutt/hash.h"
-#include "mutt/logging.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
+#include "mutt/mutt.h"
 #include "set.h"
 #include "types.h"
 
@@ -113,7 +109,7 @@ static int quad_string_get(const struct ConfigSet *cs, void *var,
 
   if (value >= (mutt_array_size(QuadValues) - 1))
   {
-    mutt_debug(1, "Variable has an invalid value: %d\n", value);
+    mutt_debug(LL_DEBUG1, "Variable has an invalid value: %d\n", value);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 
@@ -240,7 +236,7 @@ int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err
   char value = *var;
   if ((value < 0) || (value >= (mutt_array_size(QuadValues) - 1)))
   {
-    mutt_buffer_printf(err, "Invalid quad value: %ld", value);
+    mutt_buffer_printf(err, "Invalid quad value: %d", value);
     return CSR_ERR_INVALID | CSR_INV_TYPE;
   }
 

@@ -34,7 +34,7 @@
 #include "tags.h"
 
 /* These Config Variables are only used in email/tags.c */
-char *HiddenTags; ///< Config: Tags that shouldn't be displayed on screen
+char *C_HiddenTags; ///< Config: Tags that shouldn't be displayed on screen
 
 struct Hash *TagTransforms; /**< Lookup table of alternative tag names */
 
@@ -58,7 +58,7 @@ static char *driver_tags_getter(struct TagHead *head, bool show_hidden,
   struct TagNode *np = NULL;
   STAILQ_FOREACH(np, head, entries)
   {
-    if (filter && mutt_str_strcmp(np->name, filter) != 0)
+    if (filter && (mutt_str_strcmp(np->name, filter) != 0))
       continue;
     if (show_hidden || !np->hidden)
     {
@@ -89,12 +89,12 @@ static void driver_tags_add(struct TagHead *head, char *new_tag)
     np->transformed = mutt_str_strdup(new_tag_transformed);
 
   /* filter out hidden tags */
-  if (HiddenTags)
+  if (C_HiddenTags)
   {
-    char *p = strstr(HiddenTags, new_tag);
+    char *p = strstr(C_HiddenTags, new_tag);
     size_t xsz = p ? mutt_str_strlen(new_tag) : 0;
 
-    if (p && ((p == HiddenTags) || (*(p - 1) == ',') || (*(p - 1) == ' ')) &&
+    if (p && ((p == C_HiddenTags) || (*(p - 1) == ',') || (*(p - 1) == ' ')) &&
         ((*(p + xsz) == '\0') || (*(p + xsz) == ',') || (*(p + xsz) == ' ')))
     {
       np->hidden = true;
@@ -198,9 +198,10 @@ bool driver_tags_replace(struct TagHead *head, char *tags)
   if (tags)
   {
     char *tag = NULL;
-    while ((tag = strsep(&tags, " ")))
+    char *split_tags = mutt_str_strdup(tags);
+    while ((tag = strsep(&split_tags, " ")))
       driver_tags_add(head, tag);
-    FREE(&tags);
+    FREE(&split_tags);
   }
   return true;
 }

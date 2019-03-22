@@ -23,6 +23,7 @@
 #ifndef MUTT_EMAIL_BODY_H
 #define MUTT_EMAIL_BODY_H
 
+#include "config.h"
 #include <stdbool.h>
 #include <time.h>
 #include "parameter.h"
@@ -63,6 +64,8 @@ struct Body
   signed short attach_count;
 
   time_t stamp;                   /**< time stamp of last encoding update.  */
+
+  struct Envelope *mime_headers;  /**< memory hole protected headers */
 
   unsigned int type : 4;          /**< content-type primary type */
   unsigned int encoding : 3;      /**< content-transfer-encoding */

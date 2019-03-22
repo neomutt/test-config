@@ -39,14 +39,15 @@
 #include "rfc2047.h"
 #include "address.h"
 #include "email_globals.h"
+#include "envelope.h"
 #include "mime.h"
 
 #define ENCWORD_LEN_MAX 75
 #define ENCWORD_LEN_MIN 9 /* strlen ("=?.?.?.?=") */
 
-#define HSPACE(x) (((x) == '\0') || ((x) == ' ') || ((x) == '\t'))
+#define HSPACE(ch) (((ch) == '\0') || ((ch) == ' ') || ((ch) == '\t'))
 
-#define CONTINUATION_BYTE(c) (((c) &0xc0) == 0x80)
+#define CONTINUATION_BYTE(ch) (((ch) &0xc0) == 0x80)
 
 /**
  * typedef encoder_t - Prototype for an encoding function
@@ -185,7 +186,7 @@ static char *parse_encoded_word(char *str, enum ContentEncoding *enc, char **cha
  * @retval  0 Success, string converted
  * @retval >0 Error, number of bytes that could be converted
  *
- * If the data could be conveted using encoder, then set *encoder and *wlen.
+ * If the data could be converted using encoder, then set *encoder and *wlen.
  * Otherwise return an upper bound on the maximum length of the data which
  * could be converted.
  *
@@ -210,13 +211,13 @@ static size_t try_block(const char *d, size_t dlen, const char *fromcode,
     ibl = dlen;
     ob = buf;
     obl = sizeof(buf) - strlen(tocode);
-    if (iconv(cd, (ICONV_CONST char **) &ib, &ibl, &ob, &obl) == (size_t)(-1) ||
-        iconv(cd, NULL, NULL, &ob, &obl) == (size_t)(-1))
+    if ((iconv(cd, (ICONV_CONST char **) &ib, &ibl, &ob, &obl) == (size_t)(-1)) ||
+        (iconv(cd, NULL, NULL, &ob, &obl) == (size_t)(-1)))
     {
       assert(errno == E2BIG);
       iconv_close(cd);
       assert(ib > d);
-      return (ib - d == dlen) ? dlen : ib - d + 1;
+      return ((ib - d) == dlen) ? dlen : ib - d + 1;
     }
     iconv_close(cd);
   }
@@ -324,7 +325,7 @@ static size_t choose_block(char *d, size_t dlen, int col, const char *fromcode,
   {
     assert(n > 0);
     const size_t nn = try_block(d, n, fromcode, tocode, encoder, wlen);
-    if ((nn == 0) && ((col + *wlen) <= (ENCWORD_LEN_MAX + 1) || (n <= 1)))
+    if ((nn == 0) && (((col + *wlen) <= (ENCWORD_LEN_MAX + 1)) || (n <= 1)))
       break;
     n = (nn ? nn : n) - 1;
     assert(n > 0);
@@ -348,7 +349,7 @@ static void finalize_chunk(struct Buffer *res, struct Buffer *buf, char *charset
 {
   char end = charset[charsetlen];
   charset[charsetlen] = '\0';
-  mutt_ch_convert_string(&buf->data, charset, Charset, MUTT_ICONV_HOOK_FROM);
+  mutt_ch_convert_string(&buf->data, charset, C_Charset, MUTT_ICONV_HOOK_FROM);
   charset[charsetlen] = end;
   mutt_mb_filter_unprintable(&buf->data);
   mutt_buffer_addstr(res, buf->data);
@@ -373,14 +374,14 @@ static char *decode_word(const char *s, size_t len, enum ContentEncoding enc)
   if (enc == ENC_QUOTED_PRINTABLE)
   {
     struct Buffer buf = { 0 };
-    for (; it < end; ++it)
+    for (; it < end; it++)
     {
       if (*it == '_')
       {
         mutt_buffer_addch(&buf, ' ');
       }
-      else if ((*it == '=') && (!(it[1] & ~127) && hexval(it[1]) != -1) &&
-               (!(it[2] & ~127) && hexval(it[2]) != -1))
+      else if ((it[0] == '=') && (!(it[1] & ~127) && (hexval(it[1]) != -1)) &&
+               (!(it[2] & ~127) && (hexval(it[2]) != -1)))
       {
         mutt_buffer_addch(&buf, (hexval(it[1]) << 4) | hexval(it[2]));
         it += 2;
@@ -413,14 +414,14 @@ static char *decode_word(const char *s, size_t len, enum ContentEncoding enc)
 
 /**
  * encode - RFC2047-encode a string
- * @param d        String to convert
- * @param dlen     Length of string
- * @param col      Starting column to convert
- * @param fromcode Original encoding
- * @param charsets List of allowable encodings (colon separated)
- * @param e        Encoded string
- * @param elen     Length of encoded string
- * @param specials Special characters to be encoded
+ * @param[in]  d        String to convert
+ * @param[in]  dlen     Length of string
+ * @param[in]  col      Starting column to convert
+ * @param[in]  fromcode Original encoding
+ * @param[in]  charsets List of allowable encodings (colon separated)
+ * @param[out] e        Encoded string
+ * @param[out] elen     Length of encoded string
+ * @param[in]  specials Special characters to be encoded
  * @retval 0 Success
  */
 static int encode(const char *d, size_t dlen, int col, const char *fromcode,
@@ -624,7 +625,7 @@ static int encode(const char *d, size_t dlen, int col, const char *fromcode,
  */
 void rfc2047_encode(char **pd, const char *specials, int col, const char *charsets)
 {
-  if (!Charset || !*pd)
+  if (!C_Charset || !*pd)
     return;
 
   if (!charsets || !*charsets)
@@ -632,7 +633,7 @@ void rfc2047_encode(char **pd, const char *specials, int col, const char *charse
 
   char *e = NULL;
   size_t elen = 0;
-  encode(*pd, strlen(*pd), col, Charset, charsets, &e, &elen, specials);
+  encode(*pd, strlen(*pd), col, C_Charset, charsets, &e, &elen, specials);
 
   FREE(pd);
   *pd = e;
@@ -662,8 +663,7 @@ void rfc2047_decode(char **pd)
 
   /* Keep some state in case the next decoded word is using the same charset
    * and it happens to be split in the middle of a multibyte character.
-   * See https://github.com/neomutt/neomutt/issues/1015
-   */
+   * See https://github.com/neomutt/neomutt/issues/1015 */
   struct Buffer prev = { 0 }; /* Previously decoded word                */
   char *prev_charset = NULL;  /* Previously used charset                */
   size_t prev_charsetlen = 0; /* Length of the previously used charset  */
@@ -677,7 +677,7 @@ void rfc2047_decode(char **pd)
       size_t holelen = beg ? beg - s : mutt_str_strlen(s);
 
       /* Ignore whitespace between encoded words */
-      if (beg && mutt_str_lws_len(s, holelen) == holelen)
+      if (beg && (mutt_str_lws_len(s, holelen) == holelen))
       {
         s = beg;
         continue;
@@ -691,7 +691,7 @@ void rfc2047_decode(char **pd)
 
       /* Add non-encoded part */
       {
-        if (AssumedCharset && *AssumedCharset)
+        if (C_AssumedCharset && *C_AssumedCharset)
         {
           char *conv = mutt_str_substr_dup(s, s + holelen);
           mutt_ch_convert_nonmime_string(&conv);
@@ -754,9 +754,9 @@ void rfc2047_encode_addrlist(struct Address *addr, const char *tag)
   while (ptr)
   {
     if (ptr->personal)
-      rfc2047_encode(&ptr->personal, AddressSpecials, col, SendCharset);
+      rfc2047_encode(&ptr->personal, AddressSpecials, col, C_SendCharset);
     else if (ptr->group && ptr->mailbox)
-      rfc2047_encode(&ptr->mailbox, AddressSpecials, col, SendCharset);
+      rfc2047_encode(&ptr->mailbox, AddressSpecials, col, C_SendCharset);
     ptr = ptr->next;
   }
 }
@@ -769,7 +769,7 @@ void rfc2047_decode_addrlist(struct Address *a)
 {
   while (a)
   {
-    if (a->personal && ((strstr(a->personal, "=?")) || (AssumedCharset && *AssumedCharset)))
+    if (a->personal && ((strstr(a->personal, "=?")) || (C_AssumedCharset && *C_AssumedCharset)))
     {
       rfc2047_decode(&a->personal);
     }
@@ -777,4 +777,39 @@ void rfc2047_decode_addrlist(struct Address *a)
       rfc2047_decode(&a->mailbox);
     a = a->next;
   }
+}
+
+/**
+ * rfc2047_decode_envelope - Decode the fields of an Envelope
+ * @param env Envelope
+ */
+void rfc2047_decode_envelope(struct Envelope *env)
+{
+  rfc2047_decode_addrlist(env->from);
+  rfc2047_decode_addrlist(env->to);
+  rfc2047_decode_addrlist(env->cc);
+  rfc2047_decode_addrlist(env->bcc);
+  rfc2047_decode_addrlist(env->reply_to);
+  rfc2047_decode_addrlist(env->mail_followup_to);
+  rfc2047_decode_addrlist(env->return_path);
+  rfc2047_decode_addrlist(env->sender);
+  rfc2047_decode(&env->x_label);
+  rfc2047_decode(&env->subject);
+}
+
+/**
+ * rfc2047_encode_envelope - Encode the fields of an Envelope
+ * @param env Envelope
+ */
+void rfc2047_encode_envelope(struct Envelope *env)
+{
+  rfc2047_encode_addrlist(env->from, "From");
+  rfc2047_encode_addrlist(env->to, "To");
+  rfc2047_encode_addrlist(env->cc, "Cc");
+  rfc2047_encode_addrlist(env->bcc, "Bcc");
+  rfc2047_encode_addrlist(env->reply_to, "Reply-To");
+  rfc2047_encode_addrlist(env->mail_followup_to, "Mail-Followup-To");
+  rfc2047_encode_addrlist(env->sender, "Sender");
+  rfc2047_encode(&env->x_label, NULL, sizeof("X-Label:"), C_SendCharset);
+  rfc2047_encode(&env->subject, NULL, sizeof("Subject:"), C_SendCharset);
 }

@@ -22,7 +22,7 @@
  */
 
 /**
- * @page group Handling for email address groups
+ * @page email_group Handling for email address groups
  *
  * Handling for email address groups
  */
@@ -30,14 +30,8 @@
 #include "config.h"
 #include <stdbool.h>
 #include <stdlib.h>
-#include "mutt/mutt.h"
-#include "email/lib.h"
+#include "email/address.h"
 #include "group.h"
-#include "hash.h"
-#include "logging.h"
-#include "memory.h"
-#include "regex3.h"
-#include "string2.h"
 
 static struct Hash *Groups = NULL;
 
@@ -77,7 +71,7 @@ struct Group *mutt_pattern_group(const char *k)
   p = mutt_hash_find(Groups, k);
   if (!p)
   {
-    mutt_debug(2, "Creating group %s.\n", k);
+    mutt_debug(LL_DEBUG2, "Creating group %s.\n", k);
     p = mutt_mem_calloc(1, sizeof(struct Group));
     p->name = mutt_str_strdup(k);
     STAILQ_INIT(&p->rs);
@@ -111,7 +105,7 @@ void mutt_grouplist_clear(struct GroupList *head)
   struct GroupNode *np = STAILQ_FIRST(head), *next = NULL;
   while (np)
   {
-    group_remove(np->g);
+    group_remove(np->group);
     next = STAILQ_NEXT(np, entries);
     FREE(&np);
     np = next;
@@ -141,11 +135,11 @@ void mutt_grouplist_add(struct GroupList *head, struct Group *group)
   struct GroupNode *np = NULL;
   STAILQ_FOREACH(np, head, entries)
   {
-    if (np->g == group)
+    if (np->group == group)
       return;
   }
   np = mutt_mem_calloc(1, sizeof(struct GroupNode));
-  np->g = group;
+  np->group = group;
   STAILQ_INSERT_TAIL(head, np, entries);
 }
 
@@ -245,7 +239,7 @@ void mutt_grouplist_add_addrlist(struct GroupList *head, struct Address *a)
   struct GroupNode *np = NULL;
   STAILQ_FOREACH(np, head, entries)
   {
-    group_add_addrlist(np->g, a);
+    group_add_addrlist(np->group, a);
   }
 }
 
@@ -263,9 +257,9 @@ int mutt_grouplist_remove_addrlist(struct GroupList *head, struct Address *a)
 
   STAILQ_FOREACH(np, head, entries)
   {
-    rc = group_remove_addrlist(np->g, a);
-    if (empty_group(np->g))
-      group_remove(np->g);
+    rc = group_remove_addrlist(np->group, a);
+    if (empty_group(np->group))
+      group_remove(np->group);
     if (rc)
       return rc;
   }
@@ -289,7 +283,7 @@ int mutt_grouplist_add_regex(struct GroupList *head, const char *s, int flags,
   struct GroupNode *np = NULL;
   STAILQ_FOREACH(np, head, entries)
   {
-    rc = group_add_regex(np->g, s, flags, err);
+    rc = group_add_regex(np->group, s, flags, err);
     if (rc)
       return rc;
   }
@@ -309,9 +303,9 @@ int mutt_grouplist_remove_regex(struct GroupList *head, const char *s)
   struct GroupNode *np = NULL;
   STAILQ_FOREACH(np, head, entries)
   {
-    rc = group_remove_regex(np->g, s);
-    if (empty_group(np->g))
-      group_remove(np->g);
+    rc = group_remove_regex(np->group, s);
+    if (empty_group(np->group))
+      group_remove(np->group);
     if (rc)
       return rc;
   }

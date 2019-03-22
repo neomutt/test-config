@@ -84,7 +84,7 @@ void mutt_envlist_init(char *envp[])
 bool mutt_envlist_set(const char *name, const char *value, bool overwrite)
 {
   char **envp = EnvList;
-  char work[LONG_STRING];
+  char work[1024];
   int count;
 
   /* Look for current slot to overwrite */
@@ -92,7 +92,7 @@ bool mutt_envlist_set(const char *name, const char *value, bool overwrite)
   while (envp && *envp)
   {
     size_t len = mutt_str_startswith(*envp, name, CASE_MATCH);
-    if ((len != 0) && (*envp)[len] == '=')
+    if ((len != 0) && ((*envp)[len] == '='))
     {
       if (!overwrite)
         return false;
@@ -137,7 +137,7 @@ bool mutt_envlist_unset(const char *name)
   while (envp && *envp)
   {
     size_t len = mutt_str_startswith(*envp, name, CASE_MATCH);
-    if ((len != 0) && (*envp)[len] == '=')
+    if ((len != 0) && ((*envp)[len] == '='))
     {
       /* shuffle down */
       char **save = envp++;

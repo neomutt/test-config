@@ -4,5 +4,6 @@ tags
 *.gc??
 config/config
 lib/lib
+mutt/mutt
 test/test
 lcov*

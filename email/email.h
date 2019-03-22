@@ -23,21 +23,25 @@
 #ifndef MUTT_EMAIL_EMAIL_H
 #define MUTT_EMAIL_EMAIL_H
 
+#include "config.h"
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <time.h>
 #include "mutt/mutt.h"
 #include "tags.h"
+
+typedef uint16_t SecurityFlags;
 
 /**
  * struct Email - The envelope/body of an email
  */
 struct Email
 {
-  unsigned int security : 12; /**< bit 0-8: flags, bit 9,10: application.
-                                 see: mutt_crypt.h pgplib.h, smime.h */
+  SecurityFlags security;   /**< bit 0-8: flags, bit 9,10: application.
+                                 see: ncrypt/ncrypt.h pgplib.h, smime.h */
 
-  bool mime            : 1; /**< has a MIME-Version email? */
+  bool mime            : 1; /**< has a MIME-Version header? */
   bool flagged         : 1; /**< marked important? */
   bool tagged          : 1;
   bool deleted         : 1;
@@ -57,7 +61,6 @@ struct Email
   bool active          : 1; /**< message is not to be removed */
   bool trash           : 1; /**< message is marked as trashed on disk.
                              * This flag is used by the maildir_trash option. */
-  bool xlabel_changed  : 1; /**< editable - used for syncing */
 
   /* timezone of the sender of this message */
   unsigned int zhours : 5;
@@ -113,6 +116,17 @@ struct Email
   void *edata;                 /**< driver-specific data */
   void (*free_edata)(void **); /**< driver-specific data free function */
 };
+
+/**
+ * struct EmailNode - List of Emails
+ */
+struct EmailNode
+{
+  struct Email *email;
+  STAILQ_ENTRY(EmailNode) entries;
+};
+
+STAILQ_HEAD(EmailList, EmailNode);
 
 bool          mutt_email_cmp_strict(const struct Email *e1, const struct Email *e2);
 void          mutt_email_free(struct Email **e);

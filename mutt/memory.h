@@ -27,16 +27,10 @@
 
 #undef MAX
 #undef MIN
-#define MAX(a, b) ((a) < (b) ? (b) : (a))
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) (((a) < (b)) ? (b) : (a))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 #define mutt_array_size(x) (sizeof(x) / sizeof((x)[0]))
-
-/* Macros for manipulating a bit-field */
-#define mutt_bit_set(v, n)    v[n / 8] |= (1 << (n % 8))
-#define mutt_bit_unset(v, n)  v[n / 8] &= ~(1 << (n % 8))
-#define mutt_bit_toggle(v, n) v[n / 8] ^= (1 << (n % 8))
-#define mutt_bit_isset(v, n)  (v[n / 8] & (1 << (n % 8)))
 
 void *mutt_mem_calloc(size_t nmemb, size_t size);
 void  mutt_mem_free(void *ptr);

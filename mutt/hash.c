@@ -30,7 +30,6 @@
 #include "config.h"
 #include <ctype.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include "hash.h"
 #include "memory.h"
 #include "string2.h"
@@ -250,7 +249,7 @@ static void union_hash_delete(struct Hash *table, union HashKey key, const void 
 
   while (ptr)
   {
-    if ((data == ptr->data || !data) && table->cmp_key(ptr->key, key) == 0)
+    if (((data == ptr->data) || !data) && (table->cmp_key(ptr->key, key) == 0))
     {
       *last = ptr->next;
       if (table->elem_free)
@@ -272,10 +271,10 @@ static void union_hash_delete(struct Hash *table, union HashKey key, const void 
 /**
  * mutt_hash_new - Create a new Hash table (with string keys)
  * @param nelem Number of elements it should contain
- * @param flags Flags, e.g. #MUTT_HASH_STRCASECMP
+ * @param flags Flags, see #HashFlags
  * @retval ptr New Hash table
  */
-struct Hash *mutt_hash_new(size_t nelem, int flags)
+struct Hash *mutt_hash_new(size_t nelem, HashFlags flags)
 {
   struct Hash *table = new_hash(nelem);
   if (flags & MUTT_HASH_STRCASECMP)
@@ -298,10 +297,10 @@ struct Hash *mutt_hash_new(size_t nelem, int flags)
 /**
  * mutt_hash_int_new - Create a new Hash table (with integer keys)
  * @param nelem Number of elements it should contain
- * @param flags Flags, e.g. #MUTT_HASH_ALLOW_DUPS
+ * @param flags Flags, see #HashFlags
  * @retval ptr New Hash table
  */
-struct Hash *mutt_hash_int_new(size_t nelem, int flags)
+struct Hash *mutt_hash_int_new(size_t nelem, HashFlags flags)
 {
   struct Hash *table = new_hash(nelem);
   table->gen_hash = gen_int_hash;
@@ -453,7 +452,7 @@ void mutt_hash_int_delete(struct Hash *table, unsigned int intkey, const void *d
 
 /**
  * mutt_hash_free - elem_free a hash table
- * @param ptr Hash Table to be freed
+ * @param[out] ptr Hash Table to be freed
  */
 void mutt_hash_free(struct Hash **ptr)
 {

@@ -35,8 +35,8 @@ void config_dump(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, STRING);
-  err.dsize = STRING;
+  err.data = mutt_mem_calloc(1, 256);
+  err.dsize = 256;
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(500);
@@ -58,13 +58,13 @@ void config_dump(void)
   cs_add_listener(cs, log_listener);
 
   dump_config(cs, CS_DUMP_STYLE_NEO,
-              CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS);
+              CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS, stdout);
   printf("\n");
 
-  dump_config(cs, CS_DUMP_STYLE_NEO, CS_DUMP_ONLY_CHANGED);
+  dump_config(cs, CS_DUMP_STYLE_NEO, CS_DUMP_ONLY_CHANGED, stdout);
   printf("\n");
 
-  dump_config(cs, CS_DUMP_STYLE_MUTT, 0);
+  dump_config(cs, CS_DUMP_STYLE_MUTT, 0, stdout);
 
   cs_free(&cs);
   FREE(&err.data);

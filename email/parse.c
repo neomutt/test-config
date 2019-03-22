@@ -34,7 +34,7 @@
 #include <string.h>
 #include <time.h>
 #include "mutt/mutt.h"
-#include "mutt/regex3.h"
+#include "mutt.h"
 #include "parse.h"
 #include "address.h"
 #include "body.h"
@@ -42,24 +42,19 @@
 #include "email_globals.h"
 #include "envelope.h"
 #include "from.h"
+#include "globals.h"
 #include "mime.h"
 #include "parameter.h"
+#include "protos.h"
 #include "rfc2047.h"
 #include "rfc2231.h"
 #include "url.h"
-
-struct Hash *AutoSubscribeCache; ///< Hash table of auto-subscribed mailing lists
-struct RegexList UnSubscribedLists = STAILQ_HEAD_INITIALIZER(UnSubscribedLists); ///< List of regexes to blacklist false matches in SubscribedLists
-struct RegexList MailLists = STAILQ_HEAD_INITIALIZER(MailLists);                 ///< List of regexes to match mailing lists
-struct RegexList UnMailLists = STAILQ_HEAD_INITIALIZER(UnMailLists);             ///< List of regexes to blacklist false matches in MailLists
-struct RegexList SubscribedLists = STAILQ_HEAD_INITIALIZER(SubscribedLists);     ///< List of regexes to match subscribed mailing lists
-bool AutoSubscribe;                  ///< Config: Automatically check if the user is subscribed to a mailing list
 
 /**
  * mutt_auto_subscribe - Check if user is subscribed to mailing list
  * @param mailto URI of mailing list subscribe
  */
-void mutt_auto_subscribe (const char *mailto)
+void mutt_auto_subscribe(const char *mailto)
 {
   struct Envelope *lpenv;
 
@@ -73,24 +68,21 @@ void mutt_auto_subscribe (const char *mailto)
 
   lpenv = mutt_env_new(); /* parsed envelope from the List-Post mailto: URL */
 
-#if 0
-  if ((url_parse_mailto (lpenv, NULL, mailto) != -1) &&
-      lpenv->to && lpenv->to->mailbox &&
+  if ((url_parse_mailto(lpenv, NULL, mailto) != -1) && lpenv->to && lpenv->to->mailbox &&
       !mutt_regexlist_match(&UnSubscribedLists, lpenv->to->mailbox) &&
       !mutt_regexlist_match(&UnMailLists, lpenv->to->mailbox) &&
       !mutt_regexlist_match(&UnSubscribedLists, lpenv->to->mailbox))
   {
     struct Buffer err;
-    char errbuf[STRING];
-    memset (&err, 0, sizeof(err));
+    char errbuf[256];
+    memset(&err, 0, sizeof(err));
     err.data = errbuf;
     err.dsize = sizeof(errbuf);
     /* mutt_regexlist_add() detects duplicates, so it is safe to
      * try to add here without any checks. */
-    mutt_regexlist_add (&MailLists, lpenv->to->mailbox, REG_ICASE, &err);
-    mutt_regexlist_add (&SubscribedLists, lpenv->to->mailbox, REG_ICASE, &err);
+    mutt_regexlist_add(&MailLists, lpenv->to->mailbox, REG_ICASE, &err);
+    mutt_regexlist_add(&SubscribedLists, lpenv->to->mailbox, REG_ICASE, &err);
   }
-#endif
 
   mutt_env_free(&lpenv);
 }
@@ -103,18 +95,18 @@ void mutt_auto_subscribe (const char *mailto)
 static void parse_parameters(struct ParameterList *param, const char *s)
 {
   struct Parameter *new = NULL;
-  char buffer[LONG_STRING];
+  char buf[1024];
   const char *p = NULL;
   size_t i;
 
-  mutt_debug(2, "'%s'\n", s);
+  mutt_debug(LL_DEBUG2, "'%s'\n", s);
 
   while (*s)
   {
     p = strpbrk(s, "=;");
     if (!p)
     {
-      mutt_debug(1, "malformed parameter: %s\n", s);
+      mutt_debug(LL_DEBUG1, "malformed parameter: %s\n", s);
       goto bail;
     }
 
@@ -127,11 +119,10 @@ static void parse_parameters(struct ParameterList *param, const char *s)
         i--;
 
       /* the check for the missing parameter token is here so that we can skip
-       * over any quoted value that may be present.
-       */
+       * over any quoted value that may be present.  */
       if (i == 0)
       {
-        mutt_debug(1, "missing attribute: %s\n", s);
+        mutt_debug(LL_DEBUG1, "missing attribute: %s\n", s);
         new = NULL;
       }
       else
@@ -146,13 +137,13 @@ static void parse_parameters(struct ParameterList *param, const char *s)
       {
         bool state_ascii = true;
         s++;
-        for (i = 0; *s && (i < (sizeof(buffer) - 1)); i++, s++)
+        for (i = 0; *s && (i < (sizeof(buf) - 1)); i++, s++)
         {
-          if (AssumedCharset && *AssumedCharset)
+          if (C_AssumedCharset && *C_AssumedCharset)
           {
             /* As iso-2022-* has a character of '"' with non-ascii state,
              * ignore it. */
-            if ((*s == 0x1b) && (i < (sizeof(buffer) - 2)))
+            if ((*s == 0x1b) && (i < (sizeof(buf) - 2)))
             {
               if ((s[1] == '(') && ((s[2] == 'B') || (s[2] == 'J')))
                 state_ascii = true;
@@ -165,30 +156,30 @@ static void parse_parameters(struct ParameterList *param, const char *s)
           if (*s == '\\')
           {
             /* Quote the next character */
-            buffer[i] = s[1];
+            buf[i] = s[1];
             if (!*++s)
               break;
           }
           else
-            buffer[i] = *s;
+            buf[i] = *s;
         }
-        buffer[i] = 0;
+        buf[i] = '\0';
         if (*s)
           s++; /* skip over the " */
       }
       else
       {
-        for (i = 0; *s && (*s != ' ') && (*s != ';') && (i < (sizeof(buffer) - 1)); i++, s++)
-          buffer[i] = *s;
-        buffer[i] = 0;
+        for (i = 0; *s && (*s != ' ') && (*s != ';') && (i < (sizeof(buf) - 1)); i++, s++)
+          buf[i] = *s;
+        buf[i] = '\0';
       }
 
       /* if the attribute token was missing, 'new' will be NULL */
       if (new)
       {
-        new->value = mutt_str_strdup(buffer);
+        new->value = mutt_str_strdup(buf);
 
-        mutt_debug(2, "parse_parameter: '%s' = `%s'\n",
+        mutt_debug(LL_DEBUG2, "parse_parameter: '%s' = '%s'\n",
                    new->attribute ? new->attribute : "", new->value ? new->value : "");
 
         /* Add this parameter to the list */
@@ -197,7 +188,7 @@ static void parse_parameters(struct ParameterList *param, const char *s)
     }
     else
     {
-      mutt_debug(1, "parameter with no value: %s\n", s);
+      mutt_debug(LL_DEBUG1, "parameter with no value: %s\n", s);
       s = p;
     }
 
@@ -279,7 +270,7 @@ static void parse_content_language(const char *s, struct Body *ct)
   if (!s || !ct)
     return;
 
-  mutt_debug(2, "RFC8255 >> Content-Language set to %s\n", s);
+  mutt_debug(LL_DEBUG2, "RFC8255 >> Content-Language set to %s\n", s);
   ct->language = mutt_str_strdup(s);
 }
 
@@ -332,8 +323,8 @@ int mutt_check_mime_type(const char *s)
 
 /**
  * mutt_extract_message_id - Find a message-id
- * @param s String to parse
- * @param saveptr Save result here
+ * @param[in]  s String to parse
+ * @param[out] saveptr Save result here
  * @retval ptr  First character after message-id
  * @retval NULL No more message ids
  *
@@ -352,7 +343,7 @@ char *mutt_extract_message_id(const char *s, const char **saveptr)
   else
     return NULL;
 
-  for (s = NULL, o = NULL, onull = NULL; (p = strpbrk(p, "<> \t;")); ++p)
+  for (s = NULL, o = NULL, onull = NULL; (p = strpbrk(p, "<> \t;")); p++)
   {
     if (*p == '<')
     {
@@ -494,8 +485,7 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
   if (!ct->subtype)
   {
     /* Some older non-MIME mailers (i.e., mailtool, elm) have a content-type
-     * field, so we can attempt to convert the type to Body here.
-     */
+     * field, so we can attempt to convert the type to Body here.  */
     if (ct->type == TYPE_TEXT)
       ct->subtype = mutt_str_strdup("plain");
     else if (ct->type == TYPE_AUDIO)
@@ -504,11 +494,11 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
       ct->subtype = mutt_str_strdup("rfc822");
     else if (ct->type == TYPE_OTHER)
     {
-      char buffer[SHORT_STRING];
+      char buf[128];
 
       ct->type = TYPE_APPLICATION;
-      snprintf(buffer, sizeof(buffer), "x-%s", s);
-      ct->subtype = mutt_str_strdup(buffer);
+      snprintf(buf, sizeof(buf), "x-%s", s);
+      ct->subtype = mutt_str_strdup(buf);
     }
     else
       ct->subtype = mutt_str_strdup("x-unknown");
@@ -521,7 +511,7 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
     if (!pc)
     {
       mutt_param_set(&ct->parameter, "charset",
-                     (AssumedCharset && *AssumedCharset) ?
+                     (C_AssumedCharset && *C_AssumedCharset) ?
                          (const char *) mutt_ch_get_default_charset() :
                          "us-ascii");
     }
@@ -650,7 +640,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
 
     case 'e':
       if ((mutt_str_strcasecmp("xpires", line + 1) == 0) && e &&
-          mutt_date_parse_date(p, NULL) < time(NULL))
+          (mutt_date_parse_date(p, NULL) < time(NULL)))
       {
         e->expired = true;
       }
@@ -690,9 +680,8 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
         if (e)
         {
           /* HACK - neomutt has, for a very short time, produced negative
-           * Lines header values.  Ignore them.
-           */
-          if (mutt_str_atoi(p, &e->lines) < 0 || (e->lines < 0))
+           * Lines header values.  Ignore them.  */
+          if ((mutt_str_atoi(p, &e->lines) < 0) || (e->lines < 0))
             e->lines = 0;
         }
 
@@ -716,7 +705,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
             {
               FREE(&env->list_post);
               env->list_post = mutt_str_substr_dup(beg, end);
-              if (AutoSubscribe)
+              if (C_AutoSubscribe)
                 mutt_auto_subscribe(env->list_post);
 
               break;
@@ -775,7 +764,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
 #endif
 
     case 'o':
-      /* field `Organization:' saves only for pager! */
+      /* field 'Organization:' saves only for pager! */
       if (mutt_str_strcasecmp(line + 1, "rganization") == 0)
       {
         if (!env->organization && (mutt_str_strcasecmp(p, "unknown") != 0))
@@ -833,7 +822,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
             switch (*p)
             {
               case 'O':
-                e->old = MarkOld ? true : false;
+                e->old = C_MarkOld ? true : false;
                 break;
               case 'R':
                 e->read = true;
@@ -926,7 +915,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
     /* restore the original line */
     line[strlen(line)] = ':';
 
-    if (!(weed && Weed && mutt_matches_ignore(line)))
+    if (!(weed && C_Weed && mutt_matches_ignore(line)))
     {
       struct ListNode *np = mutt_list_insert_tail(&env->userhdrs, mutt_str_strdup(line));
       if (do_2047)
@@ -939,7 +928,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
 
 /**
  * mutt_rfc822_read_line - Read a header line from a file
- * @param f       File to read from
+ * @param fp      File to read from
  * @param line    Buffer to store the result
  * @param linelen Length of buffer
  * @retval ptr Line read from file
@@ -948,7 +937,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
  * lines.  "line" must point to a dynamically allocated string; it is
  * increased if more space is required to fit the whole line.
  */
-char *mutt_rfc822_read_line(FILE *f, char *line, size_t *linelen)
+char *mutt_rfc822_read_line(FILE *fp, char *line, size_t *linelen)
 {
   char *buf = line;
   int ch;
@@ -956,10 +945,10 @@ char *mutt_rfc822_read_line(FILE *f, char *line, size_t *linelen)
 
   while (true)
   {
-    if (!fgets(buf, *linelen - offset, f) || /* end of file or */
-        (ISSPACE(*line) && !offset))         /* end of headers */
+    if (!fgets(buf, *linelen - offset, fp) || /* end of file or */
+        (ISSPACE(*line) && !offset))          /* end of headers */
     {
-      *line = 0;
+      *line = '\0';
       return line;
     }
 
@@ -973,32 +962,32 @@ char *mutt_rfc822_read_line(FILE *f, char *line, size_t *linelen)
       /* we did get a full line. remove trailing space */
       while (ISSPACE(*buf))
       {
-        *buf-- = 0; /* we cannot come beyond line's beginning because
-                     * it begins with a non-space */
+        *buf-- = '\0'; /* we cannot come beyond line's beginning because
+                        * it begins with a non-space */
       }
 
       /* check to see if the next line is a continuation line */
-      ch = fgetc(f);
+      ch = fgetc(fp);
       if ((ch != ' ') && (ch != '\t'))
       {
-        ungetc(ch, f);
+        ungetc(ch, fp);
         return line; /* next line is a separate header field or EOH */
       }
 
       /* eat tabs and spaces from the beginning of the continuation line */
-      while (((ch = fgetc(f)) == ' ') || (ch == '\t'))
+      while (((ch = fgetc(fp)) == ' ') || (ch == '\t'))
         ;
-      ungetc(ch, f);
+      ungetc(ch, fp);
       *++buf = ' '; /* string is still terminated because we removed
                        at least one whitespace char above */
     }
 
     buf++;
     offset = buf - line;
-    if (*linelen < (offset + STRING))
+    if (*linelen < (offset + 256))
     {
       /* grow the buffer */
-      *linelen += STRING;
+      *linelen += 256;
       mutt_mem_realloc(&line, *linelen);
       buf = line + offset;
     }
@@ -1008,7 +997,7 @@ char *mutt_rfc822_read_line(FILE *f, char *line, size_t *linelen)
 
 /**
  * mutt_rfc822_read_header - parses an RFC822 header
- * @param f         Stream to read from
+ * @param fp        Stream to read from
  * @param e         Current Email (optional)
  * @param user_hdrs If set, store user headers
  *                  Used for recall-message and postpone modes
@@ -1019,14 +1008,14 @@ char *mutt_rfc822_read_line(FILE *f, char *line, size_t *linelen)
  *
  * Caller should free the Envelope using mutt_env_free().
  */
-struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdrs, bool weed)
+struct Envelope *mutt_rfc822_read_header(FILE *fp, struct Email *e, bool user_hdrs, bool weed)
 {
   struct Envelope *env = mutt_env_new();
-  char *line = mutt_mem_malloc(LONG_STRING);
   char *p = NULL;
   LOFF_T loc;
-  size_t linelen = LONG_STRING;
-  char buf[LONG_STRING + 1];
+  size_t linelen = 1024;
+  char *line = mutt_mem_malloc(linelen);
+  char buf[linelen + 1];
 
   if (e)
   {
@@ -1045,15 +1034,15 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
     }
   }
 
-  while ((loc = ftello(f)) != -1)
+  while ((loc = ftello(fp)) != -1)
   {
-    line = mutt_rfc822_read_line(f, line, &linelen);
+    line = mutt_rfc822_read_line(fp, line, &linelen);
     if (*line == '\0')
       break;
     p = strpbrk(line, ": \t");
     if (!p || (*p != ':'))
     {
-      char return_path[LONG_STRING];
+      char return_path[1024];
       time_t t;
 
       /* some bogus MTAs will quote the original "From " line */
@@ -1067,7 +1056,7 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
         continue;
       }
 
-      fseeko(f, loc, SEEK_SET);
+      fseeko(fp, loc, SEEK_SET);
       break; /* end of header */
     }
 
@@ -1078,12 +1067,12 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
       if (!mutt_regexlist_match(&NoSpamList, line))
       {
         /* if spam tag already exists, figure out how to amend it */
-        if (env->spam && *buf)
+        if (env->spam && (*buf != '\0'))
         {
-          /* If SpamSeparator defined, append with separator */
-          if (SpamSeparator)
+          /* If C_SpamSeparator defined, append with separator */
+          if (C_SpamSeparator)
           {
-            mutt_buffer_addstr(env->spam, SpamSeparator);
+            mutt_buffer_addstr(env->spam, C_SpamSeparator);
             mutt_buffer_addstr(env->spam, buf);
           }
 
@@ -1097,7 +1086,7 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
         }
 
         /* spam tag is new, and match expr is non-empty; copy */
-        else if (!env->spam && *buf)
+        else if (!env->spam && (*buf != '\0'))
         {
           env->spam = mutt_buffer_from(buf);
         }
@@ -1113,7 +1102,7 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
       }
     }
 
-    *p = 0;
+    *p = '\0';
     p = mutt_str_skip_email_wsp(p + 1);
     if (!*p)
       continue; /* skip empty header fields */
@@ -1126,27 +1115,16 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
   if (e)
   {
     e->content->hdr_offset = e->offset;
-    e->content->offset = ftello(f);
+    e->content->offset = ftello(fp);
 
-    /* do RFC2047 decoding */
-    rfc2047_decode_addrlist(env->from);
-    rfc2047_decode_addrlist(env->to);
-    rfc2047_decode_addrlist(env->cc);
-    rfc2047_decode_addrlist(env->bcc);
-    rfc2047_decode_addrlist(env->reply_to);
-    rfc2047_decode_addrlist(env->mail_followup_to);
-    rfc2047_decode_addrlist(env->return_path);
-    rfc2047_decode_addrlist(env->sender);
-    rfc2047_decode_addrlist(env->x_original_to);
+    rfc2047_decode_envelope(env);
 
     if (env->subject)
     {
       regmatch_t pmatch[1];
 
-      rfc2047_decode(&env->subject);
-
-      if (ReplyRegex && ReplyRegex->regex &&
-          (regexec(ReplyRegex->regex, env->subject, 1, pmatch, 0) == 0))
+      if (C_ReplyRegex && C_ReplyRegex->regex &&
+          (regexec(C_ReplyRegex->regex, env->subject, 1, pmatch, 0) == 0))
       {
         env->real_subj = env->subject + pmatch[0].rm_eo;
       }
@@ -1156,14 +1134,15 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
 
     if (e->received < 0)
     {
-      mutt_debug(1, "resetting invalid received time to 0\n");
+      mutt_debug(LL_DEBUG1, "resetting invalid received time to 0\n");
       e->received = 0;
     }
 
     /* check for missing or invalid date */
     if (e->date_sent <= 0)
     {
-      mutt_debug(1, "no date found, using received time from msg separator\n");
+      mutt_debug(LL_DEBUG1,
+                 "no date found, using received time from msg separator\n");
       e->date_sent = e->received;
     }
   }
@@ -1180,9 +1159,10 @@ struct Envelope *mutt_rfc822_read_header(FILE *f, struct Email *e, bool user_hdr
 struct Body *mutt_read_mime_header(FILE *fp, bool digest)
 {
   struct Body *p = mutt_body_new();
+  struct Envelope *env = mutt_env_new();
   char *c = NULL;
-  char *line = mutt_mem_malloc(LONG_STRING);
-  size_t linelen = LONG_STRING;
+  size_t linelen = 1024;
+  char *line = mutt_mem_malloc(linelen);
 
   p->hdr_offset = ftello(fp);
 
@@ -1196,17 +1176,17 @@ struct Body *mutt_read_mime_header(FILE *fp, bool digest)
     c = strchr(line, ':');
     if (c)
     {
-      *c = 0;
+      *c = '\0';
       c = mutt_str_skip_email_wsp(c + 1);
       if (!*c)
       {
-        mutt_debug(1, "skipping empty header field: %s\n", line);
+        mutt_debug(LL_DEBUG1, "skipping empty header field: %s\n", line);
         continue;
       }
     }
     else
     {
-      mutt_debug(1, "bogus MIME header: %s\n", line);
+      mutt_debug(LL_DEBUG1, "bogus MIME header: %s\n", line);
       break;
     }
 
@@ -1243,14 +1223,24 @@ struct Body *mutt_read_mime_header(FILE *fp, bool digest)
       }
     }
 #endif
+    else
+    {
+      if (mutt_rfc822_parse_line(env, NULL, line, c, false, false, false))
+        p->mime_headers = env;
+    }
   }
   p->offset = ftello(fp); /* Mark the start of the real data */
-  if (p->type == TYPE_TEXT && !p->subtype)
+  if ((p->type == TYPE_TEXT) && !p->subtype)
     p->subtype = mutt_str_strdup("plain");
-  else if (p->type == TYPE_MESSAGE && !p->subtype)
+  else if ((p->type == TYPE_MESSAGE) && !p->subtype)
     p->subtype = mutt_str_strdup("rfc822");
 
   FREE(&line);
+
+  if (p->mime_headers)
+    rfc2047_decode_envelope(p->mime_headers);
+  else
+    mutt_env_free(&env);
 
   return p;
 }
@@ -1332,7 +1322,7 @@ void mutt_parse_part(FILE *fp, struct Body *b)
  */
 struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off, bool digest)
 {
-  char buffer[LONG_STRING];
+  char buf[1024];
   struct Body *head = NULL, *last = NULL, *new = NULL;
   bool final = false; /* did we see the ending boundary? */
 
@@ -1343,19 +1333,18 @@ struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off
   }
 
   const size_t blen = mutt_str_strlen(boundary);
-  while ((ftello(fp) < end_off) && fgets(buffer, LONG_STRING, fp))
+  while ((ftello(fp) < end_off) && fgets(buf, sizeof(buf), fp))
   {
-    const size_t len = mutt_str_strlen(buffer);
+    const size_t len = mutt_str_strlen(buf);
 
-    const size_t crlf = ((len > 1) && (buffer[len - 2] == '\r')) ? 1 : 0;
+    const size_t crlf = ((len > 1) && (buf[len - 2] == '\r')) ? 1 : 0;
 
-    if ((buffer[0] == '-') && (buffer[1] == '-') &&
-        mutt_str_startswith(buffer + 2, boundary, CASE_MATCH))
+    if ((buf[0] == '-') && (buf[1] == '-') && mutt_str_startswith(buf + 2, boundary, CASE_MATCH))
     {
       if (last)
       {
         last->length = ftello(fp) - last->offset - len - 1 - crlf;
-        if (last->parts && last->parts->length == 0)
+        if (last->parts && (last->parts->length == 0))
           last->parts->length = ftello(fp) - last->parts->offset - len - 1 - crlf;
         /* if the body is empty, we can end up with a -1 length */
         if (last->length < 0)
@@ -1365,17 +1354,17 @@ struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off
       if (len > 0)
       {
         /* Remove any trailing whitespace, up to the length of the boundary */
-        for (size_t i = len - 1; ISSPACE(buffer[i]) && (i >= (blen + 2)); i--)
-          buffer[i] = 0;
+        for (size_t i = len - 1; ISSPACE(buf[i]) && (i >= (blen + 2)); i--)
+          buf[i] = '\0';
       }
 
       /* Check for the end boundary */
-      if (mutt_str_strcmp(buffer + blen + 2, "--") == 0)
+      if (mutt_str_strcmp(buf + blen + 2, "--") == 0)
       {
         final = true;
         break; /* done parsing */
       }
-      else if (buffer[2 + blen] == 0)
+      else if (buf[2 + blen] == '\0')
       {
         new = mutt_read_mime_header(fp, digest);
 
@@ -1386,14 +1375,11 @@ struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off
           if (mutt_str_atoi(mutt_param_get(&new->parameter, "content-lines"), &lines) < 0)
             lines = 0;
           for (; lines; lines--)
-            if ((ftello(fp) >= end_off) || !fgets(buffer, LONG_STRING, fp))
+            if ((ftello(fp) >= end_off) || !fgets(buf, sizeof(buf), fp))
               break;
         }
 #endif
-        /* Consistency checking - catch
-         * bad attachment end boundaries
-         */
-
+        /* Consistency checking - catch bad attachment end boundaries */
         if (new->offset > end_off)
         {
           mutt_body_free(&new);
@@ -1440,7 +1426,7 @@ struct Body *mutt_rfc822_parse_message(FILE *fp, struct Body *parent)
   struct Body *msg = parent->email->content;
 
   /* ignore the length given in the content-length since it could be wrong
-     and we already have the info to calculate the correct length */
+   * and we already have the info to calculate the correct length */
   /* if (msg->length == -1) */
   msg->length = parent->length - (msg->offset - parent->offset);
 

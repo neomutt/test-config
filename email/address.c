@@ -43,7 +43,7 @@ const char AddressSpecials[] = "@.,:;<>[]\\\"()";
 /**
  * is_special - Is this character special to an email address?
  */
-#define is_special(x) strchr(AddressSpecials, x)
+#define is_special(ch) strchr(AddressSpecials, ch)
 
 /**
  * AddressError - An out-of-band error code
@@ -66,7 +66,7 @@ const char *const AddressErrors[] = {
 
 /**
  * free_address - Free a single Address
- * @param a Address to free
+ * @param[out] a Address to free
  *
  * @note This doesn't alter the links if the Address is in a list.
  */
@@ -296,7 +296,7 @@ static const char *parse_address(const char *s, char *token, size_t *tokenlen,
 static const char *parse_route_addr(const char *s, char *comment, size_t *commentlen,
                                     size_t commentmax, struct Address *addr)
 {
-  char token[LONG_STRING];
+  char token[1024];
   size_t tokenlen = 0;
 
   s = mutt_str_skip_email_wsp(s);
@@ -352,7 +352,7 @@ static const char *parse_route_addr(const char *s, char *comment, size_t *commen
 static const char *parse_addr_spec(const char *s, char *comment, size_t *commentlen,
                                    size_t commentmax, struct Address *addr)
 {
-  char token[LONG_STRING];
+  char token[1024];
   size_t tokenlen = 0;
 
   s = parse_address(s, token, &tokenlen, sizeof(token) - 1, comment, commentlen,
@@ -367,8 +367,8 @@ static const char *parse_addr_spec(const char *s, char *comment, size_t *comment
 
 /**
  * add_addrspec - Parse an email address and add an Address to a list
- * @param[in]  top        Top of Address list
- * @param[in]  last       End of Address list
+ * @param[out] top        Top of Address list
+ * @param[out] last       End of Address list
  * @param[in]  phrase     String to parse
  * @param[out] comment    Buffer for any comments
  * @param[out] commentlen Length of any comments
@@ -405,8 +405,8 @@ struct Address *mutt_addr_new(void)
 
 /**
  * mutt_addr_remove_from_list - Remove an Address from a list
- * @param a       Address list
- * @param mailbox Email address to match
+ * @param[out] a       Address list
+ * @param[in]  mailbox Email address to match
  * @retval  0 Success
  * @retval -1 Error, or email not found
  */
@@ -441,7 +441,7 @@ int mutt_addr_remove_from_list(struct Address **a, const char *mailbox)
 
 /**
  * mutt_addr_free - Free a list of Addresses
- * @param p Top of the list
+ * @param[out] p Top of the list
  */
 void mutt_addr_free(struct Address **p)
 {
@@ -466,7 +466,7 @@ struct Address *mutt_addr_parse_list(struct Address *top, const char *s)
 {
   int ws_pending;
   const char *ps = NULL;
-  char comment[LONG_STRING], phrase[LONG_STRING];
+  char comment[1024], phrase[1024];
   size_t phraselen = 0, commentlen = 0;
   struct Address *cur = NULL;
 
@@ -633,7 +633,7 @@ struct Address *mutt_addr_parse_list2(struct Address *p, const char *s)
   const char *q = strpbrk(s, "\"<>():;,\\");
   if (!q)
   {
-    char tmp[HUGE_STRING];
+    char tmp[8192];
 
     mutt_str_strfcpy(tmp, s, sizeof(tmp));
     char *r = tmp;
@@ -697,7 +697,7 @@ void mutt_addr_cat(char *buf, size_t buflen, const char *value, const char *spec
       tmplen--;
     }
     *pc++ = '"';
-    *pc = 0;
+    *pc = '\0';
     mutt_str_strfcpy(buf, tmp, buflen);
   }
   else
@@ -753,9 +753,9 @@ struct Address *mutt_addr_copy_list(struct Address *addr, bool prune)
 
 /**
  * mutt_addr_append - Append one list of addresses onto another
- * @param a     Destination Address list
- * @param b     Source Address list
- * @param prune Skip groups if there are more addresses
+ * @param[out] a     Destination Address list
+ * @param[in]  b     Source Address list
+ * @param[in]  prune Skip groups if there are more addresses
  * @retval ptr Last Address in the combined list
  *
  * Append the Source onto the end of the Destination Address list.
@@ -796,8 +796,8 @@ bool mutt_addr_valid_msgid(const char *msgid)
    * atom           = 1*<any CHAR except specials, SPACE and CTLs>
    * CHAR           = ( 0.-127. )
    * specials       = "(" / ")" / "<" / ">" / "@"
-                    / "," / ";" / ":" / "\" / <">
-                    / "." / "[" / "]"
+   *                / "," / ";" / ":" / "\" / <">
+   *                / "." / "[" / "]"
    * SPACE          = ( 32. )
    * CTLS           = ( 0.-31., 127.)
    * quoted-string  = <"> *(qtext/quoted-pair) <">
@@ -1126,8 +1126,8 @@ void mutt_addr_write_single(char *buf, size_t buflen, struct Address *addr, bool
   }
 done:
   /* no need to check for length here since we already save space at the
-     beginning of this routine */
-  *pbuf = 0;
+   * beginning of this routine */
+  *pbuf = '\0';
 }
 
 /**
@@ -1170,17 +1170,17 @@ size_t mutt_addr_write(char *buf, size_t buflen, struct Address *addr, bool disp
   for (; addr && (buflen > 0); addr = addr->next)
   {
     /* use buflen+1 here because we already saved space for the trailing
-       nul char, and the subroutine can make use of it */
+     * nul char, and the subroutine can make use of it */
     mutt_addr_write_single(pbuf, buflen + 1, addr, display);
 
     /* this should be safe since we always have at least 1 char passed into
-       the above call, which means `pbuf' should always be nul terminated */
+     * the above call, which means 'pbuf' should always be nul terminated */
     len = mutt_str_strlen(pbuf);
     pbuf += len;
     buflen -= len;
 
     /* if there is another address, and it's not a group mailbox name or
-       group terminator, add a comma to separate the addresses */
+     * group terminator, add a comma to separate the addresses */
     if (addr->next && addr->next->mailbox && !addr->group)
     {
       if (buflen == 0)
@@ -1194,7 +1194,7 @@ size_t mutt_addr_write(char *buf, size_t buflen, struct Address *addr, bool disp
     }
   }
 done:
-  *pbuf = 0;
+  *pbuf = '\0';
   return pbuf - buf;
 }
 
@@ -1299,7 +1299,7 @@ struct Address *mutt_addrlist_dedupe(struct Address *addr)
 
     if (dup)
     {
-      mutt_debug(2, "Removing %s\n", addr->mailbox);
+      mutt_debug(LL_DEBUG2, "Removing %s\n", addr->mailbox);
 
       *last = addr->next;
 

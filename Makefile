@@ -9,7 +9,7 @@ SRC	+= main.c
 SRC	+= config/account.c config/address.c config/bool.c config/command.c config/dump.c config/enum.c config/long.c config/magic.c config/mbtable.c config/regex.c config/number.c config/path.c config/quad.c config/set.c config/slist.c config/sort.c config/string.c
 SRC	+= test/common.c test/account.c test/address.c test/bool.c test/command.c test/enum.c test/initial.c test/long.c test/magic.c test/mbtable.c test/number.c test/path.c test/quad.c test/regex.c test/set.c test/slist.c test/sort.c test/string.c test/synonym.c
 SRC	+= mutt/base64.c mutt/buffer.c mutt/charset.c mutt/date.c mutt/envlist.c mutt/exit.c mutt/file.c mutt/hash.c mutt/history.c mutt/list.c mutt/logging.c mutt/mapping.c mutt/mbyte.c mutt/md5.c mutt/memory.c mutt/regex.c mutt/sha1.c mutt/signal.c mutt/string.c
-SRC	+= email/address.c email/attach.c email/body.c email/email.c email/email_globals.c email/envelope.c email/from.c email/header.c email/idna.c email/mime.c email/parameter.c email/parse.c email/rfc2047.c email/rfc2231.c email/tags.c email/thread.c email/url.c
+SRC	+= email/address.c email/idna.c
 SRC	+= dump/dump.c dump/data.c dump/vars.c
 
 OBJ	+= $(SRC:%.c=%.o)
@@ -88,7 +88,7 @@ coveralls: dummy_dirs all test force
 
 lcov: all test force
 	$(RM) lcov
-	$(RM) main.gc?? test/*.gc?? mutt/*.gc??
+	$(RM) main.gc?? test/*.gc?? mutt/*.gc?? config/dump.gc??
 	lcov -t "result" -o lcov.info -c -d config
 	genhtml -o lcov lcov.info
 	realpath lcov/config/index-sort-l.html

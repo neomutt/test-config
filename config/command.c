@@ -30,9 +30,7 @@
 #include <stddef.h>
 #include <limits.h>
 #include <stdint.h>
-#include "mutt/buffer.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
+#include "mutt/mutt.h"
 #include "set.h"
 #include "types.h"
 
@@ -244,11 +242,11 @@ static int command_reset(const struct ConfigSet *cs, void *var,
 
   int rc = CSR_SUCCESS;
 
-  const char *command = (const char *) cdef->initial;
-  if (!command)
+  const char *cmd = (const char *) cdef->initial;
+  if (!cmd)
     rc |= CSR_SUC_EMPTY;
 
-  if (mutt_str_strcmp(command, (*(char **) var)) == 0)
+  if (mutt_str_strcmp(cmd, (*(char **) var)) == 0)
     return rc | CSR_SUC_NO_CHANGE;
 
   if (cdef->validator)
@@ -261,10 +259,10 @@ static int command_reset(const struct ConfigSet *cs, void *var,
 
   command_destroy(cs, var, cdef);
 
-  if (!command)
+  if (!cmd)
     rc |= CSR_SUC_EMPTY;
 
-  *(const char **) var = command;
+  *(const char **) var = cmd;
   return rc;
 }
 

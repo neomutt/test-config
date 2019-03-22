@@ -36,10 +36,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "mutt/logging.h"
-#include "mutt/memory.h"
-#include "mutt/message.h"
-#include "mutt/string2.h"
+#include "logging.h"
+#include "memory.h"
+#include "message.h"
+#include "string2.h"
 
 /**
  * mutt_path_tidy_slash - Remove unnecessary slashes and dots
@@ -106,7 +106,7 @@ bool mutt_path_tidy_dotdot(char *buf)
 
   char *dd = buf;
 
-  mutt_debug(3, "Collapse path: %s\n", buf);
+  mutt_debug(LL_DEBUG3, "Collapse path: %s\n", buf);
   while ((dd = strstr(dd, "/..")))
   {
     if (dd[3] == '/') /* paths follow dots */
@@ -147,7 +147,7 @@ bool mutt_path_tidy_dotdot(char *buf)
     dd = buf; /* restart at the beginning */
   }
 
-  mutt_debug(3, "Collapsed to:  %s\n", buf);
+  mutt_debug(LL_DEBUG3, "Collapsed to:  %s\n", buf);
   return true;
 }
 
@@ -189,7 +189,7 @@ bool mutt_path_pretty(char *buf, size_t buflen, const char *homedir)
   if (len == 0)
     return false;
 
-  if (buf[len] != '/' && buf[len] != '\0')
+  if ((buf[len] != '/') && (buf[len] != '\0'))
     return false;
 
   buf[0] = '~';
@@ -232,7 +232,7 @@ bool mutt_path_canon(char *buf, size_t buflen, const char *homedir)
     {
       if (!homedir)
       {
-        mutt_debug(3, "no homedir\n");
+        mutt_debug(LL_DEBUG3, "no homedir\n");
         return false;
       }
 
@@ -241,7 +241,7 @@ bool mutt_path_canon(char *buf, size_t buflen, const char *homedir)
     }
     else
     {
-      char user[SHORT_STRING];
+      char user[128];
       dir = strchr(buf + 1, '/');
       if (dir)
         mutt_str_strfcpy(user, buf + 1, MIN(dir - buf, (unsigned) sizeof(user)));
@@ -251,7 +251,7 @@ bool mutt_path_canon(char *buf, size_t buflen, const char *homedir)
       struct passwd *pw = getpwnam(user);
       if (!pw || !pw->pw_dir)
       {
-        mutt_debug(1, "no such user: %s\n", user);
+        mutt_debug(LL_DEBUG1, "no such user: %s\n", user);
         return false;
       }
 
@@ -261,7 +261,7 @@ bool mutt_path_canon(char *buf, size_t buflen, const char *homedir)
     size_t dirlen = mutt_str_strlen(dir);
     if ((len + dirlen) >= buflen)
     {
-      mutt_debug(3, "result too big for the buffer %d >= %d\n", len + dirlen, buflen);
+      mutt_debug(LL_DEBUG3, "result too big for the buffer %d >= %d\n", len + dirlen, buflen);
       return false;
     }
 
@@ -272,7 +272,7 @@ bool mutt_path_canon(char *buf, size_t buflen, const char *homedir)
   {
     if (!getcwd(result, sizeof(result)))
     {
-      mutt_debug(1, "getcwd failed: %s (%d)\n", strerror(errno), errno);
+      mutt_debug(LL_DEBUG1, "getcwd failed: %s (%d)\n", strerror(errno), errno);
       return false;
     }
 
@@ -280,7 +280,8 @@ bool mutt_path_canon(char *buf, size_t buflen, const char *homedir)
     size_t dirlen = mutt_str_strlen(buf);
     if ((cwdlen + dirlen + 1) >= buflen)
     {
-      mutt_debug(3, "result too big for the buffer %d >= %d\n", cwdlen + dirlen + 1, buflen);
+      mutt_debug(LL_DEBUG3, "result too big for the buffer %d >= %d\n",
+                 cwdlen + dirlen + 1, buflen);
       return false;
     }
 
@@ -324,7 +325,7 @@ char *mutt_path_concat(char *d, const char *dir, const char *fname, size_t l)
 {
   const char *fmt = "%s/%s";
 
-  if (!*fname || (*dir && dir[strlen(dir) - 1] == '/'))
+  if (!*fname || (*dir && (dir[strlen(dir) - 1] == '/')))
     fmt = "%s%s";
 
   snprintf(d, l, fmt, dir, fname);
@@ -364,8 +365,7 @@ char *mutt_path_concatn(char *dst, size_t dstlen, const char *dir,
      * 1) assert(0) or return NULL to signal error
      * 2) copy as much of the path as will fit
      * It doesn't appear that the return value is actually checked anywhere mutt_path_concat()
-     * is called, so we should just copy set dst to nul and let the calling function fail later.
-     */
+     * is called, so we should just copy set dst to nul and let the calling function fail later.  */
     dst[0] = '\0'; /* safe since we bail out early if dstlen == 0 */
     return NULL;
   }
@@ -431,7 +431,7 @@ int mutt_path_to_absolute(char *path, const char *reference)
 
   path_len = sizeof(abs_path) - strlen(path);
 
-  mutt_str_strncat(abs_path, sizeof(abs_path), path, path_len > 0 ? path_len : 0);
+  mutt_str_strncat(abs_path, sizeof(abs_path), path, (path_len > 0) ? path_len : 0);
 
   path = realpath(abs_path, path);
   if (!path && (errno != ENOENT))
@@ -528,13 +528,13 @@ bool mutt_path_abbr_folder(char *buf, size_t buflen, const char *folder)
 }
 
 /**
- * mutt_escape_path - Escapes single quotes in a path for a command string
+ * mutt_path_escape - Escapes single quotes in a path for a command string
  * @param src the path to escape
  * @retval ptr The escaped string
  */
 char *mutt_path_escape(const char *src)
 {
-  static char dest[HUGE_STRING];
+  static char dest[STR_COMMAND];
   char *destp = dest;
   int destsize = 0;
 

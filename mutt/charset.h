@@ -30,8 +30,8 @@
 
 struct Buffer;
 
-extern char *AssumedCharset;
-extern char *Charset;
+extern char *C_AssumedCharset;
+extern char *C_Charset;
 extern bool CharsetIsUtf8;
 extern wchar_t ReplacementChar;
 
@@ -40,7 +40,7 @@ extern wchar_t ReplacementChar;
  */
 struct FgetConv
 {
-  FILE *file;
+  FILE *fp;
   iconv_t cd;
   char bufi[512];
   char bufo[512];
@@ -56,7 +56,7 @@ struct FgetConv
  */
 struct FgetConvNot
 {
-  FILE *file;
+  FILE *fp;
   iconv_t cd;
 };
 
@@ -92,7 +92,7 @@ int              mutt_ch_convert_nonmime_string(char **ps);
 int              mutt_ch_convert_string(char **ps, const char *from, const char *to, int flags);
 int              mutt_ch_fgetconv(struct FgetConv *fc);
 void             mutt_ch_fgetconv_close(struct FgetConv **fc);
-struct FgetConv *mutt_ch_fgetconv_open(FILE *file, const char *from, const char *to, int flags);
+struct FgetConv *mutt_ch_fgetconv_open(FILE *fp, const char *from, const char *to, int flags);
 char *           mutt_ch_fgetconvs(char *buf, size_t buflen, struct FgetConv *fc);
 char *           mutt_ch_get_default_charset(void);
 char *           mutt_ch_get_langinfo_charset(void);
@@ -103,7 +103,7 @@ bool             mutt_ch_lookup_add(enum LookupType type, const char *pat, const
 void             mutt_ch_lookup_remove(void);
 void             mutt_ch_set_charset(const char *charset);
 
-#define mutt_ch_is_utf8(a)     mutt_ch_chscmp(a, "utf-8")
-#define mutt_ch_is_us_ascii(a) mutt_ch_chscmp(a, "us-ascii")
+#define mutt_ch_is_utf8(str)     mutt_ch_chscmp(str, "utf-8")
+#define mutt_ch_is_us_ascii(str) mutt_ch_chscmp(str, "us-ascii")
 
 #endif /* MUTT_LIB_CHARSET_H */

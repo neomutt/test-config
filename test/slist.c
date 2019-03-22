@@ -362,8 +362,8 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 
   struct Buffer initial;
   mutt_buffer_init(&initial);
-  initial.data = mutt_mem_calloc(1, STRING);
-  initial.dsize = STRING;
+  initial.data = mutt_mem_calloc(1, 256);
+  initial.dsize = 256;
 
   mutt_buffer_reset(err);
   mutt_buffer_reset(&initial);
@@ -513,8 +513,8 @@ void config_slist(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, STRING);
-  err.dsize = STRING;
+  err.data = mutt_mem_calloc(1, 256);
+  err.dsize = 256;
 
   TEST_CHECK(test_slist_parse(&err));
   TEST_CHECK(test_slist_add_string(&err));

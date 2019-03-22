@@ -38,6 +38,7 @@
 #include "mbyte.h"
 #include "memory.h"
 #include "message.h"
+#include "queue.h"
 #include "regex3.h"
 #include "string2.h"
 
@@ -50,13 +51,13 @@
  */
 struct Regex *mutt_regex_compile(const char *str, int flags)
 {
-  struct Regex *r = mutt_mem_calloc(1, sizeof(struct Regex));
-  r->pattern = mutt_str_strdup(str);
-  r->regex = mutt_mem_calloc(1, sizeof(regex_t));
-  if (REGCOMP(r->regex, NONULL(str), flags) != 0)
-    mutt_regex_free(&r);
+  struct Regex *rx = mutt_mem_calloc(1, sizeof(struct Regex));
+  rx->pattern = mutt_str_strdup(str);
+  rx->regex = mutt_mem_calloc(1, sizeof(regex_t));
+  if (REGCOMP(rx->regex, NONULL(str), flags) != 0)
+    mutt_regex_free(&rx);
 
-  return r;
+  return rx;
 }
 
 /**
@@ -102,7 +103,7 @@ struct Regex *mutt_regex_new(const char *str, int flags, struct Buffer *err)
 
 /**
  * mutt_regex_free - Free a Regex object
- * @param r Regex to free
+ * @param[out] r Regex to free
  */
 void mutt_regex_free(struct Regex **r)
 {
@@ -280,16 +281,14 @@ int mutt_replacelist_add(struct ReplaceList *rl, const char *pat,
        * now we're supporting removals, which means we're supporting
        * re-adds conceptually. So we probably want this to imply a
        * removal, then do an add. We can achieve the removal by freeing
-       * the template, and leaving t pointed at the current item.
-       */
+       * the template, and leaving t pointed at the current item.  */
       FREE(&np->template);
       break;
     }
   }
 
   /* If np is set, it's pointing into an extant ReplaceList* that we want to
-   * update. Otherwise we want to make a new one to link at the rl's end.
-   */
+   * update. Otherwise we want to make a new one to link at the rl's end.  */
   if (np)
   {
     mutt_regex_free(&rx);
@@ -342,14 +341,14 @@ int mutt_replacelist_add(struct ReplaceList *rl, const char *pat,
  *
  * If 'buf' is NULL, a new string will be returned.  It must be freed by the caller.
  *
- * @note This function uses a fixed size buffer of LONG_STRING and so should
+ * @note This function uses a fixed size buffer of 1024 and so should
  * only be used for visual modifications, such as disp_subj.
  */
 char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, const char *str)
 {
   static regmatch_t *pmatch = NULL;
   static size_t nmatch = 0;
-  static char twinbuf[2][LONG_STRING];
+  static char twinbuf[2][1024];
   int switcher = 0;
   char *p = NULL;
   size_t cpysize, tlen;
@@ -358,7 +357,7 @@ char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, c
   if (buf && buflen)
     buf[0] = '\0';
 
-  if (!str || *str == '\0' || (buf && !buflen))
+  if (!str || (*str == '\0') || (buf && !buflen))
     return buf;
 
   twinbuf[0][0] = '\0';
@@ -366,7 +365,7 @@ char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, c
   src = twinbuf[switcher];
   dst = src;
 
-  mutt_str_strfcpy(src, str, LONG_STRING);
+  mutt_str_strfcpy(src, str, 1024);
 
   struct ReplaceListNode *np = NULL;
   STAILQ_FOREACH(np, rl, entries)
@@ -389,7 +388,7 @@ char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, c
       /* Copy into other twinbuf with substitutions */
       if (np->template)
       {
-        for (p = np->template; *p && (tlen < LONG_STRING - 1);)
+        for (p = np->template; *p && (tlen < 1023);)
         {
           if (*p == '%')
           {
@@ -397,14 +396,14 @@ char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, c
             if (*p == 'L')
             {
               p++;
-              cpysize = MIN(pmatch[0].rm_so, LONG_STRING - tlen - 1);
+              cpysize = MIN(pmatch[0].rm_so, 1023 - tlen);
               strncpy(&dst[tlen], src, cpysize);
               tlen += cpysize;
             }
             else if (*p == 'R')
             {
               p++;
-              cpysize = MIN(strlen(src) - pmatch[0].rm_eo, LONG_STRING - tlen - 1);
+              cpysize = MIN(strlen(src) - pmatch[0].rm_eo, 1023 - tlen);
               strncpy(&dst[tlen], &src[pmatch[0].rm_eo], cpysize);
               tlen += cpysize;
             }
@@ -413,8 +412,7 @@ char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, c
               long n = strtoul(p, &p, 10);        /* get subst number */
               while (isdigit((unsigned char) *p)) /* skip subst token */
                 p++;
-              for (int i = pmatch[n].rm_so;
-                   (i < pmatch[n].rm_eo) && (tlen < LONG_STRING - 1); i++)
+              for (int i = pmatch[n].rm_so; (i < pmatch[n].rm_eo) && (tlen < 1023); i++)
               {
                 dst[tlen++] = src[i];
               }
@@ -508,13 +506,13 @@ bool mutt_replacelist_match(struct ReplaceList *rl, char *buf, size_t buflen, co
           /* Ensure that the integer conversion succeeded (e!=p) and bounds check.  The upper bound check
            * should not strictly be necessary since add_to_spam_list() finds the largest value, and
            * the static array above is always large enough based on that value. */
-          if (e != p && n >= 0 && n <= np->nmatch && pmatch[n].rm_so != -1)
+          if ((e != p) && (n >= 0) && (n <= np->nmatch) && (pmatch[n].rm_so != -1))
           {
             /* copy as much of the substring match as will fit in the output buffer, saving space for
              * the terminating nul char */
             int idx;
             for (idx = pmatch[n].rm_so;
-                 (idx < pmatch[n].rm_eo) && (tlen < buflen - 1); ++idx)
+                 (idx < pmatch[n].rm_eo) && (tlen < buflen - 1); idx++)
             {
               buf[tlen++] = str[idx];
             }

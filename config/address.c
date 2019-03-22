@@ -29,11 +29,10 @@
 #include "config.h"
 #include <stddef.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stdint.h>
-#include "mutt/buffer.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
-#include "email/address.h"
+#include "mutt/mutt.h"
+#include "email/lib.h"
 #include "address.h"
 #include "set.h"
 #include "types.h"
@@ -115,7 +114,7 @@ static int address_string_get(const struct ConfigSet *cs, void *var,
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  char tmp[HUGE_STRING] = "";
+  char tmp[8192] = "";
   const char *str = NULL;
 
   if (var)
@@ -267,7 +266,7 @@ struct Address *address_new(const char *addr)
 
 /**
  * address_free - Free an Address object
- * @param addr Address to free
+ * @param[out] addr Address to free
  */
 void address_free(struct Address **addr)
 {

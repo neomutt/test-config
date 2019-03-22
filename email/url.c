@@ -109,7 +109,7 @@ int url_pct_decode(char *s)
   {
     if (*s == '%')
     {
-      if (s[1] && s[2] && isxdigit((unsigned char) s[1]) &&
+      if ((s[1] != '\0') && (s[2] != '\0') && isxdigit((unsigned char) s[1]) &&
           isxdigit((unsigned char) s[2]) && (hexval(s[1]) >= 0) && (hexval(s[2]) >= 0))
       {
         *d++ = (hexval(s[1]) << 4) | (hexval(s[2]));
@@ -132,7 +132,7 @@ int url_pct_decode(char *s)
  */
 enum UrlScheme url_check_scheme(const char *s)
 {
-  char sbuf[STRING];
+  char sbuf[256];
   char *t = NULL;
   int i;
 
@@ -238,9 +238,8 @@ struct Url *url_parse(const char *src)
     it = at + 1;
   }
 
-  /* IPv6 literal address.  It may contain colons, so set p to start
-   * the port scan after it.
-   */
+  /* IPv6 literal address.  It may contain colons, so set p to start the port
+   * scan after it.  */
   if ((*it == '[') && (p = strchr(it, ']')))
   {
     it++;
@@ -283,7 +282,7 @@ err:
 
 /**
  * url_free - Free the contents of a URL
- * @param u Url to empty
+ * @param[out] u Url to empty
  *
  * @note The Url itself is not freed
  */
@@ -317,7 +316,7 @@ void url_pct_encode(char *buf, size_t buflen, const char *src)
 {
   static const char *alph = "0123456789ABCDEF";
 
-  *buf = 0;
+  *buf = '\0';
   buflen--;
   while (src && *src && (buflen != 0))
   {
@@ -336,7 +335,7 @@ void url_pct_encode(char *buf, size_t buflen, const char *src)
     *buf++ = *src++;
     buflen--;
   }
-  *buf = 0;
+  *buf = '\0';
 }
 
 /**
@@ -365,7 +364,7 @@ int url_tostring(struct Url *u, char *buf, size_t buflen, int flags)
 
     if (u->user && (u->user[0] || !(flags & U_PATH)))
     {
-      char str[STRING];
+      char str[256];
       url_pct_encode(str, sizeof(str), u->user);
       snprintf(buf, buflen, "%s@", str);
       l = strlen(buf);

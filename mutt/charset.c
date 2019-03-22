@@ -31,7 +31,6 @@
 #include <errno.h>
 #include <iconv.h>
 #include <langinfo.h>
-#include <libintl.h>
 #include <limits.h>
 #include <regex.h>
 #include <stdbool.h>
@@ -43,13 +42,16 @@
 #include "queue.h"
 #include "regex3.h"
 #include "string2.h"
+#ifdef ENABLE_NLS
+#include <libintl.h>
+#endif
 
 #ifndef EILSEQ
 #define EILSEQ EINVAL
 #endif
 
-char *AssumedCharset; ///< Config: If a message is missing a character set, assume this character set
-char *Charset; ///< Config: Default character set for displaying text on screen
+char *C_AssumedCharset; ///< Config: If a message is missing a character set, assume this character set
+char *C_Charset; ///< Config: Default character set for displaying text on screen
 
 /**
  * ReplacementChar - When a Unicode character can't be displayed, use this instead
@@ -262,14 +264,14 @@ static const char *lookup_charset(enum LookupType type, const char *cs)
  * @retval 0  Success
  * @retval -1 Error
  *
- * Work through #AssumedCharset looking for a character set conversion that
+ * Work through #C_AssumedCharset looking for a character set conversion that
  * works.  Failing that, try mutt_ch_get_default_charset().
  */
 int mutt_ch_convert_nonmime_string(char **ps)
 {
   const char *c1 = NULL;
 
-  for (const char *c = AssumedCharset; c; c = c1 ? c1 + 1 : 0)
+  for (const char *c = C_AssumedCharset; c; c = c1 ? c1 + 1 : 0)
   {
     char *u = *ps;
     char *s = NULL;
@@ -287,7 +289,7 @@ int mutt_ch_convert_nonmime_string(char **ps)
     fromcode = mutt_mem_malloc(n + 1);
     mutt_str_strfcpy(fromcode, c, n + 1);
     s = mutt_str_substr_dup(u, u + ulen);
-    int m = mutt_ch_convert_string(&s, fromcode, Charset, 0);
+    int m = mutt_ch_convert_string(&s, fromcode, C_Charset, 0);
     FREE(&fromcode);
     FREE(&s);
     if (m == 0)
@@ -296,7 +298,7 @@ int mutt_ch_convert_nonmime_string(char **ps)
     }
   }
   mutt_ch_convert_string(ps, (const char *) mutt_ch_get_default_charset(),
-                         Charset, MUTT_ICONV_HOOK_FROM);
+                         C_Charset, MUTT_ICONV_HOOK_FROM);
   return -1;
 }
 
@@ -311,7 +313,7 @@ int mutt_ch_convert_nonmime_string(char **ps)
  */
 void mutt_ch_canonical_charset(char *buf, size_t buflen, const char *name)
 {
-  char in[LONG_STRING], scratch[LONG_STRING];
+  char in[1024], scratch[1024];
 
   mutt_str_strfcpy(in, name, sizeof(in));
   char *ext = strchr(in, '/');
@@ -327,11 +329,11 @@ void mutt_ch_canonical_charset(char *buf, size_t buflen, const char *name)
 
   /* catch some common iso-8859-something misspellings */
   size_t plen;
-  if ((plen = mutt_str_startswith(in, "8859", CASE_IGNORE)) && in[plen] != '-')
+  if ((plen = mutt_str_startswith(in, "8859", CASE_IGNORE)) && (in[plen] != '-'))
     snprintf(scratch, sizeof(scratch), "iso-8859-%s", in + plen);
   else if ((plen = mutt_str_startswith(in, "8859-", CASE_IGNORE)))
     snprintf(scratch, sizeof(scratch), "iso-8859-%s", in + plen);
-  else if ((plen = mutt_str_startswith(in, "iso8859", CASE_IGNORE)) && in[plen] != '-')
+  else if ((plen = mutt_str_startswith(in, "iso8859", CASE_IGNORE)) && (in[plen] != '-'))
     snprintf(scratch, sizeof(scratch), "iso_8859-%s", in + plen);
   else if ((plen = mutt_str_startswith(in, "iso8859-", CASE_IGNORE)))
     snprintf(scratch, sizeof(scratch), "iso_8859-%s", in + plen);
@@ -379,15 +381,15 @@ bool mutt_ch_chscmp(const char *cs1, const char *cs2)
   if (!cs1 || !cs2)
     return false;
 
-  char buffer[STRING];
+  char buf[256];
 
-  mutt_ch_canonical_charset(buffer, sizeof(buffer), cs1);
+  mutt_ch_canonical_charset(buf, sizeof(buf), cs1);
 
-  int len1 = mutt_str_strlen(buffer);
+  int len1 = mutt_str_strlen(buf);
   int len2 = mutt_str_strlen(cs2);
 
-  return mutt_str_strncasecmp(((len1 > len2) ? buffer : cs2),
-                              ((len1 > len2) ? cs2 : buffer), MIN(len1, len2)) == 0;
+  return mutt_str_strncasecmp(((len1 > len2) ? buf : cs2),
+                              ((len1 > len2) ? cs2 : buf), MIN(len1, len2)) == 0;
 }
 
 /**
@@ -398,8 +400,8 @@ bool mutt_ch_chscmp(const char *cs1, const char *cs2)
  */
 char *mutt_ch_get_default_charset(void)
 {
-  static char fcharset[SHORT_STRING];
-  const char *c = AssumedCharset;
+  static char fcharset[128];
+  const char *c = C_AssumedCharset;
   const char *c1 = NULL;
 
   if (c && *c)
@@ -420,7 +422,7 @@ char *mutt_ch_get_default_charset(void)
  */
 char *mutt_ch_get_langinfo_charset(void)
 {
-  char buf[LONG_STRING] = "";
+  char buf[1024] = "";
 
   mutt_ch_canonical_charset(buf, sizeof(buf), nl_langinfo(CODESET));
 
@@ -432,7 +434,7 @@ char *mutt_ch_get_langinfo_charset(void)
 
 /**
  * mutt_ch_lookup_add - Add a new character set lookup
- * @param type    Type of character set, e.g. MUTT_LOOKUP_CHARSET
+ * @param type    Type of character set, e.g. #MUTT_LOOKUP_CHARSET
  * @param pat     Pattern to match
  * @param replace Replacement string
  * @param err     Buffer for error message
@@ -528,8 +530,8 @@ const char *mutt_ch_charset_lookup(const char *chs)
  */
 iconv_t mutt_ch_iconv_open(const char *tocode, const char *fromcode, int flags)
 {
-  char tocode1[SHORT_STRING];
-  char fromcode1[SHORT_STRING];
+  char tocode1[128];
+  char fromcode1[128];
   const char *tocode2 = NULL, *fromcode2 = NULL;
   const char *tmp = NULL;
 
@@ -551,9 +553,9 @@ iconv_t mutt_ch_iconv_open(const char *tocode, const char *fromcode, int flags)
 
   /* always apply iconv-hooks to suit system's iconv tastes */
   tocode2 = mutt_ch_iconv_lookup(tocode1);
-  tocode2 = (tocode2) ? tocode2 : tocode1;
+  tocode2 = tocode2 ? tocode2 : tocode1;
   fromcode2 = mutt_ch_iconv_lookup(fromcode1);
-  fromcode2 = (fromcode2) ? fromcode2 : fromcode1;
+  fromcode2 = fromcode2 ? fromcode2 : fromcode1;
 
   /* call system iconv with names it appreciates */
   cd = iconv_open(tocode2, fromcode2);
@@ -598,7 +600,7 @@ size_t mutt_ch_iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
     if (iconverrno)
       *iconverrno = errno;
 
-    if (ibl && obl && errno == EILSEQ)
+    if (ibl && obl && (errno == EILSEQ))
     {
       if (inrepls)
       {
@@ -804,15 +806,15 @@ bool mutt_ch_check_charset(const char *cs, bool strict)
 
 /**
  * mutt_ch_fgetconv_open - Prepare a file for charset conversion
- * @param file  FILE ptr to prepare
+ * @param fp    FILE ptr to prepare
  * @param from  Current character set
  * @param to    Destination character set
- * @param flags Flags, e.g. MUTT_ICONV_HOOK_FROM
+ * @param flags Flags, e.g. #MUTT_ICONV_HOOK_FROM
  * @retval ptr fgetconv handle
  *
  * Parameter flags is given as-is to mutt_ch_iconv_open().
  */
-struct FgetConv *mutt_ch_fgetconv_open(FILE *file, const char *from, const char *to, int flags)
+struct FgetConv *mutt_ch_fgetconv_open(FILE *fp, const char *from, const char *to, int flags)
 {
   struct FgetConv *fc = NULL;
   iconv_t cd = (iconv_t) -1;
@@ -833,14 +835,14 @@ struct FgetConv *mutt_ch_fgetconv_open(FILE *file, const char *from, const char 
   }
   else
     fc = mutt_mem_malloc(sizeof(struct FgetConvNot));
-  fc->file = file;
+  fc->fp = fp;
   fc->cd = cd;
   return fc;
 }
 
 /**
  * mutt_ch_fgetconv_close - Close an fgetconv handle
- * @param fc fgetconv handle
+ * @param[out] fc fgetconv handle
  */
 void mutt_ch_fgetconv_close(struct FgetConv **fc)
 {
@@ -864,7 +866,7 @@ int mutt_ch_fgetconv(struct FgetConv *fc)
   if (!fc)
     return EOF;
   if (fc->cd == (iconv_t) -1)
-    return fgetc(fc->file);
+    return fgetc(fc->fp);
   if (!fc->p)
     return EOF;
   if (fc->p < fc->ob)
@@ -885,8 +887,8 @@ int mutt_ch_fgetconv(struct FgetConv *fc)
    * ask why it had stopped converting ... */
 
   /* Try to read some more */
-  if (fc->ibl == sizeof(fc->bufi) ||
-      (fc->ibl && fc->ib + fc->ibl < fc->bufi + sizeof(fc->bufi)))
+  if ((fc->ibl == sizeof(fc->bufi)) ||
+      (fc->ibl && (fc->ib + fc->ibl < fc->bufi + sizeof(fc->bufi))))
   {
     fc->p = 0;
     return EOF;
@@ -894,7 +896,7 @@ int mutt_ch_fgetconv(struct FgetConv *fc)
   if (fc->ibl)
     memcpy(fc->bufi, fc->ib, fc->ibl);
   fc->ib = fc->bufi;
-  fc->ibl += fread(fc->ib + fc->ibl, 1, sizeof(fc->bufi) - fc->ibl, fc->file);
+  fc->ibl += fread(fc->ib + fc->ibl, 1, sizeof(fc->bufi) - fc->ibl, fc->fp);
 
   /* Try harder this time to convert some */
   if (fc->ibl)
@@ -945,7 +947,7 @@ char *mutt_ch_fgetconvs(char *buf, size_t buflen, struct FgetConv *fc)
  * mutt_ch_set_charset - Update the records for a new character set
  * @param charset New character set
  *
- * Check if this chararacter set is utf-8 and pick a suitable replacement
+ * Check if this character set is utf-8 and pick a suitable replacement
  * character for unprintable characters.
  *
  * @note This calls `bind_textdomain_codeset()` which will affect future
@@ -953,11 +955,11 @@ char *mutt_ch_fgetconvs(char *buf, size_t buflen, struct FgetConv *fc)
  */
 void mutt_ch_set_charset(const char *charset)
 {
-  char buffer[STRING];
+  char buf[256];
 
-  mutt_ch_canonical_charset(buffer, sizeof(buffer), charset);
+  mutt_ch_canonical_charset(buf, sizeof(buf), charset);
 
-  if (mutt_ch_is_utf8(buffer))
+  if (mutt_ch_is_utf8(buf))
   {
     CharsetIsUtf8 = true;
     ReplacementChar = 0xfffd; /* replacement character */
@@ -969,7 +971,7 @@ void mutt_ch_set_charset(const char *charset)
   }
 
 #if defined(HAVE_BIND_TEXTDOMAIN_CODESET) && defined(ENABLE_NLS)
-  bind_textdomain_codeset(PACKAGE, buffer);
+  bind_textdomain_codeset(PACKAGE, buf);
 #endif
 }
 
@@ -1044,7 +1046,7 @@ char *mutt_ch_choose(const char *fromcode, const char *charsets, const char *u,
     if (dlen)
       *dlen = elen;
 
-    char canonical_buf[LONG_STRING];
+    char canonical_buf[1024];
     mutt_ch_canonical_charset(canonical_buf, sizeof(canonical_buf), tocode);
     mutt_str_replace(&tocode, canonical_buf);
   }

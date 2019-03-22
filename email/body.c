@@ -32,6 +32,7 @@
 #include "mutt/mutt.h"
 #include "body.h"
 #include "email.h"
+#include "envelope.h"
 #include "mime.h"
 #include "parameter.h"
 
@@ -51,7 +52,7 @@ struct Body *mutt_body_new(void)
 
 /**
  * mutt_body_free - Free a Body
- * @param p Body to free
+ * @param[out] p Body to free
  */
 void mutt_body_free(struct Body **p)
 {
@@ -70,7 +71,7 @@ void mutt_body_free(struct Body **p)
     {
       if (b->unlink)
         unlink(b->filename);
-      mutt_debug(1, "%sunlinking %s.\n", b->unlink ? "" : "not ", b->filename);
+      mutt_debug(LL_DEBUG1, "%sunlinking %s.\n", b->unlink ? "" : "not ", b->filename);
     }
 
     FREE(&b->filename);
@@ -90,11 +91,12 @@ void mutt_body_free(struct Body **p)
       mutt_email_free(&b->email);
     }
 
+    mutt_env_free(&b->mime_headers);
     mutt_body_free(&b->parts);
     FREE(&b);
   }
 
-  *p = 0;
+  *p = NULL;
 }
 
 /**

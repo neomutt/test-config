@@ -49,23 +49,23 @@
 
 /* These Config Variables are only used in mutt/idna.c */
 #ifdef HAVE_LIBIDN
-bool IdnDecode; ///< Config: (idn) Decode internation domain names
-bool IdnEncode; ///< Config: (idn) Encode international domain names
+bool C_IdnDecode; ///< Config: (idn) Decode international domain names
+bool C_IdnEncode; ///< Config: (idn) Encode international domain names
 #endif
 
 #ifdef HAVE_LIBIDN
 /* Work around incompatibilities in the libidn API */
 #if (!defined(HAVE_IDNA_TO_ASCII_8Z) && defined(HAVE_IDNA_TO_ASCII_FROM_UTF8))
-#define idna_to_ascii_8z(a, b, c)                                              \
-  idna_to_ascii_from_utf8(a, b, (c) &1, ((c) &2) ? 1 : 0)
+#define idna_to_ascii_8z(input, output, flags)                                 \
+  idna_to_ascii_from_utf8(input, output, (flags) &1, ((flags) &2) ? 1 : 0)
 #endif
 #if (!defined(HAVE_IDNA_TO_ASCII_LZ) && defined(HAVE_IDNA_TO_ASCII_FROM_LOCALE))
-#define idna_to_ascii_lz(a, b, c)                                              \
-  idna_to_ascii_from_locale(a, b, (c) &1, ((c) &2) ? 1 : 0)
+#define idna_to_ascii_lz(input, output, flags)                                 \
+  idna_to_ascii_from_locale(input, output, (flags) &1, ((flags) &2) ? 1 : 0)
 #endif
 #if (!defined(HAVE_IDNA_TO_UNICODE_8Z8Z) && defined(HAVE_IDNA_TO_UNICODE_UTF8_FROM_UTF8))
-#define idna_to_unicode_8z8z(a, b, c)                                          \
-  idna_to_unicode_utf8_from_utf8(a, b, (c) &1, ((c) &2) ? 1 : 0)
+#define idna_to_unicode_8z8z(input, output, flags)                             \
+  idna_to_unicode_utf8_from_utf8(input, output, (flags) &1, ((flags) &2) ? 1 : 0)
 #endif
 #endif /* HAVE_LIBIDN */
 
@@ -94,9 +94,9 @@ static bool check_idn(char *domain)
 
 /**
  * mutt_idna_to_ascii_lz - Convert a domain to Punycode
- * @param input  Domain
- * @param output Result
- * @param flags  Flags, e.g. IDNA_ALLOW_UNASSIGNED
+ * @param[in]  input  Domain
+ * @param[out] output Result
+ * @param[in]  flags  Flags, e.g. IDNA_ALLOW_UNASSIGNED
  * @retval 0 Success
  * @retval >0 Failure, error code
  *
@@ -118,10 +118,10 @@ int mutt_idna_to_ascii_lz(const char *input, char **output, int flags)
  * @retval ptr  Newly allocated local email address
  * @retval NULL Error in conversion
  *
- * If #IdnDecode is set, then the domain will be converted from Punycode.
+ * If #C_IdnDecode is set, then the domain will be converted from Punycode.
  * For example, "xn--ls8h.la" becomes the emoji domain: ":poop:.la"
  * Then the user and domain are changed from 'utf-8' to the encoding in
- * #Charset.
+ * #C_Charset.
  *
  * If the flag #MI_MAY_BE_IRREVERSIBLE is NOT given, then the results will be
  * checked to make sure that the transformation is "undo-able".
@@ -139,7 +139,7 @@ char *mutt_idna_intl_to_local(const char *user, const char *domain, int flags)
 
 #ifdef HAVE_LIBIDN
   bool is_idn_encoded = check_idn(local_domain);
-  if (is_idn_encoded && IdnDecode)
+  if (is_idn_encoded && C_IdnDecode)
   {
     if (idna_to_unicode_8z8z(local_domain, &tmp, IDNA_ALLOW_UNASSIGNED) != IDNA_SUCCESS)
       goto cleanup;
@@ -149,10 +149,10 @@ char *mutt_idna_intl_to_local(const char *user, const char *domain, int flags)
 #endif /* HAVE_LIBIDN */
 
   /* we don't want charset-hook effects, so we set flags to 0 */
-  if (mutt_ch_convert_string(&local_user, "utf-8", Charset, 0) != 0)
+  if (mutt_ch_convert_string(&local_user, "utf-8", C_Charset, 0) != 0)
     goto cleanup;
 
-  if (mutt_ch_convert_string(&local_domain, "utf-8", Charset, 0) != 0)
+  if (mutt_ch_convert_string(&local_domain, "utf-8", C_Charset, 0) != 0)
     goto cleanup;
 
   /* make sure that we can convert back and come out with the same
@@ -161,24 +161,25 @@ char *mutt_idna_intl_to_local(const char *user, const char *domain, int flags)
   {
     reversed_user = mutt_str_strdup(local_user);
 
-    if (mutt_ch_convert_string(&reversed_user, Charset, "utf-8", 0) != 0)
+    if (mutt_ch_convert_string(&reversed_user, C_Charset, "utf-8", 0) != 0)
     {
-      mutt_debug(1, "Not reversible. Charset conv to utf-8 failed for user = '%s'.\n",
+      mutt_debug(LL_DEBUG1, "Not reversible. Charset conv to utf-8 failed for user = '%s'.\n",
                  reversed_user);
       goto cleanup;
     }
 
     if (mutt_str_strcasecmp(user, reversed_user) != 0)
     {
-      mutt_debug(1, "#1 Not reversible. orig = '%s', reversed = '%s'.\n", user, reversed_user);
+      mutt_debug(LL_DEBUG1, "#1 Not reversible. orig = '%s', reversed = '%s'.\n",
+                 user, reversed_user);
       goto cleanup;
     }
 
     reversed_domain = mutt_str_strdup(local_domain);
 
-    if (mutt_ch_convert_string(&reversed_domain, Charset, "utf-8", 0) != 0)
+    if (mutt_ch_convert_string(&reversed_domain, C_Charset, "utf-8", 0) != 0)
     {
-      mutt_debug(1, "Not reversible. Charset conv to utf-8 failed for domain = '%s'.\n",
+      mutt_debug(LL_DEBUG1, "Not reversible. Charset conv to utf-8 failed for domain = '%s'.\n",
                  reversed_domain);
       goto cleanup;
     }
@@ -186,13 +187,12 @@ char *mutt_idna_intl_to_local(const char *user, const char *domain, int flags)
 #ifdef HAVE_LIBIDN
     /* If the original domain was UTF-8, idna encoding here could
      * produce a non-matching domain!  Thus we only want to do the
-     * idna_to_ascii_8z() if the original domain was IDNA encoded.
-     */
-    if (is_idn_encoded && IdnDecode)
+     * idna_to_ascii_8z() if the original domain was IDNA encoded.  */
+    if (is_idn_encoded && C_IdnDecode)
     {
       if (idna_to_ascii_8z(reversed_domain, &tmp, IDNA_ALLOW_UNASSIGNED) != IDNA_SUCCESS)
       {
-        mutt_debug(1, "Not reversible. idna_to_ascii_8z failed for domain = '%s'.\n",
+        mutt_debug(LL_DEBUG1, "Not reversible. idna_to_ascii_8z failed for domain = '%s'.\n",
                    reversed_domain);
         goto cleanup;
       }
@@ -202,7 +202,8 @@ char *mutt_idna_intl_to_local(const char *user, const char *domain, int flags)
 
     if (mutt_str_strcasecmp(domain, reversed_domain) != 0)
     {
-      mutt_debug(1, "#2 Not reversible. orig = '%s', reversed = '%s'.\n", domain, reversed_domain);
+      mutt_debug(LL_DEBUG1, "#2 Not reversible. orig = '%s', reversed = '%s'.\n",
+                 domain, reversed_domain);
       goto cleanup;
     }
   }
@@ -227,8 +228,8 @@ cleanup:
  * @retval ptr  Newly allocated Punycode email address
  * @retval NULL Error in conversion
  *
- * The user and domain are assumed to be encoded according to #Charset.
- * They are converted to 'utf-8'.  If #IdnEncode is set, then the domain
+ * The user and domain are assumed to be encoded according to #C_Charset.
+ * They are converted to 'utf-8'.  If #C_IdnEncode is set, then the domain
  * will be converted to Punycode.  For example, the emoji domain:
  * ":poop:.la" becomes "xn--ls8h.la"
  *
@@ -243,14 +244,14 @@ char *mutt_idna_local_to_intl(const char *user, const char *domain)
   char *intl_domain = mutt_str_strdup(domain);
 
   /* we don't want charset-hook effects, so we set flags to 0 */
-  if (mutt_ch_convert_string(&intl_user, Charset, "utf-8", 0) != 0)
+  if (mutt_ch_convert_string(&intl_user, C_Charset, "utf-8", 0) != 0)
     goto cleanup;
 
-  if (mutt_ch_convert_string(&intl_domain, Charset, "utf-8", 0) != 0)
+  if (mutt_ch_convert_string(&intl_domain, C_Charset, "utf-8", 0) != 0)
     goto cleanup;
 
 #ifdef HAVE_LIBIDN
-  if (IdnEncode)
+  if (C_IdnEncode)
   {
     if (idna_to_ascii_8z(intl_domain, &tmp, IDNA_ALLOW_UNASSIGNED) != IDNA_SUCCESS)
       goto cleanup;
@@ -277,7 +278,7 @@ cleanup:
  */
 const char *mutt_idna_print_version(void)
 {
-  static char vstring[STRING];
+  static char vstring[256];
 
 #ifdef HAVE_IDN2_H
   snprintf(vstring, sizeof(vstring), "libidn2: %s (compiled with %s)",

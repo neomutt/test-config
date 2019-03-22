@@ -133,7 +133,7 @@ size_t mutt_buffer_addstr_n(struct Buffer *buf, const char *s, size_t len)
 
 /**
  * mutt_buffer_free - Release a Buffer and its contents
- * @param p Buffer pointer to free and NULL
+ * @param[out] p Buffer pointer to free and NULL
  */
 void mutt_buffer_free(struct Buffer **p)
 {
@@ -351,7 +351,7 @@ static void increase_buffer_pool(void)
   mutt_mem_realloc(&BufferPool, BufferPoolLen * sizeof(struct Buffer *));
   while (BufferPoolCount < 5)
   {
-    newbuf = mutt_buffer_alloc(LONG_STRING);
+    newbuf = mutt_buffer_alloc(1024);
     BufferPool[BufferPoolCount++] = newbuf;
   }
 }
@@ -369,7 +369,7 @@ void mutt_buffer_pool_init(void)
  */
 void mutt_buffer_pool_free(void)
 {
-  mutt_debug(1, "mutt_buffer_pool_free: %zu of %zu returned to pool\n",
+  mutt_debug(LL_DEBUG1, "mutt_buffer_pool_free: %zu of %zu returned to pool\n",
              BufferPoolCount, BufferPoolLen);
 
   while (BufferPoolCount)
@@ -391,7 +391,7 @@ struct Buffer *mutt_buffer_pool_get(void)
 
 /**
  * mutt_buffer_pool_release - Free a Buffer from the pool
- * @param pbuf Buffer to free
+ * @param[out] pbuf Buffer to free
  */
 void mutt_buffer_pool_release(struct Buffer **pbuf)
 {
@@ -400,19 +400,32 @@ void mutt_buffer_pool_release(struct Buffer **pbuf)
 
   if (BufferPoolCount >= BufferPoolLen)
   {
-    mutt_debug(1, "Internal buffer pool error\n");
+    mutt_debug(LL_DEBUG1, "Internal buffer pool error\n");
     mutt_buffer_free(pbuf);
     return;
   }
 
   struct Buffer *buf = *pbuf;
-  if (buf->dsize > (LONG_STRING * 2))
+  if (buf->dsize > 2048)
   {
-    buf->dsize = LONG_STRING;
+    buf->dsize = 1024;
     mutt_mem_realloc(&buf->data, buf->dsize);
   }
   mutt_buffer_reset(buf);
   BufferPool[BufferPoolCount++] = buf;
 
   *pbuf = NULL;
+}
+
+/**
+ * mutt_buffer_len - Calculate the length of a Buffer
+ * @param buf Buffer
+ * @retval num Size of buffer
+ */
+size_t mutt_buffer_len(const struct Buffer *buf)
+{
+  if (!buf)
+    return 0;
+
+  return buf->dptr - buf->data;
 }

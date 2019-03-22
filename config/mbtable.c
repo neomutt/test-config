@@ -31,11 +31,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <wchar.h>
-#include "mutt/buffer.h"
-#include "mutt/logging.h"
-#include "mutt/memory.h"
-#include "mutt/string2.h"
-#include "config/mbtable.h"
+#include "mutt/mutt.h"
+#include "mbtable.h"
 #include "set.h"
 #include "types.h"
 
@@ -59,7 +56,7 @@ struct MbTable *mbtable_parse(const char *s)
 
   t->orig_str = mutt_str_strdup(s);
   /* This could be more space efficient.  However, being used on tiny
-   * strings (Tochars and StatusChars), the overhead is not great. */
+   * strings (C_ToChars and C_StatusChars), the overhead is not great. */
   t->chars = mutt_mem_calloc(slen, sizeof(char *));
   t->segmented_str = mutt_mem_calloc(slen * 2, sizeof(char));
   d = t->segmented_str;
@@ -67,10 +64,10 @@ struct MbTable *mbtable_parse(const char *s)
   memset(&mbstate, 0, sizeof(mbstate));
   while (slen && (k = mbrtowc(NULL, s, slen, &mbstate)))
   {
-    if (k == (size_t)(-1) || k == (size_t)(-2))
+    if ((k == (size_t)(-1)) || (k == (size_t)(-2)))
     {
       /* XXX put message in err buffer; fail? warning? */
-      mutt_debug(1, "mbtable_parse: mbrtowc returned %d converting %s in %s\n",
+      mutt_debug(LL_DEBUG1, "mbtable_parse: mbrtowc returned %d converting %s in %s\n",
                  (k == (size_t)(-1)) ? -1 : -2, s, t->orig_str);
       if (k == (size_t)(-1))
         memset(&mbstate, 0, sizeof(mbstate));
@@ -305,7 +302,7 @@ void mbtable_init(struct ConfigSet *cs)
 
 /**
  * mbtable_free - Free an MbTable object
- * @param table MbTable to free
+ * @param[out] table MbTable to free
  */
 void mbtable_free(struct MbTable **table)
 {

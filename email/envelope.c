@@ -48,7 +48,7 @@ struct Envelope *mutt_env_new(void)
 
 /**
  * mutt_env_free - Free an Envelope
- * @param p Envelope to free
+ * @param[out] p Envelope to free
  */
 void mutt_env_free(struct Envelope **p)
 {
@@ -90,8 +90,8 @@ void mutt_env_free(struct Envelope **p)
 
 /**
  * mutt_env_merge - Merge the headers of two Envelopes
- * @param base  Envelope destination for all the headers
- * @param extra Envelope to copy from
+ * @param[in]  base  Envelope destination for all the headers
+ * @param[out] extra Envelope to copy from
  *
  * Any fields that are missing from base will be copied from extra.
  * extra will be freed afterwards.
@@ -101,17 +101,17 @@ void mutt_env_merge(struct Envelope *base, struct Envelope **extra)
 /* copies each existing element if necessary, and sets the element
  * to NULL in the source so that mutt_env_free doesn't leave us
  * with dangling pointers. */
-#define MOVE_ELEM(h)                                                           \
-  if (!base->h)                                                                \
+#define MOVE_ELEM(member)                                                      \
+  if (!base->member)                                                           \
   {                                                                            \
-    base->h = (*extra)->h;                                                     \
-    (*extra)->h = NULL;                                                        \
+    base->member = (*extra)->member;                                           \
+    (*extra)->member = NULL;                                                   \
   }
 
-#define MOVE_STAILQ(h)                                                         \
-  if (STAILQ_EMPTY(&base->h))                                                  \
+#define MOVE_STAILQ(member)                                                    \
+  if (STAILQ_EMPTY(&base->member))                                             \
   {                                                                            \
-    STAILQ_SWAP(&base->h, &((*extra))->h, ListNode);                           \
+    STAILQ_SWAP(&base->member, &((*extra))->member, ListNode);                 \
   }
 
   MOVE_ELEM(return_path);
@@ -126,13 +126,16 @@ void mutt_env_merge(struct Envelope *base, struct Envelope **extra)
   MOVE_ELEM(message_id);
   MOVE_ELEM(supersedes);
   MOVE_ELEM(date);
-  MOVE_ELEM(x_label);
   MOVE_ELEM(x_original_to);
-  if (!base->refs_changed)
+  if (!(base->changed & MUTT_ENV_CHANGED_XLABEL))
+  {
+    MOVE_ELEM(x_label);
+  }
+  if (!(base->changed & MUTT_ENV_CHANGED_REFS))
   {
     MOVE_STAILQ(references);
   }
-  if (!base->irt_changed)
+  if (!(base->changed & MUTT_ENV_CHANGED_IRT))
   {
     MOVE_STAILQ(in_reply_to);
   }
@@ -208,16 +211,16 @@ void mutt_env_to_local(struct Envelope *env)
   mutt_addrlist_to_local(env->mail_followup_to);
 }
 
-/* Note that `a' in the `env->a' expression is macro argument, not
- * "real" name of an `env' compound member.  Real name will be substituted
- * by preprocessor at the macro-expansion time.
- * Note that #a escapes and double quotes the argument.
+/* Note that 'member' in the 'env->member' expression is macro argument, not
+ * "real" name of an 'env' compound member.  Real name will be substituted by
+ * preprocessor at the macro-expansion time.
+ * Note that #member escapes and double quotes the argument.
  */
-#define H_TO_INTL(a)                                                           \
-  if (mutt_addrlist_to_intl(env->a, err) && !e)                                \
+#define H_TO_INTL(member)                                                      \
+  if (mutt_addrlist_to_intl(env->member, err) && !e)                           \
   {                                                                            \
     if (tag)                                                                   \
-      *tag = #a;                                                               \
+      *tag = #member;                                                          \
     e = 1;                                                                     \
     err = NULL;                                                                \
   }

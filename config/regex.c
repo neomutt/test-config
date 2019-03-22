@@ -32,11 +32,7 @@
 #include <regex.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "mutt/buffer.h"
-#include "mutt/mbyte.h"
-#include "mutt/memory.h"
-#include "mutt/regex3.h"
-#include "mutt/string2.h"
+#include "mutt/mutt.h"
 #include "regex2.h"
 #include "set.h"
 #include "types.h"
@@ -311,7 +307,7 @@ struct Regex *regex_new(const char *str, int flags, struct Buffer *err)
 
 /**
  * regex_free - Free a Regex object
- * @param r Regex to free
+ * @param[out] r Regex to free
  */
 void regex_free(struct Regex **r)
 {

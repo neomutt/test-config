@@ -29,7 +29,7 @@
  * | :------------------ | :------------------------- |
  * | config/address.c    | @subpage config_address    |
  * | config/bool.c       | @subpage config_bool       |
- * | config/gaccount.c   | @subpage config_account    |
+ * | config/account.c    | @subpage config_account    |
  * | config/command.c    | @subpage config_command    |
  * | config/dump.c       | @subpage config_dump       |
  * | config/long.c       | @subpage config_long       |

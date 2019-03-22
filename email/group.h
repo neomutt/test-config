@@ -25,12 +25,9 @@
 #define MUTT_GROUP_H
 
 #include <stdbool.h>
-#include "queue.h"
-#include "regex3.h"
+#include "mutt/mutt.h"
 
 struct Address;
-struct Buffer;
-struct Hash;
 
 #define MUTT_GROUP   0
 #define MUTT_UNGROUP 1
@@ -50,7 +47,7 @@ struct Group
  */
 struct GroupNode
 {
-  struct Group *g;
+  struct Group *group;
   STAILQ_ENTRY(GroupNode) entries;
 };
 

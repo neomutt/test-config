@@ -31,13 +31,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define SHORT_STRING 128
-#define STRING       256
-#define LONG_STRING  1024
-#define HUGE_STRING  8192
+#define STR_COMMAND 8192  ///< Enough space for a long command line
 
-#define NONULL(x) (x ? x : "")
-#define ISSPACE(c) isspace((unsigned char) c)
+#define NONULL(x) ((x) ? (x) : "")
+#define ISSPACE(ch) isspace((unsigned char) ch)
 #define EMAIL_WSP " \t\r\n"
 
 /* Exit values */
@@ -45,24 +42,24 @@
 #define S_BKG 126
 
 /* this macro must check for (*c == 0) since isspace(0) has unreliable behavior
-   on some systems */
-#define SKIPWS(c)                                                              \
-  while (*(c) && isspace((unsigned char) *(c)))                                \
-    c++;
+ * on some systems */
+#define SKIPWS(ch)                                                             \
+  while (*(ch) && isspace((unsigned char) *(ch)))                              \
+    ch++;
 
-#define terminate_string(a, b, c)                                              \
+#define terminate_string(str, strlen, buflen)                                  \
   do                                                                           \
   {                                                                            \
-    if ((b) < (c))                                                             \
-      a[(b)] = 0;                                                              \
+    if ((strlen) < (buflen))                                                   \
+      str[(strlen)] = '\0';                                                    \
     else                                                                       \
-      a[(c)] = 0;                                                              \
+      str[(buflen)] = '\0';                                                    \
   } while (false)
 
-#define terminate_buffer(a, b) terminate_string(a, b, sizeof(a) - 1)
+#define terminate_buffer(str, strlen) terminate_string(str, strlen, sizeof(str) - 1)
 
 /**
- * CaseSensitivity - Should a string's case matter when matching?
+ * enum CaseSensitivity - Should a string's case matter when matching?
  */
 enum CaseSensitivity
 {
