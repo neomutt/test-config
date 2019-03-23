@@ -1,8 +1,7 @@
 notifications:
   email: false
 
-sudo: false
-dist: trusty
+dist: xenial
 
 language: c
 compiler: gcc
@@ -10,8 +9,9 @@ compiler: gcc
 addons:
   apt:
     packages:
-      - python-software-properties
+      - libidn2-0-dev
       - python-pip
+      - python-software-properties
 
 before_install:
   - pip install --user cpp-coveralls
