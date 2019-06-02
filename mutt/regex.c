@@ -51,10 +51,12 @@
  */
 struct Regex *mutt_regex_compile(const char *str, int flags)
 {
+  if (!str || !*str)
+    return NULL;
   struct Regex *rx = mutt_mem_calloc(1, sizeof(struct Regex));
   rx->pattern = mutt_str_strdup(str);
   rx->regex = mutt_mem_calloc(1, sizeof(regex_t));
-  if (REGCOMP(rx->regex, NONULL(str), flags) != 0)
+  if (REG_COMP(rx->regex, str, flags) != 0)
     mutt_regex_free(&rx);
 
   return rx;
@@ -70,7 +72,7 @@ struct Regex *mutt_regex_compile(const char *str, int flags)
  */
 struct Regex *mutt_regex_new(const char *str, int flags, struct Buffer *err)
 {
-  if (!str)
+  if (!str || !*str)
     return NULL;
 
   int rflags = 0;
@@ -90,7 +92,7 @@ struct Regex *mutt_regex_new(const char *str, int flags, struct Buffer *err)
     str++;
   }
 
-  int rc = REGCOMP(reg->regex, str, rflags);
+  int rc = REG_COMP(reg->regex, str, rflags);
   if ((rc != 0) && err)
   {
     regerror(rc, reg->regex, err->data, err->dsize);
@@ -128,7 +130,7 @@ void mutt_regex_free(struct Regex **r)
  */
 int mutt_regexlist_add(struct RegexList *rl, const char *str, int flags, struct Buffer *err)
 {
-  if (!str || !*str)
+  if (!rl || !str || !*str)
     return 0;
 
   struct Regex *rx = mutt_regex_compile(str, flags);
@@ -187,9 +189,9 @@ void mutt_regexlist_free(struct RegexList *rl)
  */
 bool mutt_regexlist_match(struct RegexList *rl, const char *str)
 {
-  struct RegexListNode *np = NULL;
-  if (!str)
+  if (!rl || !str)
     return false;
+  struct RegexListNode *np = NULL;
   STAILQ_FOREACH(np, rl, entries)
   {
     if (!np->regex || !np->regex->regex)
@@ -261,13 +263,14 @@ int mutt_regexlist_remove(struct RegexList *rl, const char *str)
 int mutt_replacelist_add(struct ReplaceList *rl, const char *pat,
                          const char *templ, struct Buffer *err)
 {
-  if (!pat || !*pat || !templ)
+  if (!rl || !pat || !*pat || !templ)
     return 0;
 
   struct Regex *rx = mutt_regex_compile(pat, REG_ICASE);
   if (!rx)
   {
-    mutt_buffer_printf(err, _("Bad regex: %s"), pat);
+    if (err)
+      mutt_buffer_printf(err, _("Bad regex: %s"), pat);
     return -1;
   }
 
@@ -310,7 +313,9 @@ int mutt_replacelist_add(struct ReplaceList *rl, const char *pat,
   {
     if (*p == '%')
     {
-      int n = atoi(++p);
+      int n = 0;
+      if (mutt_str_atoi(++p, &n) < 0)
+        mutt_debug(LL_DEBUG2, "Invalid match number in replacelist: '%s'\n", p);
       if (n > np->nmatch)
         np->nmatch = n;
       while (*p && isdigit((int) *p))
@@ -322,7 +327,8 @@ int mutt_replacelist_add(struct ReplaceList *rl, const char *pat,
 
   if (np->nmatch > np->regex->regex->re_nsub)
   {
-    mutt_buffer_printf(err, "%s", _("Not enough subexpressions for template"));
+    if (err)
+      mutt_buffer_printf(err, "%s", _("Not enough subexpressions for template"));
     mutt_replacelist_remove(rl, pat);
     return -1;
   }
@@ -357,7 +363,7 @@ char *mutt_replacelist_apply(struct ReplaceList *rl, char *buf, size_t buflen, c
   if (buf && buflen)
     buf[0] = '\0';
 
-  if (!str || (*str == '\0') || (buf && !buflen))
+  if (!rl || !str || (*str == '\0') || (buf && !buflen))
     return buf;
 
   twinbuf[0][0] = '\0';

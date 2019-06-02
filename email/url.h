@@ -58,7 +58,6 @@ struct UrlQueryString
   char *value;
   STAILQ_ENTRY(UrlQueryString) entries;
 };
-
 STAILQ_HEAD(UrlQueryStringHead, UrlQueryString);
 
 /**
@@ -81,6 +80,7 @@ void           url_free(struct Url **u);
 struct Url    *url_parse(const char *src);
 int            url_pct_decode(char *s);
 void           url_pct_encode(char *buf, size_t buflen, const char *src);
+int            url_tobuffer(struct Url *u, struct Buffer *dest, int flags);
 int            url_tostring(struct Url *u, char *buf, size_t buflen, int flags);
 
 #endif /* MUTT_EMAIL_URL_H */

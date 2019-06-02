@@ -4,6 +4,7 @@
  *
  * @authors
  * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2019 Pietro Cerutti <gahr@gahr.ch>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -32,6 +33,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "mutt/mutt.h"
+#include "address/lib.h"
 #include "email/lib.h"
 #include "address.h"
 #include "set.h"
@@ -66,7 +68,11 @@ static int address_string_set(const struct ConfigSet *cs, void *var, struct Conf
   /* An empty address "" will be stored as NULL */
   if (var && value && (value[0] != '\0'))
   {
-    addr = mutt_addr_parse_list(NULL, value);
+    // TODO - config can only store one
+    struct AddressList al = TAILQ_HEAD_INITIALIZER(al);
+    mutt_addrlist_parse(&al, value);
+    addr = mutt_addr_copy(TAILQ_FIRST(&al));
+    mutt_addrlist_clear(&al);
   }
 
   int rc = CSR_SUCCESS;
@@ -114,7 +120,7 @@ static int address_string_get(const struct ConfigSet *cs, void *var,
   if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  char tmp[8192] = "";
+  char tmp[8192] = { 0 };
   const char *str = NULL;
 
   if (var)
@@ -271,7 +277,7 @@ struct Address *address_new(const char *addr)
 void address_free(struct Address **addr)
 {
   if (!addr || !*addr)
-    return; /* LCOV_EXCL_LINE */
+    return;
 
   FREE(&(*addr)->personal);
   FREE(&(*addr)->mailbox);

@@ -38,15 +38,7 @@
 #include "memory.h"
 #include "string2.h"
 
-/* theoretically time_t can be float but it is integer on most (if not all) systems */
-#define TIME_T_MAX ((((time_t) 1 << (sizeof(time_t) * 8 - 2)) - 1) * 2 + 1)
-#define TIME_T_MIN (-TIME_T_MAX - 1)
-#define TM_YEAR_MAX                                                            \
-  (1970 + (((((TIME_T_MAX - 59) / 60) - 59) / 60) - 23) / 24 / 366)
-#define TM_YEAR_MIN (1970 - (TM_YEAR_MAX - 1970) - 1)
-
 // clang-format off
-
 /**
  * Weekdays - Day of the week (abbreviated)
  */
@@ -131,12 +123,10 @@ static const struct Tz TimeZones[] = {
 static time_t compute_tz(time_t g, struct tm *utc)
 {
   struct tm lt = mutt_date_localtime(g);
-  time_t t;
-  int yday;
 
-  t = (((lt.tm_hour - utc->tm_hour) * 60) + (lt.tm_min - utc->tm_min)) * 60;
+  time_t t = (((lt.tm_hour - utc->tm_hour) * 60) + (lt.tm_min - utc->tm_min)) * 60;
 
-  yday = (lt.tm_yday - utc->tm_yday);
+  int yday = (lt.tm_yday - utc->tm_yday);
   if (yday != 0)
   {
     /* This code is optimized to negative timezones (West of Greenwich) */
@@ -193,7 +183,7 @@ static const char *uncomment_timezone(char *buf, size_t buflen, const char *tz)
     return tz;
   len = p - tz;
   if (len > (buflen - 1))
-    len = buflen - 1;
+    len = buflen - 1; /* LCOV_EXCL_LINE */
   memcpy(buf, tz, len);
   buf[len] = '\0';
   return buf;
@@ -224,14 +214,16 @@ time_t mutt_date_local_tz(time_t t)
  * mutt_date_make_time - Convert `struct tm` to `time_t`
  * @param t     Time to convert
  * @param local Should the local timezone be considered
- * @retval num Time in Unix format
+ * @retval num        Time in Unix format
+ * @retval TIME_T_MIN Error
  *
  * Convert a struct tm to time_t, but don't take the local timezone into
  * account unless "local" is nonzero
  */
-time_t mutt_date_make_time(struct tm *t, int local)
+time_t mutt_date_make_time(struct tm *t, bool local)
 {
-  time_t g;
+  if (!t)
+    return TIME_T_MIN;
 
   static const int AccumDaysPerMonth[mutt_array_size(Months)] = {
     0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334,
@@ -254,7 +246,7 @@ time_t mutt_date_make_time(struct tm *t, int local)
     return TIME_T_MAX;
 
   /* Compute the number of days since January 1 in the same year */
-  g = AccumDaysPerMonth[t->tm_mon % mutt_array_size(Months)];
+  time_t g = AccumDaysPerMonth[t->tm_mon % mutt_array_size(Months)];
 
   /* The leap years are 1972 and every 4. year until 2096,
    * but this algorithm will fail after year 2099 */
@@ -296,6 +288,9 @@ time_t mutt_date_make_time(struct tm *t, int local)
  */
 void mutt_date_normalize_time(struct tm *tm)
 {
+  if (!tm)
+    return;
+
   static const char DaysPerMonth[mutt_array_size(Months)] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
   };
@@ -374,6 +369,9 @@ void mutt_date_normalize_time(struct tm *tm)
  */
 char *mutt_date_make_date(char *buf, size_t buflen)
 {
+  if (!buf)
+    return NULL;
+
   time_t t = time(NULL);
   struct tm tm = mutt_date_localtime(t);
   time_t tz = mutt_date_local_tz(t);
@@ -414,7 +412,7 @@ int mutt_date_check_month(const char *s)
  */
 bool mutt_date_is_day_name(const char *s)
 {
-  if ((strlen(s) < 3) || !*(s + 3) || !ISSPACE(*(s + 3)))
+  if (!s || (strlen(s) < 3) || (s[3] == '\0') || !IS_SPACE(s[3]))
     return false;
 
   for (int i = 0; i < mutt_array_size(Weekdays); i++)
@@ -437,9 +435,12 @@ bool mutt_date_is_day_name(const char *s)
  */
 time_t mutt_date_parse_date(const char *s, struct Tz *tz_out)
 {
+  if (!s)
+    return -1;
+
   int count = 0;
   int hour, min, sec;
-  struct tm tm;
+  struct tm tm = { 0 };
   int i;
   int tz_offset = 0;
   int zhours = 0;
@@ -461,8 +462,6 @@ time_t mutt_date_parse_date(const char *s, struct Tz *tz_out)
   else
     t = scratch;
   t = mutt_str_skip_email_wsp(t);
-
-  memset(&tm, 0, sizeof(tm));
 
   while ((t = strtok(t, " \t")))
   {
@@ -575,7 +574,7 @@ time_t mutt_date_parse_date(const char *s, struct Tz *tz_out)
     tz_out->zoccident = zoccident;
   }
 
-  time_t time = mutt_date_make_time(&tm, 0);
+  time_t time = mutt_date_make_time(&tm, false);
   /* Check we haven't overflowed the time (on 32-bit arches) */
   if ((time != TIME_T_MAX) && (time != TIME_T_MIN))
     time += tz_offset;
@@ -594,6 +593,9 @@ time_t mutt_date_parse_date(const char *s, struct Tz *tz_out)
  */
 int mutt_date_make_imap(char *buf, size_t buflen, time_t timestamp)
 {
+  if (!buf)
+    return -1;
+
   struct tm tm = mutt_date_localtime(timestamp);
   time_t tz = mutt_date_local_tz(timestamp);
 
@@ -617,6 +619,9 @@ int mutt_date_make_imap(char *buf, size_t buflen, time_t timestamp)
  */
 int mutt_date_make_tls(char *buf, size_t buflen, time_t timestamp)
 {
+  if (!buf)
+    return -1;
+
   struct tm tm = mutt_date_gmtime(timestamp);
   return snprintf(buf, buflen, "%s, %d %s %d %02d:%02d:%02d UTC",
                   Weekdays[tm.tm_wday], tm.tm_mday, Months[tm.tm_mon],
@@ -631,6 +636,9 @@ int mutt_date_make_tls(char *buf, size_t buflen, time_t timestamp)
  */
 time_t mutt_date_parse_imap(const char *s)
 {
+  if (!s)
+    return 0;
+
   struct tm t;
   time_t tz;
 
@@ -673,7 +681,7 @@ time_t mutt_date_parse_imap(const char *s)
   if (s[0] == '+')
     tz = -tz;
 
-  return mutt_date_make_time(&t, 0) + tz;
+  return mutt_date_make_time(&t, false) + tz;
 }
 
 /**
@@ -696,9 +704,9 @@ time_t mutt_date_add_timeout(time_t now, long timeout)
 }
 
 /**
- * mutt_date_localtime - Converts calendar time to a broken-down time structure expressed in user timezone.
+ * mutt_date_localtime - Converts calendar time to a broken-down time structure expressed in user timezone
  * @param  t  Time
- * @retval tm Broken-down time representation
+ * @retval obj Broken-down time representation
  *
  * Uses current time if t is #MUTT_DATE_NOW
  */
@@ -714,9 +722,9 @@ struct tm mutt_date_localtime(time_t t)
 }
 
 /**
- * mutt_date_gmtime - Converts calendar time to a broken-down time structure expressed in UTC timezone.
+ * mutt_date_gmtime - Converts calendar time to a broken-down time structure expressed in UTC timezone
  * @param  t  Time
- * @retval tm Broken-down time representation
+ * @retval obj Broken-down time representation
  *
  * Uses current time if t is #MUTT_DATE_NOW
  */
@@ -739,8 +747,11 @@ struct tm mutt_date_gmtime(time_t t)
  * @param t      Time to format
  * @retval num   Number of Bytes added to buffer, excluding null byte.
  */
-size_t mutt_date_localtime_format(char *buf, size_t buflen, char *format, time_t t)
+size_t mutt_date_localtime_format(char *buf, size_t buflen, const char *format, time_t t)
 {
+  if (!buf || !format)
+    return 0;
+
   struct tm tm = mutt_date_localtime(t);
   return strftime(buf, buflen, format, &tm);
 }

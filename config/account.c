@@ -46,7 +46,7 @@ struct Account *ac_new(const struct ConfigSet *cs, const char *name,
                           const char *var_names[])
 {
   if (!cs || !name || !var_names)
-    return NULL; /* LCOV_EXCL_LINE */
+    return NULL;
 
   int count = 0;
   for (; var_names[count]; count++)
@@ -97,25 +97,22 @@ struct Account *ac_new(const struct ConfigSet *cs, const char *name,
 void ac_free(const struct ConfigSet *cs, struct Account **ac)
 {
   if (!cs || !ac || !*ac)
-    return; /* LCOV_EXCL_LINE */
+    return;
 
   char child[128];
-  struct Buffer err;
-  mutt_buffer_init(&err);
-  err.dsize = 256;
-  err.data = mutt_mem_calloc(1, err.dsize);
+  struct Buffer *err = mutt_buffer_new();
 
   for (size_t i = 0; i < (*ac)->num_vars; i++)
   {
     snprintf(child, sizeof(child), "%s:%s", (*ac)->name, (*ac)->var_names[i]);
-    mutt_buffer_reset(&err);
-    int result = cs_str_reset(cs, child, &err);
+    mutt_buffer_reset(err);
+    int result = cs_str_reset(cs, child, err);
     if (CSR_RESULT(result) != CSR_SUCCESS)
-      mutt_debug(LL_DEBUG1, "reset failed for %s: %s\n", child, err.data);
+      mutt_debug(LL_DEBUG1, "reset failed for %s: %s\n", child, mutt_b2s(err));
     mutt_hash_delete(cs->hash, child, NULL);
   }
 
-  FREE(&err.data);
+  mutt_buffer_free(&err);
   FREE(&(*ac)->name);
   FREE(&(*ac)->vars);
   FREE(ac);
@@ -127,12 +124,12 @@ void ac_free(const struct ConfigSet *cs, struct Account **ac)
  * @param vid   Value ID (index into Account's HashElem's)
  * @param value Native pointer/value to set
  * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int ac_set_value(const struct Account *ac, size_t vid, intptr_t value, struct Buffer *err)
 {
   if (!ac)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
   if (vid >= ac->num_vars)
     return CSR_ERR_UNKNOWN;
 
@@ -145,12 +142,12 @@ int ac_set_value(const struct Account *ac, size_t vid, intptr_t value, struct Bu
  * @param ac     Account-specific config items
  * @param vid    Value ID (index into Account's HashElem's)
  * @param result Buffer for results or error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int ac_get_value(const struct Account *ac, size_t vid, struct Buffer *result)
 {
   if (!ac)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
   if (vid >= ac->num_vars)
     return CSR_ERR_UNKNOWN;
 

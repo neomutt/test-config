@@ -4,6 +4,7 @@
  *
  * @authors
  * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2019 Pietro Cerutti <gahr@gahr.ch>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -34,7 +35,7 @@
 #define STR_COMMAND 8192  ///< Enough space for a long command line
 
 #define NONULL(x) ((x) ? (x) : "")
-#define ISSPACE(ch) isspace((unsigned char) ch)
+#define IS_SPACE(ch) isspace((unsigned char) ch)
 #define EMAIL_WSP " \t\r\n"
 
 /* Exit values */
@@ -68,7 +69,8 @@ enum CaseSensitivity
 };
 
 void        mutt_str_adjust(char **p);
-void        mutt_str_append_item(char **str, const char *item, int sep);
+void        mutt_str_append_item(char **str, const char *item, char sep);
+int         mutt_str_asprintf(char **strp, const char *fmt, ...);
 int         mutt_str_atoi(const char *str, int *dst);
 int         mutt_str_atol(const char *str, long *dst);
 int         mutt_str_atos(const char *str, short *dst);
@@ -79,7 +81,7 @@ void        mutt_str_dequote_comment(char *s);
 const char *mutt_str_find_word(const char *src);
 const char *mutt_str_getenv(const char *name);
 bool        mutt_str_inline_replace(char *buf, size_t buflen, size_t xlen, const char *rstr);
-bool        mutt_str_is_ascii(const char *p, size_t len);
+bool        mutt_str_is_ascii(const char *str, size_t len);
 bool        mutt_str_is_email_wsp(char c);
 size_t      mutt_str_lws_len(const char *s, size_t n);
 size_t      mutt_str_lws_rlen(const char *s, size_t n);
@@ -90,7 +92,8 @@ void        mutt_str_remove_trailing_ws(char *s);
 void        mutt_str_replace(char **p, const char *s);
 const char *mutt_str_rstrnstr(const char *haystack, size_t haystack_length, const char *needle);
 char *      mutt_str_skip_email_wsp(const char *s);
-char *      mutt_str_skip_whitespace(char *p);
+char *      mutt_str_skip_whitespace(const char *p);
+struct ListHead mutt_str_split(const char *src, char sep);
 int         mutt_str_strcasecmp(const char *a, const char *b);
 size_t      mutt_str_startswith(const char *str, const char *prefix, enum CaseSensitivity cs);
 const char *mutt_str_strcasestr(const char *haystack, const char *needle);

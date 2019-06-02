@@ -34,7 +34,7 @@
 #include "memory.h"
 #include "string2.h"
 
-#define SOMEPRIME 149711
+#define SOME_PRIME 149711
 
 /**
  * gen_string_hash - Generate a hash from a string
@@ -49,7 +49,7 @@ static size_t gen_string_hash(union HashKey key, size_t n)
 
   while (*s)
     h += ((h << 7) + *s++);
-  h = (h * SOMEPRIME) % n;
+  h = (h * SOME_PRIME) % n;
 
   return h;
 }
@@ -80,7 +80,7 @@ static size_t gen_case_string_hash(union HashKey key, size_t n)
 
   while (*s)
     h += ((h << 7) + tolower(*s++));
-  h = (h * SOMEPRIME) % n;
+  h = (h * SOME_PRIME) % n;
 
   return h;
 }
@@ -155,6 +155,9 @@ static struct Hash *new_hash(size_t nelem)
 static struct HashElem *union_hash_insert(struct Hash *table, union HashKey key,
                                           int type, void *data)
 {
+  if (!table)
+    return NULL;
+
   struct HashElem *ptr = mutt_mem_malloc(sizeof(struct HashElem));
   unsigned int h = table->gen_hash(key, table->nelem);
   ptr->key = key;
@@ -198,14 +201,11 @@ static struct HashElem *union_hash_insert(struct Hash *table, union HashKey key,
  */
 static struct HashElem *union_hash_find_elem(const struct Hash *table, union HashKey key)
 {
-  int hash;
-  struct HashElem *ptr = NULL;
-
   if (!table)
     return NULL;
 
-  hash = table->gen_hash(key, table->nelem);
-  ptr = table->table[hash];
+  int hash = table->gen_hash(key, table->nelem);
+  struct HashElem *ptr = table->table[hash];
   for (; ptr; ptr = ptr->next)
   {
     if (table->cmp_key(key, ptr->key) == 0)
@@ -222,6 +222,8 @@ static struct HashElem *union_hash_find_elem(const struct Hash *table, union Has
  */
 static void *union_hash_find(const struct Hash *table, union HashKey key)
 {
+  if (!table)
+    return NULL;
   struct HashElem *ptr = union_hash_find_elem(table, key);
   if (ptr)
     return ptr->data;
@@ -237,15 +239,12 @@ static void *union_hash_find(const struct Hash *table, union HashKey key)
  */
 static void union_hash_delete(struct Hash *table, union HashKey key, const void *data)
 {
-  int hash;
-  struct HashElem *ptr, **last;
-
   if (!table)
     return;
 
-  hash = table->gen_hash(key, table->nelem);
-  ptr = table->table[hash];
-  last = &table->table[hash];
+  int hash = table->gen_hash(key, table->nelem);
+  struct HashElem *ptr = table->table[hash];
+  struct HashElem **last = &table->table[hash];
 
   while (ptr)
   {
@@ -318,6 +317,8 @@ struct Hash *mutt_hash_int_new(size_t nelem, HashFlags flags)
  */
 void mutt_hash_set_destructor(struct Hash *table, hashelem_free_t fn, intptr_t fn_data)
 {
+  if (!table)
+    return;
   table->elem_free = fn;
   table->hash_data = fn_data;
 }
@@ -333,6 +334,9 @@ void mutt_hash_set_destructor(struct Hash *table, hashelem_free_t fn, intptr_t f
 struct HashElem *mutt_hash_typed_insert(struct Hash *table, const char *strkey,
                                         int type, void *data)
 {
+  if (!table || !strkey)
+    return NULL;
+
   union HashKey key;
   key.strkey = table->strdup_keys ? mutt_str_strdup(strkey) : strkey;
   return union_hash_insert(table, key, type, data);
@@ -359,6 +363,8 @@ struct HashElem *mutt_hash_insert(struct Hash *table, const char *strkey, void *
  */
 struct HashElem *mutt_hash_int_insert(struct Hash *table, unsigned int intkey, void *data)
 {
+  if (!table)
+    return NULL;
   union HashKey key;
   key.intkey = intkey;
   return union_hash_insert(table, key, -1, data);
@@ -372,6 +378,8 @@ struct HashElem *mutt_hash_int_insert(struct Hash *table, unsigned int intkey, v
  */
 void *mutt_hash_find(const struct Hash *table, const char *strkey)
 {
+  if (!table || !strkey)
+    return NULL;
   union HashKey key;
   key.strkey = strkey;
   return union_hash_find(table, key);
@@ -385,6 +393,8 @@ void *mutt_hash_find(const struct Hash *table, const char *strkey)
  */
 struct HashElem *mutt_hash_find_elem(const struct Hash *table, const char *strkey)
 {
+  if (!table || !strkey)
+    return NULL;
   union HashKey key;
   key.strkey = strkey;
   return union_hash_find_elem(table, key);
@@ -398,6 +408,8 @@ struct HashElem *mutt_hash_find_elem(const struct Hash *table, const char *strke
  */
 void *mutt_hash_int_find(const struct Hash *table, unsigned int intkey)
 {
+  if (!table)
+    return NULL;
   union HashKey key;
   key.intkey = intkey;
   return union_hash_find(table, key);
@@ -413,14 +425,13 @@ void *mutt_hash_int_find(const struct Hash *table, unsigned int intkey)
  */
 struct HashElem *mutt_hash_find_bucket(const struct Hash *table, const char *strkey)
 {
-  union HashKey key;
-  int hash;
-
-  if (!table)
+  if (!table || !strkey)
     return NULL;
 
+  union HashKey key;
+
   key.strkey = strkey;
-  hash = table->gen_hash(key, table->nelem);
+  int hash = table->gen_hash(key, table->nelem);
   return table->table[hash];
 }
 
@@ -432,6 +443,8 @@ struct HashElem *mutt_hash_find_bucket(const struct Hash *table, const char *str
  */
 void mutt_hash_delete(struct Hash *table, const char *strkey, const void *data)
 {
+  if (!table || !strkey)
+    return;
   union HashKey key;
   key.strkey = strkey;
   union_hash_delete(table, key, data);
@@ -445,6 +458,8 @@ void mutt_hash_delete(struct Hash *table, const char *strkey, const void *data)
  */
 void mutt_hash_int_delete(struct Hash *table, unsigned int intkey, const void *data)
 {
+  if (!table)
+    return;
   union HashKey key;
   key.intkey = intkey;
   union_hash_delete(table, key, data);
@@ -488,6 +503,9 @@ void mutt_hash_free(struct Hash **ptr)
  */
 struct HashElem *mutt_hash_walk(const struct Hash *table, struct HashWalkState *state)
 {
+  if (!table || !state)
+    return NULL;
+
   if (state->last && state->last->next)
   {
     state->last = state->last->next;

@@ -492,7 +492,7 @@ bool slist_test_separator(struct ConfigDef Vars[], struct Buffer *err)
   if (!cs_register_variables(cs, Vars, 0))
     return false;
 
-  cs_add_listener(cs, log_listener);
+  cs_add_observer(cs, log_observer);
 
   set_list(cs);
 

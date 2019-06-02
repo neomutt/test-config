@@ -26,12 +26,10 @@
 #include "config.h"
 #include <stddef.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <time.h>
 #include "mutt/mutt.h"
+#include "ncrypt/ncrypt.h"
 #include "tags.h"
-
-typedef uint16_t SecurityFlags;
 
 /**
  * struct Email - The envelope/body of an email
@@ -125,11 +123,13 @@ struct EmailNode
   struct Email *email;
   STAILQ_ENTRY(EmailNode) entries;
 };
-
 STAILQ_HEAD(EmailList, EmailNode);
 
 bool          mutt_email_cmp_strict(const struct Email *e1, const struct Email *e2);
 void          mutt_email_free(struct Email **e);
 struct Email *mutt_email_new(void);
+size_t        mutt_email_size(const struct Email *e);
+
+void el_free(struct EmailList *el);
 
 #endif /* MUTT_EMAIL_EMAIL_H */

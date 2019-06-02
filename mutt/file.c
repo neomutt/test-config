@@ -42,9 +42,12 @@
 #include <unistd.h>
 #include <utime.h>
 #include "file.h"
+#include "buffer.h"
 #include "logging.h"
 #include "memory.h"
 #include "message.h"
+#include "path.h"
+#include "pool.h"
 #include "string2.h"
 
 char *C_Tmpdir; ///< Config: Directory for temporary files
@@ -81,20 +84,19 @@ static bool compare_stat(struct stat *osb, struct stat *nsb)
  * mkwrapdir - Create a temporary directory next to a file name
  * @param path    Existing filename
  * @param newfile New filename
- * @param nflen   Length of new filename
  * @param newdir  New directory name
- * @param ndlen   Length of new directory name
  * @retval  0 Success
  * @retval -1 Error
  */
-static int mkwrapdir(const char *path, char *newfile, size_t nflen, char *newdir, size_t ndlen)
+static int mkwrapdir(const char *path, struct Buffer *newfile, struct Buffer *newdir)
 {
   const char *basename = NULL;
-  char parent[PATH_MAX];
+  int rc = 0;
 
-  mutt_str_strfcpy(parent, path, sizeof(parent));
+  struct Buffer *parent = mutt_buffer_alloc(PATH_MAX);
+  mutt_buffer_strcpy(parent, NONULL(path));
 
-  char *p = strrchr(parent, '/');
+  char *p = strrchr(parent->data, '/');
   if (p)
   {
     *p = '\0';
@@ -102,24 +104,23 @@ static int mkwrapdir(const char *path, char *newfile, size_t nflen, char *newdir
   }
   else
   {
-    mutt_str_strfcpy(parent, ".", sizeof(parent));
+    mutt_buffer_strcpy(parent, ".");
     basename = path;
   }
 
-  snprintf(newdir, ndlen, "%s/%s", parent, ".muttXXXXXX");
-  if (!mkdtemp(newdir))
+  mutt_buffer_printf(newdir, "%s/%s", mutt_b2s(parent), ".muttXXXXXX");
+  if (!mkdtemp(newdir->data))
   {
     mutt_debug(LL_DEBUG1, "mkdtemp() failed\n");
-    return -1;
+    rc = -1;
+    goto cleanup;
   }
 
-  if (snprintf(newfile, nflen, "%s/%s", newdir, NONULL(basename)) >= nflen)
-  {
-    rmdir(newdir);
-    mutt_debug(LL_DEBUG1, "string was truncated\n");
-    return -1;
-  }
-  return 0;
+  mutt_buffer_printf(newfile, "%s/%s", newdir->data, NONULL(basename));
+
+cleanup:
+  mutt_buffer_free(&parent);
+  return rc;
 }
 
 /**
@@ -190,14 +191,15 @@ int mutt_file_fsync_close(FILE **fp)
  */
 void mutt_file_unlink(const char *s)
 {
+  if (!s)
+    return;
+
   struct stat sb;
   /* Defend against symlink attacks */
 
   const bool is_regular_file = (lstat(s, &sb) == 0) && S_ISREG(sb.st_mode);
   if (!is_regular_file)
-  {
     return;
-  }
 
   const int fd = open(s, O_RDWR | O_NOFOLLOW);
   if (fd < 0)
@@ -235,6 +237,9 @@ void mutt_file_unlink(const char *s)
  */
 int mutt_file_copy_bytes(FILE *fp_in, FILE *fp_out, size_t size)
 {
+  if (!fp_in || !fp_out)
+    return -1;
+
   while (size > 0)
   {
     char buf[2048];
@@ -262,6 +267,9 @@ int mutt_file_copy_bytes(FILE *fp_in, FILE *fp_out, size_t size)
  */
 int mutt_file_copy_stream(FILE *fp_in, FILE *fp_out)
 {
+  if (!fp_in || !fp_out)
+    return -1;
+
   size_t l;
   char buf[1024];
 
@@ -300,18 +308,23 @@ int mutt_file_symlink(const char *oldpath, const char *newpath)
   }
   else
   {
-    char abs_oldpath[PATH_MAX];
+    struct Buffer *abs_oldpath = mutt_buffer_alloc(PATH_MAX);
 
-    if (!getcwd(abs_oldpath, sizeof(abs_oldpath)) ||
-        ((strlen(abs_oldpath) + 1 + strlen(oldpath) + 1) > sizeof(abs_oldpath)))
+    if (!mutt_path_getcwd(abs_oldpath))
     {
+      mutt_buffer_free(&abs_oldpath);
       return -1;
     }
 
-    strcat(abs_oldpath, "/");
-    strcat(abs_oldpath, oldpath);
-    if (symlink(abs_oldpath, newpath) == -1)
+    mutt_buffer_addch(abs_oldpath, '/');
+    mutt_buffer_addstr(abs_oldpath, oldpath);
+    if (symlink(mutt_b2s(abs_oldpath), newpath) == -1)
+    {
+      mutt_buffer_free(&abs_oldpath);
       return -1;
+    }
+
+    mutt_buffer_free(&abs_oldpath);
   }
 
   if ((stat(oldpath, &osb) == -1) || (stat(newpath, &nsb) == -1) ||
@@ -386,14 +399,14 @@ int mutt_file_safe_rename(const char *src, const char *target)
 #endif
     )
     {
-      mutt_debug(LL_DEBUG1, "trying rename...\n");
+      mutt_debug(LL_DEBUG1, "trying rename\n");
       if (rename(src, target) == -1)
       {
         mutt_debug(LL_DEBUG1, "rename (%s, %s) failed: %s (%d)\n", src, target,
                    strerror(errno), errno);
         return -1;
       }
-      mutt_debug(LL_DEBUG1, "rename succeeded.\n");
+      mutt_debug(LL_DEBUG1, "rename succeeded\n");
 
       return 0;
     }
@@ -424,7 +437,7 @@ int mutt_file_safe_rename(const char *src, const char *target)
 
   if (!compare_stat(&ssb, &tsb))
   {
-    mutt_debug(LL_DEBUG1, "stat blocks for %s and %s diverge; pretending EEXIST.\n", src, target);
+    mutt_debug(LL_DEBUG1, "stat blocks for %s and %s diverge; pretending EEXIST\n", src, target);
     errno = EEXIST;
     return -1;
   }
@@ -449,8 +462,11 @@ success:
  */
 int mutt_file_rmtree(const char *path)
 {
+  if (!path)
+    return -1;
+
   struct dirent *de = NULL;
-  char cur[PATH_MAX];
+  struct Buffer *cur = NULL;
   struct stat statbuf;
   int rc = 0;
 
@@ -460,29 +476,36 @@ int mutt_file_rmtree(const char *path)
     mutt_debug(LL_DEBUG1, "error opening directory %s\n", path);
     return -1;
   }
+
+  /* We avoid using the buffer pool for this function, because it
+   * invokes recursively to an unknown depth. */
+  cur = mutt_buffer_new();
+  mutt_buffer_increase_size(cur, PATH_MAX);
+
   while ((de = readdir(dirp)))
   {
     if ((strcmp(".", de->d_name) == 0) || (strcmp("..", de->d_name) == 0))
       continue;
 
-    snprintf(cur, sizeof(cur), "%s/%s", path, de->d_name);
+    mutt_buffer_printf(cur, "%s/%s", path, de->d_name);
     /* XXX make nonrecursive version */
 
-    if (stat(cur, &statbuf) == -1)
+    if (stat(mutt_b2s(cur), &statbuf) == -1)
     {
       rc = 1;
       continue;
     }
 
     if (S_ISDIR(statbuf.st_mode))
-      rc |= mutt_file_rmtree(cur);
+      rc |= mutt_file_rmtree(mutt_b2s(cur));
     else
-      rc |= unlink(cur);
+      rc |= unlink(mutt_b2s(cur));
   }
   closedir(dirp);
 
   rc |= rmdir(path);
 
+  mutt_buffer_free(&cur);
   return rc;
 }
 
@@ -495,40 +518,56 @@ int mutt_file_rmtree(const char *path)
  */
 int mutt_file_open(const char *path, int flags)
 {
+  if (!path)
+    return -1;
+
   struct stat osb, nsb;
   int fd;
+  struct Buffer *safe_file = NULL;
+  struct Buffer *safe_dir = NULL;
 
   if (flags & O_EXCL)
   {
-    char safe_file[PATH_MAX];
-    char safe_dir[PATH_MAX];
+    safe_file = mutt_buffer_alloc(PATH_MAX);
+    safe_dir = mutt_buffer_alloc(PATH_MAX);
 
-    if (mkwrapdir(path, safe_file, sizeof(safe_file), safe_dir, sizeof(safe_dir)) == -1)
-      return -1;
+    if (mkwrapdir(path, safe_file, safe_dir) == -1)
+    {
+      fd = -1;
+      goto cleanup;
+    }
 
-    fd = open(safe_file, flags, 0600);
+    fd = open(mutt_b2s(safe_file), flags, 0600);
     if (fd < 0)
     {
-      rmdir(safe_dir);
-      return fd;
+      rmdir(mutt_b2s(safe_dir));
+      goto cleanup;
     }
 
     /* NFS and I believe cygwin do not handle movement of open files well */
     close(fd);
-    if (put_file_in_place(path, safe_file, safe_dir) == -1)
-      return -1;
+    if (put_file_in_place(path, mutt_b2s(safe_file), mutt_b2s(safe_dir)) == -1)
+    {
+      fd = -1;
+      goto cleanup;
+    }
   }
 
   fd = open(path, flags & ~O_EXCL, 0600);
   if (fd < 0)
-    return fd;
+    goto cleanup;
 
   /* make sure the file is not symlink */
   if (((lstat(path, &osb) < 0) || (fstat(fd, &nsb) < 0)) || !compare_stat(&osb, &nsb))
   {
     close(fd);
-    return -1;
+    fd = -1;
+    goto cleanup;
   }
+
+cleanup:
+  mutt_buffer_free(&safe_file);
+  mutt_buffer_free(&safe_dir);
 
   return fd;
 }
@@ -570,47 +609,42 @@ FILE *mutt_file_fopen(const char *path, const char *mode)
 
 /**
  * mutt_file_sanitize_filename - Replace unsafe characters in a filename
- * @param fp     Filename to make safe
+ * @param path  Filename to make safe
  * @param slash Replace '/' characters too
  */
-void mutt_file_sanitize_filename(char *fp, bool slash)
+void mutt_file_sanitize_filename(char *path, bool slash)
 {
-  if (!fp)
+  if (!path)
     return;
 
-  for (; *fp; fp++)
+  for (; *path; path++)
   {
-    if ((slash && (*fp == '/')) || !strchr(safe_chars, *fp))
-      *fp = '_';
+    if ((slash && (*path == '/')) || !strchr(safe_chars, *path))
+      *path = '_';
   }
 }
 
 /**
  * mutt_file_sanitize_regex - Escape any regex-magic characters in a string
- * @param dest    Buffer for result
- * @param destlen Length of buffer
- * @param src     String to transform
+ * @param dest Buffer for result
+ * @param src  String to transform
  * @retval  0 Success
  * @retval -1 Error
  */
-int mutt_file_sanitize_regex(char *dest, size_t destlen, const char *src)
+int mutt_file_sanitize_regex(struct Buffer *dest, const char *src)
 {
-  while (*src && (--destlen > 2))
+  if (!dest || !src)
+    return -1;
+
+  mutt_buffer_reset(dest);
+  while (*src != '\0')
   {
     if (strchr(rx_special_chars, *src))
-    {
-      *dest++ = '\\';
-      destlen--;
-    }
-    *dest++ = *src++;
+      mutt_buffer_addch(dest, '\\');
+    mutt_buffer_addch(dest, *src++);
   }
 
-  *dest = '\0';
-
-  if (*src)
-    return -1;
-  else
-    return 0;
+  return 0;
 }
 
 /**
@@ -622,13 +656,16 @@ int mutt_file_sanitize_regex(char *dest, size_t destlen, const char *src)
  * @param[in]  flags    Flags, e.g. #MUTT_CONT
  * @retval ptr          The allocated string
  *
- * Read a line from "fp" into the dynamically allocated "s", increasing
- * "s" if necessary. The ending "\n" or "\r\n" is removed.  If a line ends
+ * Read a line from "fp" into the dynamically allocated "line", increasing
+ * "line" if necessary. The ending "\n" or "\r\n" is removed.  If a line ends
  * with "\", this char and the linefeed is removed, and the next line is read
  * too.
  */
 char *mutt_file_read_line(char *line, size_t *size, FILE *fp, int *line_num, int flags)
 {
+  if (!size || !fp)
+    return NULL;
+
   size_t offset = 0;
   char *ch = NULL;
 
@@ -706,6 +743,9 @@ char *mutt_file_read_line(char *line, size_t *size, FILE *fp, int *line_num, int
  */
 bool mutt_file_iter_line(struct MuttFileIter *iter, FILE *fp, int flags)
 {
+  if (!iter)
+    return false;
+
   char *p = mutt_file_read_line(iter->line, &iter->size, fp, &iter->line_num, flags);
   if (!p)
     return false;
@@ -723,6 +763,9 @@ bool mutt_file_iter_line(struct MuttFileIter *iter, FILE *fp, int flags)
  */
 bool mutt_file_map_lines(mutt_file_map_t func, void *user_data, FILE *fp, int flags)
 {
+  if (!func || !fp)
+    return false;
+
   struct MuttFileIter iter = { 0 };
   while (mutt_file_iter_line(&iter, fp, flags))
   {
@@ -746,13 +789,16 @@ bool mutt_file_map_lines(mutt_file_map_t func, void *user_data, FILE *fp, int fl
  */
 size_t mutt_file_quote_filename(const char *filename, char *buf, size_t buflen)
 {
-  size_t j = 0;
+  if (!buf)
+    return 0;
 
   if (!filename)
   {
     *buf = '\0';
     return 0;
   }
+
+  size_t j = 0;
 
   /* leave some space for the trailing characters. */
   buflen -= 6;
@@ -776,6 +822,39 @@ size_t mutt_file_quote_filename(const char *filename, char *buf, size_t buflen)
   buf[j] = '\0';
 
   return j;
+}
+
+/**
+ * mutt_buffer_quote_filename - Quote a filename to survive the shell's quoting rules
+ * @param buf       Buffer for the result
+ * @param filename  String to convert
+ * @param add_outer If true, add 'single quotes' around the result
+ * @retval num Bytes written to the buffer
+ */
+void mutt_buffer_quote_filename(struct Buffer *buf, const char *filename, bool add_outer)
+{
+  if (!buf || !filename)
+    return;
+
+  mutt_buffer_reset(buf);
+  if (add_outer)
+    mutt_buffer_addch(buf, '\'');
+
+  for (; *filename != '\0'; filename++)
+  {
+    if ((*filename == '\'') || (*filename == '`'))
+    {
+      mutt_buffer_addch(buf, '\'');
+      mutt_buffer_addch(buf, '\\');
+      mutt_buffer_addch(buf, *filename);
+      mutt_buffer_addch(buf, '\'');
+    }
+    else
+      mutt_buffer_addch(buf, *filename);
+  }
+
+  if (add_outer)
+    mutt_buffer_addch(buf, '\'');
 }
 
 /**
@@ -881,6 +960,9 @@ FILE *mutt_file_mkstemp_full(const char *file, int line, const char *func)
  */
 time_t mutt_file_decrease_mtime(const char *fp, struct stat *st)
 {
+  if (!fp)
+    return -1;
+
   struct utimbuf utim;
   struct stat st2;
   time_t mtime;
@@ -911,6 +993,9 @@ time_t mutt_file_decrease_mtime(const char *fp, struct stat *st)
  */
 void mutt_file_set_mtime(const char *from, const char *to)
 {
+  if (!from || !to)
+    return;
+
   struct utimbuf utim;
   struct stat st;
 
@@ -947,6 +1032,9 @@ void mutt_file_touch_atime(int fd)
  */
 int mutt_file_chmod(const char *path, mode_t mode)
 {
+  if (!path)
+    return -1;
+
   return chmod(path, mode);
 }
 
@@ -990,6 +1078,9 @@ int mutt_file_chmod_add(const char *path, mode_t mode)
  */
 int mutt_file_chmod_add_stat(const char *path, mode_t mode, struct stat *st)
 {
+  if (!path)
+    return -1;
+
   struct stat st2;
 
   if (!st)
@@ -1041,6 +1132,9 @@ int mutt_file_chmod_rm(const char *path, mode_t mode)
  */
 int mutt_file_chmod_rm_stat(const char *path, mode_t mode, struct stat *st)
 {
+  if (!path)
+    return -1;
+
   struct stat st2;
 
   if (!st)
@@ -1078,7 +1172,7 @@ int mutt_file_lock(int fd, bool excl, bool timeout)
 
   while (fcntl(fd, F_SETLK, &lck) == -1)
   {
-    mutt_debug(LL_DEBUG1, "fcntl errno %d.\n", errno);
+    mutt_debug(LL_DEBUG1, "fcntl errno %d\n", errno);
     if ((errno != EAGAIN) && (errno != EACCES))
     {
       mutt_perror("fcntl");
@@ -1115,7 +1209,7 @@ int mutt_file_lock(int fd, bool excl, bool timeout)
  */
 int mutt_file_unlock(int fd)
 {
-  struct flock unlockit = { F_UNLCK, 0, 0, 0, 0 };
+  struct flock unlockit;
 
   memset(&unlockit, 0, sizeof(struct flock));
   unlockit.l_type = F_UNLCK;
@@ -1203,10 +1297,12 @@ int mutt_file_unlock(int fd)
  */
 void mutt_file_unlink_empty(const char *path)
 {
-  int fd;
+  if (!path)
+    return;
+
   struct stat sb;
 
-  fd = open(path, O_RDWR);
+  int fd = open(path, O_RDWR);
   if (fd == -1)
     return;
 
@@ -1237,6 +1333,8 @@ void mutt_file_unlink_empty(const char *path)
  */
 int mutt_file_rename(const char *oldfile, const char *newfile)
 {
+  if (!oldfile || !newfile)
+    return -1;
   if (access(oldfile, F_OK) != 0)
     return 1;
   if (access(newfile, F_OK) == 0)
@@ -1300,8 +1398,10 @@ char *mutt_file_read_keyword(const char *file, char *buf, size_t buflen)
  */
 int mutt_file_check_empty(const char *path)
 {
-  struct stat st;
+  if (!path)
+    return -1;
 
+  struct stat st;
   if (stat(path, &st) == -1)
     return -1;
 
@@ -1309,75 +1409,67 @@ int mutt_file_check_empty(const char *path)
 }
 
 /**
- * mutt_file_expand_fmt_quote - Replace `%s` in a string with a filename
+ * mutt_buffer_file_expand_fmt_quote - Replace `%s` in a string with a filename
  * @param dest    Buffer for the result
- * @param destlen Length of buffer
  * @param fmt     printf-like format string
  * @param src     Filename to substitute
  *
  * This function also quotes the file to prevent shell problems.
  */
-void mutt_file_expand_fmt_quote(char *dest, size_t destlen, const char *fmt, const char *src)
+void mutt_buffer_file_expand_fmt_quote(struct Buffer *dest, const char *fmt, const char *src)
 {
-  char tmp[PATH_MAX];
+  struct Buffer *tmp = mutt_buffer_alloc(PATH_MAX);
 
-  mutt_file_quote_filename(src, tmp, sizeof(tmp));
-  mutt_file_expand_fmt(dest, destlen, fmt, tmp);
+  mutt_buffer_quote_filename(tmp, src, true);
+  mutt_file_expand_fmt(dest, fmt, mutt_b2s(tmp));
+  mutt_buffer_free(&tmp);
 }
 
 /**
  * mutt_file_expand_fmt - Replace `%s` in a string with a filename
  * @param dest    Buffer for the result
- * @param destlen Length of buffer
  * @param fmt     printf-like format string
  * @param src     Filename to substitute
  */
-void mutt_file_expand_fmt(char *dest, size_t destlen, const char *fmt, const char *src)
+void mutt_file_expand_fmt(struct Buffer *dest, const char *fmt, const char *src)
 {
+  if (!dest || !fmt || !src)
+    return;
+
   const char *p = NULL;
-  char *d = NULL;
-  size_t slen;
   bool found = false;
 
-  slen = mutt_str_strlen(src);
-  destlen--;
+  mutt_buffer_reset(dest);
 
-  for (p = fmt, d = dest; (destlen != 0) && *p; p++)
+  for (p = fmt; *p; p++)
   {
     if (*p == '%')
     {
       switch (p[1])
       {
         case '%':
-          *d++ = *p++;
-          destlen--;
+          mutt_buffer_addch(dest, *p++);
           break;
         case 's':
           found = true;
-          mutt_str_strfcpy(d, src, destlen + 1);
-          d += (destlen > slen) ? slen : destlen;
-          destlen -= (destlen > slen) ? slen : destlen;
+          mutt_buffer_addstr(dest, src);
           p++;
           break;
         default:
-          *d++ = *p;
-          destlen--;
+          mutt_buffer_addch(dest, *p);
           break;
       }
     }
     else
     {
-      *d++ = *p;
-      destlen--;
+      mutt_buffer_addch(dest, *p);
     }
   }
 
-  *d = '\0';
-
-  if (!found && (destlen > 0))
+  if (!found)
   {
-    mutt_str_strcat(dest, destlen, " ");
-    mutt_str_strcat(dest, destlen, src);
+    mutt_buffer_addch(dest, ' ');
+    mutt_buffer_addstr(dest, src);
   }
 }
 
@@ -1409,6 +1501,8 @@ long mutt_file_get_size(const char *path)
  */
 int mutt_file_timespec_compare(struct timespec *a, struct timespec *b)
 {
+  if (!a || !b)
+    return 0;
   if (a->tv_sec < b->tv_sec)
     return -1;
   if (a->tv_sec > b->tv_sec)
@@ -1429,6 +1523,9 @@ int mutt_file_timespec_compare(struct timespec *a, struct timespec *b)
  */
 void mutt_file_get_stat_timespec(struct timespec *dest, struct stat *sb, enum MuttStatType type)
 {
+  if (!dest || !sb)
+    return;
+
   dest->tv_sec = 0;
   dest->tv_nsec = 0;
 
@@ -1467,6 +1564,9 @@ void mutt_file_get_stat_timespec(struct timespec *dest, struct stat *sb, enum Mu
 int mutt_file_stat_timespec_compare(struct stat *sba, enum MuttStatType type,
                                     struct timespec *b)
 {
+  if (!sba || !b)
+    return 0;
+
   struct timespec a = { 0 };
 
   mutt_file_get_stat_timespec(&a, sba, type);
@@ -1486,6 +1586,9 @@ int mutt_file_stat_timespec_compare(struct stat *sba, enum MuttStatType type,
 int mutt_file_stat_compare(struct stat *sba, enum MuttStatType sba_type,
                            struct stat *sbb, enum MuttStatType sbb_type)
 {
+  if (!sba || !sbb)
+    return 0;
+
   struct timespec a = { 0 };
   struct timespec b = { 0 };
 

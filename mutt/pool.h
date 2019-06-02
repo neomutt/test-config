@@ -1,9 +1,9 @@
 /**
  * @file
- * RFC2231 MIME Charset routines
+ * A global pool of Buffers
  *
  * @authors
- * Copyright (C) 1999-2000 Thomas Roessler <roessler@does-not-exist.org>
+ * Copyright (C) 2019 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,17 +20,13 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MUTT_EMAIL_RFC2231_H
-#define MUTT_EMAIL_RFC2231_H
+#ifndef MUTT_LIB_POOL_H
+#define MUTT_LIB_POOL_H
 
-#include <stdbool.h>
+struct Buffer;
 
-struct ParameterList;
+void           mutt_buffer_pool_free    (void);
+struct Buffer *mutt_buffer_pool_get     (void);
+void           mutt_buffer_pool_release (struct Buffer **pbuf);
 
-/* These Config Variables are only used in rfc2231.c */
-extern bool C_Rfc2047Parameters;
-
-void rfc2231_decode_parameters(struct ParameterList *p);
-struct ParameterList rfc2231_encode_string(const char *attribute, char *value);
-
-#endif /* MUTT_EMAIL_RFC2231_H */
+#endif /* MUTT_LIB_POOL_H */

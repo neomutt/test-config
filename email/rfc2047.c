@@ -5,7 +5,7 @@
  * @authors
  * Copyright (C) 1996-2000,2010 Michael R. Elkins <me@mutt.org>
  * Copyright (C) 2000-2002 Edmund Grimley Evans <edmundo@rano.org>
- * Copyright (C) 2018 Pietro Cerutti <gahr@gahr.ch>
+ * Copyright (C) 2018-2019 Pietro Cerutti <gahr@gahr.ch>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -36,8 +36,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include "mutt/mutt.h"
+#include "address/lib.h"
 #include "rfc2047.h"
-#include "address.h"
 #include "email_globals.h"
 #include "envelope.h"
 #include "mime.h"
@@ -139,40 +139,39 @@ static size_t q_encoder(char *str, const char *buf, size_t buflen, const char *t
 static char *parse_encoded_word(char *str, enum ContentEncoding *enc, char **charset,
                                 size_t *charsetlen, char **text, size_t *textlen)
 {
-  static struct Regex *re = NULL;
   regmatch_t match[4];
   size_t nmatch = 4;
-
-  if (!re)
-  {
-    re = mutt_regex_compile("=\\?"
-                            "([^][()<>@,;:\\\"/?. =]+)" /* charset */
-                            "\\?"
-                            "([qQbB])" /* encoding */
-                            "\\?"
-                            "([^?]+)" /* encoded text - we accept whitespace
+  struct Regex *re = mutt_regex_compile("=\\?"
+                                        "([^][()<>@,;:\\\"/?. =]+)" /* charset */
+                                        "\\?"
+                                        "([qQbB])" /* encoding */
+                                        "\\?"
+                                        "([^?]+)" /* encoded text - we accept whitespace
                                          as some mailers do that, see #1189. */
-                            "\\?=",
-                            REG_EXTENDED);
-    assert(re && "Something is wrong with your RE engine.");
+                                        "\\?=",
+                                        REG_EXTENDED);
+  assert(re && "Something is wrong with your RE engine.");
+
+  char *res = NULL;
+  int rc = regexec(re->regex, str, nmatch, match, 0);
+  if (rc == 0)
+  {
+    /* Charset */
+    *charset = str + match[1].rm_so;
+    *charsetlen = match[1].rm_eo - match[1].rm_so;
+
+    /* Encoding: either Q or B */
+    *enc = ((str[match[2].rm_so] == 'Q') || (str[match[2].rm_so] == 'q')) ?
+               ENC_QUOTED_PRINTABLE :
+               ENC_BASE64;
+
+    *text = str + match[3].rm_so;
+    *textlen = match[3].rm_eo - match[3].rm_so;
+    res = str + match[0].rm_so;
   }
 
-  int rc = regexec(re->regex, str, nmatch, match, 0);
-  if (rc != 0)
-    return NULL;
-
-  /* Charset */
-  *charset = str + match[1].rm_so;
-  *charsetlen = match[1].rm_eo - match[1].rm_so;
-
-  /* Encoding: either Q or B */
-  *enc = ((str[match[2].rm_so] == 'Q') || (str[match[2].rm_so] == 'q')) ?
-             ENC_QUOTED_PRINTABLE :
-             ENC_BASE64;
-
-  *text = str + match[3].rm_so;
-  *textlen = match[3].rm_eo - match[3].rm_so;
-  return str + match[0].rm_so;
+  mutt_regex_free(&re);
+  return res;
 }
 
 /**
@@ -327,7 +326,7 @@ static size_t choose_block(char *d, size_t dlen, int col, const char *fromcode,
     const size_t nn = try_block(d, n, fromcode, tocode, encoder, wlen);
     if ((nn == 0) && (((col + *wlen) <= (ENCWORD_LEN_MAX + 1)) || (n <= 1)))
       break;
-    n = (nn ? nn : n) - 1;
+    n = ((nn != 0) ? nn : n) - 1;
     assert(n > 0);
     if (utf8)
       while ((n > 1) && CONTINUATION_BYTE(d[n]))
@@ -625,7 +624,7 @@ static int encode(const char *d, size_t dlen, int col, const char *fromcode,
  */
 void rfc2047_encode(char **pd, const char *specials, int col, const char *charsets)
 {
-  if (!C_Charset || !*pd)
+  if (!C_Charset || !pd || !*pd)
     return;
 
   if (!charsets || !*charsets)
@@ -691,7 +690,7 @@ void rfc2047_decode(char **pd)
 
       /* Add non-encoded part */
       {
-        if (C_AssumedCharset && *C_AssumedCharset)
+        if (C_AssumedCharset)
         {
           char *conv = mutt_str_substr_dup(s, s + holelen);
           mutt_ch_convert_nonmime_string(&conv);
@@ -743,39 +742,43 @@ void rfc2047_decode(char **pd)
 
 /**
  * rfc2047_encode_addrlist - Encode any RFC2047 headers, where required, in an Address list
- * @param addr Address list
+ * @param al   AddressList
  * @param tag  Header tag (used for wrapping calculation)
  */
-void rfc2047_encode_addrlist(struct Address *addr, const char *tag)
+void rfc2047_encode_addrlist(struct AddressList *al, const char *tag)
 {
-  struct Address *ptr = addr;
-  int col = tag ? strlen(tag) + 2 : 32;
+  if (!al)
+    return;
 
-  while (ptr)
+  int col = tag ? strlen(tag) + 2 : 32;
+  struct Address *a = NULL;
+  TAILQ_FOREACH(a, al, entries)
   {
-    if (ptr->personal)
-      rfc2047_encode(&ptr->personal, AddressSpecials, col, C_SendCharset);
-    else if (ptr->group && ptr->mailbox)
-      rfc2047_encode(&ptr->mailbox, AddressSpecials, col, C_SendCharset);
-    ptr = ptr->next;
+    if (a->personal)
+      rfc2047_encode(&a->personal, AddressSpecials, col, C_SendCharset);
+    else if (a->group && a->mailbox)
+      rfc2047_encode(&a->mailbox, AddressSpecials, col, C_SendCharset);
   }
 }
 
 /**
  * rfc2047_decode_addrlist - Decode any RFC2047 headers in an Address list
- * @param a Address list
+ * @param al AddressList
  */
-void rfc2047_decode_addrlist(struct Address *a)
+void rfc2047_decode_addrlist(struct AddressList *al)
 {
-  while (a)
+  if (!al)
+    return;
+
+  struct Address *a = NULL;
+  TAILQ_FOREACH(a, al, entries)
   {
-    if (a->personal && ((strstr(a->personal, "=?")) || (C_AssumedCharset && *C_AssumedCharset)))
+    if (a->personal && ((strstr(a->personal, "=?")) || C_AssumedCharset))
     {
       rfc2047_decode(&a->personal);
     }
     else if (a->group && a->mailbox && strstr(a->mailbox, "=?"))
       rfc2047_decode(&a->mailbox);
-    a = a->next;
   }
 }
 
@@ -785,14 +788,16 @@ void rfc2047_decode_addrlist(struct Address *a)
  */
 void rfc2047_decode_envelope(struct Envelope *env)
 {
-  rfc2047_decode_addrlist(env->from);
-  rfc2047_decode_addrlist(env->to);
-  rfc2047_decode_addrlist(env->cc);
-  rfc2047_decode_addrlist(env->bcc);
-  rfc2047_decode_addrlist(env->reply_to);
-  rfc2047_decode_addrlist(env->mail_followup_to);
-  rfc2047_decode_addrlist(env->return_path);
-  rfc2047_decode_addrlist(env->sender);
+  if (!env)
+    return;
+  rfc2047_decode_addrlist(&env->from);
+  rfc2047_decode_addrlist(&env->to);
+  rfc2047_decode_addrlist(&env->cc);
+  rfc2047_decode_addrlist(&env->bcc);
+  rfc2047_decode_addrlist(&env->reply_to);
+  rfc2047_decode_addrlist(&env->mail_followup_to);
+  rfc2047_decode_addrlist(&env->return_path);
+  rfc2047_decode_addrlist(&env->sender);
   rfc2047_decode(&env->x_label);
   rfc2047_decode(&env->subject);
 }
@@ -803,13 +808,15 @@ void rfc2047_decode_envelope(struct Envelope *env)
  */
 void rfc2047_encode_envelope(struct Envelope *env)
 {
-  rfc2047_encode_addrlist(env->from, "From");
-  rfc2047_encode_addrlist(env->to, "To");
-  rfc2047_encode_addrlist(env->cc, "Cc");
-  rfc2047_encode_addrlist(env->bcc, "Bcc");
-  rfc2047_encode_addrlist(env->reply_to, "Reply-To");
-  rfc2047_encode_addrlist(env->mail_followup_to, "Mail-Followup-To");
-  rfc2047_encode_addrlist(env->sender, "Sender");
+  if (!env)
+    return;
+  rfc2047_encode_addrlist(&env->from, "From");
+  rfc2047_encode_addrlist(&env->to, "To");
+  rfc2047_encode_addrlist(&env->cc, "Cc");
+  rfc2047_encode_addrlist(&env->bcc, "Bcc");
+  rfc2047_encode_addrlist(&env->reply_to, "Reply-To");
+  rfc2047_encode_addrlist(&env->mail_followup_to, "Mail-Followup-To");
+  rfc2047_encode_addrlist(&env->sender, "Sender");
   rfc2047_encode(&env->x_label, NULL, sizeof("X-Label:"), C_SendCharset);
   rfc2047_encode(&env->subject, NULL, sizeof("Subject:"), C_SendCharset);
 }

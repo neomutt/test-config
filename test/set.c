@@ -90,10 +90,10 @@ void config_set(void)
   if (!TEST_CHECK(cs != NULL))
     return;
 
-  cs_add_listener(cs, log_listener);
-  cs_add_listener(cs, log_listener); /* dupe */
-  cs_remove_listener(cs, log_listener);
-  cs_remove_listener(cs, log_listener); /* non-existant */
+  cs_add_observer(cs, log_observer);
+  cs_add_observer(cs, log_observer); /* dupe */
+  cs_remove_observer(cs, log_observer);
+  cs_remove_observer(cs, log_observer); /* non-existant */
 
   const struct ConfigSetType cst_dummy = {
     "dummy", NULL, NULL, NULL, NULL, NULL, NULL,

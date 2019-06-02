@@ -71,7 +71,7 @@ void mutt_body_free(struct Body **p)
     {
       if (b->unlink)
         unlink(b->filename);
-      mutt_debug(LL_DEBUG1, "%sunlinking %s.\n", b->unlink ? "" : "not ", b->filename);
+      mutt_debug(LL_DEBUG1, "%sunlinking %s\n", b->unlink ? "" : "not ", b->filename);
     }
 
     FREE(&b->filename);
@@ -86,7 +86,7 @@ void mutt_body_free(struct Body **p)
 
     if (b->email)
     {
-      /* Don't free twice (b->hdr->content = b->parts) */
+      /* Don't free twice (b->email->content = b->parts) */
       b->email->content = NULL;
       mutt_email_free(&b->email);
     }
@@ -107,6 +107,9 @@ void mutt_body_free(struct Body **p)
  */
 bool mutt_body_cmp_strict(const struct Body *b1, const struct Body *b2)
 {
+  if (!b1 || !b2)
+    return false;
+
   if ((b1->type != b2->type) || (b1->encoding != b2->encoding) ||
       (mutt_str_strcmp(b1->subtype, b2->subtype) != 0) ||
       (mutt_str_strcmp(b1->description, b2->description) != 0) ||

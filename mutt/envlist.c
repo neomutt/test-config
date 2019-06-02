@@ -60,7 +60,7 @@ void mutt_envlist_init(char *envp[])
   if (!envp)
     return;
 
-  char **src, **dst;
+  char **src = NULL, **dst = NULL;
   int count = 0;
   for (src = envp; src && *src; src++)
     count++;
@@ -83,12 +83,14 @@ void mutt_envlist_init(char *envp[])
  */
 bool mutt_envlist_set(const char *name, const char *value, bool overwrite)
 {
+  if (!name)
+    return false;
+
   char **envp = EnvList;
   char work[1024];
-  int count;
 
   /* Look for current slot to overwrite */
-  count = 0;
+  int count = 0;
   while (envp && *envp)
   {
     size_t len = mutt_str_startswith(*envp, name, CASE_MATCH);
@@ -103,7 +105,7 @@ bool mutt_envlist_set(const char *name, const char *value, bool overwrite)
   }
 
   /* Format var=value string */
-  snprintf(work, sizeof(work), "%s=%s", NONULL(name), NONULL(value));
+  snprintf(work, sizeof(work), "%s=%s", name, NONULL(value));
 
   if (envp && *envp)
   {
@@ -160,7 +162,7 @@ bool mutt_envlist_unset(const char *name)
  * mutt_envlist_getlist - Get the private environment
  * @retval ptr Array of strings
  *
- * @note: The caller must not free the strings
+ * @note The caller must not free the strings
  */
 char **mutt_envlist_getlist(void)
 {

@@ -18,7 +18,7 @@ Expected error
 fruit:Apple = '33'
 Event: Apple has been set to '42'
 Set fruit:Apple
-Variable 'Apple' is inherited type.
+Variable 'Apple' is inherited type
 Expected error
 Expected error
 Event: Apple has been set to '42'

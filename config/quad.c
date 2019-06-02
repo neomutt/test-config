@@ -218,14 +218,14 @@ static int quad_toggle(int opt)
  * @param cs  Config items
  * @param he  HashElem representing config item
  * @param err Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  *
  * @sa quad_toggle()
  */
 int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he || !he->data)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   if (DTYPE(he->type) != DT_QUAD)
     return CSR_ERR_CODE;
@@ -242,6 +242,6 @@ int quad_he_toggle(struct ConfigSet *cs, struct HashElem *he, struct Buffer *err
 
   *(char *) var = quad_toggle(value);
 
-  cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
+  cs_notify_observers(cs, he, he->key.strkey, CE_SET);
   return CSR_SUCCESS;
 }

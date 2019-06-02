@@ -40,9 +40,14 @@
  * @param h Head of the List
  * @param s String to insert
  * @retval ptr Newly inserted ListNode containing the string
+ *
+ * @note The inserted string isn't strdup()d
  */
 struct ListNode *mutt_list_insert_head(struct ListHead *h, char *s)
 {
+  if (!h)
+    return NULL;
+
   struct ListNode *np = mutt_mem_calloc(1, sizeof(struct ListNode));
   np->data = s;
   STAILQ_INSERT_HEAD(h, np, entries);
@@ -54,9 +59,14 @@ struct ListNode *mutt_list_insert_head(struct ListHead *h, char *s)
  * @param h Head of the List
  * @param s String to insert
  * @retval ptr Newly appended ListNode containing the string
+ *
+ * @note The inserted string isn't strdup()d
  */
 struct ListNode *mutt_list_insert_tail(struct ListHead *h, char *s)
 {
+  if (!h)
+    return NULL;
+
   struct ListNode *np = mutt_mem_calloc(1, sizeof(struct ListNode));
   np->data = s;
   STAILQ_INSERT_TAIL(h, np, entries);
@@ -69,9 +79,14 @@ struct ListNode *mutt_list_insert_tail(struct ListHead *h, char *s)
  * @param n ListNode after which the string will be inserted
  * @param s String to insert
  * @retval ptr Newly created ListNode containing the string
+ *
+ * @note The inserted string isn't strdup()d
  */
 struct ListNode *mutt_list_insert_after(struct ListHead *h, struct ListNode *n, char *s)
 {
+  if (!h || !n)
+    return NULL;
+
   struct ListNode *np = mutt_mem_calloc(1, sizeof(struct ListNode));
   np->data = s;
   STAILQ_INSERT_AFTER(h, n, np, entries);
@@ -87,6 +102,9 @@ struct ListNode *mutt_list_insert_after(struct ListHead *h, struct ListNode *n, 
  */
 struct ListNode *mutt_list_find(const struct ListHead *h, const char *data)
 {
+  if (!h)
+    return NULL;
+
   struct ListNode *np = NULL;
   STAILQ_FOREACH(np, h, entries)
   {
@@ -104,7 +122,11 @@ struct ListNode *mutt_list_find(const struct ListHead *h, const char *data)
  */
 void mutt_list_free(struct ListHead *h)
 {
-  struct ListNode *np = STAILQ_FIRST(h), *next = NULL;
+  if (!h)
+    return;
+
+  struct ListNode *np = STAILQ_FIRST(h);
+  struct ListNode *next = NULL;
   while (np)
   {
     next = STAILQ_NEXT(np, entries);
@@ -125,7 +147,8 @@ void mutt_list_free_type(struct ListHead *h, list_free_t fn)
   if (!h || !fn)
     return;
 
-  struct ListNode *np = STAILQ_FIRST(h), *next = NULL;
+  struct ListNode *np = STAILQ_FIRST(h);
+  struct ListNode *next = NULL;
   while (np)
   {
     next = STAILQ_NEXT(np, entries);
@@ -144,13 +167,16 @@ void mutt_list_free_type(struct ListHead *h, list_free_t fn)
  */
 void mutt_list_clear(struct ListHead *h)
 {
-  struct ListNode *np = STAILQ_FIRST(h), *next = NULL;
-  while (np)
+  if (!h)
+    return;
+
+  struct ListNode *np = NULL, *tmp = NULL;
+  STAILQ_FOREACH_SAFE(np, h, entries, tmp)
   {
-    next = STAILQ_NEXT(np, entries);
+    STAILQ_REMOVE(h, np, ListNode, entries);
     FREE(&np);
-    np = next;
   }
+
   STAILQ_INIT(h);
 }
 
@@ -169,6 +195,9 @@ void mutt_list_clear(struct ListHead *h)
  */
 bool mutt_list_match(const char *s, struct ListHead *h)
 {
+  if (!h)
+    return false;
+
   struct ListNode *np = NULL;
   STAILQ_FOREACH(np, h, entries)
   {
@@ -189,6 +218,9 @@ bool mutt_list_match(const char *s, struct ListHead *h)
  */
 bool mutt_list_compare(const struct ListHead *ah, const struct ListHead *bh)
 {
+  if (!ah || !bh)
+    return false;
+
   struct ListNode *a = STAILQ_FIRST(ah);
   struct ListNode *b = STAILQ_FIRST(bh);
 

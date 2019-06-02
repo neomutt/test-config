@@ -99,7 +99,7 @@ static struct HashElem *create_synonym(const struct ConfigSet *cs,
   struct HashElem *child =
       mutt_hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
   if (!child)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   cdef->var = parent;
   return child;
@@ -131,7 +131,7 @@ static struct HashElem *reg_one_var(const struct ConfigSet *cs,
   struct HashElem *he =
       mutt_hash_typed_insert(cs->hash, cdef->name, cdef->type, (void *) cdef);
   if (!he)
-    return NULL;
+    return NULL; /* LCOV_EXCL_LINE */
 
   if (cst && cst->reset)
     cst->reset(cs, cdef->var, cdef, err);
@@ -159,10 +159,10 @@ struct ConfigSet *cs_new(size_t size)
 void cs_init(struct ConfigSet *cs, size_t size)
 {
   if (!cs)
-    return; /* LCOV_EXCL_LINE */
+    return;
 
   memset(cs, 0, sizeof(*cs));
-  cs->hash = mutt_hash_new(size, 0);
+  cs->hash = mutt_hash_new(size, MUTT_HASH_NO_FLAGS);
   mutt_hash_set_destructor(cs->hash, destroy, (intptr_t) cs);
 }
 
@@ -173,7 +173,7 @@ void cs_init(struct ConfigSet *cs, size_t size)
 void cs_free(struct ConfigSet **cs)
 {
   if (!cs || !*cs)
-    return; /* LCOV_EXCL_LINE */
+    return;
 
   mutt_hash_free(&(*cs)->hash);
   FREE(cs);
@@ -188,7 +188,7 @@ void cs_free(struct ConfigSet **cs)
 struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 {
   if (!cs || !name)
-    return NULL; /* LCOV_EXCL_LINE */
+    return NULL;
 
   struct HashElem *he = mutt_hash_find_elem(cs->hash, name);
   if (!he)
@@ -211,7 +211,7 @@ struct HashElem *cs_get_elem(const struct ConfigSet *cs, const char *name)
 const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned int type)
 {
   if (!cs)
-    return NULL; /* LCOV_EXCL_LINE */
+    return NULL;
 
   type = DTYPE(type);
   if ((type < 1) || (type >= mutt_array_size(cs->types)))
@@ -233,7 +233,7 @@ const struct ConfigSetType *cs_get_type_def(const struct ConfigSet *cs, unsigned
 bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct ConfigSetType *cst)
 {
   if (!cs || !cst)
-    return false; /* LCOV_EXCL_LINE */
+    return false;
 
   if (!cst->name || !cst->string_set || !cst->string_get || !cst->reset ||
       !cst->native_set || !cst->native_get)
@@ -261,25 +261,22 @@ bool cs_register_type(struct ConfigSet *cs, unsigned int type, const struct Conf
 bool cs_register_variables(const struct ConfigSet *cs, struct ConfigDef vars[], int flags)
 {
   if (!cs || !vars)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return false;
 
-  struct Buffer err;
-  mutt_buffer_init(&err);
-  err.dsize = 256;
-  err.data = calloc(1, err.dsize);
+  struct Buffer *err = mutt_buffer_new();
 
   bool rc = true;
 
   for (size_t i = 0; vars[i].name; i++)
   {
-    if (!reg_one_var(cs, &vars[i], &err))
+    if (!reg_one_var(cs, &vars[i], err))
     {
-      mutt_debug(LL_DEBUG1, "%s\n", err.data);
+      mutt_debug(LL_DEBUG1, "%s\n", mutt_b2s(err));
       rc = false;
     }
   }
 
-  FREE(&err.data);
+  mutt_buffer_free(&err);
   return rc;
 }
 
@@ -294,12 +291,7 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
                                      struct HashElem *parent, const char *name)
 {
   if (!cs || !parent)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  struct Buffer err;
-  mutt_buffer_init(&err);
-  err.dsize = 256;
-  err.data = calloc(1, err.dsize);
+    return NULL;
 
   struct Inheritance *i = mutt_mem_calloc(1, sizeof(*i));
   i->parent = parent;
@@ -312,79 +304,78 @@ struct HashElem *cs_inherit_variable(const struct ConfigSet *cs,
     FREE(&i);
   }
 
-  FREE(&err.data);
   return he;
 }
 
 /**
- * cs_add_listener - Add a listener (callback function)
+ * cs_add_observer - Add a observer (callback function)
  * @param cs Config items
- * @param fn Listener callback function
+ * @param fn Observer callback function
  */
-void cs_add_listener(struct ConfigSet *cs, cs_listener fn)
+void cs_add_observer(struct ConfigSet *cs, cs_observer fn)
 {
   if (!cs || !fn)
-    return; /* LCOV_EXCL_LINE */
+    return;
 
-  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->observers); i++)
   {
-    if (cs->listeners[i] == fn)
+    if (cs->observers[i] == fn)
     {
-      mutt_debug(LL_DEBUG1, "Listener was already registered\n");
+      mutt_debug(LL_DEBUG1, "Observer was already registered\n");
       return;
     }
   }
 
-  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->observers); i++)
   {
-    if (!cs->listeners[i])
+    if (!cs->observers[i])
     {
-      cs->listeners[i] = fn;
+      cs->observers[i] = fn;
       return;
     }
   }
 }
 
 /**
- * cs_remove_listener - Remove a listener (callback function)
+ * cs_remove_observer - Remove a observer (callback function)
  * @param cs Config items
- * @param fn Listener callback function
+ * @param fn Observer callback function
  */
-void cs_remove_listener(struct ConfigSet *cs, cs_listener fn)
+void cs_remove_observer(struct ConfigSet *cs, cs_observer fn)
 {
   if (!cs || !fn)
-    return; /* LCOV_EXCL_LINE */
+    return;
 
-  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->observers); i++)
   {
-    if (cs->listeners[i] == fn)
+    if (cs->observers[i] == fn)
     {
-      cs->listeners[i] = NULL;
+      cs->observers[i] = NULL;
       return;
     }
   }
-  mutt_debug(LL_DEBUG1, "Listener wasn't registered\n");
+  mutt_debug(LL_DEBUG1, "Observer wasn't registered\n");
 }
 
 /**
- * cs_notify_listeners - Notify all listeners of an event
+ * cs_notify_observers - Notify all observers of an event
  * @param cs   Config items
  * @param he   HashElem representing config item
  * @param name Name of config item
  * @param ev   Type of event
  */
-void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
+void cs_notify_observers(const struct ConfigSet *cs, struct HashElem *he,
                          const char *name, enum ConfigEvent ev)
 {
   if (!cs || !he || !name)
-    return; /* LCOV_EXCL_LINE */
+    return;
 
-  for (size_t i = 0; i < mutt_array_size(cs->listeners); i++)
+  for (size_t i = 0; i < mutt_array_size(cs->observers); i++)
   {
-    if (!cs->listeners[i])
+    if (!cs->observers[i])
       return;
 
-    cs->listeners[i](cs, he, name, ev);
+    cs->observers[i](cs, he, name, ev);
   }
 }
 
@@ -393,12 +384,12 @@ void cs_notify_listeners(const struct ConfigSet *cs, struct HashElem *he,
  * @param cs   Config items
  * @param he   HashElem representing config item
  * @param err  Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   /* An inherited var that's already pointing to its parent.
    * Return 'success', but don't send a notification. */
@@ -431,7 +422,7 @@ int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *
   }
 
   if ((CSR_RESULT(rc) == CSR_SUCCESS) && !(rc & CSR_SUC_NO_CHANGE))
-    cs_notify_listeners(cs, he, he->key.strkey, CE_RESET);
+    cs_notify_observers(cs, he, he->key.strkey, CE_RESET);
   return rc;
 }
 
@@ -440,12 +431,12 @@ int cs_he_reset(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *
  * @param cs   Config items
  * @param name Name of config item
  * @param err  Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_str_reset(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -463,13 +454,13 @@ int cs_str_reset(const struct ConfigSet *cs, const char *name, struct Buffer *er
  * @param he    HashElem representing config item
  * @param value Value to set
  * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_he_initial_set(const struct ConfigSet *cs, struct HashElem *he,
                       const char *value, struct Buffer *err)
 {
   if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
@@ -478,7 +469,7 @@ int cs_he_initial_set(const struct ConfigSet *cs, struct HashElem *he,
   {
     struct Inheritance *i = he->data;
     cdef = i->parent->data;
-    mutt_debug(LL_DEBUG1, "Variable '%s' is inherited type.\n", cdef->name);
+    mutt_debug(LL_DEBUG1, "Variable '%s' is inherited type\n", cdef->name);
     return CSR_ERR_CODE;
   }
 
@@ -494,7 +485,7 @@ int cs_he_initial_set(const struct ConfigSet *cs, struct HashElem *he,
   if (CSR_RESULT(rc) != CSR_SUCCESS)
     return rc;
 
-  cs_notify_listeners(cs, he, he->key.strkey, CE_INITIAL_SET);
+  cs_notify_observers(cs, he, he->key.strkey, CE_INITIAL_SET);
   return CSR_SUCCESS;
 }
 
@@ -504,13 +495,13 @@ int cs_he_initial_set(const struct ConfigSet *cs, struct HashElem *he,
  * @param name  Name of config item
  * @param value Value to set
  * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_str_initial_set(const struct ConfigSet *cs, const char *name,
                        const char *value, struct Buffer *err)
 {
   if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -527,7 +518,7 @@ int cs_str_initial_set(const struct ConfigSet *cs, const char *name,
  * @param cs     Config items
  * @param he     HashElem representing config item
  * @param result Buffer for results or error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  *
  * If a config item is inherited from another, then this will get the parent's
  * value.  Otherwise, it will get the config item's initial value.
@@ -535,7 +526,7 @@ int cs_str_initial_set(const struct ConfigSet *cs, const char *name,
 int cs_he_initial_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
 {
   if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct Inheritance *i = NULL;
   const struct ConfigDef *cdef = NULL;
@@ -568,7 +559,7 @@ int cs_he_initial_get(const struct ConfigSet *cs, struct HashElem *he, struct Bu
  * @param cs     Config items
  * @param name   Name of config item
  * @param result Buffer for results or error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  *
  * If a config item is inherited from another, then this will get the parent's
  * value.  Otherwise, it will get the config item's initial value.
@@ -576,7 +567,7 @@ int cs_he_initial_get(const struct ConfigSet *cs, struct HashElem *he, struct Bu
 int cs_str_initial_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
 {
   if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -594,13 +585,13 @@ int cs_str_initial_get(const struct ConfigSet *cs, const char *name, struct Buff
  * @param he    HashElem representing config item
  * @param value Value to set
  * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_he_string_set(const struct ConfigSet *cs, struct HashElem *he,
                      const char *value, struct Buffer *err)
 {
   if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
@@ -627,7 +618,7 @@ int cs_he_string_set(const struct ConfigSet *cs, struct HashElem *he,
   }
 
   if (!var)
-    return CSR_ERR_CODE;
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int rc = cst->string_set(cs, var, cdef, value, err);
   if (CSR_RESULT(rc) != CSR_SUCCESS)
@@ -639,7 +630,7 @@ int cs_he_string_set(const struct ConfigSet *cs, struct HashElem *he,
     he->type = i->parent->type | DT_INHERITED;
   }
   if (!(rc & CSR_SUC_NO_CHANGE))
-    cs_notify_listeners(cs, he, he->key.strkey, CE_SET);
+    cs_notify_observers(cs, he, he->key.strkey, CE_SET);
   return rc;
 }
 
@@ -649,13 +640,13 @@ int cs_he_string_set(const struct ConfigSet *cs, struct HashElem *he,
  * @param name  Name of config item
  * @param value Value to set
  * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_str_string_set(const struct ConfigSet *cs, const char *name,
                       const char *value, struct Buffer *err)
 {
   if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -672,12 +663,12 @@ int cs_str_string_set(const struct ConfigSet *cs, const char *name,
  * @param cs     Config items
  * @param he     HashElem representing config item
  * @param result Buffer for results or error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_he_string_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *result)
 {
   if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct Inheritance *i = NULL;
   const struct ConfigDef *cdef = NULL;
@@ -720,12 +711,12 @@ int cs_he_string_get(const struct ConfigSet *cs, struct HashElem *he, struct Buf
  * @param cs     Config items
  * @param name   Name of config item
  * @param result Buffer for results or error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffer *result)
 {
   if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -743,13 +734,13 @@ int cs_str_string_get(const struct ConfigSet *cs, const char *name, struct Buffe
  * @param he    HashElem representing config item
  * @param value Native pointer/value to set
  * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
                      intptr_t value, struct Buffer *err)
 {
   if (!cs || !he)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   const struct ConfigDef *cdef = NULL;
   const struct ConfigSetType *cst = NULL;
@@ -781,7 +772,7 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
     if (he->type & DT_INHERITED)
       he->type = cdef->type | DT_INHERITED;
     if (!(rc & CSR_SUC_NO_CHANGE))
-      cs_notify_listeners(cs, he, cdef->name, CE_SET);
+      cs_notify_observers(cs, he, cdef->name, CE_SET);
   }
 
   return rc;
@@ -793,13 +784,13 @@ int cs_he_native_set(const struct ConfigSet *cs, struct HashElem *he,
  * @param name  Name of config item
  * @param value Native pointer/value to set
  * @param err   Buffer for error messages
- * @retval int Result, e.g. #CSR_SUCCESS
+ * @retval num Result, e.g. #CSR_SUCCESS
  */
 int cs_str_native_set(const struct ConfigSet *cs, const char *name,
                       intptr_t value, struct Buffer *err)
 {
   if (!cs || !name)
-    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
+    return CSR_ERR_CODE;
 
   struct HashElem *he = cs_get_elem(cs, name);
   if (!he)
@@ -827,10 +818,7 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
   }
 
   if (!cst)
-  {
-    mutt_debug(LL_DEBUG1, "Variable '%s' has an invalid type %d\n", cdef->name, he->type);
-    return CSR_ERR_CODE;
-  }
+    return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
   int rc = cst->native_set(cs, var, cdef, value, err);
   if (CSR_RESULT(rc) == CSR_SUCCESS)
@@ -838,7 +826,7 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
     if (he->type & DT_INHERITED)
       he->type = cdef->type | DT_INHERITED;
     if (!(rc & CSR_SUC_NO_CHANGE))
-      cs_notify_listeners(cs, he, cdef->name, CE_SET);
+      cs_notify_observers(cs, he, cdef->name, CE_SET);
   }
 
   return rc;
@@ -850,11 +838,12 @@ int cs_str_native_set(const struct ConfigSet *cs, const char *name,
  * @param he  HashElem representing config item
  * @param err Buffer for results or error messages
  * @retval intptr_t Native pointer/value
+ * @retval INT_MIN  Error
  */
 intptr_t cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struct Buffer *err)
 {
   if (!cs || !he)
-    return INT_MIN; /* LCOV_EXCL_LINE */
+    return INT_MIN;
 
   struct Inheritance *i = NULL;
   const struct ConfigDef *cdef = NULL;
@@ -897,11 +886,12 @@ intptr_t cs_he_native_get(const struct ConfigSet *cs, struct HashElem *he, struc
  * @param name Name of config item
  * @param err  Buffer for error messages
  * @retval intptr_t Native pointer/value
+ * @retval INT_MIN  Error
  */
 intptr_t cs_str_native_get(const struct ConfigSet *cs, const char *name, struct Buffer *err)
 {
   if (!cs || !name)
-    return INT_MIN; /* LCOV_EXCL_LINE */
+    return INT_MIN;
 
   struct HashElem *he = cs_get_elem(cs, name);
   return cs_he_native_get(cs, he, err);

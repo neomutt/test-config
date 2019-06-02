@@ -76,7 +76,7 @@ int LogQueueMax = 0;   /**< Maximum number of entries in the log queue */
  */
 static const char *timestamp(time_t stamp)
 {
-  static char buf[23] = "";
+  static char buf[23] = { 0 };
   static time_t last = 0;
 
   if (stamp == 0)
@@ -147,6 +147,9 @@ int log_file_open(bool verbose)
  */
 int log_file_set_filename(const char *file, bool verbose)
 {
+  if (!file)
+    return -1;
+
   /* also handles both being NULL */
   if (mutt_str_strcmp(LogFileName, file) == 0)
     return 0;
@@ -291,6 +294,9 @@ int log_disp_file(time_t stamp, const char *file, int line,
  */
 int log_queue_add(struct LogLine *ll)
 {
+  if (!ll)
+    return -1;
+
   STAILQ_INSERT_TAIL(&LogQueue, ll, entries);
 
   if ((LogQueueMax > 0) && (LogQueueCount >= LogQueueMax))
@@ -402,7 +408,7 @@ int log_queue_save(FILE *fp)
 int log_disp_queue(time_t stamp, const char *file, int line,
                    const char *function, int level, ...)
 {
-  char buf[1024] = "";
+  char buf[1024] = { 0 };
   int err = errno;
 
   va_list ap;
@@ -418,7 +424,7 @@ int log_disp_queue(time_t stamp, const char *file, int line,
   }
 
   struct LogLine *ll = mutt_mem_calloc(1, sizeof(*ll));
-  ll->time = stamp ? stamp : time(NULL);
+  ll->time = (stamp != 0) ? stamp : time(NULL);
   ll->file = file;
   ll->line = line;
   ll->function = function;
@@ -485,7 +491,7 @@ int log_disp_terminal(time_t stamp, const char *file, int line,
   }
 
   if (colour > 0)
-    ret += fprintf(fp, "\033[1;%dm", colour);
+    ret += fprintf(fp, "\033[1;%dm", colour); // Escape
 
   fputs(buf, fp);
 
@@ -493,9 +499,18 @@ int log_disp_terminal(time_t stamp, const char *file, int line,
     ret += fprintf(fp, ": %s", strerror(err));
 
   if (colour > 0)
-    ret += fprintf(fp, "\033[0m");
+    ret += fprintf(fp, "\033[0m"); // Escape
 
   ret += fprintf(fp, "\n");
 
   return ret;
+}
+
+/**
+ * log_disp_null - Discard log lines - Implements ::log_dispatcher_t
+ */
+int log_disp_null(time_t stamp, const char *file, int line,
+                  const char *function, int level, ...)
+{
+  return 0;
 }

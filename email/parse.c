@@ -4,6 +4,7 @@
  *
  * @authors
  * Copyright (C) 2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2019 Pietro Cerutti <gahr@gahr.ch>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -34,21 +35,23 @@
 #include <string.h>
 #include <time.h>
 #include "mutt/mutt.h"
-#include "mutt.h"
+#include "address/lib.h"
+// #include "mutt.h"
 #include "parse.h"
-#include "address.h"
 #include "body.h"
 #include "email.h"
 #include "email_globals.h"
 #include "envelope.h"
 #include "from.h"
-#include "globals.h"
 #include "mime.h"
 #include "parameter.h"
-#include "protos.h"
 #include "rfc2047.h"
 #include "rfc2231.h"
 #include "url.h"
+
+/* If the 'Content-Length' is bigger than 1GiB, then it's clearly wrong.
+ * Cap the value to prevent overflow of Body.length */
+#define CONTENT_TOO_BIG (1 << 30)
 
 /**
  * mutt_auto_subscribe - Check if user is subscribed to mailing list
@@ -56,32 +59,33 @@
  */
 void mutt_auto_subscribe(const char *mailto)
 {
-  struct Envelope *lpenv;
+  if (!mailto)
+    return;
 
   if (!AutoSubscribeCache)
     AutoSubscribeCache = mutt_hash_new(200, MUTT_HASH_STRCASECMP | MUTT_HASH_STRDUP_KEYS);
 
-  if (!mailto || mutt_hash_find(AutoSubscribeCache, mailto))
+  if (mutt_hash_find(AutoSubscribeCache, mailto))
     return;
 
   mutt_hash_insert(AutoSubscribeCache, mailto, AutoSubscribeCache);
 
-  lpenv = mutt_env_new(); /* parsed envelope from the List-Post mailto: URL */
+  struct Envelope *lpenv = mutt_env_new(); /* parsed envelope from the List-Post mailto: URL */
 
-  if ((url_parse_mailto(lpenv, NULL, mailto) != -1) && lpenv->to && lpenv->to->mailbox &&
-      !mutt_regexlist_match(&UnSubscribedLists, lpenv->to->mailbox) &&
-      !mutt_regexlist_match(&UnMailLists, lpenv->to->mailbox) &&
-      !mutt_regexlist_match(&UnSubscribedLists, lpenv->to->mailbox))
+  if ((mutt_parse_mailto(lpenv, NULL, mailto) != -1) && !TAILQ_EMPTY(&lpenv->to))
   {
-    struct Buffer err;
-    char errbuf[256];
-    memset(&err, 0, sizeof(err));
-    err.data = errbuf;
-    err.dsize = sizeof(errbuf);
-    /* mutt_regexlist_add() detects duplicates, so it is safe to
-     * try to add here without any checks. */
-    mutt_regexlist_add(&MailLists, lpenv->to->mailbox, REG_ICASE, &err);
-    mutt_regexlist_add(&SubscribedLists, lpenv->to->mailbox, REG_ICASE, &err);
+    const char *mailbox = TAILQ_FIRST(&lpenv->to)->mailbox;
+    if (mailbox && !mutt_regexlist_match(&UnSubscribedLists, mailbox) &&
+        !mutt_regexlist_match(&UnMailLists, mailbox) &&
+        !mutt_regexlist_match(&UnSubscribedLists, mailbox))
+    {
+      struct Buffer *err = mutt_buffer_new();
+      /* mutt_regexlist_add() detects duplicates, so it is safe to
+       * try to add here without any checks. */
+      mutt_regexlist_add(&MailLists, mailbox, REG_ICASE, err);
+      mutt_regexlist_add(&SubscribedLists, mailbox, REG_ICASE, err);
+      mutt_buffer_free(&err);
+    }
   }
 
   mutt_env_free(&lpenv);
@@ -115,7 +119,7 @@ static void parse_parameters(struct ParameterList *param, const char *s)
     {
       i = p - s;
       /* remove whitespace from the end of the attribute name */
-      while (i > 0 && mutt_str_is_email_wsp(s[i - 1]))
+      while ((i > 0) && mutt_str_is_email_wsp(s[i - 1]))
         i--;
 
       /* the check for the missing parameter token is here so that we can skip
@@ -139,7 +143,7 @@ static void parse_parameters(struct ParameterList *param, const char *s)
         s++;
         for (i = 0; *s && (i < (sizeof(buf) - 1)); i++, s++)
         {
-          if (C_AssumedCharset && *C_AssumedCharset)
+          if (C_AssumedCharset)
           {
             /* As iso-2022-* has a character of '"' with non-ascii state,
              * ignore it. */
@@ -291,7 +295,7 @@ bool mutt_matches_ignore(const char *s)
  * @param s String to check
  * @retval num MIME type, e.g. #TYPE_TEXT
  */
-int mutt_check_mime_type(const char *s)
+enum ContentType mutt_check_mime_type(const char *s)
 {
   if (mutt_str_strcasecmp("text", s) == 0)
     return TYPE_TEXT;
@@ -338,7 +342,7 @@ char *mutt_extract_message_id(const char *s, const char **saveptr)
 
   if (s)
     p = s;
-  else if (saveptr)
+  else if (saveptr && *saveptr)
     p = *saveptr;
   else
     return NULL;
@@ -431,6 +435,9 @@ int mutt_check_encoding(const char *c)
  */
 void mutt_parse_content_type(const char *s, struct Body *ct)
 {
+  if (!s || !ct)
+    return;
+
   FREE(&ct->subtype);
   mutt_param_free(&ct->parameter);
 
@@ -439,7 +446,7 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
   if (pc)
   {
     *pc++ = 0;
-    while (*pc && ISSPACE(*pc))
+    while (*pc && IS_SPACE(*pc))
       pc++;
     parse_parameters(&ct->parameter, pc);
 
@@ -463,7 +470,7 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
   if (subtype)
   {
     *subtype++ = '\0';
-    for (pc = subtype; *pc && !ISSPACE(*pc) && (*pc != ';'); pc++)
+    for (pc = subtype; *pc && !IS_SPACE(*pc) && (*pc != ';'); pc++)
       ;
     *pc = '\0';
     ct->subtype = mutt_str_strdup(subtype);
@@ -479,7 +486,7 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
 
   if (ct->type == TYPE_OTHER)
   {
-    ct->xtype = mutt_str_strdup(s);
+    mutt_str_replace(&ct->xtype, s);
   }
 
   if (!ct->subtype)
@@ -511,9 +518,8 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
     if (!pc)
     {
       mutt_param_set(&ct->parameter, "charset",
-                     (C_AssumedCharset && *C_AssumedCharset) ?
-                         (const char *) mutt_ch_get_default_charset() :
-                         "us-ascii");
+                     (C_AssumedCharset) ? (const char *) mutt_ch_get_default_charset() :
+                                          "us-ascii");
     }
   }
 }
@@ -536,6 +542,9 @@ void mutt_parse_content_type(const char *s, struct Body *ct)
 int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
                            char *p, bool user_hdrs, bool weed, bool do_2047)
 {
+  if (!env || !line)
+    return 0;
+
   bool matched = false;
 
   switch (tolower(line[0]))
@@ -543,12 +552,12 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
     case 'a':
       if (mutt_str_strcasecmp(line + 1, "pparently-to") == 0)
       {
-        env->to = mutt_addr_parse_list(env->to, p);
+        mutt_addrlist_parse(&env->to, p);
         matched = true;
       }
       else if (mutt_str_strcasecmp(line + 1, "pparently-from") == 0)
       {
-        env->from = mutt_addr_parse_list(env->from, p);
+        mutt_addrlist_parse(&env->from, p);
         matched = true;
       }
       break;
@@ -556,7 +565,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
     case 'b':
       if (mutt_str_strcasecmp(line + 1, "cc") == 0)
       {
-        env->bcc = mutt_addr_parse_list(env->bcc, p);
+        mutt_addrlist_parse(&env->bcc, p);
         matched = true;
       }
       break;
@@ -564,7 +573,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
     case 'c':
       if (mutt_str_strcasecmp(line + 1, "c") == 0)
       {
-        env->cc = mutt_addr_parse_list(env->cc, p);
+        mutt_addrlist_parse(&env->cc, p);
         matched = true;
       }
       else
@@ -594,9 +603,11 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
           {
             if (e)
             {
-              e->content->length = atol(p);
-              if (e->content->length < 0)
+              int rc = mutt_str_atol(p, &e->content->length);
+              if ((rc < 0) || (e->content->length < 0))
                 e->content->length = -1;
+              if (e->content->length > CONTENT_TOO_BIG)
+                e->content->length = CONTENT_TOO_BIG;
             }
             matched = true;
           }
@@ -649,7 +660,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
     case 'f':
       if (mutt_str_strcasecmp("rom", line + 1) == 0)
       {
-        env->from = mutt_addr_parse_list(env->from, p);
+        mutt_addrlist_parse(&env->from, p);
         matched = true;
       }
 #ifdef USE_NNTP
@@ -738,13 +749,13 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
           if (mutt_str_strcasecmp(line + 1 + plen, "reply-to") == 0)
           {
             /* override the Reply-To: field */
-            mutt_addr_free(&env->reply_to);
-            env->reply_to = mutt_addr_parse_list(env->reply_to, p);
+            mutt_addrlist_clear(&env->reply_to);
+            mutt_addrlist_parse(&env->reply_to, p);
             matched = true;
           }
           else if (mutt_str_strcasecmp(line + 1 + plen, "followup-to") == 0)
           {
-            env->mail_followup_to = mutt_addr_parse_list(env->mail_followup_to, p);
+            mutt_addrlist_parse(&env->mail_followup_to, p);
             matched = true;
           }
         }
@@ -781,12 +792,12 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
       }
       else if (mutt_str_strcasecmp(line + 1, "eply-to") == 0)
       {
-        env->reply_to = mutt_addr_parse_list(env->reply_to, p);
+        mutt_addrlist_parse(&env->reply_to, p);
         matched = true;
       }
       else if (mutt_str_strcasecmp(line + 1, "eturn-path") == 0)
       {
-        env->return_path = mutt_addr_parse_list(env->return_path, p);
+        mutt_addrlist_parse(&env->return_path, p);
         matched = true;
       }
       else if (mutt_str_strcasecmp(line + 1, "eceived") == 0)
@@ -810,7 +821,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
       }
       else if (mutt_str_strcasecmp(line + 1, "ender") == 0)
       {
-        env->sender = mutt_addr_parse_list(env->sender, p);
+        mutt_addrlist_parse(&env->sender, p);
         matched = true;
       }
       else if (mutt_str_strcasecmp(line + 1, "tatus") == 0)
@@ -822,7 +833,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
             switch (*p)
             {
               case 'O':
-                e->old = C_MarkOld ? true : false;
+                e->old = C_MarkOld;
                 break;
               case 'R':
                 e->read = true;
@@ -848,7 +859,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
     case 't':
       if (mutt_str_strcasecmp(line + 1, "o") == 0)
       {
-        env->to = mutt_addr_parse_list(env->to, p);
+        mutt_addrlist_parse(&env->to, p);
         matched = true;
       }
       break;
@@ -901,7 +912,7 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
 #endif
       else if (mutt_str_strcasecmp(line + 1, "-original-to") == 0)
       {
-        env->x_original_to = mutt_addr_parse_list(env->x_original_to, p);
+        mutt_addrlist_parse(&env->x_original_to, p);
         matched = true;
       }
 
@@ -939,6 +950,9 @@ int mutt_rfc822_parse_line(struct Envelope *env, struct Email *e, char *line,
  */
 char *mutt_rfc822_read_line(FILE *fp, char *line, size_t *linelen)
 {
+  if (!fp || !line || !linelen)
+    return NULL;
+
   char *buf = line;
   int ch;
   size_t offset = 0;
@@ -946,23 +960,23 @@ char *mutt_rfc822_read_line(FILE *fp, char *line, size_t *linelen)
   while (true)
   {
     if (!fgets(buf, *linelen - offset, fp) || /* end of file or */
-        (ISSPACE(*line) && !offset))          /* end of headers */
+        (IS_SPACE(*line) && !offset))         /* end of headers */
     {
       *line = '\0';
       return line;
     }
 
     const size_t len = mutt_str_strlen(buf);
-    if (!len)
+    if (len == 0)
       return line;
 
     buf += len - 1;
     if (*buf == '\n')
     {
       /* we did get a full line. remove trailing space */
-      while (ISSPACE(*buf))
+      while (IS_SPACE(*buf))
       {
-        *buf-- = '\0'; /* we cannot come beyond line's beginning because
+        *buf-- = '\0'; /* we can't come beyond line's beginning because
                         * it begins with a non-space */
       }
 
@@ -1010,6 +1024,9 @@ char *mutt_rfc822_read_line(FILE *fp, char *line, size_t *linelen)
  */
 struct Envelope *mutt_rfc822_read_header(FILE *fp, struct Email *e, bool user_hdrs, bool weed)
 {
+  if (!fp)
+    return NULL;
+
   struct Envelope *env = mutt_env_new();
   char *p = NULL;
   LOFF_T loc;
@@ -1075,12 +1092,9 @@ struct Envelope *mutt_rfc822_read_header(FILE *fp, struct Email *e, bool user_hd
             mutt_buffer_addstr(env->spam, C_SpamSeparator);
             mutt_buffer_addstr(env->spam, buf);
           }
-
-          /* else overwrite */
-          else
+          else /* overwrite */
           {
-            env->spam->dptr = env->spam->data;
-            *env->spam->dptr = '\0';
+            mutt_buffer_reset(env->spam);
             mutt_buffer_addstr(env->spam, buf);
           }
         }
@@ -1158,6 +1172,9 @@ struct Envelope *mutt_rfc822_read_header(FILE *fp, struct Email *e, bool user_hd
  */
 struct Body *mutt_read_mime_header(FILE *fp, bool digest)
 {
+  if (!fp)
+    return NULL;
+
   struct Body *p = mutt_body_new();
   struct Envelope *env = mutt_env_new();
   char *c = NULL;
@@ -1269,6 +1286,9 @@ bool mutt_is_message_type(int type, const char *subtype)
  */
 void mutt_parse_part(FILE *fp, struct Body *b)
 {
+  if (!fp || !b)
+    return;
+
   const char *bound = NULL;
 
   switch (b->type)
@@ -1322,15 +1342,18 @@ void mutt_parse_part(FILE *fp, struct Body *b)
  */
 struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off, bool digest)
 {
-  char buf[1024];
-  struct Body *head = NULL, *last = NULL, *new = NULL;
-  bool final = false; /* did we see the ending boundary? */
+  if (!fp)
+    return NULL;
 
   if (!boundary)
   {
     mutt_error(_("multipart message has no boundary parameter"));
     return NULL;
   }
+
+  char buf[1024];
+  struct Body *head = NULL, *last = NULL, *new = NULL;
+  bool final = false; /* did we see the ending boundary? */
 
   const size_t blen = mutt_str_strlen(boundary);
   while ((ftello(fp) < end_off) && fgets(buf, sizeof(buf), fp))
@@ -1354,7 +1377,7 @@ struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off
       if (len > 0)
       {
         /* Remove any trailing whitespace, up to the length of the boundary */
-        for (size_t i = len - 1; ISSPACE(buf[i]) && (i >= (blen + 2)); i--)
+        for (size_t i = len - 1; IS_SPACE(buf[i]) && (i >= (blen + 2)); i--)
           buf[i] = '\0';
       }
 
@@ -1371,10 +1394,10 @@ struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off
 #ifdef SUN_ATTACHMENT
         if (mutt_param_get(&new->parameter, "content-lines"))
         {
-          int lines;
+          int lines = 0;
           if (mutt_str_atoi(mutt_param_get(&new->parameter, "content-lines"), &lines) < 0)
             lines = 0;
-          for (; lines; lines--)
+          for (; lines > 0; lines--)
             if ((ftello(fp) >= end_off) || !fgets(buf, sizeof(buf), fp))
               break;
         }
@@ -1420,6 +1443,9 @@ struct Body *mutt_parse_multipart(FILE *fp, const char *boundary, LOFF_T end_off
  */
 struct Body *mutt_rfc822_parse_message(FILE *fp, struct Body *parent)
 {
+  if (!fp || !parent)
+    return NULL;
+
   parent->email = mutt_email_new();
   parent->email->offset = ftello(fp);
   parent->email->env = mutt_rfc822_read_header(fp, parent->email, false, false);
@@ -1436,4 +1462,96 @@ struct Body *mutt_rfc822_parse_message(FILE *fp, struct Body *parent)
 
   mutt_parse_part(fp, msg);
   return msg;
+}
+
+/**
+ * mutt_parse_mailto - Parse a mailto:// url
+ * @param[in]  e    Envelope to fill
+ * @param[out] body Body to
+ * @param[in]  src  String to parse
+ * @retval  0 Success
+ * @retval -1 Error
+ */
+int mutt_parse_mailto(struct Envelope *e, char **body, const char *src)
+{
+  if (!e || !src)
+    return -1;
+
+  char *p = NULL;
+  char *tag = NULL, *value = NULL;
+
+  int rc = -1;
+
+  char *t = strchr(src, ':');
+  if (!t)
+    return -1;
+
+  /* copy string for safe use of strtok() */
+  char *tmp = mutt_str_strdup(t + 1);
+  if (!tmp)
+    return -1;
+
+  char *headers = strchr(tmp, '?');
+  if (headers)
+    *headers++ = '\0';
+
+  if (url_pct_decode(tmp) < 0)
+    goto out;
+
+  mutt_addrlist_parse(&e->to, tmp);
+
+  tag = headers ? strtok_r(headers, "&", &p) : NULL;
+
+  for (; tag; tag = strtok_r(NULL, "&", &p))
+  {
+    value = strchr(tag, '=');
+    if (value)
+      *value++ = '\0';
+    if (!value || !*value)
+      continue;
+
+    if (url_pct_decode(tag) < 0)
+      goto out;
+    if (url_pct_decode(value) < 0)
+      goto out;
+
+    /* Determine if this header field is on the allowed list.  Since NeoMutt
+     * interprets some header fields specially (such as
+     * "Attach: ~/.gnupg/secring.gpg"), care must be taken to ensure that
+     * only safe fields are allowed.
+     *
+     * RFC2368, "4. Unsafe headers"
+     * The user agent interpreting a mailto URL SHOULD choose not to create
+     * a message if any of the headers are considered dangerous; it may also
+     * choose to create a message with only a subset of the headers given in
+     * the URL.  */
+    if (mutt_list_match(tag, &MailToAllow))
+    {
+      if (mutt_str_strcasecmp(tag, "body") == 0)
+      {
+        if (body)
+          mutt_str_replace(body, value);
+      }
+      else
+      {
+        char *scratch = NULL;
+        size_t taglen = mutt_str_strlen(tag);
+
+        mutt_str_asprintf(&scratch, "%s: %s", tag, value);
+        scratch[taglen] = 0; /* overwrite the colon as mutt_rfc822_parse_line expects */
+        value = mutt_str_skip_email_wsp(&scratch[taglen + 1]);
+        mutt_rfc822_parse_line(e, NULL, scratch, value, true, false, true);
+        FREE(&scratch);
+      }
+    }
+  }
+
+  /* RFC2047 decode after the RFC822 parsing */
+  rfc2047_decode_envelope(e);
+
+  rc = 0;
+
+out:
+  FREE(&tmp);
+  return rc;
 }

@@ -40,8 +40,6 @@
 #define SWAP(n) (n)
 #endif
 
-#define BLOCKSIZE 4096
-
 /* This array contains the bytes used to pad the buffer to the next
  * 64-byte boundary.  (RFC1321, 3.1: Step 1)  */
 static const unsigned char fillbuf[64] = { 0x80, 0 /* , 0, 0, ... */ };
@@ -86,10 +84,10 @@ static void mutt_md5_process_block(const void *buffer, size_t len, struct Md5Ctx
   while (words < endp)
   {
     md5_uint32 *cwp = correct_words;
-    md5_uint32 A_save = A;
-    md5_uint32 B_save = B;
-    md5_uint32 C_save = C;
-    md5_uint32 D_save = D;
+    md5_uint32 save_A = A;
+    md5_uint32 save_B = B;
+    md5_uint32 save_C = C;
+    md5_uint32 save_D = D;
 
     /* First round: using the given function, the context and a constant the
      * next context is computed.  Because the algorithms processing unit is a
@@ -203,10 +201,10 @@ static void mutt_md5_process_block(const void *buffer, size_t len, struct Md5Ctx
     OP(FI, B, C, D, A, 9, 21, 0xeb86d391);
 
     /* Add the starting values of the context. */
-    A += A_save;
-    B += B_save;
-    C += C_save;
-    D += D_save;
+    A += save_A;
+    B += save_B;
+    C += save_C;
+    D += save_D;
   }
 
   /* Put checksum in context given as argument. */
@@ -241,6 +239,9 @@ static inline void set_uint32(char *cp, md5_uint32 v)
  */
 static void *mutt_md5_read_ctx(const struct Md5Ctx *md5ctx, void *resbuf)
 {
+  if (!md5ctx || !resbuf)
+    return NULL;
+
   char *r = resbuf;
 
   set_uint32(r + 0 * sizeof(md5ctx->A), SWAP(md5ctx->A));
@@ -259,6 +260,9 @@ static void *mutt_md5_read_ctx(const struct Md5Ctx *md5ctx, void *resbuf)
  */
 void mutt_md5_init_ctx(struct Md5Ctx *md5ctx)
 {
+  if (!md5ctx)
+    return;
+
   md5ctx->A = 0x67452301;
   md5ctx->B = 0xefcdab89;
   md5ctx->C = 0x98badcfe;
@@ -280,6 +284,9 @@ void mutt_md5_init_ctx(struct Md5Ctx *md5ctx)
  */
 void *mutt_md5_finish_ctx(struct Md5Ctx *md5ctx, void *resbuf)
 {
+  if (!md5ctx)
+    return NULL;
+
   /* Take yet unprocessed bytes into account. */
   md5_uint32 bytes = md5ctx->buflen;
   size_t size = (bytes < 56) ? 64 / 4 : 64 * 2 / 4;
@@ -308,6 +315,9 @@ void *mutt_md5_finish_ctx(struct Md5Ctx *md5ctx, void *resbuf)
  */
 void *mutt_md5(const char *str, void *buf)
 {
+  if (!str)
+    return NULL;
+
   return mutt_md5_bytes(str, strlen(str), buf);
 }
 
@@ -343,29 +353,35 @@ void *mutt_md5_bytes(const void *buffer, size_t len, void *resbuf)
  */
 void mutt_md5_process(const char *str, struct Md5Ctx *md5ctx)
 {
+  if (!str)
+    return;
+
   mutt_md5_process_bytes(str, strlen(str), md5ctx);
 }
 
 /**
  * mutt_md5_process_bytes - Process a block of data
- * @param buffer Buffer to process
- * @param len    Length of buffer
+ * @param buf    Buffer to process
+ * @param buflen Length of buffer
  * @param md5ctx MD5 context
  *
  * Starting with the result of former calls of this function (or the
- * initialization function update the context for the next LEN bytes starting
- * at Buffer.  It is NOT required that LEN is a multiple of 64.
+ * initialization function update the context for the next BUFLEN bytes starting
+ * at Buffer.  It is NOT required that BUFLEN is a multiple of 64.
  */
-void mutt_md5_process_bytes(const void *buffer, size_t len, struct Md5Ctx *md5ctx)
+void mutt_md5_process_bytes(const void *buf, size_t buflen, struct Md5Ctx *md5ctx)
 {
+  if (!buf || !md5ctx)
+    return;
+
   /* When we already have some bits in our internal buffer concatenate both
    * inputs first. */
   if (md5ctx->buflen != 0)
   {
     size_t left_over = md5ctx->buflen;
-    size_t add = ((128 - left_over) > len) ? len : (128 - left_over);
+    size_t add = ((128 - left_over) > buflen) ? buflen : (128 - left_over);
 
-    memcpy(&((char *) md5ctx->buffer)[left_over], buffer, add);
+    memcpy(&((char *) md5ctx->buffer)[left_over], buf, add);
     md5ctx->buflen += add;
 
     if (md5ctx->buflen > 64)
@@ -373,46 +389,50 @@ void mutt_md5_process_bytes(const void *buffer, size_t len, struct Md5Ctx *md5ct
       mutt_md5_process_block(md5ctx->buffer, md5ctx->buflen & ~63, md5ctx);
 
       md5ctx->buflen &= 63;
-      /* The regions in the following copy operation cannot overlap. */
+      /* The regions in the following copy operation can't overlap. */
       memcpy(md5ctx->buffer, &((char *) md5ctx->buffer)[(left_over + add) & ~63],
              md5ctx->buflen);
     }
 
-    buffer = (const char *) buffer + add;
-    len -= add;
+    buf = (const char *) buf + add;
+    buflen -= add;
   }
 
   /* Process available complete blocks. */
-  if (len >= 64)
+  if (buflen >= 64)
   {
 #if !defined(_STRING_ARCH_unaligned)
-#define alignof(type) offsetof(struct { char c; type x; }, x)
+#define alignof(type) offsetof(                                                \
+    struct {                                                                   \
+      char c; type x;                                                          \
+    },                                                                         \
+    x)
 #define UNALIGNED_P(p) (((size_t) p) % alignof(md5_uint32) != 0)
-    if (UNALIGNED_P(buffer))
+    if (UNALIGNED_P(buf))
     {
-      while (len > 64)
+      while (buflen > 64)
       {
-        mutt_md5_process_block(memcpy(md5ctx->buffer, buffer, 64), 64, md5ctx);
-        buffer = (const char *) buffer + 64;
-        len -= 64;
+        mutt_md5_process_block(memcpy(md5ctx->buffer, buf, 64), 64, md5ctx);
+        buf = (const char *) buf + 64;
+        buflen -= 64;
       }
     }
     else
 #endif
     {
-      mutt_md5_process_block(buffer, len & ~63, md5ctx);
-      buffer = (const char *) buffer + (len & ~63);
-      len &= 63;
+      mutt_md5_process_block(buf, buflen & ~63, md5ctx);
+      buf = (const char *) buf + (buflen & ~63);
+      buflen &= 63;
     }
   }
 
   /* Move remaining bytes in internal buffer. */
-  if (len > 0)
+  if (buflen > 0)
   {
     size_t left_over = md5ctx->buflen;
 
-    memcpy(&((char *) md5ctx->buffer)[left_over], buffer, len);
-    left_over += len;
+    memcpy(&((char *) md5ctx->buffer)[left_over], buf, buflen);
+    left_over += buflen;
     if (left_over >= 64)
     {
       mutt_md5_process_block(md5ctx->buffer, 64, md5ctx);
@@ -432,6 +452,9 @@ void mutt_md5_process_bytes(const void *buffer, size_t len, struct Md5Ctx *md5ct
  */
 void mutt_md5_toascii(const void *digest, char *resbuf)
 {
+  if (!digest || !resbuf)
+    return;
+
   const unsigned char *c = digest;
   sprintf(resbuf, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
           c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10],

@@ -75,13 +75,6 @@ struct LogLine
   char *message;
   STAILQ_ENTRY(LogLine) entries;
 };
-
-/**
- * struct LogList - A list of log lines
- *
- * The Log is stored as a STAILQ.
- * This means that insertions are quick at the head and tail of the list.
- */
 STAILQ_HEAD(LogList, LogLine);
 
 #define mutt_debug(LEVEL, ...) MuttLogger(0, __FILE__, __LINE__, __func__, LEVEL,      __VA_ARGS__)
@@ -90,8 +83,9 @@ STAILQ_HEAD(LogList, LogLine);
 #define mutt_error(...)        MuttLogger(0, __FILE__, __LINE__, __func__, LL_ERROR,   __VA_ARGS__)
 #define mutt_perror(...)       MuttLogger(0, __FILE__, __LINE__, __func__, LL_PERROR,  __VA_ARGS__)
 
-int  log_disp_file(time_t stamp, const char *file, int line, const char *function, int level, ...);
-int  log_disp_queue(time_t stamp, const char *file, int line, const char *function, int level, ...);
+int  log_disp_file    (time_t stamp, const char *file, int line, const char *function, int level, ...);
+int  log_disp_null    (time_t stamp, const char *file, int line, const char *function, int level, ...);
+int  log_disp_queue   (time_t stamp, const char *file, int line, const char *function, int level, ...);
 int  log_disp_terminal(time_t stamp, const char *file, int line, const char *function, int level, ...);
 
 int  log_queue_add(struct LogLine *ll);

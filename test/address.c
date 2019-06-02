@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "mutt/mutt.h"
 #include "config/lib.h"
-#include "email/address.h"
+#include "email/lib.h"
 #include "test/common.h"
 
 static struct Address *VarApple;
@@ -611,7 +611,7 @@ void config_address(void)
     return;
   dont_fail = false;
 
-  cs_add_listener(cs, log_listener);
+  cs_add_observer(cs, log_observer);
 
   set_list(cs);
 

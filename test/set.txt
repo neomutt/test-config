@@ -1,6 +1,6 @@
 [36m---- config_set ----------------------------------[m
-Listener was already registered
-Listener wasn't registered
+Observer was already registered
+Observer wasn't registered
 Expected error
 Expected error
 Variable 'Apple' has an invalid type 9

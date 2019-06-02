@@ -55,7 +55,7 @@ void config_dump(void)
   if (!cs_register_variables(cs, MuttVars, 0))
     return;
 
-  cs_add_listener(cs, log_listener);
+  cs_add_observer(cs, log_observer);
 
   dump_config(cs, CS_DUMP_STYLE_NEO,
               CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS, stdout);

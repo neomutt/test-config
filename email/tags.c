@@ -94,8 +94,8 @@ static void driver_tags_add(struct TagHead *head, char *new_tag)
     char *p = strstr(C_HiddenTags, new_tag);
     size_t xsz = p ? mutt_str_strlen(new_tag) : 0;
 
-    if (p && ((p == C_HiddenTags) || (*(p - 1) == ',') || (*(p - 1) == ' ')) &&
-        ((*(p + xsz) == '\0') || (*(p + xsz) == ',') || (*(p + xsz) == ' ')))
+    if (p && ((p == C_HiddenTags) || (p[-1] == ',') || (p[-1] == ' ')) &&
+        ((p[xsz] == '\0') || (p[xsz] == ',') || (p[xsz] == ' ')))
     {
       np->hidden = true;
     }
@@ -115,7 +115,8 @@ void driver_tags_free(struct TagHead *head)
   if (!head)
     return;
 
-  struct TagNode *np = STAILQ_FIRST(head), *next = NULL;
+  struct TagNode *np = STAILQ_FIRST(head);
+  struct TagNode *next = NULL;
   while (np)
   {
     next = STAILQ_NEXT(np, entries);
@@ -197,11 +198,13 @@ bool driver_tags_replace(struct TagHead *head, char *tags)
 
   if (tags)
   {
-    char *tag = NULL;
-    char *split_tags = mutt_str_strdup(tags);
-    while ((tag = strsep(&split_tags, " ")))
-      driver_tags_add(head, tag);
-    FREE(&split_tags);
+    struct ListHead hsplit = mutt_str_split(tags, ' ');
+    struct ListNode *np = NULL;
+    STAILQ_FOREACH(np, &hsplit, entries)
+    {
+      driver_tags_add(head, np->data);
+    }
+    mutt_list_clear(&hsplit);
   }
   return true;
 }

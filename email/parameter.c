@@ -47,6 +47,8 @@ struct Parameter *mutt_param_new(void)
  */
 void mutt_param_free_one(struct Parameter **p)
 {
+  if (!p || !*p)
+    return;
   FREE(&(*p)->attribute);
   FREE(&(*p)->value);
   FREE(p);
@@ -61,7 +63,8 @@ void mutt_param_free(struct ParameterList *p)
   if (!p)
     return;
 
-  struct Parameter *np = TAILQ_FIRST(p), *next = NULL;
+  struct Parameter *np = TAILQ_FIRST(p);
+  struct Parameter *next = NULL;
   while (np)
   {
     next = TAILQ_NEXT(np, entries);

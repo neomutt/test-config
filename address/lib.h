@@ -1,9 +1,9 @@
 /**
  * @file
- * RFC2231 MIME Charset routines
+ * Email Address Handling
  *
  * @authors
- * Copyright (C) 1999-2000 Thomas Roessler <roessler@does-not-exist.org>
+ * Copyright (C) 2019 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,17 +20,23 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MUTT_EMAIL_RFC2231_H
-#define MUTT_EMAIL_RFC2231_H
+/**
+ * @page address ADDRESS: Email Address Handling
+ *
+ * Email Address Handling
+ *
+ * | File                   | Description              |
+ * | :--------------------- | :----------------------- |
+ * | address/address.c      | @subpage addr_address    |
+ * | address/group.c        | @subpage addr_group      |
+ * | address/idna.c         | @subpage addr_idna       |
+ */
 
-#include <stdbool.h>
+#ifndef MUTT_ADDRESS_LIB_H
+#define MUTT_ADDRESS_LIB_H
 
-struct ParameterList;
+#include "address.h"
+#include "group.h"
+#include "idna2.h"
 
-/* These Config Variables are only used in rfc2231.c */
-extern bool C_Rfc2047Parameters;
-
-void rfc2231_decode_parameters(struct ParameterList *p);
-struct ParameterList rfc2231_encode_string(const char *attribute, char *value);
-
-#endif /* MUTT_EMAIL_RFC2231_H */
+#endif /* MUTT_ADDRESS_LIB_H */

@@ -269,26 +269,26 @@ static const char *lookup_charset(enum LookupType type, const char *cs)
  */
 int mutt_ch_convert_nonmime_string(char **ps)
 {
+  if (!ps)
+    return -1;
+
   const char *c1 = NULL;
 
   for (const char *c = C_AssumedCharset; c; c = c1 ? c1 + 1 : 0)
   {
     char *u = *ps;
-    char *s = NULL;
-    char *fromcode = NULL;
-    size_t n;
     size_t ulen = mutt_str_strlen(*ps);
 
     if (!u || !*u)
       return 0;
 
     c1 = strchr(c, ':');
-    n = c1 ? c1 - c : mutt_str_strlen(c);
-    if (!n)
+    size_t n = c1 ? c1 - c : mutt_str_strlen(c);
+    if (n == 0)
       return 0;
-    fromcode = mutt_mem_malloc(n + 1);
+    char *fromcode = mutt_mem_malloc(n + 1);
     mutt_str_strfcpy(fromcode, c, n + 1);
-    s = mutt_str_substr_dup(u, u + ulen);
+    char *s = mutt_str_substr_dup(u, u + ulen);
     int m = mutt_ch_convert_string(&s, fromcode, C_Charset, 0);
     FREE(&fromcode);
     FREE(&s);
@@ -313,6 +313,9 @@ int mutt_ch_convert_nonmime_string(char **ps)
  */
 void mutt_ch_canonical_charset(char *buf, size_t buflen, const char *name)
 {
+  if (!buf || !name)
+    return;
+
   char in[1024], scratch[1024];
 
   mutt_str_strfcpy(in, name, sizeof(in));
@@ -422,7 +425,7 @@ char *mutt_ch_get_default_charset(void)
  */
 char *mutt_ch_get_langinfo_charset(void)
 {
-  char buf[1024] = "";
+  char buf[1024] = { 0 };
 
   mutt_ch_canonical_charset(buf, sizeof(buf), nl_langinfo(CODESET));
 
@@ -450,7 +453,7 @@ bool mutt_ch_lookup_add(enum LookupType type, const char *pat,
     return false;
 
   regex_t *rx = mutt_mem_malloc(sizeof(regex_t));
-  int rc = REGCOMP(rx, pat, REG_ICASE);
+  int rc = REG_COMP(rx, pat, REG_ICASE);
   if (rc != 0)
   {
     regerror(rc, rx, err->data, err->dsize);
@@ -487,6 +490,7 @@ void mutt_ch_lookup_remove(void)
     FREE(&l->regex.pattern);
     if (l->regex.regex)
       regfree(l->regex.regex);
+    FREE(&l->regex.regex);
     FREE(&l->regex);
     FREE(&l);
   }
@@ -613,7 +617,7 @@ size_t mutt_ch_iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
           char *ob1 = ob;
           size_t obl1 = obl;
           iconv(cd, (ICONV_CONST char **) &ib1, &ibl1, &ob1, &obl1);
-          if (!ibl1)
+          if (ibl1 == 0)
           {
             ib++;
             ibl--;
@@ -682,6 +686,9 @@ const char *mutt_ch_iconv_lookup(const char *chs)
  */
 int mutt_ch_check(const char *s, size_t slen, const char *from, const char *to)
 {
+  if (!s || !from || !to)
+    return -1;
+
   int rc = 0;
   iconv_t cd = mutt_ch_iconv_open(to, from, 0);
   if (cd == (iconv_t) -1)
@@ -716,10 +723,10 @@ int mutt_ch_check(const char *s, size_t slen, const char *from, const char *to)
  */
 int mutt_ch_convert_string(char **ps, const char *from, const char *to, int flags)
 {
-  iconv_t cd;
-  const char *repls[] = { "\357\277\275", "?", 0 };
+  if (!ps)
+    return -1;
+
   char *s = *ps;
-  int rc = 0;
 
   if (!s || !*s)
     return 0;
@@ -727,7 +734,10 @@ int mutt_ch_convert_string(char **ps, const char *from, const char *to, int flag
   if (!to || !from)
     return -1;
 
-  cd = mutt_ch_iconv_open(to, from, flags);
+  const char *repls[] = { "\357\277\275", "?", 0 };
+  int rc = 0;
+
+  iconv_t cd = mutt_ch_iconv_open(to, from, flags);
   if (cd == (iconv_t) -1)
     return -1;
 
@@ -777,7 +787,8 @@ int mutt_ch_convert_string(char **ps, const char *from, const char *to, int flag
  */
 bool mutt_ch_check_charset(const char *cs, bool strict)
 {
-  iconv_t cd;
+  if (!cs)
+    return false;
 
   if (mutt_ch_is_utf8(cs))
     return true;
@@ -794,7 +805,7 @@ bool mutt_ch_check_charset(const char *cs, bool strict)
     }
   }
 
-  cd = mutt_ch_iconv_open(cs, cs, 0);
+  iconv_t cd = mutt_ch_iconv_open(cs, cs, 0);
   if (cd != (iconv_t)(-1))
   {
     iconv_close(cd);
@@ -846,6 +857,9 @@ struct FgetConv *mutt_ch_fgetconv_open(FILE *fp, const char *from, const char *t
  */
 void mutt_ch_fgetconv_close(struct FgetConv **fc)
 {
+  if (!fc || !*fc)
+    return;
+
   if ((*fc)->cd != (iconv_t) -1)
     iconv_close((*fc)->cd);
   FREE(fc);
@@ -925,6 +939,9 @@ int mutt_ch_fgetconv(struct FgetConv *fc)
  */
 char *mutt_ch_fgetconvs(char *buf, size_t buflen, struct FgetConv *fc)
 {
+  if (!buf)
+    return NULL;
+
   size_t r;
   for (r = 0; (r + 1) < buflen;)
   {
@@ -989,26 +1006,26 @@ void mutt_ch_set_charset(const char *charset)
 char *mutt_ch_choose(const char *fromcode, const char *charsets, const char *u,
                      size_t ulen, char **d, size_t *dlen)
 {
+  if (!fromcode)
+    return NULL;
+
   char *e = NULL, *tocode = NULL;
   size_t elen = 0, bestn = 0;
   const char *q = NULL;
 
   for (const char *p = charsets; p; p = q ? q + 1 : 0)
   {
-    char *s = NULL, *t = NULL;
-    size_t slen, n;
-
     q = strchr(p, ':');
 
-    n = q ? q - p : strlen(p);
-    if (!n)
+    size_t n = q ? q - p : strlen(p);
+    if (n == 0)
       continue;
 
-    t = mutt_mem_malloc(n + 1);
+    char *t = mutt_mem_malloc(n + 1);
     memcpy(t, p, n);
     t[n] = '\0';
 
-    s = mutt_str_substr_dup(u, u + ulen);
+    char *s = mutt_str_substr_dup(u, u + ulen);
     const int rc = d ? mutt_ch_convert_string(&s, fromcode, t, 0) :
                        mutt_ch_check(s, ulen, fromcode, t);
     if (rc)
@@ -1017,7 +1034,7 @@ char *mutt_ch_choose(const char *fromcode, const char *charsets, const char *u,
       FREE(&s);
       continue;
     }
-    slen = mutt_str_strlen(s);
+    size_t slen = mutt_str_strlen(s);
 
     if (!tocode || (n < bestn))
     {

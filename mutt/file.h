@@ -29,9 +29,10 @@
 #include <sys/types.h>
 #include <time.h>
 
+struct Buffer;
 struct stat;
-struct timespec;
 extern char *C_Tmpdir;
+struct timespec;
 
 /* Flags for mutt_file_read_line() */
 #define MUTT_CONT (1 << 0) /**< \-continuation */
@@ -89,7 +90,7 @@ int         mutt_file_chmod_rm_stat(const char *path, mode_t mode, struct stat *
 int         mutt_file_copy_bytes(FILE *fp_in, FILE *fp_out, size_t size);
 int         mutt_file_copy_stream(FILE *fp_in, FILE *fp_out);
 time_t      mutt_file_decrease_mtime(const char *fp, struct stat *st);
-void        mutt_file_expand_fmt(char *dest, size_t destlen, const char *fmt, const char *src);
+void        mutt_file_expand_fmt(struct Buffer *dest, const char *fmt, const char *src);
 void        mutt_file_expand_fmt_quote(char *dest, size_t destlen, const char *fmt, const char *src);
 int         mutt_file_fclose(FILE **fp);
 FILE *      mutt_file_fopen(const char *path, const char *mode);
@@ -109,8 +110,8 @@ char *      mutt_file_read_line(char *line, size_t *size, FILE *fp, int *line_nu
 int         mutt_file_rename(const char *oldfile, const char *newfile);
 int         mutt_file_rmtree(const char *path);
 int         mutt_file_safe_rename(const char *src, const char *target);
-void        mutt_file_sanitize_filename(char *fp, bool slash);
-int         mutt_file_sanitize_regex(char *dest, size_t destlen, const char *src);
+void        mutt_file_sanitize_filename(char *path, bool slash);
+int         mutt_file_sanitize_regex(struct Buffer *dest, const char *src);
 void        mutt_file_set_mtime(const char *from, const char *to);
 int         mutt_file_stat_compare(struct stat *sba, enum MuttStatType sba_type, struct stat *sbb, enum MuttStatType sbb_type);
 int         mutt_file_stat_timespec_compare(struct stat *sba, enum MuttStatType type, struct timespec *b);
@@ -120,5 +121,8 @@ void        mutt_file_touch_atime(int fd);
 void        mutt_file_unlink(const char *s);
 void        mutt_file_unlink_empty(const char *path);
 int         mutt_file_unlock(int fd);
+
+void        mutt_buffer_quote_filename(struct Buffer *buf, const char *filename, bool add_outer);
+void        mutt_buffer_file_expand_fmt_quote(struct Buffer *dest, const char *fmt, const char *src);
 
 #endif /* MUTT_LIB_FILE_H */
