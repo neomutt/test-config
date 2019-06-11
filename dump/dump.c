@@ -43,28 +43,26 @@ void config_dump(void)
 
   address_init(cs);
   bool_init(cs);
-  magic_init(cs);
+  enum_init(cs);
+  long_init(cs);
   mbtable_init(cs);
   number_init(cs);
-  path_init(cs);
   quad_init(cs);
   regex_init(cs);
+  slist_init(cs);
   sort_init(cs);
   string_init(cs);
 
   if (!cs_register_variables(cs, MuttVars, 0))
     return;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
-  dump_config(cs, CS_DUMP_STYLE_NEO,
-              CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS, stdout);
+  dump_config(cs, CS_DUMP_HIDE_SENSITIVE | CS_DUMP_SHOW_DEFAULTS | CS_DUMP_SHOW_SYNONYMS, stdout);
   printf("\n");
 
-  dump_config(cs, CS_DUMP_STYLE_NEO, CS_DUMP_ONLY_CHANGED, stdout);
+  dump_config(cs, CS_DUMP_ONLY_CHANGED, stdout);
   printf("\n");
-
-  dump_config(cs, CS_DUMP_STYLE_MUTT, 0, stdout);
 
   cs_free(&cs);
   FREE(&err.data);

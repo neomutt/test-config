@@ -9,14 +9,11 @@
 #include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
-#include "test/command.h"
 #include "test/enum.h"
 #include "test/initial.h"
 #include "test/long.h"
-#include "test/magic.h"
 #include "test/mbtable.h"
 #include "test/number.h"
-#include "test/path.h"
 #include "test/quad.h"
 #include "test/regex3.h"
 #include "test/set.h"
@@ -58,13 +55,10 @@ struct Test test[] = {
   { "synonym",   config_synonym   },
   { "address",   config_address   },
   { "bool",      config_bool      },
-  { "command",   config_command   },
   { "enum",      config_enum      },
   { "long",      config_long      },
-  { "magic",     config_magic     },
   { "mbtable",   config_mbtable   },
   { "number",    config_number    },
-  { "path",      config_path      },
   { "quad",      config_quad      },
   { "regex",     config_regex     },
   { "slist",     config_slist     },

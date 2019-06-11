@@ -21,6 +21,9 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
+#include "dump/data.h"
+#include "config/lib.h"
 
 unsigned char   C_AbortNoattach;
 struct Regex *  C_AbortNoattachRegex;
@@ -32,21 +35,22 @@ bool            C_Allow8bit;
 bool            C_AllowAnsi;
 bool            C_ArrowCursor;
 bool            C_AsciiChars;
-bool            C_Askbcc;
-bool            C_Askcc;
 bool            C_AskFollowUp;
 bool            C_AskXCommentTo;
+bool            C_Askbcc;
+bool            C_Askcc;
 char *          C_AssumedCharset;
 char *          C_AttachCharset;
 char *          C_AttachFormat;
 char *          C_AttachSaveDir;
+bool            C_AttachSaveWithoutPrompting;
 char *          C_AttachSep;
 bool            C_AttachSplit;
 char *          C_Attribution;
 char *          C_AttributionLocale;
-bool            C_Autoedit;
 bool            C_AutoSubscribe;
 bool            C_AutoTag;
+bool            C_Autoedit;
 bool            C_Beep;
 bool            C_BeepNew;
 unsigned char   C_Bounce;
@@ -116,6 +120,7 @@ char *          C_FolderFormat;
 bool            C_FollowupTo;
 unsigned char   C_FollowupToPoster;
 bool            C_ForceName;
+unsigned char   C_ForwardAttachments;
 char *          C_ForwardAttributionIntro;
 char *          C_ForwardAttributionTrailer;
 bool            C_ForwardDecode;
@@ -155,42 +160,45 @@ bool            C_IgnoreLinearWhiteSpace;
 bool            C_IgnoreListReplyTo;
 char *          C_ImapAuthenticators;
 bool            C_ImapCheckSubscribed;
-bool            C_ImapCondStore;
+bool            C_ImapCondstore;
 char *          C_ImapDelimChars;
+long            C_ImapFetchChunkSize;
 char *          C_ImapHeaders;
 bool            C_ImapIdle;
 short           C_ImapKeepalive;
 bool            C_ImapListSubscribed;
 char *          C_ImapLogin;
-char *          C_ImapOauthRefreshCmd;
+char *          C_ImapOauthRefreshCommand;
 char *          C_ImapPass;
 bool            C_ImapPassive;
 bool            C_ImapPeek;
 short           C_ImapPipelineDepth;
 short           C_ImapPollTimeout;
-bool            C_ImapQResync;
+bool            C_ImapQresync;
+bool            C_ImapRfc5161;
 bool            C_ImapServernoise;
 char *          C_ImapUser;
 bool            C_ImplicitAutoview;
 unsigned char   C_Include;
+bool            C_IncludeEncrypted;
 bool            C_IncludeOnlyfirst;
 char *          C_IndentString;
 char *          C_IndexFormat;
 char *          C_Inews;
 char *          C_Ispell;
 bool            C_KeepFlagged;
-char *          C_MailcapPath;
-bool            C_MailcapSanitize;
 short           C_MailCheck;
 bool            C_MailCheckRecent;
 bool            C_MailCheckStats;
 short           C_MailCheckStatsInterval;
+char *          C_MailcapPath;
+bool            C_MailcapSanitize;
 bool            C_MaildirCheckCur;
 bool            C_MaildirHeaderCacheVerify;
 bool            C_MaildirTrash;
-bool            C_Markers;
 char *          C_MarkMacroPrefix;
 bool            C_MarkOld;
+bool            C_Markers;
 struct Regex *  C_Mask;
 char *          C_Mbox;
 short           C_MboxType;
@@ -219,9 +227,9 @@ bool            C_NarrowTree;
 short           C_NetInc;
 char *          C_NewMailCommand;
 char *          C_NewsCacheDir;
+char *          C_NewsServer;
 char *          C_NewsgroupsCharset;
 char *          C_Newsrc;
-char *          C_NewsServer;
 short           C_NmDbLimit;
 char *          C_NmDefaultUri;
 char *          C_NmExcludeTags;
@@ -285,22 +293,22 @@ char *          C_PgpVerifyKeyCommand;
 bool            C_PipeDecode;
 char *          C_PipeSep;
 bool            C_PipeSplit;
-char *          C_PopAuthenticators;
 bool            C_PopAuthTryAll;
+char *          C_PopAuthenticators;
 short           C_PopCheckinterval;
 unsigned char   C_PopDelete;
 char *          C_PopHost;
 bool            C_PopLast;
-char *          C_PopOauthRefreshCmd;
+char *          C_PopOauthRefreshCommand;
 char *          C_PopPass;
 unsigned char   C_PopReconnect;
 char *          C_PopUser;
 char *          C_PostIndentString;
 unsigned char   C_PostModerated;
 unsigned char   C_Postpone;
-char *          C_Postponed;
 bool            C_PostponeEncrypt;
 char *          C_PostponeEncryptAs;
+char *          C_Postponed;
 char *          C_Preconnect;
 char *          C_PreferredLanguages;
 unsigned char   C_Print;
@@ -356,14 +364,15 @@ char *          C_SidebarFormat;
 char *          C_SidebarIndentString;
 bool            C_SidebarNewMailOnly;
 bool            C_SidebarNextNewWrap;
+bool            C_SidebarNonEmptyMailboxOnly;
 bool            C_SidebarOnRight;
 bool            C_SidebarShortPath;
 short           C_SidebarSortMethod;
 bool            C_SidebarVisible;
 short           C_SidebarWidth;
 bool            C_SigDashes;
-char *          C_Signature;
 bool            C_SigOnTop;
+char *          C_Signature;
 char *          C_SimpleSearch;
 short           C_SkipQuotedOffset;
 short           C_SleepTime;
@@ -393,7 +402,7 @@ short           C_SmimeTimeout;
 char *          C_SmimeVerifyCommand;
 char *          C_SmimeVerifyOpaqueCommand;
 char *          C_SmtpAuthenticators;
-char *          C_SmtpOauthRefreshCmd;
+char *          C_SmtpOauthRefreshCommand;
 char *          C_SmtpPass;
 char *          C_SmtpUrl;
 short           C_Sort;
@@ -411,10 +420,10 @@ short           C_SslMinDhPrimeBits;
 unsigned char   C_SslStarttls;
 bool            C_SslUseSslv2;
 bool            C_SslUseSslv3;
-bool            C_SslUsesystemcerts;
-bool            C_SslUseTlsv1;
 bool            C_SslUseTlsv11;
 bool            C_SslUseTlsv12;
+bool            C_SslUseTlsv1;
+bool            C_SslUsesystemcerts;
 bool            C_SslVerifyDates;
 bool            C_SslVerifyHost;
 bool            C_SslVerifyPartialChains;
@@ -450,9 +459,61 @@ char *          C_Visual;
 bool            C_WaitKey;
 bool            C_Weed;
 short           C_Wrap;
-short           C_Wrap;
 short           C_WrapHeaders;
 bool            C_WrapSearch;
 bool            C_WriteBcc;
 short           C_WriteInc;
 bool            C_XCommentTo;
+
+int charset_validator(const struct ConfigSet *cs, const struct ConfigDef *cdef,
+                      intptr_t value, struct Buffer *err)
+{
+  return CSR_SUCCESS;
+}
+
+int hcache_validator(const struct ConfigSet *cs, const struct ConfigDef *cdef,
+                     intptr_t value, struct Buffer *err)
+{
+  return CSR_SUCCESS;
+}
+
+int level_validator(const struct ConfigSet *cs, const struct ConfigDef *cdef,
+                    intptr_t value, struct Buffer *err)
+{
+  return CSR_SUCCESS;
+}
+
+int multipart_validator(const struct ConfigSet *cs, const struct ConfigDef *cdef,
+                        intptr_t value, struct Buffer *err)
+{
+  return CSR_SUCCESS;
+}
+
+int pager_validator(const struct ConfigSet *cs, const struct ConfigDef *cdef,
+                    intptr_t value, struct Buffer *err)
+{
+  return CSR_SUCCESS;
+}
+
+int reply_validator(const struct ConfigSet *cs, const struct ConfigDef *cdef,
+                    intptr_t value, struct Buffer *err)
+{
+  return CSR_SUCCESS;
+}
+
+// clang-format off
+static struct Mapping MagicMap[] = {
+  { "mbox",    MUTT_MBOX,    },
+  { "MMDF",    MUTT_MMDF,    },
+  { "MH",      MUTT_MH,      },
+  { "Maildir", MUTT_MAILDIR, },
+  { NULL,      0,            },
+};
+// clang-format on
+
+struct EnumDef MagicDef = {
+  "mbox_type",
+  4,
+  (struct Mapping *) &MagicMap,
+};
+

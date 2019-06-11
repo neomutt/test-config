@@ -1,9 +1,9 @@
 /**
  * @file
- * Test code for the Path object
+ * Notification Types
  *
  * @authors
- * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2019 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,11 +20,23 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _TEST_PATH_H
-#define _TEST_PATH_H
+#ifndef MUTT_LIB_NOTIFY_TYPE_H
+#define MUTT_LIB_NOTIFY_TYPE_H
 
-#include <stdbool.h>
+/**
+ * enum NotifyType - Notification Types
+ */
+enum NotifyType
+{
+  NT_NEOMUTT, ///< Container for all notifications
+  NT_GLOBAL,  ///< Not object-related
+  NT_CONFIG,  ///< Config has changed
+  NT_ACCOUNT, ///< Account has changed
+  NT_MAILBOX, ///< Mailbox has changed
+  NT_EMAIL,   ///< Email has changed
+  NT_WINDOW,  ///< Window has changed
 
-void config_path(void);
+  NT_MAX,
+};
 
-#endif /* _TEST_PATH_H */
+#endif /* MUTT_LIB_NOTIFY_TYPE_H */

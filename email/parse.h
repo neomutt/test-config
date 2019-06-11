@@ -26,7 +26,11 @@
 #include "config.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "email/lib.h"
+#include "mime.h"
+
+struct Body;
+struct Envelope;
+struct Email;
 
 void             mutt_auto_subscribe(const char *mailto);
 int              mutt_check_encoding(const char *c);

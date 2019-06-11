@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-enum Type: Enumeration
+ * @page config_enum Type: Enumeration
  *
  * Type representing an enumeration.
  */
@@ -57,22 +57,11 @@ static int enum_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
   if (!cs || !cdef || !value)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  struct EnumDef *ed = (struct EnumDef *) cdef->flags;
+  struct EnumDef *ed = (struct EnumDef *) cdef->data;
   if (!ed || !ed->lookup)
     return CSR_ERR_CODE;
 
-  struct Mapping *map = ed->lookup;
-
-  int num = -1;
-  for (size_t i = 0; map[i].name; i++)
-  {
-    if (mutt_str_strcasecmp(map[i].name, value) == 0)
-    {
-      num = map[i].value;
-      break;
-    }
-  }
-
+  int num = mutt_map_get_value(value, ed->lookup);
   if (num < 0)
   {
     mutt_buffer_printf(err, "Invalid enum value: %s", value);
@@ -81,7 +70,7 @@ static int enum_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
 
   if (var)
   {
-    if (num == (*(short *) var))
+    if (num == (*(unsigned char *) var))
       return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
 
     if (cdef->validator)
@@ -92,7 +81,7 @@ static int enum_string_set(const struct ConfigSet *cs, void *var, struct ConfigD
         return (rc | CSR_INV_VALIDATOR);
     }
 
-    *(short *) var = num;
+    *(unsigned char *) var = num;
   }
   else
   {
@@ -121,27 +110,23 @@ static int enum_string_get(const struct ConfigSet *cs, void *var,
   unsigned int value;
 
   if (var)
-    value = *(short *) var;
+    value = *(unsigned char *) var;
   else
     value = (int) cdef->initial;
 
-  struct EnumDef *ed = (struct EnumDef *) cdef->flags;
+  struct EnumDef *ed = (struct EnumDef *) cdef->data;
   if (!ed || !ed->lookup)
     return CSR_ERR_CODE;
 
-  struct Mapping *map = ed->lookup;
-
-  for (size_t i = 0; map[i].name; i++)
+  const char *name = mutt_map_get_name(value, ed->lookup);
+  if (!name)
   {
-    if (map[i].value == value)
-    {
-      mutt_buffer_addstr(result, map[i].name);
-      return CSR_SUCCESS;
-    }
+    mutt_debug(1, "Variable has an invalid value: %d\n", value);
+    return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
-  mutt_debug(1, "Variable has an invalid value: %d\n", value);
-  return (CSR_ERR_INVALID | CSR_INV_TYPE);
+  mutt_buffer_addstr(result, name);
+  return CSR_SUCCESS;
 }
 
 /**
@@ -159,24 +144,18 @@ static int enum_native_set(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  struct EnumDef *ed = (struct EnumDef *) cdef->flags;
+  struct EnumDef *ed = (struct EnumDef *) cdef->data;
   if (!ed || !ed->lookup)
     return CSR_ERR_CODE;
 
-  struct Mapping *map = ed->lookup;
-
-  size_t i;
-  for (i = 0; i < ed->count; i++)
-    if (map[i].value == value)
-      break;
-
-  if (i >= ed->count)
+  const char *name = mutt_map_get_name(value, ed->lookup);
+  if (!name)
   {
     mutt_buffer_printf(err, "Invalid enum value: %ld", value);
     return (CSR_ERR_INVALID | CSR_INV_TYPE);
   }
 
-  if (value == (*(short *) var))
+  if (value == (*(unsigned char *) var))
     return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
 
   if (cdef->validator)
@@ -187,7 +166,7 @@ static int enum_native_set(const struct ConfigSet *cs, void *var,
       return (rc | CSR_INV_VALIDATOR);
   }
 
-  *(short *) var = value;
+  *(unsigned char *) var = value;
   return CSR_SUCCESS;
 }
 
@@ -205,7 +184,7 @@ static intptr_t enum_native_get(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
-  return *(short *) var;
+  return *(unsigned char *) var;
 }
 
 /**
@@ -222,7 +201,7 @@ static int enum_reset(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
-  if (cdef->initial == (*(short *) var))
+  if (cdef->initial == (*(unsigned char *) var))
     return (CSR_SUCCESS | CSR_SUC_NO_CHANGE);
 
   if (cdef->validator)
@@ -233,7 +212,7 @@ static int enum_reset(const struct ConfigSet *cs, void *var,
       return (rc | CSR_INV_VALIDATOR);
   }
 
-  *(short *) var = cdef->initial;
+  *(unsigned char *) var = cdef->initial;
   return CSR_SUCCESS;
 }
 

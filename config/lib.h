@@ -29,17 +29,15 @@
  * | :------------------ | :------------------------- |
  * | config/address.c    | @subpage config_address    |
  * | config/bool.c       | @subpage config_bool       |
- * | config/account.c    | @subpage config_account    |
- * | config/command.c    | @subpage config_command    |
  * | config/dump.c       | @subpage config_dump       |
+ * | config/enum.c       | @subpage config_enum       |
  * | config/long.c       | @subpage config_long       |
- * | config/magic.c      | @subpage config_magic      |
  * | config/mbtable.c    | @subpage config_mbtable    |
  * | config/number.c     | @subpage config_number     |
- * | config/path.c       | @subpage config_path       |
  * | config/quad.c       | @subpage config_quad       |
  * | config/regex.c      | @subpage config_regex      |
  * | config/set.c        | @subpage config_set        |
+ * | config/slist.c      | @subpage config_slist      |
  * | config/sort.c       | @subpage config_sort       |
  * | config/string.c     | @subpage config_string     |
  */
@@ -47,18 +45,14 @@
 #ifndef MUTT_CONFIG_LIB_H
 #define MUTT_CONFIG_LIB_H
 
-#include "account.h"
 #include "address.h"
 #include "bool.h"
-#include "command.h"
 #include "dump.h"
 #include "enum.h"
 #include "inheritance.h"
 #include "long.h"
-#include "magic.h"
 #include "mbtable.h"
 #include "number.h"
-#include "path.h"
 #include "quad.h"
 #include "regex2.h"
 #include "set.h"

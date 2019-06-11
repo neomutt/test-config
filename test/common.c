@@ -31,6 +31,7 @@
 #include "mutt/mutt.h"
 #include "config/lib.h"
 #include "common.h"
+#include "account.h"
 
 const char *line = "----------------------------------------"
                    "----------------------------------------";
@@ -81,24 +82,29 @@ void short_line(void)
   TEST_MSG("%s\n", line + 40);
 }
 
-bool log_observer(const struct ConfigSet *cs, struct HashElem *he,
-                  const char *name, enum ConfigEvent ev)
+int log_observer(struct NotifyCallback *nc)
 {
+  if (!nc)
+    return -1;
+
+  struct EventConfig *ec = (struct EventConfig *) nc->event;
+
   struct Buffer result;
   mutt_buffer_init(&result);
-  result.data = mutt_mem_calloc(1, 256);
   result.dsize = 256;
+  result.data = mutt_mem_calloc(1, result.dsize);
 
   const char *events[] = { "set", "reset", "initial-set" };
 
   mutt_buffer_reset(&result);
 
-  if (ev != CE_INITIAL_SET)
-    cs_he_string_get(cs, he, &result);
+  if (nc->event_subtype != NT_CONFIG_INITIAL_SET)
+    cs_he_string_get(ec->cs, ec->he, &result);
   else
-    cs_he_initial_get(cs, he, &result);
+    cs_he_initial_get(ec->cs, ec->he, &result);
 
-  TEST_MSG("Event: %s has been %s to '%s'\n", name, events[ev - 1], result.data);
+  TEST_MSG("Event: %s has been %s to '%s'\n", ec->name,
+           events[nc->event_subtype - 1], result.data);
 
   FREE(&result.data);
   return true;
@@ -109,39 +115,6 @@ void set_list(const struct ConfigSet *cs)
   log_line(__func__);
   cs_dump_set(cs);
   log_line(__func__);
-}
-
-void hash_dump(struct Hash *table)
-{
-  if (!table)
-    return;
-
-  struct HashElem *he = NULL;
-
-  for (int i = 0; i < table->nelem; i++)
-  {
-    he = table->table[i];
-    if (!he)
-      continue;
-
-    if (he->type == DT_SYNONYM)
-      continue;
-
-    TEST_MSG("%03d ", i);
-    for (; he; he = he->next)
-    {
-      if (he->type & DT_INHERITED)
-      {
-        struct Inheritance *inh = he->data;
-        TEST_MSG("\033[1;32m[%s]\033[m ", inh->name);
-      }
-      else
-      {
-        TEST_MSG("%s ", *(char **) he->data);
-      }
-    }
-    TEST_MSG("\n");
-  }
 }
 
 int sort_list_cb(const void *a, const void *b)
@@ -162,8 +135,8 @@ void cs_dump_set(const struct ConfigSet *cs)
 
   struct Buffer result;
   mutt_buffer_init(&result);
-  result.data = mutt_mem_calloc(1, 256);
   result.dsize = 256;
+  result.data = mutt_mem_calloc(1, result.dsize);
 
   char tmp[128];
   char *list[26] = { 0 };

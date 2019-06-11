@@ -42,10 +42,13 @@
  * | mutt/mbyte.c     | @subpage mbyte     |
  * | mutt/md5.c       | @subpage md5       |
  * | mutt/memory.c    | @subpage memory    |
+ * | mutt/notify.c    | @subpage notify    |
+ * | mutt/observer.h  | @subpage observer  |
  * | mutt/path.c      | @subpage path      |
  * | mutt/pool.c      | @subpage pool      |
  * | mutt/regex.c     | @subpage regex     |
  * | mutt/sha1.c      | @subpage sha1      |
+ * | mutt/slist.c     | @subpage slist     |
  * | mutt/signal.c    | @subpage signal    |
  * | mutt/string.c    | @subpage string    |
  *
@@ -73,11 +76,15 @@
 #include "memory.h"
 #include "message.h"
 #include "queue.h"
+#include "notify.h"
+#include "notify_type.h"
+#include "observer.h"
 #include "path.h"
 #include "pool.h"
 #include "regex3.h"
 #include "sha1.h"
 #include "signal2.h"
+#include "slist.h"
 #include "string2.h"
 
 #endif /* MUTT_LIB_MUTT_H */

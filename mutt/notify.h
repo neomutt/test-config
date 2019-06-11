@@ -1,9 +1,9 @@
 /**
  * @file
- * Test code for the Magic object
+ * Notification API
  *
  * @authors
- * Copyright (C) 2017-2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2019 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,11 +20,23 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _TEST_MAGIC_H
-#define _TEST_MAGIC_H
+#ifndef MUTT_LIB_NOTIFY_H
+#define MUTT_LIB_NOTIFY_H
 
 #include <stdbool.h>
+#include <stdint.h>
+#include "notify_type.h"
+#include "observer.h"
 
-void config_magic(void);
+struct Notify;
 
-#endif /* _TEST_MAGIC_H */
+struct Notify *notify_new(void *object, enum NotifyType type);
+void notify_free(struct Notify **ptr);
+void notify_set_parent(struct Notify *notify, struct Notify *parent);
+
+bool notify_send(struct Notify *notify, int type, int subtype, intptr_t data);
+
+bool notify_observer_add(struct Notify *notify, enum NotifyType type, int subtype, observer_t callback, intptr_t data);
+bool notify_observer_remove(struct Notify *notify, observer_t callback);
+
+#endif /* MUTT_LIB_NOTIFY_H */

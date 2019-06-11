@@ -1,15 +1,12 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
-#define _GNU_SOURCE 1
-#define ALL_TARGETS "all-po all-doc all-contrib all-test"
+#define ALL_TARGETS "all-po all-doc all-contrib"
 #define BINDIR "/usr/bin"
-#define CLEAN_TARGETS "clean-po clean-doc clean-contrib clean-test"
+#define CLEAN_TARGETS "clean-po clean-doc clean-contrib"
 #define CRYPT_BACKEND_CLASSIC_PGP 1
 #define CRYPT_BACKEND_CLASSIC_SMIME 1
 #define CRYPT_BACKEND_GPGME 1
-#define ENABLE_COVERAGE 1
 #define ENABLE_NLS 1
-#define ENABLE_UNIT_TESTS 1
 #define HAVE_BDB 1
 #define HAVE_BIND_TEXTDOMAIN_CODESET 1
 #define HAVE_BKGDSET 1
@@ -110,7 +107,7 @@
 #define HAVE_WADDNWSTR 1
 #define HAVE_WCSCASECMP 1
 #define ICONV_CONST 
-#define INSTALL_TARGETS "install-po install-doc install-contrib install-test"
+#define INSTALL_TARGETS "install-po install-doc install-contrib"
 #define LOFF_T off_t
 #define MAILPATH "/var/mail"
 #define MIXMASTER "mixmaster"
@@ -126,7 +123,7 @@
 #define SIZEOF_OFF_T 8
 #define SUN_ATTACHMENT 1
 #define SYSCONFDIR "/etc"
-#define UNINSTALL_TARGETS "uninstall-po uninstall-doc uninstall-contrib uninstall-test"
+#define UNINSTALL_TARGETS "uninstall-po uninstall-doc uninstall-contrib"
 #define USE_COMPRESSED 1
 #define USE_FCNTL 1
 /* #undef USE_FMEMOPEN */
@@ -144,4 +141,5 @@
 #define USE_SOCKET 1
 #define USE_SSL 1
 #define USE_SSL_GNUTLS 1
+#define VPATH "$(SRCDIR):$(SRCDIR)/po:$(SRCDIR)/doc:$(SRCDIR)/contrib"
 #endif

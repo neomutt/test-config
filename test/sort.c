@@ -27,8 +27,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static short VarApple;
 static short VarBanana;
@@ -52,34 +53,34 @@ static short VarStrawberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_SORT,                 0, &VarApple,      1,  NULL              }, /* test_initial_values */
-  { "Banana",     DT_SORT,                 0, &VarBanana,     2,  NULL              },
-  { "Cherry",     DT_SORT,                 0, &VarCherry,     1,  NULL              },
-  { "Damson",     DT_SORT|DT_SORT_INDEX,   0, &VarDamson,     1,  NULL              }, /* test_string_set */
-  { "Elderberry", DT_SORT|DT_SORT_ALIAS,   0, &VarElderberry, 11, NULL              },
-  { "Fig",        DT_SORT|DT_SORT_BROWSER, 0, &VarFig,        1,  NULL              },
-  { "Guava",      DT_SORT|DT_SORT_KEYS,    0, &VarGuava,      1,  NULL              },
-  { "Hawthorn",   DT_SORT|DT_SORT_AUX,     0, &VarHawthorn,   1,  NULL              },
-  { "Ilama",      DT_SORT|DT_SORT_SIDEBAR, 0, &VarIlama,      17, NULL              },
-  { "Jackfruit",  DT_SORT,                 0, &VarJackfruit,  1,  NULL              }, /* test_string_get */
-  { "Kumquat",    DT_SORT,                 0, &VarKumquat,    1,  NULL              }, /* test_native_set */
-  { "Lemon",      DT_SORT,                 0, &VarLemon,      1,  NULL              }, /* test_native_get */
-  { "Mango",      DT_SORT,                 0, &VarMango,      1,  NULL              }, /* test_reset */
-  { "Nectarine",  DT_SORT,                 0, &VarNectarine,  1,  validator_fail    },
-  { "Olive",      DT_SORT,                 0, &VarOlive,      1,  validator_succeed }, /* test_validator */
-  { "Papaya",     DT_SORT,                 0, &VarPapaya,     1,  validator_warn    },
-  { "Quince",     DT_SORT,                 0, &VarQuince,     1,  validator_fail    },
-  { "Strawberry", DT_SORT,                 0, &VarStrawberry, 1,  NULL              }, /* test_inherit */
+  { "Apple",      DT_SORT,                 &VarApple,      1,  0, NULL              }, /* test_initial_values */
+  { "Banana",     DT_SORT,                 &VarBanana,     2,  0, NULL              },
+  { "Cherry",     DT_SORT,                 &VarCherry,     1,  0, NULL              },
+  { "Damson",     DT_SORT|DT_SORT_INDEX,   &VarDamson,     1,  0, NULL              }, /* test_string_set */
+  { "Elderberry", DT_SORT|DT_SORT_ALIAS,   &VarElderberry, 11, 0, NULL              },
+  { "Fig",        DT_SORT|DT_SORT_BROWSER, &VarFig,        1,  0, NULL              },
+  { "Guava",      DT_SORT|DT_SORT_KEYS,    &VarGuava,      1,  0, NULL              },
+  { "Hawthorn",   DT_SORT|DT_SORT_AUX,     &VarHawthorn,   1,  0, NULL              },
+  { "Ilama",      DT_SORT|DT_SORT_SIDEBAR, &VarIlama,      17, 0, NULL              },
+  { "Jackfruit",  DT_SORT,                 &VarJackfruit,  1,  0, NULL              }, /* test_string_get */
+  { "Kumquat",    DT_SORT,                 &VarKumquat,    1,  0, NULL              }, /* test_native_set */
+  { "Lemon",      DT_SORT,                 &VarLemon,      1,  0, NULL              }, /* test_native_get */
+  { "Mango",      DT_SORT,                 &VarMango,      1,  0, NULL              }, /* test_reset */
+  { "Nectarine",  DT_SORT,                 &VarNectarine,  1,  0, validator_fail    },
+  { "Olive",      DT_SORT,                 &VarOlive,      1,  0, validator_succeed }, /* test_validator */
+  { "Papaya",     DT_SORT,                 &VarPapaya,     1,  0, validator_warn    },
+  { "Quince",     DT_SORT,                 &VarQuince,     1,  0, validator_fail    },
+  { "Strawberry", DT_SORT,                 &VarStrawberry, 1,  0, NULL              }, /* test_inherit */
   { NULL },
 };
 
 static struct ConfigDef Vars2[] = {
-  { "Raspberry", DT_SORT|DT_SORT_AUX|DT_SORT_ALIAS, 0, &VarRaspberry, 1, NULL }, /* test_sort_type */
+  { "Raspberry", DT_SORT|DT_SORT_AUX|DT_SORT_ALIAS, &VarRaspberry, 1, 0, NULL }, /* test_sort_type */
   { NULL },
 };
 // clang-format on
 
-char *name_list[] = {
+const char *name_list[] = {
   "Damson", "Elderberry", "Fig", "Guava", "Hawthorn", "Ilama",
 };
 
@@ -115,8 +116,8 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 
   struct Buffer value;
   mutt_buffer_init(&value);
-  value.data = mutt_mem_calloc(1, 256);
   value.dsize = 256;
+  value.data = mutt_mem_calloc(1, value.dsize);
   mutt_buffer_reset(&value);
 
   int rc;
@@ -364,7 +365,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
     }
   }
 
-  char *name = "Kumquat";
+  const char *name = "Kumquat";
   short value = SORT_THREADS;
   VarKumquat = -1;
   mutt_buffer_reset(err);
@@ -437,7 +438,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Lemon";
+  const char *name = "Lemon";
 
   VarLemon = SORT_THREADS;
   mutt_buffer_reset(err);
@@ -457,7 +458,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Mango";
+  const char *name = "Mango";
   VarMango = SORT_SUBJECT;
   mutt_buffer_reset(err);
 
@@ -521,7 +522,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Olive";
+  const char *name = "Olive";
   VarOlive = SORT_SUBJECT;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "threads", err);
@@ -636,7 +637,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *ac = ac_new(cs, account, AccountVarStr);
+  struct Account *a = account_new();
+  account_add_config(a, cs, account, AccountVarStr);
 
   // set parent
   VarStrawberry = SORT_SUBJECT;
@@ -682,7 +684,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   result = true;
 ti_out:
-  ac_free(cs, &ac);
+  account_free(&a);
   return result;
 }
 
@@ -691,7 +693,7 @@ static bool test_sort_type(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   const char *name = "Raspberry";
-  char *value = "alpha";
+  const char *value = "alpha";
 
   mutt_buffer_reset(err);
   TEST_MSG("Expect error for next test\n");
@@ -721,8 +723,8 @@ void config_sort(void)
 {
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -733,7 +735,7 @@ void config_sort(void)
     return;
   dont_fail = false;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 

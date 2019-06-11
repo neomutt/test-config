@@ -3,7 +3,7 @@
  * Type representing a list of strings
  *
  * @authors
- * Copyright (C) 2018 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2018-2019 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -21,7 +21,7 @@
  */
 
 /**
- * @page config-slist Type: List of strings
+ * @page config_slist Type: List of strings
  *
  * Type representing a list of strings.
  */
@@ -31,12 +31,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include <string.h>
-#include "mutt/buffer.h"
-#include "mutt/logging.h"
-#include "mutt/memory.h"
-#include "mutt/queue.h"
-#include "mutt/string2.h"
-#include "slist.h"
+#include "mutt/mutt.h"
 #include "set.h"
 #include "types.h"
 
@@ -72,9 +67,10 @@ static void slist_destroy(const struct ConfigSet *cs, void *var, const struct Co
 static int slist_string_set(const struct ConfigSet *cs, void *var, struct ConfigDef *cdef,
                             const char *value, struct Buffer *err)
 {
-  if (!cs || !cdef || !value)
+  if (!cs || !cdef)
     return CSR_ERR_CODE; /* LCOV_EXCL_LINE */
 
+  /* Store empty strings as NULL */
   if (value && (value[0] == '\0'))
     value = NULL;
 
@@ -84,7 +80,7 @@ static int slist_string_set(const struct ConfigSet *cs, void *var, struct Config
 
   if (var)
   {
-    list = slist_parse(value, cdef->flags);
+    list = slist_parse(value, cdef->type);
 
     if (cdef->validator)
     {
@@ -144,7 +140,7 @@ static int slist_string_get(const struct ConfigSet *cs, void *var,
       mutt_buffer_addstr(result, np->data);
       if (STAILQ_NEXT(np, entries))
       {
-        int sep = (cdef->flags & SLIST_SEP_MASK);
+        int sep = (cdef->type & SLIST_SEP_MASK);
         if (sep == SLIST_SEP_COMMA)
           mutt_buffer_addch(result, ',');
         else if (sep == SLIST_SEP_COLON)
@@ -217,7 +213,9 @@ static intptr_t slist_native_get(const struct ConfigSet *cs, void *var,
   if (!cs || !var || !cdef)
     return INT_MIN; /* LCOV_EXCL_LINE */
 
-  return *(short *) var;
+  struct Slist *list = *(struct Slist **) var;
+
+  return (intptr_t) list;
 }
 
 /**
@@ -237,14 +235,10 @@ static int slist_reset(const struct ConfigSet *cs, void *var,
   struct Slist *list = NULL;
   const char *initial = (const char *) cdef->initial;
 
-  struct Slist *curlist = *(struct Slist **) var;
+  if (initial)
+    list = slist_parse(initial, cdef->type);
 
   int rc = CSR_SUCCESS;
-  if (!curlist)
-    rc |= CSR_SUC_EMPTY;
-
-  if (initial)
-    list = slist_parse(initial, cdef->flags);
 
   if (cdef->validator)
   {
@@ -279,228 +273,3 @@ void slist_init(struct ConfigSet *cs)
   cs_register_type(cs, DT_SLIST, &cst_slist);
 }
 
-/**
- * slist_add_list - Add a list to another list
- * @param list String list to add to
- * @param add  String list to add
- * @retval ptr Modified list
- */
-struct Slist *slist_add_list(struct Slist *list, const struct Slist *add)
-{
-  if (!add)
-    return list;
-  if (!list)
-    return slist_dup(add);
-
-  struct ListNode *np = NULL;
-  STAILQ_FOREACH(np, &add->head, entries)
-  {
-    mutt_list_insert_tail(&list->head, mutt_str_strdup((char *) np->data));
-    list->count++;
-  }
-  return list;
-}
-
-/**
- * slist_add_string - Add a string to a list
- * @param list List to modify
- * @param str  String to add
- * @retval ptr Modified list
- */
-struct Slist *slist_add_string(struct Slist *list, const char *str)
-{
-  if (!list)
-    return NULL;
-
-  if (str && (str[0] == '\0'))
-    str = NULL;
-
-  if (!str && !(list->flags & SLIST_ALLOW_EMPTY))
-    return list;
-
-  mutt_list_insert_tail(&list->head, mutt_str_strdup(str));
-  list->count++;
-
-  return list;
-}
-
-/**
- * slist_compare - Compare two string lists
- * @param a First list
- * @param b Second list
- * @retval true If they are identical
- */
-bool slist_compare(const struct Slist *a, const struct Slist *b)
-{
-  if (!a && !b) /* both empty */
-    return true;
-  if (!a ^ !b) /* one is empty, but not the other */
-    return false;
-  if (a->count != b->count)
-    return false;
-
-  return false;
-}
-
-/**
- * slist_dup - Create a copy of an Slist object
- * @param list Slist to duplicate
- * @retval ptr New Slist object
- */
-struct Slist *slist_dup(const struct Slist *list)
-{
-  if (!list)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  struct Slist *l = mutt_mem_calloc(1, sizeof(*l));
-  l->flags = list->flags;
-  STAILQ_INIT(&l->head);
-
-  struct ListNode *np = NULL;
-  STAILQ_FOREACH(np, &list->head, entries)
-  {
-    mutt_list_insert_tail(&l->head, mutt_str_strdup(np->data));
-  }
-  return l;
-}
-
-/**
- * slist_empty - Empty out an Slist object
- * @param list Slist to duplicate
- * @retval ptr New Slist object
- */
-struct Slist *slist_empty(struct Slist **list)
-{
-  if (!list || !*list)
-    return NULL; /* LCOV_EXCL_LINE */
-
-  mutt_list_free(&(*list)->head);
-
-  if ((*list)->flags & SLIST_ALLOW_EMPTY)
-  {
-    (*list)->count = 0;
-    return *list;
-  }
-
-  FREE(list);
-  return NULL;
-}
-
-/**
- * slist_free - Free an Slist object
- * @param list Slist to free
- */
-void slist_free(struct Slist **list)
-{
-  if (!list || !*list)
-    return; /* LCOV_EXCL_LINE */
-
-  mutt_list_free(&(*list)->head);
-  FREE(list);
-}
-
-/**
- * slist_is_member - Is a string a member of a list?
- * @param list List to modify
- * @param str  String to find
- * @param true String is in the list
- */
-bool slist_is_member(const struct Slist *list, const char *str)
-{
-  if (!list)
-    return false;
-
-  if (!str && !(list->flags & SLIST_ALLOW_EMPTY))
-    return false;
-
-  struct ListNode *np = NULL;
-  STAILQ_FOREACH(np, &list->head, entries)
-  {
-    if (mutt_str_strcmp(np->data, str) == 0)
-      return true;
-  }
-  return false;
-}
-
-/**
- * slist_parse - Parse a list of strings into a list
- * @param s String of strings
- * @retval ptr New Slist object
- */
-struct Slist *slist_parse(const char *str, int flags)
-{
-  char *src = mutt_str_strdup(str);
-  if (!src && !(flags & SLIST_ALLOW_EMPTY))
-    return NULL;
-
-  char sep = ' ';
-  if ((flags & SLIST_SEP_MASK) == SLIST_SEP_COMMA)
-    sep = ',';
-  else if ((flags & SLIST_SEP_MASK) == SLIST_SEP_COLON)
-    sep = ':';
-
-  struct Slist *list = mutt_mem_calloc(1, sizeof(struct Slist));
-  list->flags = flags;
-  STAILQ_INIT(&list->head);
-
-  if (!src)
-    return list;
-
-  char *start = src;
-  for (char *p = start; *p; p++)
-  {
-    if ((p[0] == '\\') && (p[1] != '\0'))
-    {
-      p++;
-      continue;
-    }
-
-    if (p[0] == sep)
-    {
-      p[0] = '\0';
-      mutt_list_insert_tail(&list->head, mutt_str_strdup(start));
-      list->count++;
-      start = p + 1;
-    }
-  }
-
-  mutt_list_insert_tail(&list->head, mutt_str_strdup(start));
-  list->count++;
-
-  FREE(&src);
-  return list;
-}
-
-/**
- * slist_remove_string - Remove a string from a list
- * @param list List to modify
- * @param str  String to remove
- * @retval ptr Modified list
- */
-struct Slist *slist_remove_string(struct Slist *list, const char *str)
-{
-  if (!list)
-    return NULL;
-  if (!str && !(list->flags & SLIST_ALLOW_EMPTY))
-    return list;
-
-  struct ListNode *prev = NULL;
-  struct ListNode *np = NULL;
-  struct ListNode *tmp = NULL;
-  STAILQ_FOREACH_SAFE(np, &list->head, entries, tmp)
-  {
-    if (mutt_str_strcmp(np->data, str) == 0)
-    {
-      if (prev)
-        STAILQ_REMOVE_AFTER(&list->head, prev, entries);
-      else
-        STAILQ_REMOVE_HEAD(&list->head, entries);
-      FREE(&np->data);
-      FREE(&np);
-      list->count--;
-      break;
-    }
-    prev = np;
-  }
-  return list;
-}

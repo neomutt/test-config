@@ -1,15 +1,23 @@
 [36m---- config_set ----------------------------------[m
-Observer was already registered
-Observer wasn't registered
 Expected error
 Expected error
 Variable 'Apple' has an invalid type 9
 Expected error
+cs_init(NULL, 100)
+cs_free(NULL)
+cs_notify_observers(NULL, he, "apple", NT_CONFIG_SET)
+cs_notify_observers(cs, NULL, "apple", NT_CONFIG_SET)
+cs_notify_observers(cs, he, NULL, NT_CONFIG_SET)
+Variable 'Banana' has an invalid type 30
+Variable 'Banana' has an invalid type 30
+Variable 'Banana' has an invalid type 30
+Variable 'Banana' has an invalid type 30
+Variable 'Banana' has an invalid type 30
 Expected error: Unknown var 'Unknown'
 Expected error: Unknown var 'Unknown'
 Expected error: Unknown var 'Unknown'
 Expected error: Unknown var 'Unknown'
 [36m---- set_list ------------------------------------[m
-boolean Banana = yes
+Unknown type: 30
 [36m---- set_list ------------------------------------[m
 [36m---- config_set ----------------------------------[m

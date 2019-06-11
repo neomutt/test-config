@@ -28,9 +28,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "address/lib.h"
+#include "common.h"
 #include "config/lib.h"
-#include "email/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static struct Address *VarApple;
 static struct Address *VarBanana;
@@ -52,23 +53,23 @@ static struct Address *VarQuince;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_ADDRESS, 0, &VarApple,      IP "apple@example.com",      NULL              }, /* test_initial_values */
-  { "Banana",     DT_ADDRESS, 0, &VarBanana,     IP "banana@example.com",     NULL              },
-  { "Cherry",     DT_ADDRESS, 0, &VarCherry,     IP "cherry@example.com",     NULL              },
-  { "Damson",     DT_ADDRESS, 0, &VarDamson,     0,                           NULL              }, /* test_address_set */
-  { "Elderberry", DT_ADDRESS, 0, &VarElderberry, IP "elderberry@example.com", NULL              },
-  { "Fig",        DT_ADDRESS, 0, &VarFig,        0,                           NULL              }, /* test_address_get */
-  { "Guava",      DT_ADDRESS, 0, &VarGuava,      IP "guava@example.com",      NULL              },
-  { "Hawthorn",   DT_ADDRESS, 0, &VarHawthorn,   0,                           NULL              },
-  { "Ilama",      DT_ADDRESS, 0, &VarIlama,      0,                           NULL              }, /* test_native_set */
-  { "Jackfruit",  DT_ADDRESS, 0, &VarJackfruit,  IP "jackfruit@example.com",  NULL              },
-  { "Kumquat",    DT_ADDRESS, 0, &VarKumquat,    0,                           NULL              }, /* test_native_get */
-  { "Lemon",      DT_ADDRESS, 0, &VarLemon,      IP "lemon@example.com",      NULL              }, /* test_reset */
-  { "Mango",      DT_ADDRESS, 0, &VarMango,      IP "mango@example.com",      validator_fail    },
-  { "Nectarine",  DT_ADDRESS, 0, &VarNectarine,  IP "nectarine@example.com",  validator_succeed }, /* test_validator */
-  { "Olive",      DT_ADDRESS, 0, &VarOlive,      IP "olive@example.com",      validator_warn    },
-  { "Papaya",     DT_ADDRESS, 0, &VarPapaya,     IP "papaya@example.com",     validator_fail    },
-  { "Quince",     DT_ADDRESS, 0, &VarQuince,     0,                           NULL              }, /* test_inherit */
+  { "Apple",      DT_ADDRESS, &VarApple,      IP "apple@example.com",      0, NULL              }, /* test_initial_values */
+  { "Banana",     DT_ADDRESS, &VarBanana,     IP "banana@example.com",     0, NULL              },
+  { "Cherry",     DT_ADDRESS, &VarCherry,     IP "cherry@example.com",     0, NULL              },
+  { "Damson",     DT_ADDRESS, &VarDamson,     0,                           0, NULL              }, /* test_address_set */
+  { "Elderberry", DT_ADDRESS, &VarElderberry, IP "elderberry@example.com", 0, NULL              },
+  { "Fig",        DT_ADDRESS, &VarFig,        0,                           0, NULL              }, /* test_address_get */
+  { "Guava",      DT_ADDRESS, &VarGuava,      IP "guava@example.com",      0, NULL              },
+  { "Hawthorn",   DT_ADDRESS, &VarHawthorn,   0,                           0, NULL              },
+  { "Ilama",      DT_ADDRESS, &VarIlama,      0,                           0, NULL              }, /* test_native_set */
+  { "Jackfruit",  DT_ADDRESS, &VarJackfruit,  IP "jackfruit@example.com",  0, NULL              },
+  { "Kumquat",    DT_ADDRESS, &VarKumquat,    0,                           0, NULL              }, /* test_native_get */
+  { "Lemon",      DT_ADDRESS, &VarLemon,      IP "lemon@example.com",      0, NULL              }, /* test_reset */
+  { "Mango",      DT_ADDRESS, &VarMango,      IP "mango@example.com",      0, validator_fail    },
+  { "Nectarine",  DT_ADDRESS, &VarNectarine,  IP "nectarine@example.com",  0, validator_succeed }, /* test_validator */
+  { "Olive",      DT_ADDRESS, &VarOlive,      IP "olive@example.com",      0, validator_warn    },
+  { "Papaya",     DT_ADDRESS, &VarPapaya,     IP "papaya@example.com",     0, validator_fail    },
+  { "Quince",     DT_ADDRESS, &VarQuince,     0,                           0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -99,8 +100,8 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 
   struct Buffer value;
   mutt_buffer_init(&value);
-  value.data = mutt_mem_calloc(1, 256);
   value.dsize = 256;
+  value.data = mutt_mem_calloc(1, value.dsize);
   mutt_buffer_reset(&value);
 
   int rc;
@@ -181,7 +182,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   const char *valid[] = { "hello@example.com", "world@example.com", NULL };
-  char *name = "Damson";
+  const char *name = "Damson";
   char *addr = NULL;
 
   int rc;
@@ -279,7 +280,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   struct Address *a = address_new("hello@example.com");
-  char *name = "Ilama";
+  const char *name = "Ilama";
   char *addr = NULL;
   bool result = false;
 
@@ -326,7 +327,7 @@ tbns_out:
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Kumquat";
+  const char *name = "Kumquat";
 
   if (!TEST_CHECK(cs_str_string_set(cs, name, "kumquat@example.com", err) != INT_MIN))
     return false;
@@ -352,7 +353,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Lemon";
+  const char *name = "Lemon";
 
   mutt_buffer_reset(err);
 
@@ -422,7 +423,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   struct Address *a = address_new("world@example.com");
   bool result = false;
 
-  char *name = "Nectarine";
+  const char *name = "Nectarine";
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello@example.com", err);
   if (TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
@@ -546,7 +547,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *ac = ac_new(cs, account, AccountVarAddr);
+  struct Account *a = account_new();
+  account_add_config(a, cs, account, AccountVarAddr);
 
   // set parent
   mutt_buffer_reset(err);
@@ -591,7 +593,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   result = true;
 ti_out:
-  ac_free(cs, &ac);
+  account_free(&a);
   return result;
 }
 
@@ -599,8 +601,8 @@ void config_address(void)
 {
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -611,7 +613,7 @@ void config_address(void)
     return;
   dont_fail = false;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 

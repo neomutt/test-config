@@ -28,8 +28,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static short VarApple;
 static short VarBanana;
@@ -49,21 +50,21 @@ static short VarOlive;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_NUMBER,                 0, &VarApple,      -42, NULL              }, /* test_initial_values */
-  { "Banana",     DT_NUMBER,                 0, &VarBanana,     99,  NULL              },
-  { "Cherry",     DT_NUMBER,                 0, &VarCherry,     33,  NULL              },
-  { "Damson",     DT_NUMBER,                 0, &VarDamson,     0,   NULL              }, /* test_string_set */
-  { "Elderberry", DT_NUMBER|DT_NOT_NEGATIVE, 0, &VarElderberry, 0,   NULL              },
-  { "Fig",        DT_NUMBER,                 0, &VarFig,        0,   NULL              }, /* test_string_get */
-  { "Guava",      DT_NUMBER,                 0, &VarGuava,      0,   NULL              }, /* test_native_set */
-  { "Hawthorn",   DT_NUMBER|DT_NOT_NEGATIVE, 0, &VarHawthorn,   0,   NULL              },
-  { "Ilama",      DT_NUMBER,                 0, &VarIlama,      0,   NULL              }, /* test_native_get */
-  { "Jackfruit",  DT_NUMBER,                 0, &VarJackfruit,  99,  NULL              }, /* test_reset */
-  { "Kumquat",    DT_NUMBER,                 0, &VarKumquat,    33,  validator_fail    },
-  { "Lemon",      DT_NUMBER,                 0, &VarLemon,      0,   validator_succeed }, /* test_validator */
-  { "Mango",      DT_NUMBER,                 0, &VarMango,      0,   validator_warn    },
-  { "Nectarine",  DT_NUMBER,                 0, &VarNectarine,  0,   validator_fail    },
-  { "Olive",      DT_NUMBER,                 0, &VarOlive,      0,   NULL              }, /* test_inherit */
+  { "Apple",      DT_NUMBER,                 &VarApple,      -42, 0, NULL              }, /* test_initial_values */
+  { "Banana",     DT_NUMBER,                 &VarBanana,     99,  0, NULL              },
+  { "Cherry",     DT_NUMBER,                 &VarCherry,     33,  0, NULL              },
+  { "Damson",     DT_NUMBER,                 &VarDamson,     0,   0, NULL              }, /* test_string_set */
+  { "Elderberry", DT_NUMBER|DT_NOT_NEGATIVE, &VarElderberry, 0,   0, NULL              },
+  { "Fig",        DT_NUMBER,                 &VarFig,        0,   0, NULL              }, /* test_string_get */
+  { "Guava",      DT_NUMBER,                 &VarGuava,      0,   0, NULL              }, /* test_native_set */
+  { "Hawthorn",   DT_NUMBER|DT_NOT_NEGATIVE, &VarHawthorn,   0,   0, NULL              },
+  { "Ilama",      DT_NUMBER,                 &VarIlama,      0,   0, NULL              }, /* test_native_get */
+  { "Jackfruit",  DT_NUMBER,                 &VarJackfruit,  99,  0, NULL              }, /* test_reset */
+  { "Kumquat",    DT_NUMBER,                 &VarKumquat,    33,  0, validator_fail    },
+  { "Lemon",      DT_NUMBER,                 &VarLemon,      0,   0, validator_succeed }, /* test_validator */
+  { "Mango",      DT_NUMBER,                 &VarMango,      0,   0, validator_warn    },
+  { "Nectarine",  DT_NUMBER,                 &VarNectarine,  0,   0, validator_fail    },
+  { "Olive",      DT_NUMBER,                 &VarOlive,      0,   0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -91,8 +92,8 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 
   struct Buffer value;
   mutt_buffer_init(&value);
-  value.data = mutt_mem_calloc(1, 256);
   value.dsize = 256;
+  value.data = mutt_mem_calloc(1, value.dsize);
 
   int rc;
 
@@ -165,7 +166,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   const char *valid[] = { "-123", "0", "-42", "456" };
   int numbers[] = { -123, 0, -42, 456 };
   const char *invalid[] = { "-32769", "32768", "junk", "", NULL };
-  char *name = "Damson";
+  const char *name = "Damson";
 
   int rc;
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
@@ -264,7 +265,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Guava";
+  const char *name = "Guava";
   short value = 12345;
 
   TEST_MSG("Setting %s to %d\n", name, value);
@@ -340,7 +341,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Ilama";
+  const char *name = "Ilama";
 
   VarIlama = 3456;
   mutt_buffer_reset(err);
@@ -360,7 +361,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Jackfruit";
+  const char *name = "Jackfruit";
   VarJackfruit = 345;
   mutt_buffer_reset(err);
 
@@ -419,7 +420,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Lemon";
+  const char *name = "Lemon";
   VarLemon = 123;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "456", err);
@@ -539,7 +540,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *ac = ac_new(cs, account, AccountVarStr);
+  struct Account *a = account_new();
+  account_add_config(a, cs, account, AccountVarStr);
 
   // set parent
   VarOlive = 123;
@@ -588,7 +590,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   result = true;
 ti_out:
-  ac_free(cs, &ac);
+  account_free(&a);
   return result;
 }
 
@@ -596,8 +598,8 @@ void config_number(void)
 {
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -608,7 +610,7 @@ void config_number(void)
     return;
   dont_fail = false;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 

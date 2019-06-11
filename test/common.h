@@ -25,11 +25,12 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "config/set.h"
+#include "config/lib.h"
 
 struct Buffer;
 struct Hash;
 struct HashElem;
+struct NotifyCallback;
 
 extern const char *line;
 extern bool dont_fail;
@@ -40,10 +41,8 @@ int validator_fail   (const struct ConfigSet *cs, const struct ConfigDef *cdef, 
 
 void log_line(const char *fn);
 void short_line(void);
-bool log_observer(const struct ConfigSet *cs, struct HashElem *he, const char *name, enum ConfigEvent ev);
+int log_observer(struct NotifyCallback *nc);
 void set_list(const struct ConfigSet *cs);
-
-void hash_dump(struct Hash *table);
 void cs_dump_set(const struct ConfigSet *cs);
 
 #endif /* _TEST_COMMON_H */

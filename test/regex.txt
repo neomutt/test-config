@@ -52,7 +52,7 @@ Event: Elderberry has been set to ''
 Elderberry = '', set by ''
 Event: Elderberry has been set to ''
 Elderberry = '', set by ''
-Expected error: Invalid back reference
+Expected error: Unmatched [, [^, [:, [., or [=
 [36m---- test_string_set -----------------------------[m
 [36m---- test_string_get -----------------------------[m
 Fig = '', ''
@@ -67,7 +67,7 @@ Event: Ilama has been set to '!world.*'
 '!world.*', not flag set to 1
 Event: Jackfruit has been set to ''
 Jackfruit = '', set by NULL
-Expected error: Invalid back reference
+Expected error: Unmatched [, [^, [:, [., or [=
 [36m---- test_native_set -----------------------------[m
 [36m---- test_native_get -----------------------------[m
 Event: Lemon has been set to 'lemon.*'
@@ -79,7 +79,7 @@ Event: Mango has been set to 'hello.*'
 Set: Mango = 'hello.*'
 Event: Mango has been reset to 'mango.*'
 Reset: Mango = 'mango.*'
-Expected error: Invalid back reference
+Expected error: Unmatched [, [^, [:, [., or [=
 Initial: Olive = 'olive.*'
 Event: Olive has been set to 'hel*o'
 Set: Olive = 'hel*o'

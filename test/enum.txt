@@ -1,11 +1,140 @@
-[36m---- config_enum ---------------------------------[m
 [36m---- set_list ------------------------------------[m
+Variable has an invalid value: 0
+Variable has an invalid value: 0
 enum Apple = Dingo
+enum Banana = Badger
+enum Cherry = Frog
+enum Damson = Antelope
+enum Elderberry: ERROR: 
+enum Fig = Antelope
+enum Guava = Antelope
+enum Hawthorn = Antelope
+enum Ilama = Antelope
+enum Jackfruit = Antelope
+enum Kumquat: ERROR: 
+enum Lemon = Antelope
+enum Mango = Antelope
+enum Nectarine: ERROR: 
+enum Olive = Antelope
 [36m---- set_list ------------------------------------[m
 [36m---- test_initial_values -------------------------[m
 Apple = 40
-Event: Apple has been set to 'Antelope'
-Apple = 1, 
-Event: Apple has been set to 'Echidna'
-Apple = 41, 
+Banana = 2
+Event: Apple has been set to 'Cassowary'
+Event: Banana has been set to 'Antelope'
+Apple = 3
+Apple's initial value is 'Dingo'
+Banana = 1
+Banana's initial value is 'Badger'
+Event: Cherry has been initial-set to 'Cassowary'
+Cherry = 42
+Cherry's initial value is Cassowary
+[36m---- test_initial_values -------------------------[m
+[36m---- test_string_set -----------------------------[m
+Setting Damson to Antelope
+Event: Damson has been set to 'Antelope'
+Damson = 1, set by 'Antelope'
+----------------------------------------
+Setting Damson to ECHIDNA
+Event: Damson has been set to 'Echidna'
+Damson = 41, set by 'ECHIDNA'
+----------------------------------------
+Setting Damson to herbivore
+Event: Damson has been set to 'Antelope'
+Damson = 1, set by 'herbivore'
+----------------------------------------
+Setting Damson to BIRD
+Value of Damson wasn't changed
+Setting Damson to Frogs
+Expected error: Invalid enum value: Frogs
+----------------------------------------
+Setting Damson to 
+Expected error: Invalid enum value: 
+----------------------------------------
+Setting Damson to 
+Expected error: 
+----------------------------------------
+----------------------------------------
+Setting Elderberry to 'Dingo'
+Expected error: 
+[36m---- test_string_set -----------------------------[m
+[36m---- test_string_get -----------------------------[m
+Fig = 41, Echidna
+Fig = 40, Dingo
+[36m---- test_string_get -----------------------------[m
+[36m---- test_native_set -----------------------------[m
+Setting Guava to 3
+Event: Guava has been set to 'Cassowary'
+Guava = 3, set to '3'
+----------------------------------------
+Setting Guava to 3
+Value of Guava wasn't changed
+----------------------------------------
+Setting Hawthorn to 214
+Expected error: Invalid enum value: 214
+----------------------------------------
+Setting Hawthorn to -1
+Expected error: Invalid enum value: -1
+----------------------------------------
+Setting Hawthorn to 256
+Expected error: Invalid enum value: 256
+----------------------------------------
+Setting Elderberry to 1
+Expected error: Invalid enum value: 256
+[36m---- test_native_set -----------------------------[m
+[36m---- test_native_get -----------------------------[m
+Ilama = 253
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
+Jackfruit = 253
+Event: Jackfruit has been reset to 'Antelope'
+Reset: Jackfruit = 1
+----------------------------------------
+Initial: Kumquat = 0
+Event: Kumquat has been set to 'Dingo'
+Set: Kumquat = 40
+Expected error: validator_fail: Kumquat, 1
+Reset: Kumquat = 40
+----------------------------------------
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
+Event: Lemon has been set to 'Dingo'
+validator_succeed: Lemon, 40
+String: Lemon = 40
+----------------------------------------
+Event: Lemon has been set to 'Echidna'
+validator_succeed: Lemon, 41
+Native: Lemon = 41
+----------------------------------------
+Event: Mango has been set to 'Cassowary'
+validator_warn: Mango, 3
+String: Mango = 3
+----------------------------------------
+Event: Mango has been set to 'Dingo'
+validator_warn: Mango, 40
+Native: Mango = 40
+----------------------------------------
+Expected error: validator_fail: Nectarine, 3
+String: Nectarine = 123
+----------------------------------------
+Expected error: validator_fail: Nectarine, 3
+Native: Nectarine = 253
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
+Event: Olive has been set to 'Dingo'
+          Olive = 40
+    fruit:Olive = 40
+----------------------------------------
+Event: fruit:Olive has been set to 'Cassowary'
+          Olive = 40
+    fruit:Olive = 3
+----------------------------------------
+Event: fruit:Olive has been reset to 'Dingo'
+          Olive = 40
+    fruit:Olive = 40
+----------------------------------------
+Event: Olive has been reset to 'Antelope'
+          Olive = 1
+    fruit:Olive = 1
+[36m---- test_inherit --------------------------------[m
 [36m---- config_enum ---------------------------------[m

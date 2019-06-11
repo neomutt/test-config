@@ -27,8 +27,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static char *VarApple;
 static char *VarBanana;
@@ -52,25 +53,25 @@ static char *VarStrawberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_STRING,              0, &VarApple,      IP "apple",      NULL              }, /* test_initial_values */
-  { "Banana",     DT_STRING,              0, &VarBanana,     IP "banana",     NULL              },
-  { "Cherry",     DT_STRING,              0, &VarCherry,     IP "cherry",     NULL              },
-  { "Damson",     DT_STRING,              0, &VarDamson,     0,               NULL              }, /* test_string_set */
-  { "Elderberry", DT_STRING,              0, &VarElderberry, IP "elderberry", NULL              },
-  { "Fig",        DT_STRING|DT_NOT_EMPTY, 0, &VarFig,        IP "fig",        NULL              },
-  { "Guava",      DT_STRING,              0, &VarGuava,      0,               NULL              }, /* test_string_get */
-  { "Hawthorn",   DT_STRING,              0, &VarHawthorn,   IP "hawthorn",   NULL              },
-  { "Ilama",      DT_STRING,              0, &VarIlama,      0,               NULL              },
-  { "Jackfruit",  DT_STRING,              0, &VarJackfruit,  0,               NULL              }, /* test_native_set */
-  { "Kumquat",    DT_STRING,              0, &VarKumquat,    IP "kumquat",    NULL              },
-  { "Lemon",      DT_STRING|DT_NOT_EMPTY, 0, &VarLemon,      IP "lemon",      NULL              },
-  { "Mango",      DT_STRING,              0, &VarMango,      0,               NULL              }, /* test_native_get */
-  { "Nectarine",  DT_STRING,              0, &VarNectarine,  IP "nectarine",  NULL              }, /* test_reset */
-  { "Olive",      DT_STRING,              0, &VarOlive,      IP "olive",      validator_fail    },
-  { "Papaya",     DT_STRING,              0, &VarPapaya,     IP "papaya",     validator_succeed }, /* test_validator */
-  { "Quince",     DT_STRING,              0, &VarQuince,     IP "quince",     validator_warn    },
-  { "Raspberry",  DT_STRING,              0, &VarRaspberry,  IP "raspberry",  validator_fail    },
-  { "Strawberry", DT_STRING,              0, &VarStrawberry, 0,               NULL              }, /* test_inherit */
+  { "Apple",      DT_STRING,              &VarApple,      IP "apple",      0, NULL              }, /* test_initial_values */
+  { "Banana",     DT_STRING,              &VarBanana,     IP "banana",     0, NULL              },
+  { "Cherry",     DT_STRING,              &VarCherry,     IP "cherry",     0, NULL              },
+  { "Damson",     DT_STRING,              &VarDamson,     0,               0, NULL              }, /* test_string_set */
+  { "Elderberry", DT_STRING,              &VarElderberry, IP "elderberry", 0, NULL              },
+  { "Fig",        DT_STRING|DT_NOT_EMPTY, &VarFig,        IP "fig",        0, NULL              },
+  { "Guava",      DT_STRING,              &VarGuava,      0,               0, NULL              }, /* test_string_get */
+  { "Hawthorn",   DT_STRING,              &VarHawthorn,   IP "hawthorn",   0, NULL              },
+  { "Ilama",      DT_STRING,              &VarIlama,      0,               0, NULL              },
+  { "Jackfruit",  DT_STRING,              &VarJackfruit,  0,               0, NULL              }, /* test_native_set */
+  { "Kumquat",    DT_STRING,              &VarKumquat,    IP "kumquat",    0, NULL              },
+  { "Lemon",      DT_STRING|DT_NOT_EMPTY, &VarLemon,      IP "lemon",      0, NULL              },
+  { "Mango",      DT_STRING,              &VarMango,      0,               0, NULL              }, /* test_native_get */
+  { "Nectarine",  DT_STRING,              &VarNectarine,  IP "nectarine",  0, NULL              }, /* test_reset */
+  { "Olive",      DT_STRING,              &VarOlive,      IP "olive",      0, validator_fail    },
+  { "Papaya",     DT_STRING,              &VarPapaya,     IP "papaya",     0, validator_succeed }, /* test_validator */
+  { "Quince",     DT_STRING,              &VarQuince,     IP "quince",     0, validator_warn    },
+  { "Raspberry",  DT_STRING,              &VarRaspberry,  IP "raspberry",  0, validator_fail    },
+  { "Strawberry", DT_STRING,              &VarStrawberry, 0,               0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -98,8 +99,8 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 
   struct Buffer value;
   mutt_buffer_init(&value);
-  value.data = mutt_mem_calloc(1, 256);
   value.dsize = 256;
+  value.data = mutt_mem_calloc(1, value.dsize);
   mutt_buffer_reset(&value);
 
   int rc;
@@ -180,7 +181,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   const char *valid[] = { "hello", "world", "world", "", NULL };
-  char *name = "Damson";
+  const char *name = "Damson";
 
   int rc;
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
@@ -298,7 +299,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   const char *valid[] = { "hello", "world", "world", "", NULL };
-  char *name = "Jackfruit";
+  const char *name = "Jackfruit";
 
   int rc;
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
@@ -372,7 +373,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Mango";
+  const char *name = "Mango";
 
   int rc = cs_str_string_set(cs, name, "mango", err);
   if (!TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
@@ -395,7 +396,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Nectarine";
+  const char *name = "Nectarine";
   mutt_buffer_reset(err);
 
   TEST_MSG("Initial: %s = '%s'\n", name, VarNectarine);
@@ -464,7 +465,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Papaya";
+  const char *name = "Papaya";
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello", err);
   if (TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
@@ -573,7 +574,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *ac = ac_new(cs, account, AccountVarStr);
+  struct Account *a = account_new();
+  account_add_config(a, cs, account, AccountVarStr);
 
   // set parent
   mutt_buffer_reset(err);
@@ -618,7 +620,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   result = true;
 ti_out:
-  ac_free(cs, &ac);
+  account_free(&a);
   return result;
 }
 
@@ -626,8 +628,8 @@ void config_string(void)
 {
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -638,7 +640,7 @@ void config_string(void)
     return;
   dont_fail = false;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 

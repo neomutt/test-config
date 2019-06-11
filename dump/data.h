@@ -23,6 +23,26 @@
 #ifndef _DUMP_DATA_H
 #define _DUMP_DATA_H
 
+#include "config/lib.h"
+
 extern struct ConfigDef MuttVars[];
+
+/**
+ * enum MailboxType - Supported mailbox formats
+ */
+enum MailboxType
+{
+  MUTT_MAILBOX_ERROR = -1, ///< Error occurred examining mailbox
+  MUTT_UNKNOWN = 0,        ///< Mailbox wasn't recognised
+  MUTT_MBOX,               ///< 'mbox' Mailbox type
+  MUTT_MMDF,               ///< 'mmdf' Mailbox type
+  MUTT_MH,                 ///< 'MH' Mailbox type
+  MUTT_MAILDIR,            ///< 'Maildir' Mailbox type
+  MUTT_NNTP,               ///< 'NNTP' (Usenet) Mailbox type
+  MUTT_IMAP,               ///< 'IMAP' Mailbox type
+  MUTT_NOTMUCH,            ///< 'Notmuch' (virtual) Mailbox type
+  MUTT_POP,                ///< 'POP3' Mailbox type
+  MUTT_COMPRESSED,         ///< Compressed file Mailbox type
+};
 
 #endif /* _DUMP_DATA_H */

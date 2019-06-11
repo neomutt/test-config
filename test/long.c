@@ -28,8 +28,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static long VarApple;
 static long VarBanana;
@@ -49,21 +50,21 @@ static long VarOlive;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_LONG,                 0, &VarApple,      -42, NULL              }, /* test_initial_values */
-  { "Banana",     DT_LONG,                 0, &VarBanana,     99,  NULL              },
-  { "Cherry",     DT_LONG,                 0, &VarCherry,     33,  NULL              },
-  { "Damson",     DT_LONG,                 0, &VarDamson,     0,   NULL              }, /* test_string_set */
-  { "Elderberry", DT_LONG|DT_NOT_NEGATIVE, 0, &VarElderberry, 0,   NULL              },
-  { "Fig",        DT_LONG,                 0, &VarFig,        0,   NULL              }, /* test_string_get */
-  { "Guava",      DT_LONG,                 0, &VarGuava,      0,   NULL              }, /* test_native_set */
-  { "Hawthorn",   DT_LONG|DT_NOT_NEGATIVE, 0, &VarHawthorn,   0,   NULL              },
-  { "Ilama",      DT_LONG,                 0, &VarIlama,      0,   NULL              }, /* test_native_get */
-  { "Jackfruit",  DT_LONG,                 0, &VarJackfruit,  99,  NULL              }, /* test_reset */
-  { "Kumquat",    DT_LONG,                 0, &VarKumquat,    33,  validator_fail    },
-  { "Lemon",      DT_LONG,                 0, &VarLemon,      0,   validator_succeed }, /* test_validator */
-  { "Mango",      DT_LONG,                 0, &VarMango,      0,   validator_warn    },
-  { "Nectarine",  DT_LONG,                 0, &VarNectarine,  0,   validator_fail    },
-  { "Olive",      DT_LONG,                 0, &VarOlive,      0,   NULL              }, /* test_inherit */
+  { "Apple",      DT_LONG,                 &VarApple,      -42, 0, NULL              }, /* test_initial_values */
+  { "Banana",     DT_LONG,                 &VarBanana,     99,  0, NULL              },
+  { "Cherry",     DT_LONG,                 &VarCherry,     33,  0, NULL              },
+  { "Damson",     DT_LONG,                 &VarDamson,     0,   0, NULL              }, /* test_string_set */
+  { "Elderberry", DT_LONG|DT_NOT_NEGATIVE, &VarElderberry, 0,   0, NULL              },
+  { "Fig",        DT_LONG,                 &VarFig,        0,   0, NULL              }, /* test_string_get */
+  { "Guava",      DT_LONG,                 &VarGuava,      0,   0, NULL              }, /* test_native_set */
+  { "Hawthorn",   DT_LONG|DT_NOT_NEGATIVE, &VarHawthorn,   0,   0, NULL              },
+  { "Ilama",      DT_LONG,                 &VarIlama,      0,   0, NULL              }, /* test_native_get */
+  { "Jackfruit",  DT_LONG,                 &VarJackfruit,  99,  0, NULL              }, /* test_reset */
+  { "Kumquat",    DT_LONG,                 &VarKumquat,    33,  0, validator_fail    },
+  { "Lemon",      DT_LONG,                 &VarLemon,      0,   0, validator_succeed }, /* test_validator */
+  { "Mango",      DT_LONG,                 &VarMango,      0,   0, validator_warn    },
+  { "Nectarine",  DT_LONG,                 &VarNectarine,  0,   0, validator_fail    },
+  { "Olive",      DT_LONG,                 &VarOlive,      0,   0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -91,8 +92,8 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 
   struct Buffer value;
   mutt_buffer_init(&value);
-  value.data = mutt_mem_calloc(1, 256);
   value.dsize = 256;
+  value.data = mutt_mem_calloc(1, value.dsize);
 
   int rc;
 
@@ -166,7 +167,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   int longs[] = { -123, 0, -42, 456 };
   const char *invalid[] = { "-9223372036854775809", "9223372036854775808", "junk", "", NULL };
 
-  char *name = "Damson";
+  const char *name = "Damson";
 
   int rc;
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
@@ -265,7 +266,7 @@ static bool test_string_get(struct ConfigSet *cs, struct Buffer *err)
 static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Guava";
+  const char *name = "Guava";
   long value = 12345;
 
   TEST_MSG("Setting %s to %ld\n", name, value);
@@ -321,7 +322,7 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Ilama";
+  const char *name = "Ilama";
 
   VarIlama = 3456;
   mutt_buffer_reset(err);
@@ -341,7 +342,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Jackfruit";
+  const char *name = "Jackfruit";
   VarJackfruit = 345;
   mutt_buffer_reset(err);
 
@@ -400,7 +401,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Lemon";
+  const char *name = "Lemon";
   VarLemon = 123;
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "456", err);
@@ -520,7 +521,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *ac = ac_new(cs, account, AccountVarStr);
+  struct Account *a = account_new();
+  account_add_config(a, cs, account, AccountVarStr);
 
   // set parent
   VarOlive = 123;
@@ -569,7 +571,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   result = true;
 ti_out:
-  ac_free(cs, &ac);
+  account_free(&a);
   return result;
 }
 
@@ -577,8 +579,8 @@ void config_long(void)
 {
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -589,7 +591,7 @@ void config_long(void)
     return;
   dont_fail = false;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 

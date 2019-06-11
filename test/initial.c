@@ -26,8 +26,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static char *VarApple;
 static char *VarBanana;
@@ -35,9 +36,9 @@ static char *VarCherry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",  DT_STRING, 0, &VarApple,  IP "apple", NULL },
-  { "Banana", DT_STRING, 0, &VarBanana, 0,          NULL },
-  { "Cherry", DT_STRING, 0, &VarCherry, 0,          NULL },
+  { "Apple",  DT_STRING, &VarApple,  IP "apple", 0, NULL },
+  { "Banana", DT_STRING, &VarBanana, 0,          0, NULL },
+  { "Cherry", DT_STRING, &VarCherry, 0,          0, NULL },
   { NULL },
 };
 // clang-format on
@@ -45,7 +46,7 @@ static struct ConfigDef Vars[] = {
 static bool test_set_initial(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  const char *name;
+  const char *name = NULL;
 
   name = "Apple";
   struct HashElem *he_a = cs_get_elem(cs, name);
@@ -93,8 +94,8 @@ void config_initial(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -103,7 +104,7 @@ void config_initial(void)
   if (!cs_register_variables(cs, Vars, 0))
     return;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 

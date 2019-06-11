@@ -28,16 +28,17 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static short VarApple;
 static bool VarBanana;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",  DT_NUMBER,  0, &VarApple,  0, NULL },
-  { "Banana", DT_BOOL,    0, &VarBanana, 1, NULL },
+  { "Apple",  DT_NUMBER,  &VarApple,  0, 0, NULL },
+  { "Banana", DT_BOOL,    &VarBanana, 1, 0, NULL },
   { NULL },
 };
 // clang-format on
@@ -76,24 +77,150 @@ void dummy_destroy(const struct ConfigSet *cs, void *var, const struct ConfigDef
 {
 }
 
+bool degenerate_tests(struct ConfigSet *cs)
+{
+  const struct ConfigSetType cst_dummy = {
+    "dummy", NULL, NULL, NULL, NULL, NULL, NULL,
+  };
+
+  struct HashElem *he = cs_get_elem(cs, "Banana");
+
+  cs_init(NULL, 100);
+  TEST_CHECK_(1, "cs_init(NULL, 100)");
+  cs_free(NULL);
+  TEST_CHECK_(1, "cs_free(NULL)");
+  cs_notify_observers(NULL, he, "apple", NT_CONFIG_SET);
+  TEST_CHECK_(1, "cs_notify_observers(NULL, he, \"apple\", NT_CONFIG_SET)");
+  cs_notify_observers(cs, NULL, "apple", NT_CONFIG_SET);
+  TEST_CHECK_(1, "cs_notify_observers(cs, NULL, \"apple\", NT_CONFIG_SET)");
+  cs_notify_observers(cs, he, NULL, NT_CONFIG_SET);
+  TEST_CHECK_(1, "cs_notify_observers(cs, he, NULL, NT_CONFIG_SET)");
+
+  if (!TEST_CHECK(cs_register_type(NULL, DT_NUMBER, &cst_dummy) == false))
+    return false;
+  if (!TEST_CHECK(cs_register_type(cs, DT_NUMBER, NULL) == false))
+    return false;
+  if (!TEST_CHECK(cs_register_variables(cs, NULL, 0) == false))
+    return false;
+  if (!TEST_CHECK(cs_register_variables(NULL, Vars, 0) == false))
+    return false;
+
+  if (!TEST_CHECK(cs_str_native_get(NULL, "apple", NULL) == INT_MIN))
+    return false;
+  if (!TEST_CHECK(cs_str_native_get(cs, NULL, NULL) == INT_MIN))
+    return false;
+
+  if (!TEST_CHECK(cs_get_elem(NULL, "apple") == NULL))
+    return false;
+  if (!TEST_CHECK(cs_get_elem(cs, NULL) == NULL))
+    return false;
+  if (!TEST_CHECK(cs_get_type_def(NULL, DT_NUMBER) == NULL))
+    return false;
+  if (!TEST_CHECK(cs_get_type_def(cs, 30) == NULL))
+    return false;
+  if (!TEST_CHECK(cs_inherit_variable(NULL, he, "apple") == NULL))
+    return false;
+  if (!TEST_CHECK(cs_inherit_variable(cs, NULL, "apple") == NULL))
+    return false;
+
+  if (!TEST_CHECK(cs_str_native_set(NULL, "apple", IP "hello", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_native_set(cs, NULL, IP "hello", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_reset(NULL, he, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_reset(cs, NULL, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_reset(NULL, "apple", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_reset(cs, NULL, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_initial_set(NULL, he, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_initial_set(cs, NULL, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_initial_set(cs, he, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_initial_set(NULL, "apple", "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_initial_set(cs, NULL, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_initial_set(cs, "unknown", "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_initial_get(NULL, "apple", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_initial_get(cs, NULL, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_initial_get(cs, "unknown", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_initial_get(NULL, he, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_initial_get(cs, NULL, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_string_set(NULL, he, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_string_set(cs, NULL, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_string_set(NULL, "apple", "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_string_set(cs, NULL, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_string_get(NULL, he, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_string_get(cs, NULL, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_string_get(NULL, "apple", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_string_get(cs, NULL, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_native_set(NULL, he, 42, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_native_set(cs, NULL, 42, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_native_set(NULL, "apple", 42, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_native_set(cs, NULL, 42, NULL) != CSR_SUCCESS))
+    return false;
+
+  return true;
+}
+
+bool invalid_tests(struct ConfigSet *cs)
+{
+  struct HashElem *he = cs_get_elem(cs, "Banana");
+  he->type = 30;
+
+  if (!TEST_CHECK(cs_he_initial_set(cs, he, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_initial_get(cs, he, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_string_set(cs, he, "42", NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_string_get(cs, he, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_native_set(cs, he, 42, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_he_native_get(cs, he, NULL) != CSR_SUCCESS))
+    return false;
+  if (!TEST_CHECK(cs_str_native_set(cs, "apple", 42, NULL) != CSR_SUCCESS))
+    return false;
+
+  return true;
+}
+
 void config_set(void)
 {
   log_line(__func__);
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
   if (!TEST_CHECK(cs != NULL))
     return;
-
-  cs_add_observer(cs, log_observer);
-  cs_add_observer(cs, log_observer); /* dupe */
-  cs_remove_observer(cs, log_observer);
-  cs_remove_observer(cs, log_observer); /* non-existant */
 
   const struct ConfigSetType cst_dummy = {
     "dummy", NULL, NULL, NULL, NULL, NULL, NULL,
@@ -136,6 +263,12 @@ void config_set(void)
     TEST_MSG("This test should have failed\n");
     return;
   }
+
+  if (!degenerate_tests(cs))
+    return;
+
+  if (!invalid_tests(cs))
+    return;
 
   const char *name = "Unknown";
   int result = cs_str_string_set(cs, name, "hello", &err);

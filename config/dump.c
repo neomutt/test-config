@@ -36,7 +36,7 @@
 #include "set.h"
 #include "types.h"
 
-void mutt_pretty_mailbox(char *s, size_t buflen)
+void mutt_pretty_mailbox(char *buf, size_t buflen)
 {
 }
 
@@ -142,40 +142,6 @@ struct HashElem **get_elem_list(struct ConfigSet *cs)
 }
 
 /**
- * dump_config_mutt - Dump the config in the style of Mutt
- * @param cs      Config items
- * @param he      HashElem representing config item
- * @param value   Current value of the config item
- * @param initial Initial value of the config item
- * @param flags   Flags, see #ConfigDumpFlags
- * @param fp      File pointer to write to
- */
-void dump_config_mutt(struct ConfigSet *cs, struct HashElem *he, struct Buffer *value,
-                      struct Buffer *initial, ConfigDumpFlags flags, FILE *fp)
-{
-  if (!he || !value || !fp)
-    return;
-
-  const char *name = he->key.strkey;
-
-  if (DTYPE(he->type) == DT_BOOL)
-  {
-    if ((value->data[0] == 'y') || ((value->data[0] == '"') && (value->data[1] == 'y')))
-    {
-      fprintf(fp, "%s is set\n", name);
-    }
-    else
-    {
-      fprintf(fp, "%s is unset\n", name);
-    }
-  }
-  else
-  {
-    fprintf(fp, "%s=%s\n", name, value->data);
-  }
-}
-
-/**
  * dump_config_neo - Dump the config in the style of NeoMutt
  * @param cs      Config items
  * @param he      HashElem representing config item
@@ -229,12 +195,10 @@ void dump_config_neo(struct ConfigSet *cs, struct HashElem *he, struct Buffer *v
 /**
  * dump_config - Write all the config to a file
  * @param cs    ConfigSet to dump
- * @param style Output style, e.g. #CS_DUMP_STYLE_MUTT
  * @param flags Flags, see #ConfigDumpFlags
  * @param fp    File to write config to
  */
-bool dump_config(struct ConfigSet *cs, enum CsDumpStyle style,
-                 ConfigDumpFlags flags, FILE *fp)
+bool dump_config(struct ConfigSet *cs, ConfigDumpFlags flags, FILE *fp)
 {
   if (!cs)
     return false;
@@ -278,14 +242,14 @@ bool dump_config(struct ConfigSet *cs, enum CsDumpStyle style,
         }
 
         const struct ConfigDef *cdef = he->data;
-        if (IS_SENSITIVE(*cdef) && (flags & CS_DUMP_HIDE_SENSITIVE) &&
-            !mutt_buffer_is_empty(value))
+        if ((type == DT_STRING) && IS_SENSITIVE(*cdef) &&
+            (flags & CS_DUMP_HIDE_SENSITIVE) && !mutt_buffer_is_empty(value))
         {
           mutt_buffer_reset(value);
           mutt_buffer_addstr(value, "***");
         }
 
-        if ((type == DT_PATH) && (value->data[0] == '/'))
+        if (IS_PATH(he) && (value->data[0] == '/'))
           mutt_pretty_mailbox(value->data, value->dsize);
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) &&
@@ -307,7 +271,7 @@ bool dump_config(struct ConfigSet *cs, enum CsDumpStyle style,
           break;          /* LCOV_EXCL_LINE */
         }
 
-        if ((type == DT_PATH) && !(he->type & DT_MAILBOX))
+        if (IS_PATH(he) && !(he->type & DT_MAILBOX))
           mutt_pretty_mailbox(initial->data, initial->dsize);
 
         if ((type != DT_BOOL) && (type != DT_NUMBER) && (type != DT_LONG) &&
@@ -320,10 +284,7 @@ bool dump_config(struct ConfigSet *cs, enum CsDumpStyle style,
       }
     }
 
-    if (style == CS_DUMP_STYLE_MUTT)
-      dump_config_mutt(cs, he, value, initial, flags, fp);
-    else
-      dump_config_neo(cs, he, value, initial, flags, fp);
+    dump_config_neo(cs, he, value, initial, flags, fp);
   }
 
   FREE(&list);

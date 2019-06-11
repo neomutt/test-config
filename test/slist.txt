@@ -1,5 +1,5 @@
 [36m---- config_slist --------------------------------[m
-COLON | SLIST_ALLOW_EMPTY
+Flags: COLON | SLIST_ALLOW_EMPTY
 >>NULL<<
 [0] 
 >><<
@@ -32,6 +32,7 @@ COLON | SLIST_ALLOW_EMPTY
 [3] 'apple','banana','cherry'
 [2] 'banana','cherry'
 [2] 'banana','cherry'
+[4] 'apple','ba\:nana',NULL,'cherry'
 [4] 'apple','banana',NULL,'cherry'
 member 'apple' : yes
 member '' : yes
@@ -40,8 +41,12 @@ member '(null)' : yes
 [4] 'apple','banana',NULL,'cherry'
 [4] 'damson',NULL,'apple','apple'
 [8] 'apple','banana',NULL,'cherry','damson',NULL,'apple','apple'
+[8] 'apple','banana',NULL,'cherry','damson',NULL,'apple','apple'
 [4] 'damson',NULL,'apple','apple'
 [0] 'damson',NULL,'apple','apple'
+[4] 'apple','banana',NULL,'cherry'
+[4] 'apple','banana',NULL,'cherry'
+[4] 'apple','banana',NULL,'cherry'
 [36m---- slist_test_separator ------------------------[m
 [36m---- set_list ------------------------------------[m
 slist Apple = apple
@@ -54,11 +59,15 @@ slist Guava = apple::cherry
 slist Hawthorn = apple:
 [36m---- set_list ------------------------------------[m
 [36m---- test_initial_values -------------------------[m
-Apple, 1 items, 2 flags
-Banana, 2 items, 2 flags
-Cherry, 3 items, 2 flags
+Apple, 1 items, COLON | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Banana, 2 items, COLON | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Cherry, 3 items, COLON | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Event: Cherry has been initial-set to 'raspberry'
+Event: Cherry has been initial-set to 'strawberry'
 [36m---- test_string_set -----------------------------[m
 Event: Damson has been set to 'pig:quail:rhino'
+Event: Damson has been set to ''
+Event: Damson has been set to ''
 Event: Elderberry has been set to 'pig:quail:rhino'
 [36m---- test_string_get -----------------------------[m
 Match: Fig ':apple' ':apple'
@@ -76,11 +85,15 @@ slist Guava = apple,,cherry
 slist Hawthorn = apple,
 [36m---- set_list ------------------------------------[m
 [36m---- test_initial_values -------------------------[m
-Apple, 1 items, 1 flags
-Banana, 2 items, 1 flags
-Cherry, 3 items, 1 flags
+Apple, 1 items, COMMA | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Banana, 2 items, COMMA | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Cherry, 3 items, COMMA | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Event: Cherry has been initial-set to 'raspberry'
+Event: Cherry has been initial-set to 'strawberry'
 [36m---- test_string_set -----------------------------[m
 Event: Damson has been set to 'pig:quail:rhino'
+Event: Damson has been set to ''
+Event: Damson has been set to ''
 Event: Elderberry has been set to 'pig:quail:rhino'
 [36m---- test_string_get -----------------------------[m
 Match: Fig ',apple' ',apple'
@@ -98,14 +111,66 @@ slist Guava = apple  cherry
 slist Hawthorn = apple 
 [36m---- set_list ------------------------------------[m
 [36m---- test_initial_values -------------------------[m
-Apple, 1 items, 0 flags
-Banana, 2 items, 0 flags
-Cherry, 3 items, 0 flags
+Apple, 1 items, SPACE | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Banana, 2 items, SPACE | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Cherry, 3 items, SPACE | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Event: Cherry has been initial-set to 'raspberry'
+Event: Cherry has been initial-set to 'strawberry'
 [36m---- test_string_set -----------------------------[m
 Event: Damson has been set to 'pig:quail:rhino'
+Event: Damson has been set to ''
+Event: Damson has been set to ''
 Event: Elderberry has been set to 'pig:quail:rhino'
 [36m---- test_string_get -----------------------------[m
 Match: Fig ' apple' ' apple'
 Match: Guava 'apple  cherry' 'apple  cherry'
 Match: Hawthorn 'apple ' 'apple '
+[36m---- test_native_set -----------------------------[m
+Event: Ilama has been set to 'apple:banana::cherry'
+Event: Ilama has been set to ''
+[36m---- test_native_get -----------------------------[m
+[36m---- test_reset ----------------------------------[m
+Initial: Lemon = 'lemon'
+Event: Lemon has been set to 'apple'
+Set: Lemon = 'apple'
+Event: Lemon has been reset to 'lemon'
+Reset: Lemon = 'lemon'
+Initial: Mango = 'mango'
+Event: Mango has been set to 'banana'
+Set: Mango = 'banana'
+Expected error: validator_fail: Mango, (ptr)
+Reset: Mango = 'banana'
+[36m---- test_reset ----------------------------------[m
+[36m---- test_validator ------------------------------[m
+Event: Nectarine has been set to 'banana'
+validator_succeed: Nectarine, (ptr)
+Address: Nectarine = banana
+Event: Nectarine has been set to 'apple'
+validator_succeed: Nectarine, (ptr)
+Native: Nectarine = apple
+Event: Olive has been set to 'cherry'
+validator_warn: Olive, (ptr)
+Address: Olive = cherry
+Event: Olive has been set to 'apple'
+validator_warn: Olive, (ptr)
+Native: Olive = apple
+Expected error: validator_fail: Papaya, (ptr)
+Address: Papaya = papaya
+Expected error: validator_fail: Papaya, (ptr)
+Native: Papaya = papaya
+[36m---- test_validator ------------------------------[m
+[36m---- test_inherit --------------------------------[m
+Event: Quince has been set to 'apple'
+         Quince = apple
+   fruit:Quince = apple
+Event: fruit:Quince has been set to 'banana'
+         Quince = apple
+   fruit:Quince = banana
+Event: fruit:Quince has been reset to 'apple'
+         Quince = apple
+   fruit:Quince = apple
+Event: Quince has been reset to ''
+         Quince = 
+   fruit:Quince = 
+[36m---- test_inherit --------------------------------[m
 [36m---- config_slist --------------------------------[m

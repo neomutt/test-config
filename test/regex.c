@@ -27,8 +27,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static struct Regex *VarApple;
 static struct Regex *VarBanana;
@@ -52,25 +53,25 @@ static struct Regex *VarStrawberry;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_REGEX, 0,                  &VarApple,      IP "apple.*",      NULL              }, /* test_initial_values */
-  { "Banana",     DT_REGEX, 0,                  &VarBanana,     IP "banana.*",     NULL              },
-  { "Cherry",     DT_REGEX, 0,                  &VarCherry,     IP "cherry.*",     NULL              },
-  { "Damson",     DT_REGEX, 0,                  &VarDamson,     0,                 NULL              }, /* test_regex_set */
-  { "Elderberry", DT_REGEX, DT_REGEX_NOSUB,     &VarElderberry, IP "elderberry.*", NULL              },
-  { "Fig",        DT_REGEX, 0,                  &VarFig,        0,                 NULL              }, /* test_regex_get */
-  { "Guava",      DT_REGEX, 0,                  &VarGuava,      IP "guava.*",      NULL              },
-  { "Hawthorn",   DT_REGEX, 0,                  &VarHawthorn,   0,                 NULL              },
-  { "Ilama",      DT_REGEX, DT_REGEX_ALLOW_NOT, &VarIlama,      0,                 NULL              }, /* test_native_set */
-  { "Jackfruit",  DT_REGEX, 0,                  &VarJackfruit,  IP "jackfruit.*",  NULL              },
-  { "Kumquat",    DT_REGEX, 0,                  &VarKumquat,    IP "kumquat.*",    NULL              },
-  { "Lemon",      DT_REGEX, 0,                  &VarLemon,      0,                 NULL              }, /* test_native_get */
-  { "Mango",      DT_REGEX, 0,                  &VarMango,      IP "mango.*",      NULL              }, /* test_reset */
-  { "Nectarine",  DT_REGEX, 0,                  &VarNectarine,  IP "\\1",          NULL              },
-  { "Olive",      DT_REGEX, 0,                  &VarOlive,      IP "olive.*",      validator_fail    },
-  { "Papaya",     DT_REGEX, 0,                  &VarPapaya,     IP "papaya.*",     validator_succeed }, /* test_validator */
-  { "Quince",     DT_REGEX, 0,                  &VarQuince,     IP "quince.*",     validator_warn    },
-  { "Raspberry",  DT_REGEX, 0,                  &VarRaspberry,  IP "raspberry.*",  validator_fail    },
-  { "Strawberry", DT_REGEX, 0,                  &VarStrawberry, 0,                 NULL              }, /* test_inherit */
+  { "Apple",      DT_REGEX,                    &VarApple,      IP "apple.*",      0, NULL              }, /* test_initial_values */
+  { "Banana",     DT_REGEX,                    &VarBanana,     IP "banana.*",     0, NULL              },
+  { "Cherry",     DT_REGEX,                    &VarCherry,     IP "cherry.*",     0, NULL              },
+  { "Damson",     DT_REGEX,                    &VarDamson,     0,                 0, NULL              }, /* test_regex_set */
+  { "Elderberry", DT_REGEX|DT_REGEX_NOSUB,     &VarElderberry, IP "elderberry.*", 0, NULL              },
+  { "Fig",        DT_REGEX,                    &VarFig,        0,                 0, NULL              }, /* test_regex_get */
+  { "Guava",      DT_REGEX,                    &VarGuava,      IP "guava.*",      0, NULL              },
+  { "Hawthorn",   DT_REGEX,                    &VarHawthorn,   0,                 0, NULL              },
+  { "Ilama",      DT_REGEX|DT_REGEX_ALLOW_NOT, &VarIlama,      0,                 0, NULL              }, /* test_native_set */
+  { "Jackfruit",  DT_REGEX,                    &VarJackfruit,  IP "jackfruit.*",  0, NULL              },
+  { "Kumquat",    DT_REGEX,                    &VarKumquat,    IP "kumquat.*",    0, NULL              },
+  { "Lemon",      DT_REGEX,                    &VarLemon,      0,                 0, NULL              }, /* test_native_get */
+  { "Mango",      DT_REGEX,                    &VarMango,      IP "mango.*",      0, NULL              }, /* test_reset */
+  { "Nectarine",  DT_REGEX,                    &VarNectarine,  IP "[a-b",         0, NULL              },
+  { "Olive",      DT_REGEX,                    &VarOlive,      IP "olive.*",      0, validator_fail    },
+  { "Papaya",     DT_REGEX,                    &VarPapaya,     IP "papaya.*",     0, validator_succeed }, /* test_validator */
+  { "Quince",     DT_REGEX,                    &VarQuince,     IP "quince.*",     0, validator_warn    },
+  { "Raspberry",  DT_REGEX,                    &VarRaspberry,  IP "raspberry.*",  0, validator_fail    },
+  { "Strawberry", DT_REGEX,                    &VarStrawberry, 0,                 0, NULL              }, /* test_inherit */
   { NULL },
 };
 // clang-format on
@@ -98,8 +99,8 @@ static bool test_initial_values(struct ConfigSet *cs, struct Buffer *err)
 
   struct Buffer value;
   mutt_buffer_init(&value);
-  value.data = mutt_mem_calloc(1, 256);
   value.dsize = 256;
+  value.data = mutt_mem_calloc(1, value.dsize);
   mutt_buffer_reset(&value);
 
   int rc;
@@ -180,10 +181,11 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
 
   const char *valid[] = { "hello.*", "world.*", "world.*", "", NULL };
-  char *name = "Damson";
+  const char *name = "Damson";
   char *regex = NULL;
 
   int rc;
+
   for (unsigned int i = 0; i < mutt_array_size(valid); i++)
   {
     mutt_buffer_reset(err);
@@ -236,7 +238,7 @@ static bool test_string_set(struct ConfigSet *cs, struct Buffer *err)
   }
 
   mutt_buffer_reset(err);
-  rc = cs_str_string_set(cs, name, "\\1", err);
+  rc = cs_str_string_set(cs, name, "[a-b", err);
   if (TEST_CHECK(CSR_RESULT(rc) != CSR_SUCCESS))
   {
     TEST_MSG("Expected error: %s\n", err->data);
@@ -301,8 +303,15 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  struct Regex *r = regex_new("hello.*", 0, err);
-  char *name = "Ilama";
+  struct Regex *r = regex_new(NULL, 0, err);
+  if (!TEST_CHECK(r == NULL))
+  {
+    TEST_MSG("regex_new() succeeded when is shouldn't have\n");
+    return false;
+  }
+
+  r = regex_new("hello.*", DT_REGEX_NOSUB, err);
+  const char *name = "Ilama";
   char *regex = NULL;
   bool result = false;
 
@@ -354,8 +363,10 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 
   regex_free(&r);
   r = regex_new("world.*", 0, err);
-  r->pattern[0] = '\\';
-  r->pattern[1] = '1';
+  r->pattern[0] = '[';
+  r->pattern[1] = 'a';
+  r->pattern[2] = '-';
+  r->pattern[3] = 'b';
   name = "Kumquat";
 
   mutt_buffer_reset(err);
@@ -380,7 +391,7 @@ tns_out:
 static bool test_native_get(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
-  char *name = "Lemon";
+  const char *name = "Lemon";
 
   int rc = cs_str_string_set(cs, name, "lemon.*", err);
   if (!TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
@@ -407,7 +418,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Mango";
+  const char *name = "Mango";
 
   mutt_buffer_reset(err);
 
@@ -488,7 +499,7 @@ static bool test_validator(struct ConfigSet *cs, struct Buffer *err)
   struct Regex *r = regex_new("world.*", 0, err);
   bool result = false;
 
-  char *name = "Papaya";
+  const char *name = "Papaya";
   mutt_buffer_reset(err);
   int rc = cs_str_string_set(cs, name, "hello.*", err);
   if (TEST_CHECK(CSR_RESULT(rc) == CSR_SUCCESS))
@@ -612,7 +623,8 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *ac = ac_new(cs, account, AccountVarRegex);
+  struct Account *a = account_new();
+  account_add_config(a, cs, account, AccountVarRegex);
 
   // set parent
   mutt_buffer_reset(err);
@@ -657,7 +669,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
   log_line(__func__);
   result = true;
 ti_out:
-  ac_free(cs, &ac);
+  account_free(&a);
   return result;
 }
 
@@ -665,8 +677,8 @@ void config_regex(void)
 {
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -677,7 +689,7 @@ void config_regex(void)
     return;
   dont_fail = false;
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 

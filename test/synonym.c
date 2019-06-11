@@ -27,8 +27,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "mutt/mutt.h"
+#include "common.h"
 #include "config/lib.h"
-#include "test/common.h"
+#include "account.h"
 
 static char *VarApple;
 static char *VarCherry;
@@ -38,21 +39,21 @@ static char *VarIlama;
 
 // clang-format off
 static struct ConfigDef Vars[] = {
-  { "Apple",      DT_STRING,  0, &VarApple,      0,               NULL },
-  { "Banana",     DT_SYNONYM, 0, NULL,           IP "Apple",      NULL },
-  { "Cherry",     DT_STRING,  0, &VarCherry,     IP "cherry",     NULL },
-  { "Damson",     DT_SYNONYM, 0, NULL,           IP "Cherry",     NULL },
-  { "Elderberry", DT_STRING,  0, &VarElderberry, 0,               NULL },
-  { "Fig",        DT_SYNONYM, 0, NULL,           IP "Elderberry", NULL },
-  { "Guava",      DT_STRING,  0, &VarGuava,      0,               NULL },
-  { "Hawthorn",   DT_SYNONYM, 0, NULL,           IP "Guava",      NULL },
-  { "Ilama",      DT_STRING,  0, &VarIlama,      IP "iguana",     NULL },
-  { "Jackfruit",  DT_SYNONYM, 0, NULL,           IP "Ilama",      NULL },
+  { "Apple",      DT_STRING,  &VarApple,      0,               0, NULL },
+  { "Banana",     DT_SYNONYM, NULL,           IP "Apple",      0, NULL },
+  { "Cherry",     DT_STRING,  &VarCherry,     IP "cherry",     0, NULL },
+  { "Damson",     DT_SYNONYM, NULL,           IP "Cherry",     0, NULL },
+  { "Elderberry", DT_STRING,  &VarElderberry, 0,               0, NULL },
+  { "Fig",        DT_SYNONYM, NULL,           IP "Elderberry", 0, NULL },
+  { "Guava",      DT_STRING,  &VarGuava,      0,               0, NULL },
+  { "Hawthorn",   DT_SYNONYM, NULL,           IP "Guava",      0, NULL },
+  { "Ilama",      DT_STRING,  &VarIlama,      IP "iguana",     0, NULL },
+  { "Jackfruit",  DT_SYNONYM, NULL,           IP "Ilama",      0, NULL },
   { NULL },
 };
 
 static struct ConfigDef Vars2[] = {
-  { "Jackfruit",  DT_SYNONYM, 0, NULL,           IP "Broken",     NULL },
+  { "Jackfruit",  DT_SYNONYM, NULL,           IP "Broken",     0, NULL },
   { NULL },
 };
 // clang-format on
@@ -103,8 +104,8 @@ static bool test_native_set(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Fig";
-  char *value = "tree";
+  const char *name = "Fig";
+  const char *value = "tree";
 
   mutt_buffer_reset(err);
   int rc = cs_str_native_set(cs, name, (intptr_t) value, err);
@@ -149,7 +150,7 @@ static bool test_reset(struct ConfigSet *cs, struct Buffer *err)
 {
   log_line(__func__);
 
-  char *name = "Jackfruit";
+  const char *name = "Jackfruit";
   mutt_buffer_reset(err);
 
   TEST_MSG("Initial: %s = '%s'\n", name, NONULL(VarIlama));
@@ -183,8 +184,8 @@ void config_synonym(void)
 
   struct Buffer err;
   mutt_buffer_init(&err);
-  err.data = mutt_mem_calloc(1, 256);
   err.dsize = 256;
+  err.data = mutt_mem_calloc(1, err.dsize);
   mutt_buffer_reset(&err);
 
   struct ConfigSet *cs = cs_new(30);
@@ -203,7 +204,7 @@ void config_synonym(void)
     return;
   }
 
-  cs_add_observer(cs, log_observer);
+  notify_observer_add(cs->notify, NT_CONFIG, 0, log_observer, 0);
 
   set_list(cs);
 
