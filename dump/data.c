@@ -29,6 +29,7 @@
 #include "config/sort.h"
 #include "config/types.h"
 #include "data.h"
+#include "mailbox.h"
 #include "vars.h"
 
 #define ISPELL "ispell"

@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "dump/data.h"
 #include "config/lib.h"
+#include "mailbox.h"
 
 unsigned char   C_AbortNoattach;
 struct Regex *  C_AbortNoattachRegex;

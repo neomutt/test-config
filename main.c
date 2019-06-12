@@ -9,6 +9,7 @@
 #include "test/account2.h"
 #include "test/address.h"
 #include "test/bool.h"
+#include "test/deep.h"
 #include "test/enum.h"
 #include "test/initial.h"
 #include "test/long.h"
@@ -64,6 +65,7 @@ struct Test test[] = {
   { "slist",     config_slist     },
   { "sort",      config_sort      },
   { "string",    config_string    },
+  { "deep",      config_deep      },
   { "dump",      config_dump      },
   { NULL },
 };

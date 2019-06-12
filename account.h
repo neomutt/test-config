@@ -26,7 +26,7 @@
 
 #include "mutt/queue.h"
 #include "config/lib.h"
-#include "dump/data.h"
+#include "mailbox.h"
 
 struct ConnAccount;
 
@@ -36,7 +36,7 @@ struct ConnAccount;
 struct Account
 {
   enum MailboxType magic;
-  // struct MailboxList mailboxes;
+  struct MailboxList mailboxes;
   TAILQ_ENTRY(Account) entries;
   void *adata;
   void (*free_adata)(void **);

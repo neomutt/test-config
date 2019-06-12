@@ -1,9 +1,9 @@
 /**
  * @file
- * Test Data for config dumping
+ * Test code for Deep Inheritance
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2019 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,11 +20,11 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DUMP_DATA_H
-#define _DUMP_DATA_H
+#ifndef _TEST_DEEP_H
+#define _TEST_DEEP_H
 
-#include "config/lib.h"
+#include <stdbool.h>
 
-extern struct ConfigDef MuttVars[];
+void config_deep(void);
 
-#endif /* _DUMP_DATA_H */
+#endif /* _TEST_DEEP_H */

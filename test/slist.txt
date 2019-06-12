@@ -59,9 +59,9 @@ slist Guava = apple::cherry
 slist Hawthorn = apple:
 [36m---- set_list ------------------------------------[m
 [36m---- test_initial_values -------------------------[m
-Apple, 1 items, COLON | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
-Banana, 2 items, COLON | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
-Cherry, 3 items, COLON | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Apple, 1 items, COLON flags
+Banana, 2 items, COLON flags
+Cherry, 3 items, COLON flags
 Event: Cherry has been initial-set to 'raspberry'
 Event: Cherry has been initial-set to 'strawberry'
 [36m---- test_string_set -----------------------------[m
@@ -85,9 +85,9 @@ slist Guava = apple,,cherry
 slist Hawthorn = apple,
 [36m---- set_list ------------------------------------[m
 [36m---- test_initial_values -------------------------[m
-Apple, 1 items, COMMA | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
-Banana, 2 items, COMMA | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
-Cherry, 3 items, COMMA | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Apple, 1 items, COMMA flags
+Banana, 2 items, COMMA flags
+Cherry, 3 items, COMMA flags
 Event: Cherry has been initial-set to 'raspberry'
 Event: Cherry has been initial-set to 'strawberry'
 [36m---- test_string_set -----------------------------[m
@@ -111,9 +111,9 @@ slist Guava = apple  cherry
 slist Hawthorn = apple 
 [36m---- set_list ------------------------------------[m
 [36m---- test_initial_values -------------------------[m
-Apple, 1 items, SPACE | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
-Banana, 2 items, SPACE | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
-Cherry, 3 items, SPACE | SLIST_ALLOW_DUPES | SLIST_ALLOW_EMPTY flags
+Apple, 1 items, SPACE flags
+Banana, 2 items, SPACE flags
+Cherry, 3 items, SPACE flags
 Event: Cherry has been initial-set to 'raspberry'
 Event: Cherry has been initial-set to 'strawberry'
 [36m---- test_string_set -----------------------------[m

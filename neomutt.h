@@ -1,9 +1,9 @@
 /**
  * @file
- * Test Data for config dumping
+ * NeoMutt container for notifications
  *
  * @authors
- * Copyright (C) 2017 Richard Russon <rich@flatcap.org>
+ * Copyright (C) 2019 Richard Russon <rich@flatcap.org>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify it under
@@ -20,11 +20,22 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DUMP_DATA_H
-#define _DUMP_DATA_H
+#ifndef MUTT_NEOMUTT_H
+#define MUTT_NEOMUTT_H
 
-#include "config/lib.h"
+struct Notify;
 
-extern struct ConfigDef MuttVars[];
+/**
+ * struct NeoMutt - Container for notifications
+ */
+struct NeoMutt
+{
+  int dummy;
+};
 
-#endif /* _DUMP_DATA_H */
+extern struct NeoMutt *NeoMutt;
+
+struct NeoMutt *neomutt_new(void);
+void neomutt_free(struct NeoMutt **ptr);
+
+#endif /* MUTT_NEOMUTT_H */
