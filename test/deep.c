@@ -59,15 +59,6 @@ static struct ConfigDef Vars[] = {
 };
 // clang-format on
 
-struct ConfigSubset
-{
-  char *name;                 ///< Name of Subset
-  const struct ConfigSet *cs; ///< Parent ConfigSet
-  const char **var_names;     ///< Array of the names of local config items
-  size_t num_vars;            ///< Number of local config items
-  struct HashElem **vars;     ///< Array of the HashElems of Subset config items
-};
-
 struct DeepTest
 {
   int b_set;
@@ -113,67 +104,6 @@ static void dump_values(const char *b_name, struct ConfigSet *cs,
   dump_value(cs, m_name);
 
   printf("\n");
-}
-
-void config_subset_free(struct ConfigSubset **sub)
-{
-  if (!sub || !*sub)
-    return;
-
-  FREE(&(*sub)->name);
-  FREE(&(*sub)->vars);
-  FREE(sub);
-}
-
-struct ConfigSubset *config_subset_new(const struct ConfigSet *cs,
-                                       const char *name, const char *parent_name, const char *var_names[])
-{
-  if (!cs || !name || !var_names)
-    return NULL;
-
-  size_t count = 0;
-  for (; var_names[count]; count++)
-    ;
-
-  struct ConfigSubset *sub = mutt_mem_calloc(1, sizeof(*sub));
-  sub->name = mutt_str_strdup(name);
-  sub->cs = cs;
-  sub->var_names = var_names;
-  sub->vars = mutt_mem_calloc(count, sizeof(struct HashElem *));
-  sub->num_vars = count;
-
-  char sub_name[128];
-
-  for (size_t i = 0; i < sub->num_vars; i++)
-  {
-    if (parent_name)
-    {
-      snprintf(sub_name, sizeof(sub_name), "%s:%s", parent_name, sub->var_names[i]);
-    }
-    else
-    {
-      mutt_str_strfcpy(sub_name, sub->var_names[i], sizeof(sub_name));
-    }
-
-    struct HashElem *parent = cs_get_elem(cs, sub_name);
-    if (!parent)
-    {
-      mutt_debug(LL_DEBUG1, "%s doesn't exist\n", sub_name);
-      config_subset_free(&sub);
-      return NULL;
-    }
-
-    snprintf(sub_name, sizeof(sub_name), "%s:%s", name, sub->var_names[i]);
-    sub->vars[i] = cs_inherit_variable(cs, parent, sub_name);
-    if (!sub->vars[i])
-    {
-      mutt_debug(LL_DEBUG1, "failed to create %s\n", sub_name);
-      config_subset_free(&sub);
-      return NULL;
-    }
-  }
-
-  return sub;
 }
 
 static void dump_compare(struct ConfigSet *cs, struct HashElem *he, int expected)

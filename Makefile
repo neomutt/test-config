@@ -5,7 +5,7 @@ RM	= rm -fr
 OUT	= demo
 
 SRC	+= main.c account.c mailbox.c neomutt.c
-SRC	+= config/address.c config/bool.c config/dump.c config/enum.c config/long.c config/mbtable.c config/regex.c config/number.c config/quad.c config/set.c config/slist.c config/sort.c config/string.c
+SRC	+= config/address.c config/bool.c config/dump.c config/enum.c config/long.c config/mbtable.c config/regex.c config/number.c config/quad.c config/set.c config/slist.c config/sort.c config/string.c config/subset.c
 SRC	+= test/common.c test/account.c test/address.c test/bool.c test/deep.c test/enum.c test/initial.c test/long.c test/mbtable.c test/number.c test/quad.c test/regex.c test/set.c test/slist.c test/sort.c test/string.c test/synonym.c
 SRC	+= dump/dump.c dump/data.c dump/vars.c
 
@@ -23,7 +23,7 @@ CFLAGS	+= -O0
 CFLAGS	+= -I.
 CFLAGS	+= -I$(NEO)
 CFLAGS	+= -D_GNU_SOURCE
-CFLAGS	+= -fprofile-arcs -ftest-coverage
+# CFLAGS	+= -fprofile-arcs -ftest-coverage
 # CFLAGS	+= -fsanitize=address -fsanitize-recover=address
 
 LDFLAGS	+= -L$(NEO)
