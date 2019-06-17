@@ -96,8 +96,8 @@ static void dump_values(const char *b_name, struct ConfigSet *cs,
   char a_name[128];
   char m_name[128];
 
-  snprintf(a_name, sizeof(a_name), "%s:%s", account->name, b_name);
-  snprintf(m_name, sizeof(m_name), "%s:%s", mailbox->name, b_name);
+  snprintf(a_name, sizeof(a_name), "%s:%s", account->scope, b_name);
+  snprintf(m_name, sizeof(m_name), "%s:%s", mailbox->scope, b_name);
 
   dump_value(cs, b_name);
   dump_value(cs, a_name);
@@ -135,8 +135,8 @@ static bool test_deep(struct ConfigSet *cs, struct Buffer *err)
   const char *mailbox_name = "ac:mbox";
   const char *mailbox_vars[] = { "Damson", "Elderberry", "Fig", NULL };
 
-  struct ConfigSubset *account_sub = config_subset_new(cs, account_name, NULL, account_vars);
-  struct ConfigSubset *mailbox_sub = config_subset_new(cs, mailbox_name, account_name, mailbox_vars);
+  struct ConfigSubset *account_sub = cs_subset_new(cs, account_name, NULL, account_vars);
+  struct ConfigSubset *mailbox_sub = cs_subset_new(cs, mailbox_name, account_name, mailbox_vars);
 
   printf("             Base  Account Mailbox\n");
   for (size_t i = 0; Vars[i].name; i++)
@@ -201,8 +201,8 @@ static bool test_deep(struct ConfigSet *cs, struct Buffer *err)
   }
   printf("\n");
 
-  config_subset_free(&account_sub);
-  config_subset_free(&mailbox_sub);
+  cs_subset_free(&account_sub);
+  cs_subset_free(&mailbox_sub);
 
   return result;
 }

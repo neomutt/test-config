@@ -5,9 +5,9 @@ string Banana =
 string Cherry = 
 [36m---- set_list ------------------------------------[m
 [36m---- test_set_initial ----------------------------[m
-Event: Apple has been initial-set to 'pie'
-Event: Banana has been initial-set to 'split'
-Event: Cherry has been initial-set to 'blossom'
+[1;33mEvent: Apple has been initial-set to 'pie'[0m
+[1;33mEvent: Banana has been initial-set to 'split'[0m
+[1;33mEvent: Cherry has been initial-set to 'blossom'[0m
 Apple = apple
 Banana = (null)
 Cherry = (null)

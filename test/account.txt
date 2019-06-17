@@ -10,18 +10,18 @@ Expected error:
 Expect error for next test
 failed to create damaged:Apple
 reset failed for damaged:Apple: Unknown var 'damaged:Apple'
-Event: Apple has been set to '33'
+[1;33mEvent: Apple has been set to '33'[0m
 Expected error: 
 Apple = 33
 Cherry = 0
 Expected error
 fruit:Apple = '33'
-Event: Apple has been set to '42'
+[1;33mEvent: Apple has been set to '42'[0m
 Set fruit:Apple
 Variable 'Apple' is inherited type
 Expected error
 Initial 0
-Event: Apple has been set to '42'
+[1;33mEvent: Apple has been set to '42'[0m
 Set Apple
-Event: fruit:Apple has been reset to '42'
+[1;33mEvent: fruit:Apple has been reset to '42'[0m
 [36m---- config_account ------------------------------[m

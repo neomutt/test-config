@@ -9,19 +9,19 @@ string Guava =
 string Ilama = iguana
 [36m---- set_list ------------------------------------[m
 [36m---- test_string_set -----------------------------[m
-Event: Apple has been set to 'pudding'
+[1;33mEvent: Apple has been set to 'pudding'[0m
 Banana = pudding, set by 'pudding'
 [36m---- test_string_get -----------------------------[m
 Damson = 'cherry', 'cherry'
 [36m---- test_native_set -----------------------------[m
-Event: Elderberry has been set to 'tree'
+[1;33mEvent: Elderberry has been set to 'tree'[0m
 Fig = tree, set by 'tree'
 [36m---- test_native_get -----------------------------[m
-Event: Guava has been set to 'tree'
+[1;33mEvent: Guava has been set to 'tree'[0m
 Hawthorn = 'tree', 'tree'
 [36m---- test_reset ----------------------------------[m
 Initial: Jackfruit = 'iguana'
-Event: Ilama has been set to 'hello'
+[1;33mEvent: Ilama has been set to 'hello'[0m
 Set: Jackfruit = 'hello'
-Event: Ilama has been reset to 'iguana'
+[1;33mEvent: Ilama has been reset to 'iguana'[0m
 Reset: Jackfruit = 'iguana'

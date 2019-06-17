@@ -22,81 +22,81 @@ regex Strawberry =
 [36m---- test_initial_values -------------------------[m
 Apple = apple.*
 Banana = banana.*
-Event: Apple has been set to 'car*'
-Event: Banana has been set to 'train*'
+[1;33mEvent: Apple has been set to 'car*'[0m
+[1;33mEvent: Banana has been set to 'train*'[0m
 Apple = 'car*'
 Apple's initial value is apple.*
 Banana = 'train*'
 Banana's initial value is banana.*
-Event: Cherry has been initial-set to 'up.*'
-Event: Cherry has been initial-set to 'down.*'
+[1;33mEvent: Cherry has been initial-set to 'up.*'[0m
+[1;33mEvent: Cherry has been initial-set to 'down.*'[0m
 Cherry = 'cherry.*'
 Cherry's initial value is 'down.*'
 [36m---- test_initial_values -------------------------[m
 [36m---- test_string_set -----------------------------[m
-Event: Damson has been set to 'hello.*'
+[1;33mEvent: Damson has been set to 'hello.*'[0m
 Damson = 'hello.*', set by 'hello.*'
-Event: Damson has been set to 'world.*'
+[1;33mEvent: Damson has been set to 'world.*'[0m
 Damson = 'world.*', set by 'world.*'
 Value of Damson wasn't changed
-Event: Damson has been set to ''
+[1;33mEvent: Damson has been set to ''[0m
 Damson = '', set by ''
-Event: Damson has been set to ''
+[1;33mEvent: Damson has been set to ''[0m
 Damson = '', set by ''
-Event: Elderberry has been set to 'hello.*'
+[1;33mEvent: Elderberry has been set to 'hello.*'[0m
 Elderberry = 'hello.*', set by 'hello.*'
-Event: Elderberry has been set to 'world.*'
+[1;33mEvent: Elderberry has been set to 'world.*'[0m
 Elderberry = 'world.*', set by 'world.*'
 Value of Elderberry wasn't changed
-Event: Elderberry has been set to ''
+[1;33mEvent: Elderberry has been set to ''[0m
 Elderberry = '', set by ''
-Event: Elderberry has been set to ''
+[1;33mEvent: Elderberry has been set to ''[0m
 Elderberry = '', set by ''
 Expected error: Unmatched [, [^, [:, [., or [=
 [36m---- test_string_set -----------------------------[m
 [36m---- test_string_get -----------------------------[m
 Fig = '', ''
 Guava = 'guava.*', 'guava.*'
-Event: Hawthorn has been set to 'hawthorn'
+[1;33mEvent: Hawthorn has been set to 'hawthorn'[0m
 Hawthorn = 'hawthorn', 'hawthorn'
 [36m---- test_string_get -----------------------------[m
 [36m---- test_native_set -----------------------------[m
-Event: Ilama has been set to 'hello.*'
+[1;33mEvent: Ilama has been set to 'hello.*'[0m
 Ilama = 'hello.*', set by 'hello.*'
-Event: Ilama has been set to '!world.*'
+[1;33mEvent: Ilama has been set to '!world.*'[0m
 '!world.*', not flag set to 1
-Event: Jackfruit has been set to ''
+[1;33mEvent: Jackfruit has been set to ''[0m
 Jackfruit = '', set by NULL
 Expected error: Unmatched [, [^, [:, [., or [=
 [36m---- test_native_set -----------------------------[m
 [36m---- test_native_get -----------------------------[m
-Event: Lemon has been set to 'lemon.*'
+[1;33mEvent: Lemon has been set to 'lemon.*'[0m
 Lemon = 'lemon.*', 'lemon.*'
 [36m---- test_native_get -----------------------------[m
 [36m---- test_reset ----------------------------------[m
 Initial: Mango = 'mango.*'
-Event: Mango has been set to 'hello.*'
+[1;33mEvent: Mango has been set to 'hello.*'[0m
 Set: Mango = 'hello.*'
-Event: Mango has been reset to 'mango.*'
+[1;33mEvent: Mango has been reset to 'mango.*'[0m
 Reset: Mango = 'mango.*'
 Expected error: Unmatched [, [^, [:, [., or [=
 Initial: Olive = 'olive.*'
-Event: Olive has been set to 'hel*o'
+[1;33mEvent: Olive has been set to 'hel*o'[0m
 Set: Olive = 'hel*o'
 Expected error: validator_fail: Olive, (ptr)
 Reset: Olive = 'hel*o'
 [36m---- test_reset ----------------------------------[m
 [36m---- test_validator ------------------------------[m
-Event: Papaya has been set to 'hello.*'
+[1;33mEvent: Papaya has been set to 'hello.*'[0m
 validator_succeed: Papaya, (ptr)
 Regex: Papaya = hello.*
-Event: Papaya has been set to 'world.*'
+[1;33mEvent: Papaya has been set to 'world.*'[0m
 validator_succeed: Papaya, (ptr)
 Native: Papaya = world.*
-Event: Quince has been set to 'hello.*'
+[1;33mEvent: Quince has been set to 'hello.*'[0m
 validator_warn: Quince, (ptr)
 Regex: Quince = hello.*
-Event: Quince has been set to 'world.*'
+[1;33mEvent: Quince has been set to 'world.*'[0m
 validator_warn: Quince, (ptr)
 Native: Quince = world.*
 Expected error: validator_fail: Raspberry, (ptr)
@@ -105,16 +105,16 @@ Expected error: validator_fail: Raspberry, (ptr)
 Native: Raspberry = raspberry.*
 [36m---- test_validator ------------------------------[m
 [36m---- test_inherit --------------------------------[m
-Event: Strawberry has been set to 'hello.*'
+[1;33mEvent: Strawberry has been set to 'hello.*'[0m
      Strawberry = hello.*
 fruit:Strawberry = hello.*
-Event: fruit:Strawberry has been set to 'world.*'
+[1;33mEvent: fruit:Strawberry has been set to 'world.*'[0m
      Strawberry = hello.*
 fruit:Strawberry = world.*
-Event: fruit:Strawberry has been reset to 'hello.*'
+[1;33mEvent: fruit:Strawberry has been reset to 'hello.*'[0m
      Strawberry = hello.*
 fruit:Strawberry = hello.*
-Event: Strawberry has been reset to ''
+[1;33mEvent: Strawberry has been reset to ''[0m
      Strawberry = 
 fruit:Strawberry = 
 [36m---- test_inherit --------------------------------[m

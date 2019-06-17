@@ -36,23 +36,38 @@
 #include "types.h"
 
 /**
- * config_subset_free - XXX
+ * cs_subset_free - XXX
  * @param sub XXX
  */
-void config_subset_free(struct ConfigSubset **sub)
+void cs_subset_free(struct ConfigSubset **ptr)
 {
-  if (!sub || !*sub)
+  if (!ptr || !*ptr)
     return;
 
-  FREE(&(*sub)->name);
-  FREE(&(*sub)->vars);
-  FREE(sub);
+  struct ConfigSubset *sub = *ptr;
+
+  char scope[128];
+  for (size_t i = 0; i < sub->num_vars; i++)
+  {
+    if (sub->scope)
+      snprintf(scope, sizeof(scope), "%s:%s", sub->scope, sub->var_names[i]);
+    else
+      mutt_str_strfcpy(scope, sub->var_names[i], sizeof(scope));
+
+    printf("uninherit %s\n", scope);
+    cs_uninherit_variable(sub->cs, scope);
+  }
+
+  // sub->var_names isn't ours to free
+  FREE(&sub->scope);
+  FREE(&sub->vars);
+  FREE(ptr);
 }
 
 /**
- * config_subset_new - XXX
+ * cs_subset_new - XXX
  */
-struct ConfigSubset *config_subset_new(const struct ConfigSet *cs,
+struct ConfigSubset *cs_subset_new(const struct ConfigSet *cs,
                                        const char *name, const char *parent_name, const char *var_names[])
 {
   if (!cs || !name || !var_names)
@@ -62,40 +77,45 @@ struct ConfigSubset *config_subset_new(const struct ConfigSet *cs,
   for (; var_names[count]; count++)
     ;
 
+  char scope[128];
+  if (parent_name)
+    snprintf(scope, sizeof(scope), "%s:%s", parent_name, name);
+  else
+    mutt_str_strfcpy(scope, name, sizeof(scope));
+
   struct ConfigSubset *sub = mutt_mem_calloc(1, sizeof(*sub));
-  sub->name = mutt_str_strdup(name);
+  sub->scope = mutt_str_strdup(scope);
   sub->cs = cs;
   sub->var_names = var_names;
   sub->vars = mutt_mem_calloc(count, sizeof(struct HashElem *));
   sub->num_vars = count;
 
-  char sub_name[128];
-
+  char tmp[130];
   for (size_t i = 0; i < sub->num_vars; i++)
   {
     if (parent_name)
     {
-      snprintf(sub_name, sizeof(sub_name), "%s:%s", parent_name, sub->var_names[i]);
+      snprintf(tmp, sizeof(tmp), "%s:%s", parent_name, sub->var_names[i]);
     }
     else
     {
-      mutt_str_strfcpy(sub_name, sub->var_names[i], sizeof(sub_name));
+      mutt_str_strfcpy(tmp, sub->var_names[i], sizeof(tmp));
     }
 
-    struct HashElem *parent = cs_get_elem(cs, sub_name);
+    struct HashElem *parent = cs_get_elem(cs, tmp);
     if (!parent)
     {
-      mutt_debug(LL_DEBUG1, "%s doesn't exist\n", sub_name);
-      config_subset_free(&sub);
+      mutt_debug(LL_DEBUG1, "%s doesn't exist\n", tmp);
+      cs_subset_free(&sub);
       return NULL;
     }
 
-    snprintf(sub_name, sizeof(sub_name), "%s:%s", name, sub->var_names[i]);
-    sub->vars[i] = cs_inherit_variable(cs, parent, sub_name);
+    snprintf(tmp, sizeof(tmp), "%s:%s", scope, sub->var_names[i]);
+    sub->vars[i] = cs_inherit_variable(cs, parent, tmp);
     if (!sub->vars[i])
     {
-      mutt_debug(LL_DEBUG1, "failed to create %s\n", sub_name);
-      config_subset_free(&sub);
+      mutt_debug(LL_DEBUG1, "failed to create %s\n", tmp);
+      cs_subset_free(&sub);
       return NULL;
     }
   }
@@ -103,3 +123,74 @@ struct ConfigSubset *config_subset_new(const struct ConfigSet *cs,
   return sub;
 }
 
+/**
+ * cs_subset_lookup - XXX
+ */
+int cs_subset_lookup(struct ConfigSubset *sub, const char *name)
+{
+  if (!sub || !name)
+    return -1;
+
+  return -1;
+}
+
+/**
+ * cs_subset_native_get - XXX
+ */
+intptr_t cs_subset_native_get(const struct ConfigSubset *sub, int vid, struct Buffer *err)
+{
+  if (!sub || (vid < 0) || (vid >= sub->num_vars))
+    return INT_MIN;
+
+  return INT_MIN;
+}
+
+/**
+ * cs_subset_native_set - XXX
+ */
+int cs_subset_native_set(const struct ConfigSubset *sub, int vid, intptr_t value, struct Buffer *err)
+{
+  if (!sub || (vid < 0) || (vid >= sub->num_vars))
+    return CSR_ERR_CODE;
+
+  return CSR_ERR_INVALID;
+}
+
+/**
+ * cs_subset_reset - XXX
+ */
+int cs_subset_reset(const struct ConfigSubset *sub, int vid, struct Buffer *err)
+{
+  if (!sub || (vid < 0) || (vid >= sub->num_vars))
+    return CSR_ERR_CODE;
+
+  struct HashElem *he = sub->vars[vid];
+
+  return cs_he_reset(sub->cs, he, err);
+}
+
+/**
+ * cs_subset_string_get - XXX
+ */
+int cs_subset_string_get(const struct ConfigSubset *sub, int vid, struct Buffer *result)
+{
+  if (!sub || (vid < 0) || (vid >= sub->num_vars))
+    return CSR_ERR_CODE;
+
+  struct HashElem *he = sub->vars[vid];
+
+  return cs_he_string_get(sub->cs, he, result);
+}
+
+/**
+ * cs_subset_string_set - XXX
+ */
+int cs_subset_string_set(const struct ConfigSubset *sub, int vid, const char *value, struct Buffer *err)
+{
+  if (!sub || (vid < 0) || (vid >= sub->num_vars))
+    return INT_MIN;
+
+  struct HashElem *he = sub->vars[vid];
+
+  return cs_he_string_set(sub->cs, he, value, err);
+}

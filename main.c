@@ -11,6 +11,7 @@
 #include "test/bool.h"
 #include "test/deep.h"
 #include "test/enum.h"
+#include "test/inherit.h"
 #include "test/initial.h"
 #include "test/long.h"
 #include "test/mbtable.h"
@@ -67,6 +68,7 @@ struct Test test[] = {
   { "string",    config_string    },
   { "deep",      config_deep      },
   { "dump",      config_dump      },
+  { "inherit",   config_inherit   },
   { NULL },
 };
 // clang-format on

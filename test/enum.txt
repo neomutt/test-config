@@ -20,27 +20,27 @@ enum Olive = Antelope
 [36m---- test_initial_values -------------------------[m
 Apple = 40
 Banana = 2
-Event: Apple has been set to 'Cassowary'
-Event: Banana has been set to 'Antelope'
+[1;33mEvent: Apple has been set to 'Cassowary'[0m
+[1;33mEvent: Banana has been set to 'Antelope'[0m
 Apple = 3
 Apple's initial value is 'Dingo'
 Banana = 1
 Banana's initial value is 'Badger'
-Event: Cherry has been initial-set to 'Cassowary'
+[1;33mEvent: Cherry has been initial-set to 'Cassowary'[0m
 Cherry = 42
 Cherry's initial value is Cassowary
 [36m---- test_initial_values -------------------------[m
 [36m---- test_string_set -----------------------------[m
 Setting Damson to Antelope
-Event: Damson has been set to 'Antelope'
+[1;33mEvent: Damson has been set to 'Antelope'[0m
 Damson = 1, set by 'Antelope'
 ----------------------------------------
 Setting Damson to ECHIDNA
-Event: Damson has been set to 'Echidna'
+[1;33mEvent: Damson has been set to 'Echidna'[0m
 Damson = 41, set by 'ECHIDNA'
 ----------------------------------------
 Setting Damson to herbivore
-Event: Damson has been set to 'Antelope'
+[1;33mEvent: Damson has been set to 'Antelope'[0m
 Damson = 1, set by 'herbivore'
 ----------------------------------------
 Setting Damson to BIRD
@@ -64,7 +64,7 @@ Fig = 40, Dingo
 [36m---- test_string_get -----------------------------[m
 [36m---- test_native_set -----------------------------[m
 Setting Guava to 3
-Event: Guava has been set to 'Cassowary'
+[1;33mEvent: Guava has been set to 'Cassowary'[0m
 Guava = 3, set to '3'
 ----------------------------------------
 Setting Guava to 3
@@ -87,30 +87,30 @@ Ilama = 253
 [36m---- test_native_get -----------------------------[m
 [36m---- test_reset ----------------------------------[m
 Jackfruit = 253
-Event: Jackfruit has been reset to 'Antelope'
+[1;33mEvent: Jackfruit has been reset to 'Antelope'[0m
 Reset: Jackfruit = 1
 ----------------------------------------
 Initial: Kumquat = 0
-Event: Kumquat has been set to 'Dingo'
+[1;33mEvent: Kumquat has been set to 'Dingo'[0m
 Set: Kumquat = 40
 Expected error: validator_fail: Kumquat, 1
 Reset: Kumquat = 40
 ----------------------------------------
 [36m---- test_reset ----------------------------------[m
 [36m---- test_validator ------------------------------[m
-Event: Lemon has been set to 'Dingo'
+[1;33mEvent: Lemon has been set to 'Dingo'[0m
 validator_succeed: Lemon, 40
 String: Lemon = 40
 ----------------------------------------
-Event: Lemon has been set to 'Echidna'
+[1;33mEvent: Lemon has been set to 'Echidna'[0m
 validator_succeed: Lemon, 41
 Native: Lemon = 41
 ----------------------------------------
-Event: Mango has been set to 'Cassowary'
+[1;33mEvent: Mango has been set to 'Cassowary'[0m
 validator_warn: Mango, 3
 String: Mango = 3
 ----------------------------------------
-Event: Mango has been set to 'Dingo'
+[1;33mEvent: Mango has been set to 'Dingo'[0m
 validator_warn: Mango, 40
 Native: Mango = 40
 ----------------------------------------
@@ -121,19 +121,19 @@ Expected error: validator_fail: Nectarine, 3
 Native: Nectarine = 253
 [36m---- test_validator ------------------------------[m
 [36m---- test_inherit --------------------------------[m
-Event: Olive has been set to 'Dingo'
+[1;33mEvent: Olive has been set to 'Dingo'[0m
           Olive = 40
     fruit:Olive = 40
 ----------------------------------------
-Event: fruit:Olive has been set to 'Cassowary'
+[1;33mEvent: fruit:Olive has been set to 'Cassowary'[0m
           Olive = 40
     fruit:Olive = 3
 ----------------------------------------
-Event: fruit:Olive has been reset to 'Dingo'
+[1;33mEvent: fruit:Olive has been reset to 'Dingo'[0m
           Olive = 40
     fruit:Olive = 40
 ----------------------------------------
-Event: Olive has been reset to 'Antelope'
+[1;33mEvent: Olive has been reset to 'Antelope'[0m
           Olive = 1
     fruit:Olive = 1
 [36m---- test_inherit --------------------------------[m

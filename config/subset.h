@@ -24,20 +24,28 @@
 #define MUTT_CONFIG_SUBSET_H
 
 #include <stdio.h>
+#include "set.h"
 
 /**
  * struct ConfigSubset - XXX
  */
 struct ConfigSubset
 {
-  char *name;                 ///< Name of Subset
+  char *scope;                ///< Scope name of Subset
   const struct ConfigSet *cs; ///< Parent ConfigSet
-  const char **var_names;     ///< Array of the names of local config items
   size_t num_vars;            ///< Number of local config items
+  const char **var_names;     ///< Array of the names of local config items
   struct HashElem **vars;     ///< Array of the HashElems of Subset config items
 };
 
-void                 config_subset_free(struct ConfigSubset **sub);
-struct ConfigSubset *config_subset_new(const struct ConfigSet *cs, const char *name, const char *parent_name, const char *var_names[]);
+struct ConfigSubset *cs_subset_new(const struct ConfigSet *cs, const char *name, const char *parent_name, const char *var_names[]);
+void                 cs_subset_free(struct ConfigSubset **sub);
+int                  cs_subset_lookup(struct ConfigSubset *sub, const char *name);
+
+intptr_t cs_subset_native_get(const struct ConfigSubset *sub, int vid,                    struct Buffer *err);
+int      cs_subset_native_set(const struct ConfigSubset *sub, int vid, intptr_t value,    struct Buffer *err);
+int      cs_subset_reset     (const struct ConfigSubset *sub, int vid,                    struct Buffer *err);
+int      cs_subset_string_get(const struct ConfigSubset *sub, int vid,                    struct Buffer *result);
+int      cs_subset_string_set(const struct ConfigSubset *sub, int vid, const char *value, struct Buffer *err);
 
 #endif /* MUTT_CONFIG_SUBSET_H */

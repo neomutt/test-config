@@ -62,13 +62,13 @@ slist Hawthorn = apple:
 Apple, 1 items, COLON flags
 Banana, 2 items, COLON flags
 Cherry, 3 items, COLON flags
-Event: Cherry has been initial-set to 'raspberry'
-Event: Cherry has been initial-set to 'strawberry'
+[1;33mEvent: Cherry has been initial-set to 'raspberry'[0m
+[1;33mEvent: Cherry has been initial-set to 'strawberry'[0m
 [36m---- test_string_set -----------------------------[m
-Event: Damson has been set to 'pig:quail:rhino'
-Event: Damson has been set to ''
-Event: Damson has been set to ''
-Event: Elderberry has been set to 'pig:quail:rhino'
+[1;33mEvent: Damson has been set to 'pig:quail:rhino'[0m
+[1;33mEvent: Damson has been set to ''[0m
+[1;33mEvent: Damson has been set to ''[0m
+[1;33mEvent: Elderberry has been set to 'pig:quail:rhino'[0m
 [36m---- test_string_get -----------------------------[m
 Match: Fig ':apple' ':apple'
 Match: Guava 'apple::cherry' 'apple::cherry'
@@ -88,13 +88,13 @@ slist Hawthorn = apple,
 Apple, 1 items, COMMA flags
 Banana, 2 items, COMMA flags
 Cherry, 3 items, COMMA flags
-Event: Cherry has been initial-set to 'raspberry'
-Event: Cherry has been initial-set to 'strawberry'
+[1;33mEvent: Cherry has been initial-set to 'raspberry'[0m
+[1;33mEvent: Cherry has been initial-set to 'strawberry'[0m
 [36m---- test_string_set -----------------------------[m
-Event: Damson has been set to 'pig:quail:rhino'
-Event: Damson has been set to ''
-Event: Damson has been set to ''
-Event: Elderberry has been set to 'pig:quail:rhino'
+[1;33mEvent: Damson has been set to 'pig:quail:rhino'[0m
+[1;33mEvent: Damson has been set to ''[0m
+[1;33mEvent: Damson has been set to ''[0m
+[1;33mEvent: Elderberry has been set to 'pig:quail:rhino'[0m
 [36m---- test_string_get -----------------------------[m
 Match: Fig ',apple' ',apple'
 Match: Guava 'apple,,cherry' 'apple,,cherry'
@@ -114,44 +114,44 @@ slist Hawthorn = apple
 Apple, 1 items, SPACE flags
 Banana, 2 items, SPACE flags
 Cherry, 3 items, SPACE flags
-Event: Cherry has been initial-set to 'raspberry'
-Event: Cherry has been initial-set to 'strawberry'
+[1;33mEvent: Cherry has been initial-set to 'raspberry'[0m
+[1;33mEvent: Cherry has been initial-set to 'strawberry'[0m
 [36m---- test_string_set -----------------------------[m
-Event: Damson has been set to 'pig:quail:rhino'
-Event: Damson has been set to ''
-Event: Damson has been set to ''
-Event: Elderberry has been set to 'pig:quail:rhino'
+[1;33mEvent: Damson has been set to 'pig:quail:rhino'[0m
+[1;33mEvent: Damson has been set to ''[0m
+[1;33mEvent: Damson has been set to ''[0m
+[1;33mEvent: Elderberry has been set to 'pig:quail:rhino'[0m
 [36m---- test_string_get -----------------------------[m
 Match: Fig ' apple' ' apple'
 Match: Guava 'apple  cherry' 'apple  cherry'
 Match: Hawthorn 'apple ' 'apple '
 [36m---- test_native_set -----------------------------[m
-Event: Ilama has been set to 'apple:banana::cherry'
-Event: Ilama has been set to ''
+[1;33mEvent: Ilama has been set to 'apple:banana::cherry'[0m
+[1;33mEvent: Ilama has been set to ''[0m
 [36m---- test_native_get -----------------------------[m
 [36m---- test_reset ----------------------------------[m
 Initial: Lemon = 'lemon'
-Event: Lemon has been set to 'apple'
+[1;33mEvent: Lemon has been set to 'apple'[0m
 Set: Lemon = 'apple'
-Event: Lemon has been reset to 'lemon'
+[1;33mEvent: Lemon has been reset to 'lemon'[0m
 Reset: Lemon = 'lemon'
 Initial: Mango = 'mango'
-Event: Mango has been set to 'banana'
+[1;33mEvent: Mango has been set to 'banana'[0m
 Set: Mango = 'banana'
 Expected error: validator_fail: Mango, (ptr)
 Reset: Mango = 'banana'
 [36m---- test_reset ----------------------------------[m
 [36m---- test_validator ------------------------------[m
-Event: Nectarine has been set to 'banana'
+[1;33mEvent: Nectarine has been set to 'banana'[0m
 validator_succeed: Nectarine, (ptr)
 Address: Nectarine = banana
-Event: Nectarine has been set to 'apple'
+[1;33mEvent: Nectarine has been set to 'apple'[0m
 validator_succeed: Nectarine, (ptr)
 Native: Nectarine = apple
-Event: Olive has been set to 'cherry'
+[1;33mEvent: Olive has been set to 'cherry'[0m
 validator_warn: Olive, (ptr)
 Address: Olive = cherry
-Event: Olive has been set to 'apple'
+[1;33mEvent: Olive has been set to 'apple'[0m
 validator_warn: Olive, (ptr)
 Native: Olive = apple
 Expected error: validator_fail: Papaya, (ptr)
@@ -160,16 +160,16 @@ Expected error: validator_fail: Papaya, (ptr)
 Native: Papaya = papaya
 [36m---- test_validator ------------------------------[m
 [36m---- test_inherit --------------------------------[m
-Event: Quince has been set to 'apple'
+[1;33mEvent: Quince has been set to 'apple'[0m
          Quince = apple
    fruit:Quince = apple
-Event: fruit:Quince has been set to 'banana'
+[1;33mEvent: fruit:Quince has been set to 'banana'[0m
          Quince = apple
    fruit:Quince = banana
-Event: fruit:Quince has been reset to 'apple'
+[1;33mEvent: fruit:Quince has been reset to 'apple'[0m
          Quince = apple
    fruit:Quince = apple
-Event: Quince has been reset to ''
+[1;33mEvent: Quince has been reset to ''[0m
          Quince = 
    fruit:Quince = 
 [36m---- test_inherit --------------------------------[m

@@ -18,29 +18,29 @@ number Olive = 0
 [36m---- test_initial_values -------------------------[m
 Apple = -42
 Banana = 99
-Event: Apple has been set to '2001'
-Event: Banana has been set to '1999'
+[1;33mEvent: Apple has been set to '2001'[0m
+[1;33mEvent: Banana has been set to '1999'[0m
 Apple = 2001
 Apple's initial value is '-42'
 Banana = 1999
 Banana's initial value is '99'
-Event: Cherry has been initial-set to '123'
+[1;33mEvent: Cherry has been initial-set to '123'[0m
 Cherry = 33
 Cherry's initial value is 123
 [36m---- test_initial_values -------------------------[m
 [36m---- test_string_set -----------------------------[m
 Setting Damson to -123
-Event: Damson has been set to '-123'
+[1;33mEvent: Damson has been set to '-123'[0m
 Damson = -123, set by '-123'
 ----------------------------------------
 Setting Damson to 0
-Event: Damson has been set to '0'
+[1;33mEvent: Damson has been set to '0'[0m
 Damson = 0, set by '0'
 ----------------------------------------
 Setting Damson to -42
 Value of Damson wasn't changed
 Setting Damson to 456
-Event: Damson has been set to '456'
+[1;33mEvent: Damson has been set to '456'[0m
 Damson = 456, set by '456'
 ----------------------------------------
 Setting Damson to -32769
@@ -67,7 +67,7 @@ Fig = -789, -789
 [36m---- test_string_get -----------------------------[m
 [36m---- test_native_set -----------------------------[m
 Setting Guava to 12345
-Event: Guava has been set to '12345'
+[1;33mEvent: Guava has been set to '12345'[0m
 Guava = 12345, set to '12345'
 ----------------------------------------
 Setting Guava to 12345
@@ -87,29 +87,29 @@ Ilama = 3456
 [36m---- test_native_get -----------------------------[m
 [36m---- test_reset ----------------------------------[m
 Jackfruit = 345
-Event: Jackfruit has been reset to '99'
+[1;33mEvent: Jackfruit has been reset to '99'[0m
 Reset: Jackfruit = 99
 ----------------------------------------
 Initial: Kumquat = 33
-Event: Kumquat has been set to '99'
+[1;33mEvent: Kumquat has been set to '99'[0m
 Set: Kumquat = 99
 Expected error: validator_fail: Kumquat, 33
 Reset: Kumquat = 99
 [36m---- test_reset ----------------------------------[m
 [36m---- test_validator ------------------------------[m
-Event: Lemon has been set to '456'
+[1;33mEvent: Lemon has been set to '456'[0m
 validator_succeed: Lemon, 456
 String: Lemon = 456
 ----------------------------------------
-Event: Lemon has been set to '123'
+[1;33mEvent: Lemon has been set to '123'[0m
 validator_succeed: Lemon, 123
 Native: Lemon = 123
 ----------------------------------------
-Event: Mango has been set to '456'
+[1;33mEvent: Mango has been set to '456'[0m
 validator_warn: Mango, 456
 String: Mango = 456
 ----------------------------------------
-Event: Mango has been set to '123'
+[1;33mEvent: Mango has been set to '123'[0m
 validator_warn: Mango, 123
 Native: Mango = 123
 ----------------------------------------
@@ -120,19 +120,19 @@ Expected error: validator_fail: Nectarine, 123
 Native: Nectarine = 456
 [36m---- test_validator ------------------------------[m
 [36m---- test_inherit --------------------------------[m
-Event: Olive has been set to '456'
+[1;33mEvent: Olive has been set to '456'[0m
           Olive = 456
     fruit:Olive = 456
 ----------------------------------------
-Event: fruit:Olive has been set to '-99'
+[1;33mEvent: fruit:Olive has been set to '-99'[0m
           Olive = 456
     fruit:Olive = -99
 ----------------------------------------
-Event: fruit:Olive has been reset to '456'
+[1;33mEvent: fruit:Olive has been reset to '456'[0m
           Olive = 456
     fruit:Olive = 456
 ----------------------------------------
-Event: Olive has been reset to '0'
+[1;33mEvent: Olive has been reset to '0'[0m
           Olive = 0
     fruit:Olive = 0
 [36m---- test_inherit --------------------------------[m

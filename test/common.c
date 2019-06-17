@@ -33,6 +33,8 @@
 #include "common.h"
 #include "account.h"
 
+struct HashElem *get_base(struct HashElem *he);
+
 const char *line = "----------------------------------------"
                    "----------------------------------------";
 
@@ -103,7 +105,7 @@ int log_observer(struct NotifyCallback *nc)
   else
     cs_he_initial_get(ec->cs, ec->he, &result);
 
-  TEST_MSG("Event: %s has been %s to '%s'\n", ec->name,
+  TEST_MSG("\033[1;33mEvent: %s has been %s to '%s'\033[0m\n", ec->name,
            events[nc->event_subtype - 1], result.data);
 
   FREE(&result.data);
@@ -152,9 +154,9 @@ void cs_dump_set(const struct ConfigSet *cs)
 
     if (he->type & DT_INHERITED)
     {
-      struct Inheritance *inh = he->data;
-      he = inh->parent;
-      name = inh->name;
+      struct Inheritance *i = he->data;
+      he = get_base(i->parent);
+      name = i->name;
     }
     else
     {
