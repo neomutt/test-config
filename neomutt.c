@@ -40,6 +40,8 @@ struct NeoMutt *neomutt_new(void)
 {
   struct NeoMutt *n = mutt_mem_calloc(1, sizeof(*NeoMutt));
 
+  n->notify = notify_new(n, NT_NEOMUTT);
+
   return n;
 }
 
@@ -52,7 +54,9 @@ void neomutt_free(struct NeoMutt **ptr)
   if (!ptr || !*ptr)
     return;
 
-  // struct NeoMutt *n = *ptr;
+  struct NeoMutt *n = *ptr;
+
+  notify_free(&n->notify);
 
   FREE(ptr);
 }

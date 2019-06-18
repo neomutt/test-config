@@ -69,7 +69,7 @@ void config_account(void)
     NULL,
   };
 
-  struct Account *a = account_new();
+  struct Account *a = account_new(cs, NULL);
   bool result = account_add_config(a, cs, account, BrokenVarStr);
   account_free(&a);
 
@@ -90,7 +90,7 @@ void config_account(void)
   };
 
   TEST_MSG("Expect error for next test\n");
-  a = account_new();
+  a = account_new(cs, NULL);
   result = account_add_config(a, cs, account, AccountVarStr2);
   account_free(&a);
 
@@ -107,7 +107,7 @@ void config_account(void)
     NULL,
   };
 
-  a = account_new();
+  a = account_new(cs, NULL);
 
   result = account_add_config(NULL, cs, account, AccountVarStr);
   if (!TEST_CHECK(!result))

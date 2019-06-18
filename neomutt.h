@@ -30,7 +30,7 @@ struct Notify;
  */
 struct NeoMutt
 {
-  int dummy;
+  struct Notify *notify;
 };
 
 extern struct NeoMutt *NeoMutt;

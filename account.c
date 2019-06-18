@@ -31,14 +31,27 @@
 #include "account.h"
 
 struct AccountList AllAccounts = TAILQ_HEAD_INITIALIZER(AllAccounts);
+struct ListHead ConfigAccountStack = STAILQ_HEAD_INITIALIZER(ConfigAccountStack);
 
 /**
  * account_new - Create a new Account
+ * @param name Name for the Account
  * @retval ptr New Account
  */
-struct Account *account_new(void)
+struct Account *account_new(struct ConfigSet *cs, const char *name)
 {
   struct Account *a = mutt_mem_calloc(1, sizeof(struct Account));
+  STAILQ_INIT(&a->mailboxes);
+
+  if (name)
+  {
+    a->name = mutt_str_strdup(name);
+    static const char *AccountVarStr[] = {
+      "folder", "index_format", "sort", "sort_aux", NULL,
+    };
+
+    account_add_config(a, cs, a->name, AccountVarStr);
+  }
 
   return a;
 }
@@ -138,6 +151,29 @@ void account_free(struct Account **ptr)
 }
 
 /**
+ * account_remove_mailbox - Remove a Mailbox from an Account
+ * @param a Account
+ * @param m Mailbox to remove
+ */
+void account_remove_mailbox(struct Account *a, struct Mailbox *m)
+{
+  struct MailboxNode *np = NULL;
+  STAILQ_FOREACH(np, &a->mailboxes, entries)
+  {
+    if (np->mailbox == m)
+    {
+      STAILQ_REMOVE(&a->mailboxes, np, MailboxNode, entries);
+      break;
+    }
+  }
+
+  if (STAILQ_EMPTY(&a->mailboxes))
+  {
+    account_free(&a);
+  }
+}
+
+/**
  * account_set_value - Set an Account-specific config item
  * @param a     Account
  * @param vid   Value ID (index into Account's HashElem's)
@@ -179,4 +215,82 @@ int account_get_value(const struct Account *a, size_t vid, struct Buffer *result
   }
 
   return cs_he_string_get(a->cs, he, result);
+}
+
+/**
+ * account_get_current - Current 'account' command in effect
+ * @retval ptr Name of the current Account
+ */
+char *account_get_current(void)
+{
+  struct ListNode *np = STAILQ_FIRST(&ConfigAccountStack);
+  if (!np)
+    return NULL;
+
+  return np->data;
+}
+
+/**
+ * account_find - Find an Account by its name
+ * @param name Name to find
+ * @retval ptr  Matching Account
+ * @retval NULL None found
+ */
+struct Account *account_find(const char *name)
+{
+  struct Account *np = NULL;
+  TAILQ_FOREACH(np, &AllAccounts, entries)
+  {
+    if (mutt_str_strcmp(name, np->name) == 0)
+      return np;
+  }
+
+  return NULL;
+}
+
+/**
+ * account_count - Count the 'account' command stack depth
+ * @param num Stack depth
+ */
+size_t account_count(void)
+{
+  size_t count = 0;
+
+  struct ListNode *np = NULL;
+  STAILQ_FOREACH(np, &ConfigAccountStack, entries)
+  {
+    count++;
+  }
+  return count;
+}
+
+/**
+ * account_push_current - Set the current 'account' command in effect
+ * @param name Current Account name
+ */
+void account_push_current(char *name)
+{
+  if (!name)
+    return;
+
+  name = mutt_str_strdup(name);
+  mutt_list_insert_head(&ConfigAccountStack, name);
+
+  mutt_message("pushed %s (%ld)", name, account_count());
+}
+
+/**
+ * account_pop_current - End the current 'account' command in effect
+ */
+void account_pop_current(void)
+{
+  struct ListNode *first = STAILQ_FIRST(&ConfigAccountStack);
+  if (!first)
+    return;
+
+  STAILQ_REMOVE_HEAD(&ConfigAccountStack, entries);
+
+  mutt_message("popped %s (%ld)", first->data, account_count());
+  FREE(&first->data);
+  FREE(&first);
 }

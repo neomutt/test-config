@@ -623,7 +623,7 @@ static bool test_inherit(struct ConfigSet *cs, struct Buffer *err)
     NULL,
   };
 
-  struct Account *a = account_new();
+  struct Account *a = account_new(cs, NULL);
   account_add_config(a, cs, account, AccountVarRegex);
 
   // set parent

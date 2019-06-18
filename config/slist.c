@@ -272,4 +272,3 @@ void slist_init(struct ConfigSet *cs)
   };
   cs_register_type(cs, DT_SLIST, &cst_slist);
 }
-
